@@ -1,0 +1,75 @@
+<?
+
+$back = array(
+	'page'=>array(
+		'type'=>'int',
+		'default'=>1,
+	),
+
+	'per'=>array(
+		'type'=>'droplink',
+		'default'=>24,
+		'name'=>'Отображать по',
+		'values'=>array(),
+		'links'=>array(),
+	),
+
+	'sort'=>array(
+		'type'=>'droplink',
+		'default'=>'pop',
+		'name'=>'Сортировать по',
+		'values'=>array(
+			'pop'=>'популярности',
+			'price2'=>'цене и наличию',
+			'price'=>'цене',
+			'name'=>'названию',
+//			'speed'=>'сроку поставки',
+		),
+		'links'=>array(),
+	),
+
+	'nofilter'=>array(
+		'type'=>'int',
+		'default'=>0,
+	),
+
+	'sklad'=>array(
+		'type'=>'droplink',
+		'default'=>0,
+		'name'=>'Наличие',
+		'values'=>array(0=>'Все') + cache_load('vendor'),
+		'links'=>array(),
+	),
+
+	'group'=>array(
+		'type'=>'droplink',
+		'default'=>0,
+		'name'=>'Группа',
+		'values'=>array(0=>'Все') + cache_load('groups'),
+		'links'=>array(),
+	),
+
+	'min'=>array(
+		'type'=>'int',
+		'default'=>0,
+	),
+
+	'max'=>array(
+		'type'=>'int',
+		'default'=>0,
+	),
+
+	'search'=>array(
+		'type'=>'line',
+		'default'=>'',
+	),
+);
+
+$per = array(24, 72, 108, 216);
+
+foreach ($per as $i) {
+	$back['per']['values'][$i] = $i;
+	$back['per']['links'][$i] = $i;
+}
+
+?>

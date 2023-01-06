@@ -1,0 +1,16 @@
+<?
+
+echo $config['row']['info'];
+
+/*
+w('catalog-load');
+$pathway = $config['pathway'];
+*/
+
+$q = db_query('SELECT * FROM subcat WHERE brand='.$config['row']['i']);
+while ($i = db_fetch($q)) {
+//	print_pre($i);
+	echo '<p><a href="/catalog/'.$i['up'].'/'.$i['code'].'">'.$i['name'].' ('.$i['count'].')</a></p>';
+}
+
+?>

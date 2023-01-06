@@ -1,0 +1,27 @@
+<?
+
+global $menu;
+$is_info = (count($menu) >= 2) && ($menu[1]['code'] == 'info');
+
+if (is_user('mail') && (is_user('info') || $is_info)) {
+	if (!is_user('info')) {
+		$users = cache_load('users');
+		if (isset($users[$_SESSION['i']])) {
+			$plan = $users[$_SESSION['i']];
+		}
+	}
+
+	if (!isset($plan)) {
+		$plan = w('plan-info');
+		$plan['fio']['value'] = $_SESSION['name'];
+		$plan['email']['value'] = $_SESSION['login'];
+	}
+
+	$config['user'] = $plan;
+
+	if (is_user('info') && !$is_info) {
+		redirect('/info');
+	}
+}
+
+?>

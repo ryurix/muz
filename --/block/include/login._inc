@@ -1,0 +1,18 @@
+<?
+
+global $menu;
+$root = count($menu) <= 1;
+if () {
+}
+
+if (is_user()) {
+	if ($root) {
+		redirect('/order');
+	}
+} else {
+	if (!$root) {
+		redirect('/');
+	}
+}
+
+?>

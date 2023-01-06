@@ -1,0 +1,61 @@
+<?
+
+w('clean');
+w('store-mini');
+
+$rows = w('store-sale-all');
+
+if (count($rows) >= 6) {
+
+$keys = array_rand($rows, 6);
+
+?>
+<div class="full-width minicatalog">
+	<div class="container container-fluid">
+		<div class="row">
+			<div class="col">
+				<h2 class="minicatalog_title">Популярные товары</h2>
+			</div>
+		</div>
+		<div class="row catalog_items">
+<?
+
+$count = 0;
+foreach ($keys as $k) {
+	$i = $rows[$k];
+	$count++;
+
+	echo '
+			<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2'.($count > 4 ? ' d-lg-none d-xl-block' : '').'">'.store_mini($i).'</div>';
+
+	/*
+?>
+<div class="minicatalog_item">
+	<ul class="minicatalog_status">
+		<li><i class="fa fa-gripfire"></i></li>
+		<li><i class="fa fa-percentage"></i></li>
+	</ul>
+	<div class="miniitem_imgcont">
+		<img src="img/item.png" alt="" class="miniitem_img">				
+	</div>
+	<a href="#" class="minicatalog_name-product">Ritmuller GP-148R1 A111 Рояль кабинетный Рояль кабинетный2 Рояль кабинетный3 Рояль кабинетный4 </a>
+	<p class="minicatalog_available">Есть в наличии</p>
+	<div class="minicatalog_itemcont">
+		<p class="minicatalog_price">1 000 000 ₽</p>
+		<button class="minicatalog_addToCard">В корзину</button>
+	</div>
+</div>
+<?
+	*/
+
+} // foreach
+
+?>
+		</div>
+	</div>
+</div>
+<?
+
+} // if
+
+?>

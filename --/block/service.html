@@ -1,0 +1,129 @@
+<?
+
+$back = array();
+
+// Заказы + Финансы
+
+$sub = array();
+
+if (is_user('order')) {
+	$sub['order'] = array('action'=>'Заказы', 'href'=>'/order');
+	$sub['doc'] = array('action'=>'Документы', 'href'=>'/doc');
+}
+
+if (is_user('sale')) {
+	$sub['sale'] = array('action'=>'Скидки', 'href'=>'/sales/list');
+}
+
+if (is_user('order')) {
+	$sub['bill'] = array('action'=>'Счета оплаты банковской картой', 'href'=>'/bill');
+}
+
+if (is_user('kkm')) {
+	$sub['kkm'] = array('action'=>'Фискальные чеки', 'href'=>'/kkm');
+}
+
+if (is_user('money')) {
+	$sub['money'] = array('action'=>'Финансы', 'href'=>'/user/sales');
+}
+
+if (is_user('sklad')) {
+	$sub['sklad'] = array('action'=>'Склады', 'href'=>'/sklad');
+}
+
+if (is_user('order')) {
+	$sub['auto'] = array('action'=>'Страница водителя', 'href'=>'/auto');
+}
+
+if (count($sub)) {
+	$key = array_keys($sub)[0];
+	$back[] = array('action'=>$sub[$key]['action'], 'href'=>$sub[$key]['href'], '/'=>$sub);
+}
+
+// Каталог
+
+$sub = array();
+
+if (is_user('sync') || is_user('import') || is_user('csv')) {
+	$sub['sync'] = array('action'=>'<i class="fa fa-balance-scale"></i> Прайсы и синхронизация', 'href'=>'/sync', '/'=>w('menu-sync'));
+}
+
+if (is_user('catalog')) {
+//	$sub['catalog'] = array('action'=>'<i class="fa fa-wrench"></i> Каталог', 'href'=>'/setup/catalog');
+
+	$sub[] = array('action'=>'Производители', 'href'=>'/brand');
+	$sub[] = array('action'=>'Поставщики', 'href'=>'/vendor');
+//	$sub[] = array('action'=>'Подкаталоги', 'href'=>'/subcat');
+	$sub[] = array('action'=>'Знаки', 'href'=>'/sign');
+	$sub[] = array('action'=>'Фильтры', 'href'=>'/filter');
+	$sub[] = array('action'=>'Категории Google', 'href'=>'/setup/google');
+	$sub[] = array('action'=>'Импорт товаров с других сайтов', 'href'=>'/setup/parse');
+	$sub[] = array('action'=>'"Потерянные" товары (без раздела)', 'href'=>'/setup/lost');
+	$sub[] = array('action'=>'Очистка лишних файлов каталога', 'href'=>'/clean-store');
+}
+
+if (is_user('rate')) {
+	$sub['rate'] = array('action'=>'Отзывы', 'href'=>'/rate');
+}
+
+if (count($sub)) {
+	$key = array_keys($sub)[0];
+	$back[] = array('action'=>'Каталог', 'href'=>$sub[$key]['href'], '/'=>$sub);
+}
+
+// Маркетплейс
+
+$sub = [];
+
+if (is_user('market')) {
+	$sub[] = ['action'=>'Выгрузка YML', 'href'=>'/setup/yml'];
+	$sub[] = ['action'=>'Выгрузка Ozon', 'href'=>'/setup/ozon'];
+	$sub[] = ['action'=>'Выгрузка Wildberries', 'href'=>'/setup/wildberries'];
+//	$sub[] = ['action'=>'Выгрузка Goods', 'href'=>'/setup/goods'];
+}
+
+if (count($sub)) {
+	$key = array_keys($sub)[0];
+	$back[] = ['action'=>'Маркетплейс', 'href'=>$sub[$key]['href'], '/'=>$sub];
+}
+
+// Сервис
+
+$sub = array();
+
+if (is_user('users')) {
+	$sub[] = array('action'=>'<i class="fa fa-user"></i> Пользователи', 'href'=>'/user');
+}
+
+if (is_user('block')) {
+	$sub[] = array('action'=>'<i class="fa fa-cog"></i> Настройки', 'href'=>'/setup');
+}
+
+if (is_user('adres')) {
+	$sub[] = array('action'=>'Города', 'href'=>'/city');
+	$sub[] = array('action'=>'Области', 'href'=>'/region');
+	$sub[] = array('action'=>'Время доставки', 'href'=>'/setup/delivery');
+}
+
+if (is_user('menu')) {
+	$sub[] = array('action'=>'Меню', 'href'=>'/menu');
+	$sub[] = array('action'=>'Статьи', 'href'=>'/article');
+}
+
+if (is_user('spam')) {
+	$sub[] = array('action'=>'<i class="icon-envelope"></i> Рассылка', 'href'=>'/setup/spam');
+}
+
+if (is_user('admin')) {
+	$sub[] = array('action'=>'<i class="fa fa-book"></i> Словарь', 'href'=>'/dict');
+}
+
+if (is_user('block')) {
+	$sub[] = array('action'=>'Блоки', 'href'=>'/block');
+	$sub[] = array('action'=>'Метки', 'href'=>'/mark');
+}
+
+if (count($sub)) {
+	$key = array_keys($sub)[0];
+	$back[] = array('action'=>'Сервис', 'href'=>$sub[$key]['href'], '/'=>$sub);
+}

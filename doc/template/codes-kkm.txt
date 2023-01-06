@@ -1,0 +1,20 @@
+{URL} => https://cash.kontur.ru/CashReceipt/View/FN/8711000101647261/FD/665/FP/822692249
+{QRCode} => t=20181203T185200&s=362.00&fn=8711000101647261&i=665&fp=822692249&n=1
+{FiscalNumber} => 665
+{FiscalDate} => 2018-12-03T18:52:00
+{CheckType} => Приход
+{FiscalSign} => 822692249
+{CashierName} => Степанцов Олег
+{CashierVATIN} => 
+{TaxVariant} => 2
+{ClientAddress} => 
+{Cash} => 0
+{ElectronicPayment} => 362
+{AdvancePayment} => 0
+{Credit} => 0
+{CashProvision} => 0
+{AllSumm} => 362
+[*Name*] => Roxtone YS231L Разъем стерео джек, 3,5 мм
+[*Quantity*] => 2
+[*Amount*] => 182
+[*Tax*] => -1

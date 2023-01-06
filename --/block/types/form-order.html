@@ -1,0 +1,62 @@
+<?
+
+$plan1 = $args;
+$plan2 = $args;
+
+$head = $args[''];
+$head['open'] = false;
+$head['close'] = false;
+
+unset($plan1['name']);
+unset($plan1['price']);
+unset($plan1['count']);
+unset($plan1['pay']);
+unset($plan1['money']);
+unset($plan1['pay2']);
+unset($plan1['money2']);
+unset($plan1['money0']);
+unset($plan1['docs']);
+unset($plan1['files']);
+unset($plan1['sale']);
+unset($plan1['mark']);
+
+$plan2 = array_diff_key($args, $plan1);
+
+$plan1[''] = $head;
+$plan2[''] = $head;
+
+?>
+<form method="POST" enctype="multipart/form-data">
+	<div class="row">
+		<div class="col-sm-6">
+			<? w('form', $plan1); ?>
+		</div>
+		<div class="col-sm-6">
+			<? w('form', $plan2); ?>
+		</div>
+	</div>
+</form>
+<script>
+$(function () {
+	$('.mark').change(function () {
+		$(this).children().each(function() {
+			if ($(this).val() == <? echo MARKETPLACE_MARK ?>) {
+				$('.marketplace').toggle($(this).is(':selected'));
+			}
+		});
+	});
+<?
+
+if (!in_array(MARKETPLACE_MARK, $args['mark']['value'])) {
+	echo '
+	$(".marketplace").hide();';
+}
+
+?>
+});
+</script>
+<?
+
+w('calendar');
+
+?>

@@ -1,0 +1,89 @@
+<p><img src="/design/img/logo.png"></p>
+<?
+
+cache_load('basket-com');
+
+/*
+<p style="color:#000">
+ООО "Кайрос"<br>
+ИНН 7203265990 КПП 720301001 ОГРН 1117232029090<br>
+Р/С 40702810700030007475 в Ф-Л ЗС ПАО «ХАНТЫ-МАНСИЙСКИЙ БАНК ОТКРЫТИЕ»; БИК  047162782; К/С 30101810771620000782<br>
+г. Тюмень, ул. Пермякова 2, строение 3, офис 407<br>
+Тел: 8(3452) 589-564; 740-480; 8-800-505-4051; Email: info@muzmart.com; сайт: www.muzmart.com<br>
+</p>
+*/
+
+?>
+<p style="color:#000"><b>Коммерческое предложение  № И-<? w('keys'); $key=key_next('com-k'); echo $key; ?> От <? w('ft'); echo ft(now()); ?> г.</b></p>
+<?
+
+$basket = array();
+$count = 0;
+if (isset($_SESSION['basket']) && is_array($_SESSION['basket'])) {
+	$count = 0;
+	foreach ($_SESSION['basket'] as $k=>$i) {
+		$count+= $i['c'];
+		$basket[$k] = $i['c'];
+	}
+}
+
+if ($count) {
+
+?>
+<table class="table table-bordered" style="background-color:#fff">
+	<thead>
+<th class="text-right">№</th>
+<th>Изображение</th>
+<th>Фирма</th>
+<th>Модель</th>
+<th>Наименование</th>
+<th nowrap>Кол-во</th>
+<th>Цена</th>
+<th>Сумма</th>
+	</thead>
+	<tbody>
+<?
+
+w('basket');
+$basket = basket_calc($_SESSION['basket'], $_SESSION['sale']);
+
+$num = 0;
+$total = 0;
+foreach ($basket as $i) {
+	$num++;
+	//$name = strlen($i['model']) > 0 ? $i['brand'].' '.$i['model'].' '.$i['name'] : $i['name'];
+	$name = $i['name'];
+
+	$count = $i['count'];
+	$summa = $count * $i['price2'];
+	$total+= $summa;
+
+	if (strlen($i['icon']) == 0) {
+		$i['icon'] = '/design/img/no-photo-s.png';
+	}
+
+	echo '<tr><td class="text-right">'.$num.'</td>'
+.'<td class="mini-icon"><img class="pull-left" src="'.$i['icon'].'" ></td>'
+.'<td>'.$i['brand'].'</td>'
+.'<td>'.$i['model'].'</td>'
+.'<td><div class="mini-info">'.$i['name1'].'</div></td>'
+.'<td class="text-right">'.$count.'</td>'
+.'<td class="text-right" nowrap>'.number_format($i['price2'], 0, '.', ' ').'</td>'
+.'<td class="text-right" nowrap>'.number_format($summa, 0, '.', ' ').'</td></tr>';
+}
+
+?>
+<tr>
+	<td colspan=5 class="text-right"><b>Итого:</b></td>
+	<td colspan=3 class="text-right"><b><? echo number_format($total, 0, '.', ' ') ?></b></td>
+</tr>
+
+	</tbody>
+</table>
+<?
+
+}
+
+?>
+<p>Исполнитель: _____________________________________________ Email: <? echo $config['backmail']; ?></p>
+<p>Генеральный директор  ____________________________________Кокшаров А.С</p>

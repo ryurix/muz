@@ -1,0 +1,91 @@
+<?
+
+w('email2');
+
+//	Spam
+
+$q = db_query('SELECT * FROM mail'
+.' WHERE mail.type=0'
+.' ORDER BY mail.dt LIMIT 1'); // рассылка по одной в минуту
+
+while ($i = db_fetch($q)) {
+	db_query('DELETE FROM mail WHERE i='.$i['i']);
+
+	$data = php_decode($i['info']);
+
+	if (!is_array($data['rows'])) {
+		$data['rows'] = array($data['rows']);
+	}
+	$data['rows'][] = 'Вы получили это письмо потому что зарегистрировались на сайте <a href="http://'.$config['site'].'">'.$config['site'].'</a>, если вы не хотите получать информацию об акциях и скидках нажмите <a href="http://'.$config['site'].'/unsubscribe?mail='.$data['mail'].'&code='.md5($data['mail'].'-unsubscribe-from-'.$config['site']).'">здесь</a>.';
+
+	email2($data['mail'], isset($data['from']) ? $data['from'] : $config['backmail'], $data['name'], $data['theme'], $data['rows'], $copy = 0);
+}
+
+
+//	Mail Order Update
+
+$q = db_query('SELECT mail.i i'
+.',user.i user'
+.',user.login mail'
+.',user.name name'
+.',user.roles roles'
+.',user.note note'
+.',mail.dt dt'
+.',mail.info info'
+.' FROM user,mail'
+.' WHERE mail.user=user.i AND mail.type=1 AND mail.dt<'.(now() + 30*60)
+.' ORDER BY mail.dt LIMIT 1'); // рассылаем по одному в минуту
+
+$sent = array();
+while ($i = db_fetch($q)) {
+	$sent[$i['i']] = $i;
+}
+
+if (count($sent)) {
+//	db_query('DELETE FROM mail WHERE i IN ('.implode(',', array_keys($sent)).')');
+}
+
+$state = w('order-state-user');
+
+foreach ($sent as $row) {
+/*
+	if (!strpos($row['roles'], 'order')) {
+		continue;
+	}
+//*/
+
+	if (!$row['note']) {
+		continue; // Если у пользователя снята галочка "получать уведомления" -- не высылаем
+	}
+
+	$orst = array_unique(explode(',', $row['info']));
+//	$q = db_query('SELECT * FROM orst WHERE i IN ('.implode(',', $orst).')');
+	$q = db_query('SELECT * FROM orst WHERE user='.$row['user']
+.' AND (state<30 OR last>'.($row['dt'] - 3*60*60).')');
+
+	$response = 0;
+
+	$table = '<table border=1>
+<tr><td>№ Заказа</td><td>Наименование</td><td>Цена</td><td>Кол-во</td><td>Оплачено</td><td>Статус</td><td>Комментарий</td></tr>';
+	while ($i = db_fetch($q)) {
+		if ($i['state'] == 30) {
+			$response++;
+		}
+		$table.= '<tr><td align="center">'.$i['i'].'</td><td><a href="http://muzmart.com/store/'.$i['store'].'" target="_BLANK">'.$i['name'].'</a></td><td align="center">'.$i['price'].'</td><td align="center">'.$i['count']
+			.'</td><td align="center">'.($i['money'] + $i['money2']).'</td>'
+			.'<td align="center">'.$state[$i['state']].'</td><td>'.$i['info'].'</td></tr>';
+	}
+	$table.= '</table>';
+
+	$rows = array($table, 'Весь список заказов можно посмотреть в <a href="http://muzmart.com/my" target="_BLANK">личном кабинете</a>.');
+
+	if ($response) {
+		$rows[] = cache_get('mail-response');
+	}
+
+//	email2($row['mail'], $config['backmail'], $row['name'], 'Статус вашего заказа изменён!', $rows);
+	print_pre($row);
+	print_pre($rows);
+}
+
+?>

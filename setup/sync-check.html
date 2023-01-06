@@ -1,0 +1,86 @@
+<?
+
+w('calendar');
+
+$plan = [
+	''=>['method'=>'GET'],
+	'dt'=>['type'=>'date', 'name'=>'Мин. дата синхронизации', 'default'=>now()-30*24*60*60],
+	'diff'=>['type'=>'number', 'name'=>'Разница в цене, %', 'default'=>20],
+	'same'=>['type'=>'number', 'name'=>'Совпадение, %', 'default'=>100],
+	'limit'=>['type'=>'number', 'name'=>'Количество записей', 'default'=>1000],
+	'send'=>['type'=>'button', 'count'=>1, 1=>'Фильтровать'],
+];
+
+$plan = w('request', $plan);
+w('form', $plan);
+
+$diff = (100-$plan['diff']['value']) / 100;
+
+$where = [
+	'store.i=sync.store',
+	'sync.price>0',
+	'store.price>0',
+	'sync.dt>='.$plan['dt']['value'],
+];
+
+$where[] = 'store.price*'.$diff.($diff > 1 ? '<' : '>').'sync.price';
+
+w('pager');
+$select = 'SELECT sync.*,store.brand,store.model,store.name store_name,store.price store_price,store.url FROM sync,store WHERE '.implode(' AND ', $where).' LIMIT '.$plan['limit']['value'];
+$q = db_query($select, 100);
+
+?>
+<table class="table table-hover">
+<thead>
+	<tr>
+		<th>Артикул</th>
+		<th>Наименование в синхронизации</th>
+		<th>Наименование</th>
+		<th>Поставщик</th>
+		<th>Дата</th>
+		<th>На сайте</th>
+		<th>Цена прайса</th>
+		<th>Наличие</th>
+		<th>Совпадение</th>
+		<th>&nbsp;</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$brand = cache_load('brand');
+$vendor = cache_load('vendor');
+
+w('ft');
+w('search');
+while ($i = db_fetch($q)) {
+
+	$store = search_split($brand[$i['brand']].' '.$i['model'].' '.$i['name']);
+	$sync = search_split($i['name']);
+	$same = search_same($store, $sync);
+
+	if ($same > $plan['same']['value']) {
+		continue;
+	}
+
+	$class = '';
+	if ($same < 80) { $class = 'warning'; }
+	if ($same < 50) { $class = 'error'; }
+
+	echo '<tr class="'.$class.'"><td>'.$i['code'].'</td>'
+.'<td>'.$i['name'].'</td>'
+.'<td><a href="/store/'.$i['url'].'">'.kv($brand, $i['brand']).' '.$i['model'].'</a></td>'
+.'<td>'.(isset($vendor[$i['vendor']]) ? $vendor[$i['vendor']] : '').'</td>'
+.'<td>'.ft($i['dt'], 1).'</td>'
+.'<td align=center>'.$i['store_price'].'</td>'
+.'<td align=center>'.$i['price'].'</td>'
+.'<td>'.$i['count'].'</td>'
+.'<td>'.$same.'%</td>'
+.'<td><a href="/store/'.$i['url'].'/sync?code='.$i['i'].'" class="btn btn-default btn-sm" onclick="return confirm(\'Удалить синхронизацию? Восстановление невозможно!\')">&times;</a></td>';
+}
+
+db_close($q);
+
+?>
+</tbody>
+</table>

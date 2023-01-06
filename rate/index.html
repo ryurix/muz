@@ -1,0 +1,108 @@
+<?
+
+$plan = $config['plan'];
+
+w('calendar');
+// w('form', $plan);
+
+$where = array(
+	'dt0>='.$plan['dt01']['value'],
+	'dt0<='.$plan['dt02']['value'] + 24*60*60 - 1,
+	'rate.dt>='.$plan['dt1']['value'],
+	'rate.dt<='.$plan['dt2']['value'] + 24*60*60 - 1,
+);
+
+if (strlen($plan['usr']['value'])) {
+	$usr = str_replace(
+		array('%', '"'),
+		array('%%', '\\"'),
+		$plan['usr']['value']
+	);
+	$where[] = '(user.name LIKE "%'.$usr.'%" OR rate.name LIKE "%'.$usr.'%")';
+}
+
+if ($plan['state']['value'] >= 0) {
+	$where[] = 'rate.state='.$plan['state']['value'];
+}
+
+if ($plan['store']['value']) {
+	w('search');
+	$s = $plan['store']['value'];
+	$i = str_replace(array('M','м','М'), 'm', $s);
+
+	if (preg_match('/^m[0-9]+$/', $i)) {
+		$where[] = 'store.i='.substr($i, 1);
+	} else {
+		$where[] = 'store.quick LIKE "%'.search_like($s).'%"';
+	}
+}
+
+w('pager');
+$q = pager_query('SELECT rate.*,store.url,store.model,store.brand,store.name sname,user.name uname FROM rate LEFT JOIN store ON rate.store=store.i LEFT JOIN user ON rate.usr=user.i WHERE '.implode(' AND ', $where).' ORDER BY rate.i DESC', 100);
+echo pager_block('?', 0);
+
+$brand = cache_load('brand');
+w('table');
+
+?>
+<table class="table table-striped table-sm">
+<thead>
+	<form class="form-inline auto" method="POST">
+<tr>
+<td rowspan=2>&nbsp;</td>
+<td></td>
+<td colspan=2>
+	<button name="send1" class="btn btn-default">Фильтровать</button>
+	<button name="send2" class="btn btn-default">Сбросить</button>
+</td>
+<td><div class="form-inline"><? echo input_date($plan['dt01']) ?></div></td>
+<td><div class="form-inline"><? echo input_date($plan['dt1']) ?></div></td>
+<td></td>
+</tr>
+
+<tr>
+<td><? echo input_line($plan['store']) ?></td>
+<td colspan=2><? echo input_line($plan['usr']) ?></td>
+<td><div class="form-inline"><? echo input_date($plan['dt02']) ?></div></td>
+<td><div class="form-inline"><? echo input_date($plan['dt2']) ?></div></td>
+<td><? echo input_combo($plan['state']) ?></td>
+</tr>
+	</form>
+<tr>
+<td>ID</td>
+<td>Товар</td>
+<td>Имя</td>
+<td>Автор</td>
+<td>Дата создания</td>
+<td>Дата отзыва</td>
+<td>Статус</td>
+</tr>
+</thead>
+<tbody>
+<?
+
+w('ft');
+
+while ($i = db_fetch($q)) {
+	$a1 = '<a href="/rate/'.$i['i'].'">';
+	$a2 = '</a>';
+	echo '<tr>
+	<td class="center">'.$a1.$i['i'].$a2.'</td>
+	<td><a href="/store/'.$i['url'].'">'.kv($brand, $i['brand']).' '.$i['model'].' '.$i['sname'].'</a></td>
+	<td>'.$i['name'].'</td>
+	<td>'.$i['uname'].'</td>	
+	<td>'.$a1.ft($i['dt0']).$a2.'</td>
+	<td>'.$a1.ft($i['dt']).$a2.'</td>
+	<td>'.($i['state'] == 10 ? '<span class="badge badge-success">Проверен</span>' : '').'</td>
+</tr>';
+}
+db_close($q);
+
+?>
+</tbody>
+</table>
+<?
+
+echo pager_block('?', 0);
+
+?>

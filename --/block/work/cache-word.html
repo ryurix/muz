@@ -1,0 +1,17 @@
+<?
+
+$site = array();
+
+$q = db_query('SELECT word.site,dict.code,word.value FROM dict,word WHERE word.dict=dict.i');
+while ($i = db_fetch($q)) {
+	$s = $i['site'];
+	if (!isset($site[$s])) {
+		$site[$s] = array();
+	}
+	$site[$s][$i['code']] = $i['value'];
+}
+db_close($q);
+
+cache_save('word', $site);
+
+?>

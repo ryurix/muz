@@ -1,0 +1,66 @@
+<?
+
+//w('pathway');
+
+$row = $config['row'];
+
+?>
+<div class="row">
+	<div class="col-sm-12 col-md-6">
+		<div class="product_gallery">
+			<div id="product_bootstrap-slider" class="carousel slide" data-ride="carousel">
+				<div class="carousel-inner">
+<?
+
+$pics = array();
+
+if (strlen($row['pics']) > 7) {
+	$more = php_decode($row['pics']);
+	foreach ($more as $i) {
+		$pics[] = $i['href'];
+	}
+}
+
+foreach ($pics as $k=>$v) {
+	echo '
+<div class="carousel-item'.($k == 0 ? ' active' : '').'">
+	<div class="product_imgcont" href="'.$v.'" data-fancybox="gallery">
+		<img src="'.$v.'" alt="product"  class="product_img">			
+	</div>
+</div>
+';
+}
+
+?>
+				</div>
+<? if (count($pics) > 1) { ?>
+				<a class="carousel-control-prev" href="#product_bootstrap-slider" role="button" data-slide="prev">
+					<i class="fa fa-angle-left"></i>
+				</a>
+				<a class="carousel-control-next" href="#product_bootstrap-slider" role="button" data-slide="next">
+					<i class="fa fa-angle-right"></i>
+				</a>
+<? } ?>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-sm-12 col-md-6">
+		<!-- product detail -->
+			<? // <h2 class="product-title"><? echo $row['name'] ? ></h2> ?>
+
+			<!-- product unique code -->
+			<p><span class="code"><? echo $row['dt'] ?></span></p>
+			<!-- /product unique code -->
+
+			<!-- product description -->
+			<div class="desc">
+				<? //<h3 class="page-header">ОПИСАНИЕ</h3> ?>
+				<? echo $row['info'] ?>
+			</div>
+			<!-- /product description -->
+
+		<!-- product detail -->
+	</div>
+</div>
+<? // w('store-sale') ?>

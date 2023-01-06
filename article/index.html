@@ -1,0 +1,105 @@
+<section id="catalog">
+	<div class="container">
+<?
+
+w('pathway');
+
+//	$shop = $row['i'];
+$up = $config['up'];
+
+$pw = cache_load('pathway'.(is_user('catalog') ? '-hide' : ''));
+
+?>
+	</div>
+
+	<div class="full-width catalog_products">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-md-12 col-lg-4 col-xl-3">
+					<aside>
+<?
+
+// Список подкаталогов
+
+$sub = $config['sub'];
+$counts = $config['counts'];
+
+//if (count($sub)) { // Подкатегории
+	echo '
+	<button type="button" class="catalog_btnsubmenu">'.($pw[$up]['name']).'</button>
+	<ul class="catalog_submenu" style="max-height:700px">';
+
+	foreach ($sub as $v) {
+		if (!$counts[$v]) {
+			continue;
+		}
+
+		$end = $counts[$v] % 10;
+		if ($end == 1) { $end = 'ья'; }
+		elseif ($end == 2 || $end == 3 || $end == 4) { $end = 'ьи'; }
+		else { $end = 'ей'; }
+
+		echo '
+		<li><a href="/article?catalog='.$pw[$v]['url'].'">
+			<div class="catalog_smcontimg">
+				<img src="'.kv($pw[$v], 'icon', '/design/img/no-photo-s.png').'" alt="'.htmlspecialchars($pw[$v]['name']).'">
+			</div>
+			<div class="catalog_smcont">
+				<p class="catalog_smtitle">'.$pw[$v]['name'].' <span class="count">'.$counts[$v].' стат'.$end.'</span></p>
+			</div>
+		</a></li>
+		';
+	}
+
+	echo '
+	</ul>';
+//}
+
+?>
+					</aside>
+				</div>
+				<div class="col-sm">
+<?
+
+//*
+$pager = '<center><nav class="catalog-pagination">';
+w('pager');
+
+$url = strlen(kv($_REQUEST, 'catalog', '')) ? '?catalog='.$_REQUEST['catalog'] : '' ;
+$pager.= pager_block($url ? $url.'&' : '?');
+$pager.= '</nav></center>';
+//*/
+
+echo $pager;
+
+?>
+					<div class="catalog_items row">
+<?
+
+foreach ($config['rows'] as $i) {
+?>
+<div class="col-lg-4 col-md-6 col-sm-12 col-xl-3">
+	<a href="/article/<? echo $i['url'] ?>" class="card my-3" style="width:100%">
+		<img src="/files/article/<? echo $i['i'] ?>/mini.jpg" class="card-img-top" alt="<? echo $i['name'] ?>">
+		<div class="card-body">
+			<p class="card-text"><? echo ($i['hide'] ? '* ' : '').$i['name'] ?></p>
+		</div>
+	</a>
+</div>
+<?
+}
+
+?>
+					</div><!-- items -->
+<?
+
+echo $pager;
+
+?>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</section>

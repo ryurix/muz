@@ -1,0 +1,221 @@
+<?
+
+function create_catalog($a, $up) {
+	foreach ($a as $v) {
+		db_insert('catalog', array(
+			'up'=>$up,
+			'name'=>$v['name'],
+			'icon'=>'',
+			'w'=>100,
+		));
+		if (isset($v['/'])) {
+			$down = db_insert_id();
+			create_catalog($v['/'], $down);
+		}
+	}
+}
+
+function get_i($table, $name) {
+	//$name = trim($name);
+	$q = db_query('SELECT i FROM '.$table.' WHERE name="'.$name.'"');
+	if ($row = db_fetch($q)) {
+		return $row['i'];
+	} else {
+		db_insert($table, array(
+			'name'=>$name,
+			'w'=>100
+		));
+		return db_insert_id();
+	}
+}
+
+function cell($s) {
+	$s = trim($s, '",{}');
+	$s = trim($s);
+	$s = strip_tags($s);
+	return $s;
+}
+
+function str_getcsv4($input, $delimiter = ",", $enclosure = '"', $escape = "\\") {
+	$fp = fopen("php://memory", 'r+');
+	fputs($fp, $input);
+	rewind($fp);
+	$data = fgetcsv($fp, null, $delimiter, $enclosure); // $escape only got added in 5.3.0
+	fclose($fp);
+	return $data;
+}
+
+w('keys');
+
+db_query('TRUNCATE TABLE `brand`');
+get_i('brand', "");
+
+$filename = $config['root'].'files/import.csv';
+//echo $filename;
+$f = @fopen($filename, 'r');
+
+if ($f) {
+	$a = '';
+	$pre = 1;
+	fgets($f);
+
+	$store = array();
+
+	while (!feof($f)) {
+		$s = fgets($f);
+		$s = iconv('windows-1251', 'UTF-8', $s);
+		$row = str_getcsv4($s, ';');
+		//$row = explode(';', $s);
+
+		if (count($row) > 1) {
+			$name = $row[1];
+//echo '<p>'.$name.'</p>';
+//echo '<p>'.$s.'</p>';
+
+			$level = 0;
+			while (substr($name, $level, 1) == '!') {
+				$level++;
+			}
+			$name = substr($name, $level);
+			if (!isset($row[29])) {
+				$level++;
+			}
+
+			if ($level > 0) {
+				$last = $name;
+				//echo '<p>'.$level.' - '.$name.'</p>';
+
+				if ($pre == $level) {
+					$a.= '), array("name"=>"'.$name.'"';
+				} else {
+					if ($pre < $level) {
+						$a.= ', "/"=>array(array("name"=>"'.$name.'"';
+					} else {
+						while ($pre > $level) {
+							$a.= '))';
+							$pre--;
+						}
+						$a.='), array("name"=>"'.$name.'"';
+
+					}
+				}
+				$pre = $level;
+			} else {
+				if (isset($last)) {
+//*
+					if (isset($row[29])) {
+						$pic = cell($row[22]);
+						$pics = explode(',', $pic);
+						//$pics = str_getcsv4($pic, ',');
+						if (count($pics) > 1) {
+							if (count($pics) == 2) {
+								$pic = $pics[0];
+							} else {
+								$pic = $pics[2];
+							}
+							//$pic = $config['root'].'files/pics/'.$pic;
+							//echo '<p>http://muzmarket.pro/images/supersound/pp/'.$pic.'</p>';
+							//$pic = '<a href="http://muzmarket.pro/images/supersound/pp/'.$pic.'">'.$pic.'</a>';
+							//echo '<p>'.$pic.'</p>';							
+						} else {
+							echo '<p>'.$pic.'</p>';
+							if (strlen($pic) > 1) {
+								echo '<p>'.$pic.'</p>';
+							}
+						}
+
+						$brand = cell($row[29]);
+						$vendor = 0;
+
+						$store[] = array(
+							'art'=>cell($row[0]),
+							'up'=>$last,
+							'name'=>cell($name),
+							'price'=>cell($row[3]),
+							'info'=>$row[9],
+							'short'=>cell($row[10]),
+							'pic'=>$pic,
+							'brand'=>$brand,
+							'brand_i'=>get_i('brand', $brand),
+						);
+
+					} else {
+						echo '<p>Error: '.$s.'</p>';
+					}
+//*/
+				}
+			}
+		}
+	}
+
+	while($pre > 0) {
+		$a.= ')';
+		$pre--;
+	}
+	$a= 'return array('.substr($a, 2).')));';
+
+//	echo $a;
+/*
+	$a = eval($a);
+	echo '<pre>';
+	print_r($a);
+	echo '</pre>';
+//*/
+
+	foreach ($store as $i) {
+//		echo '<p>'.implode('::', $i).'</p>';
+	}
+
+	db_query('TRUNCATE TABLE `store`');
+	db_query('DELETE FROM `catalog` WHERE i>0');
+	db_query('ALTER TABLE `catalog` AUTO_INCREMENT = 1');;
+
+	$cat = eval($a);
+	print_r($cat);
+	create_catalog($cat, 0);
+	w('catalog-cache');
+
+	set_time_limit(0);
+
+	$brand = cache_load('brand');
+	foreach ($store as $i) {
+		$key = key_next('store');
+		$pic = $i['pic'];
+		if (strlen($pic) > 0) {
+			$plan = array(
+				''=>array('path'=>'/files/store/'.$key.'/'),
+				'icon'=>array('filename'=>basename($pic), 'value'=>$config['root'].'files/pics/'.$pic),
+			);
+			w('store-pic', $plan);
+		} else {
+			$plan = array(
+				'icon'=>array('pic'=>'', 'value'=>''),
+			);
+		}
+
+		db_insert('store', array(
+			'i'=>$key,
+			'up'=>get_i('catalog', $i['up']),
+			'name'=>$i['name'],
+			'sync'=>'',
+			'brand'=>$i['brand'],
+			'vendor'=>0,
+			'dt'=>now(),
+			'speed'=>2,
+			'price'=>$i['price'],
+			'count'=>0,
+			'short'=>$i['short'],
+			'info'=>$i['info'],
+			'icon'=>$plan['icon']['value'],
+			'pic'=>$plan['icon']['pic'],
+//			''=>$i[''],
+//			''=>$i[''],
+			'user'=>0,
+			'w'=>100,
+		));
+	}
+}
+
+fclose($f);
+
+?>

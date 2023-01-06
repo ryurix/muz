@@ -1,0 +1,221 @@
+<?
+
+/*
+w('pic');
+$img = pic_load('files/dyna/5099/d5099-1.jpg');
+$white = imagecolorallocate($img['image'], 255, 255, 255);
+imagefilledrectangle($img['image'], 146, 779, 248, 800, $white);
+pic_jpeg($img, 'files/dyna/5099/5099-1.jpg');
+*/
+
+/*
+$s = '<ul class="list-unstyled">
+			<li><a href="https://dynatone.ru/veston">
+					<img  class="pull-right" src="https://data.dynatone.ru/image/cache/_manufacturer/veston_52296-50x50.jpg" alt="VESTON" title="VESTON">
+					</a></li>
+			<li><span>Производитель:</span>&nbsp;&nbsp;<a itemprop="manufacturer" href="https://dynatone.ru/veston">VESTON</a></li>
+		<li>Доступность:&nbsp;&nbsp;<span class = "rewardoff">Нет в наличии</span> </li>
+<br>
+
+Вес (в упаковке): 0.29 кг<br>Размер (упаковки): 38 см x 19 см x 6 см<br>
+
+<li> 3830054907416</li>';
+
+
+
+$r = mb_eregi('Вес[^<^0-9]*([0-9.]+)[^<]*кг', $s, $weight);
+//$r = mb_eregi('([0-9.]+)', $s, $a);
+//print_pre($weight);
+
+$r = mb_eregi('Размер[^0-9]*([0-9.]+)[^0-9]*([0-9.]+)[^0-9]*([0-9.]+)', $s, $dim);
+//$r = mb_eregi('([0-9.]+)', $s, $a);
+//print_pre($dim);
+
+$size = array($weight[1], $dim[1], $dim[2], $dim[3]);
+
+print_pre($size);
+//*/
+
+error_reporting(E_ALL ^ E_WARNING);
+
+function find_class($elements, $class, $prop = 'class') {
+	$a = array();
+	foreach ($elements as $i) {
+		if ($i->hasAttribute($prop)) {
+			if ($i->getAttribute($prop) == $class) {
+				$a[] = $i;
+			}
+		}
+	}
+	return $a;
+}
+
+
+function outerHTML($Node) {
+//     $Body = $Node->ownerDocument->documentElement->firstChild->firstChild;
+     $Document = new DOMDocument();    
+     $Document->appendChild($Document->importNode($Node,true));
+     return $Document->saveHTML();
+}
+
+function innerHTML($node) {
+	$children = $node->childNodes;
+	$innerHTML = '';
+	foreach ($children as $child) {
+		$tmp_doc = new DOMDocument();
+		$tmp_doc->appendChild($tmp_doc->importNode($child,true));       
+		$innerHTML .= $tmp_doc->saveHTML();
+	}
+	return $innerHTML;
+}
+
+
+
+
+/*
+
+$code = 27655;
+
+$html = file_get_contents('https://dynatone.ru/p'.$code);
+$dom = new DOMDocument();
+$dom->loadHTML($html, LIBXML_NOWARNING);
+
+//$div = $dom->getElementsByTagName('div');
+//$info = find_class($div, 'description_pr');
+//$info = count($info) ? innerHTML($info[0]) : '';
+//var_dump($info);
+
+$name = $dom->getElementsByTagName('h1')[0]->textContent;
+
+$image = $dom->getElementById('image-additional2');
+
+// var_dump(htmlspecialchars(innerHTML($image)));
+
+$image = $dom->getElementById('image-additional2');
+$images = array();
+if ($image) {
+	$image = $image->getElementsByTagName('a');
+	foreach ($image as $img) {
+		$images[] = $img->getAttribute('data-zoom-image');
+	}
+}
+
+if (!count($images)) {
+	$image = $dom->getElementById('main-image');
+	if ($image) {
+		$images[] = $image->getAttribute('data-zoom-image');
+	}
+}
+
+foreach ($images as $i) {
+	print_pre($i);
+}
+//*/
+
+
+
+//*
+$dt = now()-6*30*24*60*60;
+
+$where = array(
+	'vendor=2',
+	'code<>""',
+	'NOT EXISTS (SELECT 1 FROM dyna WHERE dyna.store=sync.store)',
+);
+
+if (!kv($config, 'DEBUG', 0)) {
+	$where[] = 'dt>'.$dt;
+}
+
+$q = db_query('SELECT * FROM sync WHERE '.implode(' AND ', $where).' LIMIT 10');
+// AND price>1000
+while ($i = db_fetch($q)) {
+	$code = preg_replace('@[^0-9]+@', '', $i['code']);
+	if (!$code) { continue; }
+
+	$url = 'https://dynatone.ru/p'.$code;
+	$html = file_get_contents($url);
+
+	$dom = new DOMDocument();
+	$dom->loadHTML($html);
+
+	$name = $dom->getElementsByTagName('h1')[0]->textContent;
+
+	$div = $dom->getElementsByTagName('div');
+	$info = find_class($div, 'description_pr');
+	$info = count($info) ? innerHTML($info[0]) : '';
+
+	$size = array();
+	$r = mb_eregi('Вес[^<^0-9]*([0-9.]+)[^<]*кг', $html, $weight);
+	$r = mb_eregi('Размер[^0-9]*([0-9.]+)[^0-9]*([0-9.]+)[^0-9]*([0-9.]+)', $html, $dim);
+	if (count($weight) > 1 && count($dim) > 3) {
+		$size = array($weight[1], $dim[1], $dim[2], $dim[3]);
+	}
+
+	$image = $dom->getElementById('image-additional2');
+	$images = array();
+	if ($image) {
+		$image = $image->getElementsByTagName('a');
+		foreach ($image as $img) {
+			$images[] = $img->getAttribute('data-zoom-image');
+		}
+	}
+
+	if (!count($images)) {
+		$image = $dom->getElementById('main-image');
+		if ($image) {
+			$images[] = $image->getAttribute('data-zoom-image');
+		}
+	}
+
+	$links = array();
+
+	$count = 0;
+	foreach ($images as $link) {
+		$count++;
+		$file = '/files/dyna/'.$i['store'].'/d'.$i['store'].'-'.$count.'.jpg';
+		xcopy($link, $config['root'].substr($file, 1));
+		$links[] = $file;
+	}
+
+	db_insert('dyna', array(
+		'url'=>$url,
+		'name'=>$name,
+		'sync'=>$i['i'],
+		'dt'=>now(),
+		'store'=>$i['store'],
+		'info'=>$info,
+		'size'=>implode(',', $size),
+		'images'=>array_encode($links),
+		'pic'=>'',
+		'pics'=>'',
+	));
+
+	alert('<a href="https://muzmart.com/store/'.$i['store'].'">'.$i['store'].'</a> <a href="'.$url.'">'.$url.'</a> &mdash; '.count($images));
+}
+w('alert');
+//*/
+
+
+/*
+$plan = array(
+	'size'=>array('name'=>'Габариты', 'type'=>'size'),
+	'send'=>array('type'=>'submit', 'value'=>'Отправить'),
+);
+
+w('request', $plan);
+w('form', $plan);
+
+print_pre($plan['size']['value']);
+//*/
+
+/*
+w('ft');
+
+echo '<p>nothing: '.ft().'</p>';
+echo '<p>null: '.ft(null).'</p>';
+echo '<p>zero: '.ft(0).'</p>';
+echo '<p>empty: '.ft('').'</p>';
+//*/
+
+?>

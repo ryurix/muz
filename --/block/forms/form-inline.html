@@ -1,0 +1,36 @@
+<?
+
+$hide = '';
+$second = false;
+foreach ($args as $k=>$v) {
+
+	if (strlen($k) == 0) { continue; }
+	if (isset($v['hide']) && $v['hide']) {
+		$hide.= "\n".call_user_func('input_'.$v['type'], $v);
+		continue;
+	}
+
+	$iv = isset($v['iv']) && $v['iv'];
+
+	if (isset($v['name']) && strlen($v['name'])) {
+		if ($second) {
+//			echo '&nbsp;';
+		}
+		echo '<label class="mx-1">'.$v['name'].'</label>';
+		$second = true;
+	}
+
+	$prefix = isset($v['prefix']) ? ' '.$v['prefix'] : '';
+	$suffix = isset($v['suffix']) ? ' '.$v['suffix'] : '';
+
+	if ($second) {
+//		echo '&nbsp;';
+	}
+	w('input-'.$v['type']);
+	echo '<div class="mx-1">'.$prefix.call_user_func('input_'.$v['type'], $v).$suffix.'</div>';
+	$second = true;
+}
+
+echo $hide;
+
+?>

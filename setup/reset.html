@@ -1,0 +1,113 @@
+<?
+
+set_time_limit(0);
+w('clean');
+
+// * * *
+
+$q = db_query('SELECT * FROM catalog');
+
+w('clean');
+
+$a = array();
+while ($i = db_fetch($q)) {
+	if ($i['url'] == '') {
+		$a[$i['i']] = $i['i'].'-'.str2url($i['name2']);
+	}
+}
+
+db_close($q);
+
+foreach ($a as $k=>$v) {
+	db_update('catalog', array('url'=>$v), array('i'=>$k));
+}
+
+// * * *
+
+//*
+$a = array();
+$q = db_query('SELECT * FROM filter');
+while ($i = db_fetch($q)) {
+	$a[$i['i']] = array(
+		'name'=>$i['name'],
+		'info'=>$i['info'],
+		'v'=>php_decode($i['value'])
+	);
+}
+db_close($q);
+
+db_query('DELETE FROM param');
+db_query('ALTER TABLE param AUTO_INCREMENT = 0');
+foreach ($a as $k=>$f) {
+	foreach ($f['v'] as $i=>$v) {
+		db_insert('param', array(
+			'filter'=>$k,
+			'value'=>$v,
+			//'code'=>str2url($v)
+			'code'=>$i
+		));
+	}
+}
+
+//*/
+
+$a = array();
+$q = db_query('SELECT * FROM store');
+while ($i = db_fetch($q)) {
+	$f = $i['filter'];
+	if (strlen($f)) {
+		$f = explode('(', $f);
+		array_shift($f);
+
+		$v = array();
+		foreach ($f as $p) {
+			$p = explode(':', trim($p, ')'));
+			$v[$p[0]] = $p[1];
+		}
+
+		$a[$i['i']] = $v;
+	}
+}
+db_close($q);
+
+$past = array();
+
+// db_query('DELETE FROM past');
+// db_query('ALTER TABLE past AUTO_INCREMENT = 0');
+foreach ($a as $store=>$list) {
+	foreach ($list as $k=>$v) {
+		$f = db_result('SELECT i FROM param WHERE filter='.$k.' AND code='.$v);
+		if ($f) {
+			if (isset($past[$store])) {
+				$past[$store][] = $f;
+			} else {
+				$past[$store] = array($f);
+			}
+			// db_insert('past', array('param'=>$f, 'store'=>$store));
+		}
+	}
+}
+
+db_query("UPDATE store SET filter=''");
+foreach ($past as $k=>$v) {
+	db_update('store', array('filter'=>implode(',', $v)), array('i'=>$k));
+}
+
+//*/
+//print_pre($a);
+
+$a = array();
+$q = db_query('SELECT * FROM param');
+while ($i = db_fetch($q)) {
+	$a[$i['i']] = $i['value'];
+}
+db_close($q);
+
+foreach ($a as $k=>$v) {
+	db_update('param', array('code'=>str2url($v)), array('i'=>$k));
+}
+
+alert('Done: '.count($a));
+w('alert');
+
+?>

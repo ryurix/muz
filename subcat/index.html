@@ -1,0 +1,63 @@
+<table class="sort table table-bordered">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Название</th>
+			<th>Раздел</th>			
+			<th>Параметры</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+function de_code($a, $dict) {
+	$a = array_flip($a);
+	foreach ($a as $k=>$v) {
+		$a[$k] = kv($dict, $k);
+	}
+	return $a;
+}
+
+$params = array();
+$parnam = array();
+$q = db_query('SELECT * FROM param');
+while ($i = db_fetch($q)) {
+	$params[$i['i']] = $i['code'];
+	$parnam[$i['i']] = $i['value'];
+}
+db_close($q);
+
+$select = 'SELECT * FROM subcat ORDER BY name2';
+$q = db_query($select);
+
+$pathway = cache_load('pathway-hide');
+
+w('clean');
+
+while ($i = db_fetch($q)) {
+
+	$path = kv($pathway, $i['up'], array('name'=>'', 'url'=>''));
+	$codes = explode(',', $i['code']);
+	$url = $path['url'].'/'.implode('+', de_code($codes, $params));
+	$a = '<a href="/catalog/'.$url.'">';
+
+	echo '<tr>';
+	echo '<td>'.$a.$i['i'].'</a></td>';
+	echo '<td>'.$a.$i['name2'].'</a></td>';
+	echo '<td>'.$a.$path['name'].'</a></td>';	
+	echo '<td>'.implode(' ', de_code($codes, $parnam)).'</td>';
+	echo '</tr>';
+}
+
+?>
+	</tbody>
+</table>
+
+<script type="text/javascript" src="/design/jquery.tablesorter.min.js"></script>
+<script>
+$(document).ready(function()
+	{
+		$("table.sort").tablesorter();
+	}
+);
+</script>

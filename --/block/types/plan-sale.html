@@ -1,0 +1,28 @@
+<?
+
+$partners = array(0=>'');
+$q = db_query('SELECT * FROM user WHERE roles LIKE "%partner%"');
+while ($i = db_fetch($q)) {
+	$partners[$i['i']] = $i['name'];
+}
+
+$brands = cache_load('brand');
+$brands[0] = '[не указан]';
+$ups = w('catalog-all');
+
+$back = array(
+	'' => array('method' => 'POST'),
+	'up'=>array('name'=>'Разделы', 'type'=>'multich', 'values'=>$ups, 'placeholder'=>'Все', 'width'=>500),
+	'brand'=>array('name'=>'Производители', 'type'=>'multich', 'values'=>$brands, 'placeholder'=>'Все', 'width'=>500),
+	'code'=>array('name'=>'Код', 'type'=>'label', 'min'=>3),
+	'name'=>array('name'=>'Описание', 'type'=>'line', 'min'=>3),
+	'dt2'=>array('name'=>'Дата окончания', 'type'=>'date'),
+	'perc'=>array('name'=>'Процент', 'type'=>'number'),
+	'partner'=>array('name'=>'Партнер', 'type'=>'combo', 'values'=>$partners),
+
+
+	'send' => array('name'=>'', 'type'=>'button', 'count'=>1, 1=>'Сохранить', 2=>'Удалить', 'class'=>array(1=>'btn-success', 2=>'btn-danger'),
+		'onclick'=>array(2=>"return confirm('Удалить скидку? Восстановление невозможно!')")),
+);
+
+?>

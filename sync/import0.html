@@ -1,0 +1,191 @@
+<tr><td colspan=4>
+<?
+
+w('u8');
+function normalize_unit($u) {
+	$u = u8lower($u);
+	$u = trim($u, '.');
+	switch ($u) {
+		case 'ком': $u = 'к-т'; break;
+		case 'комплект': $u = 'к-т'; break;
+		case '1sets': $u = 'к-т'; break;
+	}
+	return $u;
+}
+
+w('ft');
+$data_file = $config['root'].'files/data.csv';
+
+/*
+$data = file_get_contents($data_file);
+$rows = explode($data, "\r");
+*/
+
+$sames = array();
+$units = array();
+$vends = array();
+
+$f = fopen($data_file,"r");
+
+$rows = array(0=>0);
+$str = '';
+while(!feof($f)) {
+	$str = $str.fgets($f);
+	$row = explode(';', $str);
+	if (count($row) > 11) {
+		$dt = ft_parse($row[11]);
+		
+		if ((now() - $dt) < 24*60*60) {
+			echo '<p>Parse error: '.$str.'</p>';
+		} else {
+			$row[7] = normalize_unit($row[7]);
+			$rows[] = array(
+				'vendor_name'=>$row[0],
+				'kp'=>$row[1],
+				'same_name'=>$row[2],
+				'name'=>$row[3],
+				'en'=>$row[4],
+				'code'=>$row[5],
+				'xyz'=>$row[6],
+				'units_name'=>$row[7],
+				'count'=>$row[8],
+				'price'=>$row[9],
+				'info'=>$row[10],
+				'dt'=>$dt,
+				'dt_name'=>ft($dt),
+				'dt_str'=>$row[11],
+			);
+			if (strlen($row[2]) > 0) {
+				$sames[$row[2]] = 0;
+			}
+			$vends[$row[0]] = 0;
+			$units[$row[7]] = 0;
+		}
+		$str = '';
+	} else {
+		//echo '<p>'.$str.'</p>';
+	}
+}
+fclose($f);
+
+//* // Родители
+foreach ($sames as $k=>&$v) {
+	foreach ($rows as $i) {
+		if (strcmp($i['name'], $k) == 0) {
+			$v = $v + 1;
+		}
+	}
+}
+
+foreach ($sames as $k=>$v) {
+	if ($v == 0 && strlen($k) > 0) {
+		$rows[] = array(
+			'vendor_name'=>'',
+			'kp'=>'',
+			'same_name'=>'',
+			'name'=>$k,
+			'en'=>$k,
+			'code'=>'',
+			'xyz'=>'',
+			'units_name'=>'',
+			'count'=>0,
+			'price'=>0,
+			'info'=>'',
+			'dt'=>now(),
+			'dt_name'=>ft(now()),
+			'dt_str'=>ft(now()),
+		);
+	}
+}
+
+foreach ($sames as $k=>&$v) {
+	foreach ($rows as $j=>$i) {
+		if (strcmp($i['same_name'], $k) == 0) {
+			$v = $j;
+		}
+	}
+}
+$sames[''] = -1;
+//*/
+
+//* // Единицы измерения
+$cnt = 0;
+foreach ($units as $k=>&$v) {
+	if (strlen($k) > 0) {
+		$cnt++;
+		$v = $cnt;
+	}
+}
+$units[''] = 0;
+//*/
+
+//* // Поставщики
+$cnt = 0;
+foreach ($vends as $k=>&$v) {
+	if (strlen($k) > 0) {
+		$cnt++;
+		$v = $cnt;
+	}
+}
+$vends[''] = 0;
+//print_r($vends);
+
+//*/
+
+db_delete('store');
+db_delete('vendor');
+db_delete('units');
+
+foreach ($units as $j=>$i) {
+	db_insert('units', array(
+		'i'=>$i,
+		'name'=>$j,
+		'w'=>100,
+	));
+}
+
+foreach ($vends as $j=>$i) {
+	db_insert('vendor', array(
+		'name'=>$j,
+	));
+}
+
+foreach ($rows as $j=>$i) {
+	if ($j == 0) {
+		continue;
+	}
+	$data = array(
+		'i'=>$j,
+		'quick'=>'',
+		'name'=>strlen($i['name']) == 0 ? $i['en'] : $i['name'],
+		'en'=>strlen($i['en']) == 0 ? $i['name'] : $i['en'],
+		'code'=>$i['code'],
+		'kp'=>trim($i['kp'], '№'),
+		'vendor'=>$vends[$i['vendor_name']],
+		'same'=>$sames[$i['same_name']],
+		'tnved'=>'',
+		'price'=>$i['price'],
+		'count'=>$i['count'],
+		'units'=>$units[$i['units_name']],
+		'dt'=>$i['dt'],
+		'updt'=>now(),
+		'user'=>$_SESSION['i'],
+		'info'=>$i['info'],
+		'data'=>php_encode(array(
+			'xyz'=>$i['xyz'],
+			'w'=>'0',
+		)),
+		'files'=>''
+	);
+	if ($data['same'] == $data['i']) {
+		echo '<p>Родитель: '.$data['name'].'</p>';
+		$data['same'] = 0;
+	}
+
+	db_insert('store', $data);
+}
+
+w('cache_same');
+
+?>
+</td></tr>

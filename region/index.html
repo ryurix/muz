@@ -1,0 +1,28 @@
+<p><a href="/region/new" class="btn">Добавить регион</a></p>
+<? w('table') ?>
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<td>ID</td>
+<td>Наименование</td>
+</tr>
+</thead>
+<tbody>
+<?
+
+$region = array();
+
+$q = db_query("SELECT * FROM region ORDER BY w,name");
+while ($i = db_fetch($q)) {
+	echo '<tr><td class="center">'.$i['i'].'</td>';
+	echo '<td><a href="/region/'.$i['i'].'">'.$i['name'].'</a></td>';
+	echo '</tr>';
+	$region[$i['i']] = $i['name'];
+}
+db_close($q);
+
+cache_save('region', $region);
+
+?>
+</tbody>
+</table>

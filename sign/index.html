@@ -1,0 +1,30 @@
+<p><a href="/sign/new" class="btn btn-default"><i class="fa fa-plus"></i> Добавить знак</a></p>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Знак</th>
+			<th>Название</th>
+			<th>Описание</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+$select = 'SELECT * FROM sign ORDER BY name';
+$q = db_query($select);
+
+while ($i = db_fetch($q)) {
+	$href = '/sign/'.$i['i'];
+
+	echo '<tr>';
+	echo '<td><a href="'.$href.'">'.$i['i'].'</a></td>';
+	echo '<td><img src="'.$i['mini'].'"></td>';
+	echo '<td><a href="'.$href.'">'.$i['name'].' <i class="icon-edit"></i></a></td>';
+	echo '<td>'.$i['info'].'</td>';
+	echo '</tr>';
+}
+
+?>
+	</tbody>
+</table>

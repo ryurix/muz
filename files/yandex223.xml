@@ -1,0 +1,791 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
+<yml_catalog date="2020-09-17 16:00">
+	<shop>
+		<name>Muzmart</name>
+		<company>ООО "КАЙРОС"</company>
+		<url>https://muzmart.com</url>
+		<currencies>
+			<currency id="RUR" rate="1" plus="0"/>
+		</currencies>
+		<categories>
+<category id="74">Музыкальные инструменты</category>
+<category id="1574" parentId="74">Клавишные инструменты</category>
+<category id="1637" parentId="1574">Цифровые пианино</category>
+<category id="1644" parentId="1637">Интерьерные цифровые пианино</category>
+<category id="1639" parentId="1637">Компактные цифровые пианино</category>
+<category id="2030" parentId="1637">Стойки для цифровых пианино</category>
+<category id="1638" parentId="1637">Чехлы для электропианино</category>
+<category id="1678" parentId="1637">Аксессуары для цифровых пианино</category>
+<category id="1578" parentId="1574">Синтезаторы и аксессуары</category>
+<category id="1579" parentId="1578">Синтезаторы</category>
+<category id="2280" parentId="1578">Аналоговые синтезаторы</category>
+<category id="2279" parentId="1578">Рабочие станции</category>
+<category id="2281" parentId="1578">Детские синтезаторы</category>
+<category id="1618" parentId="1578">Чехлы  для синтезаторов</category>
+<category id="1605" parentId="1578">Аксессуары для синтезаторов</category>
+<category id="2027" parentId="1574">Миди-клавиатуры</category>
+<category id="1799" parentId="1574">Акустические пианино</category>
+<category id="1800" parentId="1574">Рояли</category>
+<category id="2115" parentId="1800">Акустические рояли</category>
+<category id="2116" parentId="1800">Цифровые рояли</category>
+<category id="2117" parentId="1800">Гибридные рояли</category>
+<category id="1575" parentId="1574">Органы</category>
+<category id="1576" parentId="1575">Духовые органы</category>
+<category id="1577" parentId="1575">Электронные органы</category>
+<category id="1624" parentId="1574">Клавишные комбо</category>
+<category id="1650" parentId="1574">Банкетки и стульчики</category>
+<category id="1611" parentId="1574">Универсальные стойки</category>
+<category id="2354" parentId="1574">Педали для клавишных</category>
+<category id="2355" parentId="1574">Блоки питания для клавишных</category>
+<category id="245" parentId="74">Гитары</category>
+<category id="2118" parentId="245">Акустические гитары</category>
+<category id="248" parentId="2118">Шестиструнные акустические гитары</category>
+<category id="2119" parentId="2118">Семиструнные акустические гитары</category>
+<category id="2120" parentId="2118">Двенадцатиструнные акустические гитары</category>
+<category id="266" parentId="245">Классические гитары</category>
+<category id="330" parentId="245">Укулеле</category>
+<category id="1740" parentId="330">Четырехструнные укулеле</category>
+<category id="2141" parentId="330">Пятиструнные укулеле</category>
+<category id="2142" parentId="330">Шестиструнные укулеле</category>
+<category id="335" parentId="330">Чехлы для укулеле</category>
+<category id="331" parentId="330">Ремни для укулеле</category>
+<category id="300" parentId="245">Гитары детские - уменьшенные</category>
+<category id="2122" parentId="245">Электроакустические гитары</category>
+<category id="280" parentId="2122">Шестиструнные электроакустические гитары</category>
+<category id="2123" parentId="2122">Двенадцатиструнные электроакустические гитары</category>
+<category id="2124" parentId="245">Электрогитары</category>
+<category id="339" parentId="2124">Шестиструнные электрогитары</category>
+<category id="2125" parentId="2124">Семиструнные электрогитары</category>
+<category id="2126" parentId="2124">Восьмиструнные электрогитары</category>
+<category id="2138" parentId="2124">Двенадцатиструнные электрогитары</category>
+<category id="2317" parentId="2124">Моделирующие электрогитары</category>
+<category id="2102" parentId="245">Бас-гитары</category>
+<category id="317" parentId="2102">Бас-гитары акустические</category>
+<category id="1766" parentId="2102">Бас-гитары электроакустические</category>
+<category id="2137" parentId="2102">Бас-гитары полуакустические</category>
+<category id="357" parentId="2102">Бас-гитары электро</category>
+<category id="2135" parentId="245">Полуакустические электрогитары</category>
+<category id="293" parentId="2135">Шестиструнные полуакустические гитары</category>
+<category id="2136" parentId="2135">Двенадцатиструнные полуакустические гитары</category>
+<category id="322" parentId="245">Гитарные наборы</category>
+<category id="1406" parentId="245">Гитарные  аксессуары</category>
+<category id="1450" parentId="1406">Чехлы и кейсы для гитар</category>
+<category id="2224" parentId="1450">Чехлы для гитар</category>
+<category id="2225" parentId="1450">Кейсы для гитар</category>
+<category id="1530" parentId="1406">Фурнитура для гитар</category>
+<category id="1533" parentId="1530">Колки и колковые механизмы</category>
+<category id="2397" parentId="1533">Колки для классической гитары</category>
+<category id="2398" parentId="1533">Колки для акустической и электрогитары</category>
+<category id="2399" parentId="1533">Колки для бас-гитары</category>
+<category id="2402" parentId="1533">Колки для балалайки</category>
+<category id="2401" parentId="1533">Колки для домры</category>
+<category id="2400" parentId="1533">Колки для укулеле</category>
+<category id="1539" parentId="1530">Порожки</category>
+<category id="1531" parentId="1530">Колышки для крепления струн к подставке</category>
+<category id="1543" parentId="1530">Звукосниматели, датчики</category>
+<category id="2389" parentId="1530">Струнодержатели, системы тремоло</category>
+<category id="2390" parentId="2389">Струнодержатели для электрогитар, бас-гитар</category>
+<category id="2223" parentId="2389">Тремоло системы</category>
+<category id="2222" parentId="1530">Запчасти для гитар</category>
+<category id="1436" parentId="1406">Каподастры</category>
+<category id="1464" parentId="1406">Медиаторы</category>
+<category id="2344" parentId="1406">Держатели для медиаторов</category>
+<category id="1423" parentId="1406">Слайды</category>
+<category id="1444" parentId="1406">Инструменты для замены струн</category>
+<category id="1413" parentId="1406">Камертоны</category>
+<category id="1552" parentId="1406">Ремни для гитар</category>
+<category id="1558" parentId="1552">Ремни для акустической и электрогитары</category>
+<category id="1561" parentId="1558">Замшевые</category>
+<category id="1564" parentId="1558">Кожаные</category>
+<category id="1560" parentId="1558">Меховые</category>
+<category id="1559" parentId="1558">Нейлоновые</category>
+<category id="1568" parentId="1558">Текстильные</category>
+<category id="1555" parentId="1552">Ремни для классической гитары</category>
+<category id="1554" parentId="1552">Ремни для бас гитары</category>
+<category id="1557" parentId="1552">Детские ремни</category>
+<category id="1553" parentId="1552">Наплечники для ремней</category>
+<category id="1556" parentId="1552">Крепления для ремней</category>
+<category id="1428" parentId="1406">Средства по уходу за инструментом</category>
+<category id="1408" parentId="1406">Увлажнители для гитар</category>
+<category id="1410" parentId="1406">Заглушки для розетки</category>
+<category id="1409" parentId="1406">Фазоинвертор акустический</category>
+<category id="1412" parentId="1406">Тренажеры для пальцев</category>
+<category id="2266" parentId="1406">Защитные накладки</category>
+<category id="1414" parentId="1406">Подставки под ногу</category>
+<category id="1411" parentId="1406">Стулья для гитаристов</category>
+<category id="371" parentId="245">Гитарные процессоры, эффекты</category>
+<category id="424" parentId="371">Педали эффектов, примочки</category>
+<category id="2273" parentId="424">Педали Compressor и Equalizer</category>
+<category id="2277" parentId="424">Педали Overdrive, Fuzz и Distortion</category>
+<category id="2269" parentId="424">Педали Delay и Reverb</category>
+<category id="2270" parentId="424">Педали Tremolo и Vibrato</category>
+<category id="2272" parentId="424">Педали Octaver и Pitch</category>
+<category id="2276" parentId="424">Педали Wah</category>
+<category id="2274" parentId="424">Педали Chorus</category>
+<category id="2271" parentId="424">Педали Flanger</category>
+<category id="2275" parentId="424">Педали Phaser</category>
+<category id="2283" parentId="424">Луперы</category>
+<category id="2267" parentId="424">Футсвичи</category>
+<category id="2282" parentId="424">Моделирующие и специальные педали эффектов</category>
+<category id="441" parentId="371">Гитарные процессоры</category>
+<category id="373" parentId="371">Процессоры для бас гитары</category>
+<category id="372" parentId="371">Мобильные гитарные интерфейсы</category>
+<category id="410" parentId="371">Адаптеры для педалей и процессоров</category>
+<category id="417" parentId="371">Аксессуары для гитарных эффектов</category>
+<category id="2098" parentId="245">Комбоусилители и кабинеты</category>
+<category id="2144" parentId="2098">Комбоусилители</category>
+<category id="376" parentId="2144">Комбоусилители для электрогитар</category>
+<category id="393" parentId="2144">Комбоусилители для бас-гитар</category>
+<category id="403" parentId="2144">Комбоусилители для акустических гитар</category>
+<category id="2382" parentId="2098">Гитарные стеки</category>
+<category id="413" parentId="2098">Гитарные усилители</category>
+<category id="415" parentId="2098">Кабинеты</category>
+<category id="2295" parentId="415">Кабинеты для электрогитар</category>
+<category id="2296" parentId="415">Кабинеты для бас-гитар</category>
+<category id="2133" parentId="2098">Аксессуары для усилителей и кабинетов</category>
+<category id="1672" parentId="245">Стойки и держатели для гитар</category>
+<category id="1518" parentId="1672">Гитарные стойки</category>
+<category id="1519" parentId="1672">Держатели для гитар</category>
+<category id="721" parentId="74">Ударные инструменты</category>
+<category id="2192" parentId="721">Ударные установки</category>
+<category id="776" parentId="2192">Ударные установки</category>
+<category id="863" parentId="2192">Малые барабаны</category>
+<category id="2177" parentId="2192">Том-томы</category>
+<category id="2461" parentId="2192">Бас-барабаны</category>
+<category id="2200" parentId="2192">Пластики для барабанов</category>
+<category id="827" parentId="2200">Пластики</category>
+<category id="1741" parentId="2200">Наборы пластиков</category>
+<category id="2238" parentId="2200">Пластики тренировочные</category>
+<category id="790" parentId="2192">Тарелки</category>
+<category id="1747" parentId="790">Тарелки</category>
+<category id="1752" parentId="790">Наборы тарелок</category>
+<category id="1749" parentId="790">Аксессуары для тарелок</category>
+<category id="792" parentId="1749">Средства по уходу за тарелками</category>
+<category id="793" parentId="1749">Чехлы и кейсы для тарелок</category>
+<category id="841" parentId="2192">Аксессуары и комплектующие для ударных</category>
+<category id="849" parentId="841">Запасные части для барабанов, ключи</category>
+<category id="904" parentId="841">Демпферы</category>
+<category id="842" parentId="841">Ковры под барабаны (установки)</category>
+<category id="1787" parentId="841">Набор стоек</category>
+<category id="2232" parentId="841">Педали и колотушки</category>
+<category id="896" parentId="2232">Педали</category>
+<category id="2231" parentId="2232">Колотушки</category>
+<category id="2365" parentId="2232">Аксессуары</category>
+<category id="859" parentId="841">Пружины для барабана</category>
+<category id="875" parentId="841">Стойки для Hi-Hat</category>
+<category id="844" parentId="841">Стойки для барабанов</category>
+<category id="882" parentId="841">Стойки для тарелок</category>
+<category id="869" parentId="841">Стойки, клэмпы, держатели для барабанов</category>
+<category id="889" parentId="841">Стулья для барабанщиков</category>
+<category id="853" parentId="841">Чехлы для барабанов</category>
+<category id="1008" parentId="721">Электронные ударные установки</category>
+<category id="2187" parentId="1008">Электронные ударные установки</category>
+<category id="2188" parentId="1008">Электронные тарелки</category>
+<category id="2191" parentId="1008">Электронная перкуссия</category>
+<category id="2193" parentId="1008">Электронное оборудование</category>
+<category id="2189" parentId="1008">Аксессуары и комплектующие</category>
+<category id="2198" parentId="721">Маршевые барабаны</category>
+<category id="739" parentId="2198">Маршевые барабаны</category>
+<category id="1742" parentId="2198">Пластики для маршевых барабанов</category>
+<category id="2199" parentId="2198">Аксессуары для маршевых барабанов</category>
+<category id="911" parentId="721">Этнические барабаны</category>
+<category id="924" parentId="911">Бонги</category>
+<category id="1753" parentId="924">Бонги</category>
+<category id="2194" parentId="924">Пластики для бонго</category>
+<category id="927" parentId="924">Стойки и чехлы для бонго</category>
+<category id="913" parentId="911">Бугарабу</category>
+<category id="917" parentId="911">Говорящие барабаны</category>
+<category id="2213" parentId="911">Дарбука</category>
+<category id="914" parentId="2213">Дарбука</category>
+<category id="2214" parentId="2213">Аксессуары для дарбуки</category>
+<category id="929" parentId="911">Джембе</category>
+<category id="1754" parentId="929">Джембе</category>
+<category id="934" parentId="929">Аксессуары для джембе</category>
+<category id="2216" parentId="911">Думбеки</category>
+<category id="915" parentId="2216">Думбеки</category>
+<category id="2215" parentId="2216">Аксессуары для думбека</category>
+<category id="916" parentId="911">Ибо</category>
+<category id="2218" parentId="916">Ибо</category>
+<category id="2219" parentId="916">Аксессуары для ибо</category>
+<category id="918" parentId="911">Индийские барабаны</category>
+<category id="2051" parentId="911">Кахоны</category>
+<category id="921" parentId="2051">Кахоны</category>
+<category id="938" parentId="2051">Аксессуары для кахонов</category>
+<category id="939" parentId="2051">Чехлы для кахонов</category>
+<category id="940" parentId="911">Конги</category>
+<category id="1755" parentId="940">Конги</category>
+<category id="1743" parentId="940">Пластики для конго</category>
+<category id="941" parentId="940">Стойки и чехлы для конго</category>
+<category id="2386" parentId="911">Сурду</category>
+<category id="919" parentId="911">Тайские барабаны</category>
+<category id="920" parentId="911">Танцевальные барабаны</category>
+<category id="912" parentId="911">Экзотические барабаны</category>
+<category id="729" parentId="721">Специальные барабаны</category>
+<category id="2043" parentId="721">Глюкофоны и Ханг Драмы</category>
+<category id="1750" parentId="721">Гонги</category>
+<category id="2233" parentId="1750">Гонги</category>
+<category id="2234" parentId="1750">Аксессуары для гонгов</category>
+<category id="723" parentId="721">Детские ударные установки и барабаны</category>
+<category id="732" parentId="721">Репетиционные наборы и пэды</category>
+<category id="2241" parentId="732">Тренировочные ударные установки</category>
+<category id="2240" parentId="732">Тренировочные пэды</category>
+<category id="2242" parentId="732">Сурдины и накладки</category>
+<category id="2243" parentId="732">Аксессуары для репетиционных наборов</category>
+<category id="725" parentId="721">Ритм боксы</category>
+<category id="743" parentId="721">Палочки для ударных инструментов</category>
+<category id="1674" parentId="743">Барабанные палочки</category>
+<category id="2208" parentId="743">Руты</category>
+<category id="770" parentId="743">Щётки</category>
+<category id="769" parentId="743">Палочки для ксилофона, глокеншпиля</category>
+<category id="2210" parentId="743">Палочки для литавр, бас-барабанов</category>
+<category id="2211" parentId="743">Палочки для маримбы, вибрафона</category>
+<category id="750" parentId="743">Чехлы для палочек, держатели и аксессуары</category>
+<category id="749" parentId="743">Перчатки для барабанщика</category>
+<category id="633" parentId="74">Духовые инструменты</category>
+<category id="661" parentId="633">Варганы и аксессуары</category>
+<category id="667" parentId="661">Варганы</category>
+<category id="663" parentId="661">Аксессуары для варганов</category>
+<category id="2345" parentId="633">Флейты</category>
+<category id="675" parentId="2345">Флейты</category>
+<category id="2346" parentId="2345">Чехлы для флейт</category>
+<category id="657" parentId="633">Блокфлейты</category>
+<category id="698" parentId="633">Кларнеты</category>
+<category id="2059" parentId="633">Саксонеты</category>
+<category id="635" parentId="633">Армянский Дудук</category>
+<category id="650" parentId="633">Саксофоны</category>
+<category id="709" parentId="633">Трубы</category>
+<category id="640" parentId="633">Корнеты</category>
+<category id="648" parentId="633">Флюгельгорн</category>
+<category id="705" parentId="633">Тромбоны</category>
+<category id="644" parentId="633">Валторны</category>
+<category id="2298" parentId="633">Альты, теноры, баритоны</category>
+<category id="1801" parentId="633">Эуфониум</category>
+<category id="2071" parentId="633">Тубы</category>
+<category id="646" parentId="633">Охотничий рожок</category>
+<category id="638" parentId="633">Диджериду</category>
+<category id="637" parentId="633">Этнические духовые</category>
+<category id="636" parentId="633">Казу</category>
+<category id="672" parentId="633">Мелодики</category>
+<category id="639" parentId="633">Свистки</category>
+<category id="2045" parentId="633">Электронные духовые</category>
+<category id="716" parentId="633">Трости</category>
+<category id="717" parentId="716">Трости для кларнета</category>
+<category id="719" parentId="716">Трости для саксофона</category>
+<category id="634" parentId="633">Чехлы и кейсы для духовых инструментов</category>
+<category id="153" parentId="633">Стойки для духовых инструментов</category>
+<category id="682" parentId="633">Аксессуары для духовых</category>
+<category id="1015" parentId="74">Струнные инструменты</category>
+<category id="1017" parentId="1015">Балалайки</category>
+<category id="2306" parentId="1017">Балалайки</category>
+<category id="2307" parentId="1017">Чехлы для балалайки</category>
+<category id="1018" parentId="1015">Домры</category>
+<category id="2308" parentId="1018">Домры</category>
+<category id="2309" parentId="1018">Чехлы для домры</category>
+<category id="2337" parentId="1015">Банджо</category>
+<category id="1020" parentId="2337">Банджо</category>
+<category id="2338" parentId="2337">Чехлы для банджо</category>
+<category id="1032" parentId="1015">Мандолины</category>
+<category id="1758" parentId="1032">Мандолины</category>
+<category id="1036" parentId="1032">Чехлы для мандолины</category>
+<category id="1041" parentId="1015">Скрипки</category>
+<category id="1044" parentId="1041">Скрипки 1/2</category>
+<category id="1045" parentId="1041">Скрипки 1/4</category>
+<category id="1046" parentId="1041">Скрипки 1/8</category>
+<category id="2080" parentId="1041">Скрипки 1/10, 1/16</category>
+<category id="1042" parentId="1041">Скрипки 3/4</category>
+<category id="1043" parentId="1041">Скрипки 4/4</category>
+<category id="1047" parentId="1041">Электроскрипки</category>
+<category id="1050" parentId="1041">Аксессуары для скрипок</category>
+<category id="1053" parentId="1050">Смычки</category>
+<category id="1052" parentId="1050">Фурнитура</category>
+<category id="1054" parentId="1050">Канифоль</category>
+<category id="1051" parentId="1050">Чехлы и кейсы для скрипок</category>
+<category id="1021" parentId="1015">Альты</category>
+<category id="2304" parentId="1021">Альты</category>
+<category id="2305" parentId="1021">Аксессуары для альта</category>
+<category id="2150" parentId="1015">Виолончели</category>
+<category id="1022" parentId="2150">Виолончели</category>
+<category id="2342" parentId="2150">Смычки для виолончели</category>
+<category id="2343" parentId="2150">Аксессуары для виолончели</category>
+<category id="2149" parentId="2150">Чехлы для виолончели</category>
+<category id="1019" parentId="1015">Контрабасы</category>
+<category id="2310" parentId="1019">Контрабасы</category>
+<category id="2334" parentId="1019">Электроконтрабасы</category>
+<category id="2339" parentId="1019">Смычки для контрабаса</category>
+<category id="2340" parentId="1019">Чехлы для контрабаса</category>
+<category id="2311" parentId="1019">Аксессуары для контрабаса</category>
+<category id="2335" parentId="1015">Гусли</category>
+<category id="1023" parentId="2335">Гусли</category>
+<category id="2336" parentId="2335">Чехлы для гуслей</category>
+<category id="2405" parentId="74">Шумовые инструменты (Перкуссия)</category>
+<category id="968" parentId="2405">Бубны</category>
+<category id="1756" parentId="968">Бубны</category>
+<category id="2220" parentId="968">Пандейру</category>
+<category id="2385" parentId="968">Тамборимы</category>
+<category id="971" parentId="968">Шаманские бубны</category>
+<category id="2057" parentId="2405">Вуд-блоки</category>
+<category id="948" parentId="2405">Гуиро</category>
+<category id="963" parentId="2405">Джингл-стики, погремушки, бубенцы на руку</category>
+<category id="950" parentId="2405">Кабасы</category>
+<category id="959" parentId="2405">Кастаньеты</category>
+<category id="2056" parentId="2405">Клавесы</category>
+<category id="977" parentId="2405">Ковбеллы</category>
+<category id="979" parentId="977">Ковбеллы</category>
+<category id="980" parentId="977">Аксессуары для ковбеллов</category>
+<category id="946" parentId="2405">Колокольчики</category>
+<category id="981" parentId="2405">Маракасы</category>
+<category id="952" parentId="2405">Металлофоны, ксилофоны, глокеншпили</category>
+<category id="724" parentId="2405">Музыкальные ложки</category>
+<category id="988" parentId="2405">Наборы шумовых инструментов</category>
+<category id="722" parentId="2405">Оркестровая перкуссия</category>
+<category id="2196" parentId="722">Литавры</category>
+<category id="2201" parentId="2196">Литавры</category>
+<category id="2204" parentId="2196">Аксессуары для литавр</category>
+<category id="2205" parentId="722">Маримбы, вибрафоны</category>
+<category id="2203" parentId="2205">Маримбы</category>
+<category id="2314" parentId="2205">Вибрафоны</category>
+<category id="2321" parentId="2205">Оркестровые ксилофоны</category>
+<category id="2322" parentId="2205">Оркестровые металлофоны</category>
+<category id="2206" parentId="2205">Аксессуары для маримбы, вибрафона</category>
+<category id="955" parentId="2405">Палки дождя</category>
+<category id="944" parentId="2405">Перкуссионные столы</category>
+<category id="2114" parentId="2405">Поющие чаши</category>
+<category id="993" parentId="2405">Тамбурины</category>
+<category id="995" parentId="993">Деревянные тамбурины без мембраны</category>
+<category id="994" parentId="993">Деревянные тамбурины с мембраной</category>
+<category id="996" parentId="993">Пластиковые тамбурины</category>
+<category id="998" parentId="993">Профессиональные тамбурины без мембраны</category>
+<category id="997" parentId="993">Профессиональные тамбурины с мембраной</category>
+<category id="999" parentId="993">Тамбурины с креплением на стойку</category>
+<category id="958" parentId="2405">Тарелочки</category>
+<category id="972" parentId="2405">Тон-блоки, агого</category>
+<category id="953" parentId="2405">Треугольники</category>
+<category id="949" parentId="2405">Трещётки</category>
+<category id="951" parentId="2405">Чимесы</category>
+<category id="1000" parentId="2405">Шейкеры</category>
+<category id="947" parentId="2405">Шекере</category>
+<category id="956" parentId="2405">Шумовые эффекты</category>
+<category id="1757" parentId="2405">Ocean Drum</category>
+<category id="1026" parentId="2405">Калимбы</category>
+<category id="104" parentId="74">Аккордеоны, баяны и гармони</category>
+<category id="2290" parentId="104">Аккордеоны</category>
+<category id="2291" parentId="104">Баяны</category>
+<category id="2292" parentId="104">Гармони</category>
+<category id="2293" parentId="104">Аксессуары</category>
+<category id="564" parentId="74">Губные гармошки</category>
+<category id="585" parentId="564">Диатонические</category>
+<category id="620" parentId="564">Хроматические</category>
+<category id="566" parentId="564">Аккомпанементные и оркестровые</category>
+<category id="573" parentId="564">Октавные</category>
+<category id="569" parentId="564">Тремоло</category>
+<category id="628" parentId="564">Детские</category>
+<category id="568" parentId="564">Историческая коллекция HOHNER</category>
+<category id="567" parentId="564">Уменьшенные</category>
+<category id="577" parentId="564">Аксессуары для губных гармошек</category>
+<category id="581" parentId="577">Держатели для губных гармоник</category>
+<category id="579" parentId="577">Наборы для ремонта губных гармоник</category>
+<category id="580" parentId="577">Сумки, кейсы, пояса для губных гармоник</category>
+<category id="123" parentId="74">Тюнеры и метрономы</category>
+<category id="132" parentId="123">Тюнеры</category>
+<category id="124" parentId="123">Метрономы</category>
+<category id="2457" parentId="124">Механические метрономы</category>
+<category id="2458" parentId="124">Электронные метрономы</category>
+<category id="145" parentId="123">Метро-тюнеры</category>
+<category id="2245" parentId="74">Пюпитры и аксессуары</category>
+<category id="159" parentId="2245">Пюпитры</category>
+<category id="2246" parentId="2245">Подсветка для пюпитров</category>
+<category id="2247" parentId="2245">Аксессуары для пюпитров</category>
+<category id="449" parentId="74">Струны</category>
+<category id="502" parentId="449">Струны для классической гитары</category>
+<category id="515" parentId="449">Струны для акустической гитары</category>
+<category id="529" parentId="449">Струны для электрогитары</category>
+<category id="541" parentId="449">Струны для бас-гитары</category>
+<category id="457" parentId="449">Струны для 12 струнной гитары</category>
+<category id="454" parentId="449">Cтруны для cемиструнной гитары</category>
+<category id="464" parentId="449">Струны для фолк гитары</category>
+<category id="491" parentId="449">Струны для гитар типа Selmer</category>
+<category id="487" parentId="449">Струны для укулеле</category>
+<category id="451" parentId="449">Струны для балалайки</category>
+<category id="452" parentId="449">Струны для домры</category>
+<category id="468" parentId="449">Струны для банджо</category>
+<category id="450" parentId="449">Струны для куатро</category>
+<category id="472" parentId="449">Струны для мандолины</category>
+<category id="478" parentId="449">Струны для скрипки</category>
+<category id="453" parentId="449">Струны для альта</category>
+<category id="498" parentId="449">Струны для виолончели</category>
+<category id="483" parentId="449">Струны для контрабаса</category>
+<category id="493" parentId="449">Одиночные струны</category>
+<category id="2300" parentId="74">Самоучители для начинающих</category>
+<category id="30">Звук</category>
+<category id="31" parentId="30">Акустические системы</category>
+<category id="33" parentId="31">Активные акустические системы</category>
+<category id="34" parentId="31">Пассивные акустические системы</category>
+<category id="38" parentId="31">Активные сабвуферы</category>
+<category id="1666" parentId="31">Пассивные сабвуферы</category>
+<category id="1793" parentId="31">Студийные мониторы</category>
+<category id="1162" parentId="31">Звукоусилительные комплекты</category>
+<category id="2440" parentId="31">Портативные акустические системы</category>
+<category id="2256" parentId="31">Кинотеатральные акустические системы</category>
+<category id="2229" parentId="31">Контроллеры акустических систем</category>
+<category id="1694" parentId="31">Аксессуары для акустических систем</category>
+<category id="57" parentId="30">Микшерные пульты</category>
+<category id="1194" parentId="57">Микшеры активные</category>
+<category id="1198" parentId="57">Микшеры компактные</category>
+<category id="1206" parentId="57">Микшеры концертные</category>
+<category id="1192" parentId="57">Микшеры цифровые</category>
+<category id="2111" parentId="57">Микшеры инсталляционные</category>
+<category id="1191" parentId="57">Аксессуары для микшеров</category>
+<category id="1135" parentId="30">Усилители</category>
+<category id="40" parentId="30">Микрофоны и радиосистемы</category>
+<category id="41" parentId="40">Микрофоны</category>
+<category id="43" parentId="41">Микрофоны вокальные</category>
+<category id="42" parentId="41">Микрофоны Гусиная шея</category>
+<category id="2139" parentId="41">Микрофоны инструментальные</category>
+<category id="2140" parentId="2139">Комплекты</category>
+<category id="45" parentId="2139">Микрофоны</category>
+<category id="47" parentId="41">Микрофоны поверхностные</category>
+<category id="48" parentId="41">Микрофоны подвесные</category>
+<category id="49" parentId="41">Микрофоны студийные</category>
+<category id="50" parentId="41">Микрофоны-пушки</category>
+<category id="2130" parentId="41">Ретро-микрофоны</category>
+<category id="51" parentId="41">Ручные репортажные микрофоны</category>
+<category id="2183" parentId="41">Микрофоны измерительные</category>
+<category id="1067" parentId="41">Микрофонные предусилители</category>
+<category id="53" parentId="40">Радиосистемы</category>
+<category id="54" parentId="53">Вокальные радиосистемы</category>
+<category id="55" parentId="53">Головные радиосистемы</category>
+<category id="1668" parentId="53">Инструментальные радиосистемы</category>
+<category id="2151" parentId="53">Микрофоны и передатчики</category>
+<category id="44" parentId="2151">Головные микрофоны</category>
+<category id="2152" parentId="2151">Инструментальные микрофоны</category>
+<category id="46" parentId="2151">Петличные микрофоны</category>
+<category id="2129" parentId="2151">Поясные передатчики</category>
+<category id="2153" parentId="2151">Ручные передатчики</category>
+<category id="56" parentId="53">Петличные радиосистемы</category>
+<category id="2128" parentId="53">Приемники</category>
+<category id="2366" parentId="53">Радиосистемы Гусиная шея</category>
+<category id="1767" parentId="53">Системы мониторинга</category>
+<category id="1998" parentId="53">Аксессуары для радиосистем</category>
+<category id="1115" parentId="40">Микрофонные стойки и держатели</category>
+<category id="1122" parentId="1115">Журавли</category>
+<category id="1117" parentId="1115">Прямые</category>
+<category id="1127" parentId="1115">Настольные</category>
+<category id="1118" parentId="1115">Держатели микрофонные</category>
+<category id="2454" parentId="1115">Аксессуары для микрофонных стоек</category>
+<category id="1690" parentId="40">Аксессуары и запчасти</category>
+<category id="1116" parentId="1690">Ветрозащита</category>
+<category id="2252" parentId="1690">Поп-фильтры</category>
+<category id="2254" parentId="1690">Картриджи</category>
+<category id="2253" parentId="1690">Аксессуары для микрофонов</category>
+<category id="1084" parentId="30">Наушники</category>
+<category id="2101" parentId="1084">Наушники</category>
+<category id="1241" parentId="1084">DJ Наушники</category>
+<category id="843" parentId="1084">Наушники для ударных установок</category>
+<category id="2100" parentId="1084">Усилители для наушников</category>
+<category id="2099" parentId="1084">Аксессуары для наушников</category>
+<category id="2143" parentId="30">Караоке-системы</category>
+<category id="63" parentId="30">Приборы обработки звука</category>
+<category id="1132" parentId="63">Вокальные процессоры</category>
+<category id="1227" parentId="63">Звуковые карты</category>
+<category id="2184" parentId="1227">USB аудио-интерфейсы</category>
+<category id="2226" parentId="1227">FireWire аудио-интерфейсы</category>
+<category id="2237" parentId="1227">Thunderbolt аудио-интерфейсы</category>
+<category id="2228" parentId="1227">Комбинированные аудио-интерфейсы</category>
+<category id="2406" parentId="1227">Комплекты для звукозаписи</category>
+<category id="2186" parentId="1227">Портастудии</category>
+<category id="2185" parentId="1227">Карты расширения</category>
+<category id="2227" parentId="1227">Аксессуары</category>
+<category id="1669" parentId="63">Звуковые процессоры</category>
+<category id="65" parentId="63">Компрессоры, лимитеры, гейты</category>
+<category id="66" parentId="63">Кроссоверы</category>
+<category id="1212" parentId="63">Процессоры эффектов</category>
+<category id="1999" parentId="63">ЦАП/АЦП конвертеры</category>
+<category id="68" parentId="63">Эквалайзеры</category>
+<category id="1224" parentId="63">DI-box</category>
+<category id="1777" parentId="63">Аксессуары для приборов обработки звука</category>
+<category id="1239" parentId="30">DJ Оборудование</category>
+<category id="1253" parentId="1239">DJ CD-плееры</category>
+<category id="1248" parentId="1239">DJ Контроллеры</category>
+<category id="1261" parentId="1239">DJ Микшеры</category>
+<category id="1240" parentId="1239">DJ Процессоры эффектов</category>
+<category id="2165" parentId="1239">DJ Станции и комплекты</category>
+<category id="2236" parentId="1239">USB/MIDI Контроллеры</category>
+<category id="2169" parentId="1239">Грувбоксы и синтезаторы</category>
+<category id="72" parentId="1239">Проигрыватели виниловых дисков</category>
+<category id="2176" parentId="1239">Картриджи для проигрывателей винила</category>
+<category id="1670" parentId="1239">Стойки, кейсы</category>
+<category id="1693" parentId="1239">DJ Аксессуары</category>
+<category id="1695" parentId="30">Трансляционное оборудование</category>
+<category id="1763" parentId="1695">Громкоговорители всепогодные</category>
+<category id="1697" parentId="1695">Громкоговорители настенные</category>
+<category id="1698" parentId="1695">Громкоговорители потолочные</category>
+<category id="1699" parentId="1695">Громкоговорители рупорные</category>
+<category id="1700" parentId="1695">Корпусные громкоговорители</category>
+<category id="1833" parentId="1695">Микрофоны</category>
+<category id="2145" parentId="1695">Радиоузлы, микшеры и усилители</category>
+<category id="1702" parentId="2145">Усилители, микшеры-усилители</category>
+<category id="2146" parentId="2145">Радиоузлы</category>
+<category id="2147" parentId="2145">Аксессуары</category>
+<category id="1703" parentId="1695">Функциональные блоки</category>
+<category id="2249" parentId="1695">Аттенюаторы и аксессуары</category>
+<category id="1696" parentId="2249">Аттенюаторы</category>
+<category id="2251" parentId="2249">Выносные панели</category>
+<category id="2250" parentId="2249">Аксессуары</category>
+<category id="2261" parentId="1695">Аксессуары для трансляционного оборудования</category>
+<category id="70" parentId="30">Медиапроигрыватели</category>
+<category id="2288" parentId="70">Медиапроигрыватели</category>
+<category id="2255" parentId="70">Комплектующие и аксессуары</category>
+<category id="1146" parentId="30">Записывающее оборудование</category>
+<category id="1149" parentId="1146">Программы для записи аудио</category>
+<category id="1148" parentId="1146">Цифровые рекордеры</category>
+<category id="2289" parentId="1148">Цифровые рекордеры</category>
+<category id="2181" parentId="1148">Аксессуары для цифровых рекордеров</category>
+<category id="1691" parentId="30">Конференц-системы</category>
+<category id="2170" parentId="1691">Микрофонные консоли</category>
+<category id="2182" parentId="1691">ИК-системы</category>
+<category id="2171" parentId="1691">Блоки управления, дополнительные модули</category>
+<category id="2167" parentId="1691">Кабели для конференц-систем</category>
+<category id="2134" parentId="1691">Аксессуары для конференц-систем</category>
+<category id="1271" parentId="30">Мегафоны</category>
+<category id="1704" parentId="30">Шкафы, кейсы рэковые, лючки</category>
+<category id="2173" parentId="1704">Шкафы рэковые</category>
+<category id="2175" parentId="1704">Стойки рэковые</category>
+<category id="2172" parentId="1704">Кейсы рэковые</category>
+<category id="2174" parentId="1704">Аксессуары для рэка</category>
+<category id="2391" parentId="1704">Фурнитура</category>
+<category id="155" parentId="30">Стойки под акустику</category>
+<category id="2178" parentId="155">Стойки для акустических систем</category>
+<category id="2179" parentId="155">Стойки для студийных мониторов</category>
+<category id="2407" parentId="155">Соединительные стойки сабвуфер-сателлит</category>
+<category id="2408" parentId="155">Настенные крепления</category>
+<category id="2180" parentId="155">Аксессуары для стоек</category>
+<category id="152" parentId="30">Стойки для ноутбука, планшета</category>
+<category id="1131" parentId="30">Устройства для Apple</category>
+<category id="78">Свет</category>
+<category id="1278" parentId="78">LED-приборы</category>
+<category id="1707" parentId="1278">Светодиодные прожекторы</category>
+<category id="1778" parentId="1278">Архитектурные прожекторы</category>
+<category id="2105" parentId="1278">Профильные прожекторы (LED)</category>
+<category id="2104" parentId="1278">Светодиодные блиндеры</category>
+<category id="2103" parentId="1278">Светодиодные комплекты</category>
+<category id="2083" parentId="1278">Светодиодные панели</category>
+<category id="2065" parentId="1278">Светодиодные светильники</category>
+<category id="2084" parentId="1278">Светодиодные стробоскопы</category>
+<category id="2107" parentId="1278">Светодиодные ультрафиолетовые прожекторы</category>
+<category id="2087" parentId="1278">Светодиодные эффекты</category>
+<category id="2352" parentId="1278">Следящие светодиодные прожекторы</category>
+<category id="2312" parentId="1278">Аксессуары для светодиодных приборов</category>
+<category id="1328" parentId="78">Управляемые приборы</category>
+<category id="1329" parentId="1328">Колорчейнджеры</category>
+<category id="1711" parentId="1328">Приборы полного движения</category>
+<category id="2263" parentId="1328">Сканеры</category>
+<category id="1330" parentId="2263">Сканеры</category>
+<category id="2067" parentId="2263">Аксессуары для сканера</category>
+<category id="1303" parentId="78">Ламповые приборы</category>
+<category id="1314" parentId="1303">Световые эффекты</category>
+<category id="1334" parentId="1303">Стробоскопы</category>
+<category id="1311" parentId="1303">Ультрафиолетовые светильники</category>
+<category id="1710" parentId="1303">Прожекторы профильные</category>
+<category id="1892" parentId="1303">Прожекторы театральные</category>
+<category id="1895" parentId="1303">Светильники заливного света</category>
+<category id="1306" parentId="1303">Прожекторы PAR</category>
+<category id="1309" parentId="1306">PAR 36</category>
+<category id="1307" parentId="1306">PAR 56</category>
+<category id="1310" parentId="1306">PAR 64</category>
+<category id="2088" parentId="1306">Прожекторы PAR 16, 20, MP</category>
+<category id="2106" parentId="1303">Блиндеры</category>
+<category id="2054" parentId="1303">Аксессуары для прожекторов</category>
+<category id="1712" parentId="1303">Светофильтры</category>
+<category id="2110" parentId="78">Лазерные приборы</category>
+<category id="1274" parentId="2110">Лазеры</category>
+<category id="1935" parentId="2110">Программное обеспечение</category>
+<category id="2109" parentId="2110">Аксессуары для лазеров</category>
+<category id="1708" parentId="78">Прожектора следящие</category>
+<category id="1323" parentId="78">Системы управления</category>
+<category id="1803" parentId="1323">Программное обеспечение DMX 512</category>
+<category id="1324" parentId="1323">Пульты, консоли</category>
+<category id="2360" parentId="1323">DMX сплиттеры</category>
+<category id="1709" parentId="1323">Диммеры</category>
+<category id="1325" parentId="1323">Свитчеры</category>
+<category id="2353" parentId="1323">Трансмиттеры</category>
+<category id="2294" parentId="1323">Контроллеры</category>
+<category id="1882" parentId="1323">Блоки преобразования сигналов</category>
+<category id="1885" parentId="1323">Блоки распределения питания</category>
+<category id="1884" parentId="1323">Блоки розеток</category>
+<category id="1326" parentId="1323">Пульты для управляемых приборов</category>
+<category id="2260" parentId="1323">Аксессуары для систем управления</category>
+<category id="2394" parentId="78">Аксессуары для световых приборов</category>
+<category id="1305" parentId="78">Прожекторы для зеркальных шаров</category>
+<category id="1294" parentId="78">Зеркальные шары и моторы</category>
+<category id="1298" parentId="1294">Шары белые</category>
+<category id="1301" parentId="1294">Шары цветные</category>
+<category id="1296" parentId="1294">Комплекты</category>
+<category id="1295" parentId="1294">Моторы</category>
+<category id="154" parentId="78">Стойки для световых приборов</category>
+<category id="1784" parentId="78">Струбцины, тросики и хомуты</category>
+<category id="1304" parentId="78">Лампы</category>
+<category id="1308" parentId="1304">Лампы PAR</category>
+<category id="1705" parentId="1304">Лампы газоразрядные</category>
+<category id="1706" parentId="1304">Лампы галогенные</category>
+<category id="1312" parentId="1304">Лампы ультрафиолетовые</category>
+<category id="2064" parentId="1304">Прочие лампы</category>
+<category id="1">Видео</category>
+<category id="18" parentId="1">Экраны</category>
+<category id="19" parentId="18">Мобильные экраны</category>
+<category id="20" parentId="18">Настенные подпружиненные экраны</category>
+<category id="22" parentId="18">Экраны на раме</category>
+<category id="23" parentId="18">Экраны с электроприводом</category>
+<category id="1760" parentId="18">Аксессуары для экранов</category>
+<category id="1781" parentId="1">Светодиодные экраны</category>
+<category id="1783" parentId="1781">Медиасерверы</category>
+<category id="1782" parentId="1781">Светодиодные панели</category>
+<category id="2239" parentId="1">Проекторы</category>
+<category id="17" parentId="2239">Проекторы</category>
+<category id="1748" parentId="2239">Лампы для проекторов</category>
+<category id="1746" parentId="2239">Объективы для проекторов</category>
+<category id="16" parentId="2239">Лифты для проекторов</category>
+<category id="15" parentId="2239">Крепёж для проекторов</category>
+<category id="2041" parentId="2239">Аксессуары для проекторов</category>
+<category id="2331" parentId="1">LCD и LED дисплеи</category>
+<category id="2039" parentId="2331">LCD и LED дисплеи</category>
+<category id="14" parentId="2331">Стойки и крепления для LCD и LED</category>
+<category id="2332" parentId="2331">Аксессуары для LCD и LED дисплеев</category>
+<category id="3" parentId="1">Интерактивное оборудование</category>
+<category id="2262" parentId="3">Интерактивные комплекты</category>
+<category id="5" parentId="3">Интерактивные доски</category>
+<category id="10" parentId="3">Интерактивные дисплеи</category>
+<category id="2248" parentId="3">Сенсорные панели</category>
+<category id="7" parentId="3">Интерактивные проекторы</category>
+<category id="4" parentId="3">Беспроводные планшеты</category>
+<category id="9" parentId="3">Аксессуары к интерактивным системам</category>
+<category id="11" parentId="1">Коммутационное оборудование</category>
+<category id="1745" parentId="11">Оборудование для коммутации видео</category>
+<category id="2357" parentId="11">DisplayPort</category>
+<category id="2154" parentId="11">Кабель HDMI</category>
+<category id="2155" parentId="11">Кабель VGA и DVI</category>
+<category id="2" parentId="1">Документ-камеры</category>
+<category id="1286">Шоу-эффекты</category>
+<category id="1287" parentId="1286">Генераторы дыма</category>
+<category id="1780" parentId="1286">Генераторы мыльных пузырей</category>
+<category id="2082" parentId="1286">Генераторы огня</category>
+<category id="1837" parentId="1286">Генераторы пены</category>
+<category id="1794" parentId="1286">Генераторы снега</category>
+<category id="1779" parentId="1286">Генераторы тумана</category>
+<category id="1841" parentId="1286">Имитаторы пламени</category>
+<category id="1853" parentId="1286">Конфетти машины</category>
+<category id="1839" parentId="1286">Крио эффекты</category>
+<category id="1291" parentId="1286">Расходные материалы</category>
+<category id="1851" parentId="1291">Ароматизаторы</category>
+<category id="1854" parentId="1291">Жидкость для образования дыма</category>
+<category id="1848" parentId="1291">Жидкость для образования мыльных пузырей</category>
+<category id="1846" parentId="1291">Жидкость для образования пены</category>
+<category id="1847" parentId="1291">Жидкость для образования снега</category>
+<category id="1856" parentId="1291">Жидкость для образования тумана</category>
+<category id="1850" parentId="1291">Конфетти</category>
+<category id="2073" parentId="1286">Аксессуары для генераторов спецэффектов</category>
+<category id="1337">Коммутация</category>
+<category id="1338" parentId="1337">Кабель в бухтах</category>
+<category id="1339" parentId="1338">Акустический кабель</category>
+<category id="1341" parentId="1338">Инструментальный кабель</category>
+<category id="2050" parentId="1338">Микрофонный кабель</category>
+<category id="1687" parentId="1338">Специальный кабель</category>
+<category id="2323" parentId="1687">Коаксиальный кабель</category>
+<category id="2324" parentId="1687">DMX кабель</category>
+<category id="2325" parentId="1687">Витая пара</category>
+<category id="2327" parentId="1687">Трансляционный кабель</category>
+<category id="2328" parentId="1687">Комбинированный кабель</category>
+<category id="2326" parentId="1338">Мультикабель</category>
+<category id="1359" parentId="1337">Кабель распаянный</category>
+<category id="2159" parentId="1359">Кабель спикерный</category>
+<category id="1392" parentId="2159">Спикерный Speakon-Speakon</category>
+<category id="1373" parentId="2159">Спикерный Jack-Jack</category>
+<category id="1396" parentId="2159">Спикерный Speakon-Jack</category>
+<category id="2160" parentId="1359">Кабель микрофонный</category>
+<category id="1398" parentId="2160">Микрофонный XLR-XLR</category>
+<category id="2168" parentId="2160">Микрофонный Jack-Jack</category>
+<category id="1382" parentId="2160">Микрофонный Jack-XLR</category>
+<category id="2158" parentId="1359">Кабель инструментальный</category>
+<category id="2164" parentId="1359">Кабель соединительный</category>
+<category id="2166" parentId="2164">Кабель Jack-Jack</category>
+<category id="1364" parentId="2164">Кабель Jack-RCA</category>
+<category id="2330" parentId="2164">Кабель Jack-XLR</category>
+<category id="1368" parentId="2164">Кабель RCA-RCA</category>
+<category id="1770" parentId="2164">Кабель RCA-XLR</category>
+<category id="2163" parentId="2164">Кабель инсертный</category>
+<category id="1739" parentId="1359">Кабель DMX</category>
+<category id="2359" parentId="1359">Кабель BNC</category>
+<category id="2162" parentId="1359">Кабель MIDI и USB</category>
+<category id="1387" parentId="2162">Кабель MIDI</category>
+<category id="1362" parentId="2162">Кабель USB</category>
+<category id="1771" parentId="1359">Прочие кабели</category>
+<category id="1343" parentId="1337">Разъемы и переходники</category>
+<category id="1352" parentId="1343">Разъем XLR</category>
+<category id="1344" parentId="1343">Разъем Jack</category>
+<category id="2078" parentId="1343">Разъем RCA</category>
+<category id="1348" parentId="1343">Разъем Speakon</category>
+<category id="2329" parentId="1343">Разъем PowerCon</category>
+<category id="1773" parentId="1343">Разъем BNC</category>
+<category id="2333" parentId="1343">Разъем Bantam</category>
+<category id="1774" parentId="1343">Разъем RJ45</category>
+<category id="1775" parentId="1343">Разъем USB 2.0</category>
+<category id="1355" parentId="1343">Адаптеры, переходники</category>
+<category id="1776" parentId="1343">Прочие разъемы</category>
+<category id="2079" parentId="1343">Аксессуары для разъемов</category>
+<category id="1735" parentId="1337">Мультикор</category>
+<category id="2410" parentId="1337">Оборудование Kramer</category>
+<category id="2437" parentId="2410">Digital Signage</category>
+<category id="2436" parentId="2410">Sierra Video Systems</category>
+<category id="2435" parentId="2410">Аксессуары и адаптеры для стоек</category>
+<category id="2438" parentId="2410">Аудио</category>
+<category id="2433" parentId="2410">Кабели, разъёмы, инструмент</category>
+<category id="2426" parentId="2410">Коммутаторы</category>
+<category id="2439" parentId="2410">Комплексные решения</category>
+<category id="2432" parentId="2410">Масштабаторы и преобразователи развертки</category>
+<category id="2427" parentId="2410">Матричные коммутаторы</category>
+<category id="2429" parentId="2410">Преобразователи форматов и синхропроцессоры</category>
+<category id="2434" parentId="2410">Решения для инсталляторов</category>
+<category id="2428" parentId="2410">Системы управления</category>
+<category id="2431" parentId="2410">Специальные AV-устройства</category>
+<category id="2430" parentId="2410">Удлинители интерфейсов и репитеры</category>
+<category id="2425" parentId="2410">Усилители-раcпределители</category>
+<category id="1769" parentId="1337">Патч панели</category>
+<category id="1768" parentId="1337">Аксессуары для коммутации</category>
+<category id="1688">Механика</category>
+<category id="1689" parentId="1688">Фермы</category>
+<category id="1809" parentId="1689">Квадратные фермы</category>
+<category id="2358" parentId="1689">Стыковочные углы</category>
+<category id="1808" parentId="1689">Треугольные фермы</category>
+<category id="1806" parentId="1689">Плоские фермы</category>
+<category id="2301" parentId="1689">Аксессуары для ферм</category>
+<category id="2319" parentId="1688">Подиумы</category>
+<category id="1903" parentId="1688">Лебедки</category>
+<category id="1904" parentId="1903">Лебедки цепные</category>
+<category id="1907" parentId="1903">Комплектующие</category>
+<category id="2453" parentId="1903">Лебедки беспротивовесные</category>
+<category id="2452" parentId="1903">Лебедки противовесные</category>
+<category id="2444" parentId="1688">Механизмы занавесов</category>
+<category id="2451" parentId="2444">Дороги-балки</category>
+<category id="2448" parentId="2444">Лебедки для занавесов</category>
+<category id="2447" parentId="2444">Однотрековые механизмы</category>
+<category id="2445" parentId="2444">Прямые механизмы</category>
+<category id="2446" parentId="2444">Радиальные механизмы</category>
+<category id="2450" parentId="2444">Тросовые занавесы</category>
+<category id="2449" parentId="2444">Управление занавесом</category>
+<category id="2320" parentId="1688">Кабель-каналы</category>
+<category id="79">Автоматика</category>
+<category id="80" parentId="79">Бесперебойное электроснабжение</category>
+<category id="81" parentId="80">Аккумуляторы</category>
+<category id="82" parentId="80">Инверторные системы</category>
+<category id="83" parentId="80">Инверторы</category>
+<category id="2349" parentId="83">Инверторы с модифицированной синусоидой</category>
+
+		</categories>
+		<delivery-options>
+			<option cost="400" days="1-3"/>
+		</delivery-options>
+		<offers>
+
+		</offers>
+	</shop>
+</yml_catalog>

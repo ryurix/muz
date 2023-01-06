@@ -1,0 +1,81 @@
+<?
+
+$q = db_query('SELECT * FROM brand ORDER BY w, name');
+$brand = array();
+while ($i = db_fetch($q)) {
+	$brand[$i['i']] = $i['name'];
+}
+cache_save('brand', $brand);
+
+w('clean');
+$codes = array();
+foreach ($brand as $k=>$v) {
+	$codes[$k] = str2url($v);
+}
+cache_save('brand2', $codes);
+
+
+
+$q = db_query('SELECT up,brand FROM store WHERE hide<>1');
+$ups = array();
+while ($i = db_fetch($q)) {
+	$up = $i['up'];
+	if (isset($ups[$up]) ) {
+		$ups[$up][] = $i['brand'];
+	} else {
+		$ups[$up] = array($i['brand']);
+	}
+}
+db_close($q);
+
+foreach ($ups as $k=>$v) {
+	$ups[$k] = array_unique($v);
+}
+
+
+//*
+$pathway = cache_load('pathway');
+foreach ($pathway as $k=>$v) {
+	if (isset($ups[$k])) {
+		$first = $ups[$k];
+		if (isset($v['pre'])) {
+			foreach ($v['pre'] as $i) {
+				$ups[$i] = isset($ups[$i]) ? array_merge($first, $ups[$i]) : $first;
+			}
+		}
+	}
+}
+//*/
+
+$brand = cache_load('brand');
+$brand = array_keys($brand);
+
+foreach ($ups as $k=>$v) {
+	$v = array_unique($v);
+	$v = array_intersect($brand, $v);
+	db_update('catalog', array('brand'=>implode(',', $v)), array('i'=>$k));
+}
+
+//print_pre($ups);
+
+$text = '<div class="container"><div class="row"><div class="col-md-12 text-center"><div class="owl-carousel">';
+$q = db_query("SELECT * FROM brand WHERE icon<>'' ORDER BY w, name");
+while ($i = db_fetch($q)) {
+	if (strlen($i['icon'])) {
+		$text.= '<div><a href="/brand/'.$i['code'].'"><img src="'.$i['icon'].'" alt="'.addcslashes($i['name'], '"').'"></a></div>';
+	}
+}
+$text.= '</div></div></div></div>';
+cache_set('front-brands', $text);
+
+
+/*
+$a = array();
+$q = db_query("SELECT brand.i,count(*) cnt FROM brand,store WHERE store.brand=brand.i AND brand.i>0 GROUP BY brand.i ORDER BY cnt DESC LIMIT 30");
+while ($i = db_fetch($q)) {
+	$a[$i['i']] = $i['cnt'];
+}
+cache_set('brand-top', $a);
+*/
+
+?>

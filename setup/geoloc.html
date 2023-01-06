@@ -1,0 +1,90 @@
+<?
+
+$city = cache_load('city');
+
+//	--------------------------------------------------------------------------------------
+
+$f = file_get_contents($config['root'].'files/cities.txt');
+$f = explode("\n", $f);
+//echo count($f);
+
+$city_names = array();
+$region_names = array();
+
+foreach ($f as $i) {
+	$row = explode("\t", $i);
+	if (count($row) > 5) {
+		$city_names[$row[0]] = $row[1];
+		$region_names[$row[0]] = $row[2];
+	}
+}
+
+//	----------------------------------------------------------------------------------------
+
+$country = array();
+
+$f = file_get_contents($config['root'].'files/cidr_optim.txt');
+$f = explode("\n", $f);
+
+$alpha = array();
+
+foreach ($f as $i) {
+	$row = explode("\t", $i);
+	if (count($row) > 4) {
+		if ($row[4] <> '-') {
+			$country[$row[4]] = $row[3];
+			$alpha[] = array($row[0], $row[1], $row[4]);
+		}		
+	}
+}
+
+//	--------------------------------------------------------------------------------------
+//	parsing
+
+$region = 0;
+$cities = 0;
+$notf = array();
+
+$beta = array();
+
+foreach ($alpha as $k=>$v) {
+	$i = $v[2];
+	if (isset($country[$i]) && $country[$i] == 'RU') {
+		$cn = $city_names[$i];
+		$cr = $region_names[$i];
+
+		$search_name = array_search($cn, $city);
+		if ($search_name === FALSE) {
+			$search_region = array_search($cr, $city);
+			if ($search_region === FALSE) {
+//				echo '<p>Не найдено: '.$cn.' '.$cr.'</p>';
+				if (isset($notf[$cn.' | '.$cr])) {
+					$notf[$cn.' | '.$cr]++;
+				} else {
+					$notf[$cn.' | '.$cr] = 0;
+				}
+//				$notf++;
+			} else {
+//				echo '<p>region</p>';
+				$beta[$v[0]] = array($search_region, $v[1]);
+				$region++;
+			}
+		} else {
+//			echo '<p>city</p>';
+			$beta[$v[0]] = array($search_name, $v[1]);
+			$cities++;
+		}
+//		print_pre($city_names[$i]);
+	}
+}
+
+//echo '<p>Найдено городов: '.$cities.'</p>';
+//echo '<p>Найдено регионов: '.$region.'</p>';
+
+cache_save('geoloc', $beta);
+
+echo '<p>Импортировано '.count($beta).' записей.</p>';
+echo '<p>Не найдено: '.count($notf).' городов.</p>';
+print_pre($notf);
+
+?>

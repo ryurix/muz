@@ -1,0 +1,73 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+foreach ($html->find('ul[class="catalogList"] a') as $row) {
+	$hrefs[] = 'http://www.polymedia.ru'.$row->href;
+}
+$hrefs = array_unique($hrefs);
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	unset($html);
+	$html = file_get_html($href);
+
+	$model = $html->find('h1', 0)->innertext;
+	$short = '';
+
+	$brand = '';
+	$name = '';
+	
+
+	$pico = $html->find('div[class=reviews]', 0);
+
+	if ($pico) {
+		$pico = $pico->find('img');
+		$pics = array();
+		foreach ($pico as $i) {
+			$pics[] = 'http://www.polymedia.ru'.$i->big;
+		}
+		$pic = $pics[0];
+		array_shift($pics);
+	} else {
+		$pic = 'http://www.polymedia.ru'.$html->find('div[class=galleryBlock] img', 0)->src;
+		$pics = array();
+	}
+
+	$files = array();
+	$as = $html->find('a[class=ipdf]');
+	foreach ($as as $k=>$v) {
+		$files[] = 'http://www.polymedia.ru'.$v->href;
+	}
+
+	$price = clean_int($html->find('table[class=type] td', 1)->innertext);
+	$info = $html->find('div[class=descrBlock]', 0)->innertext;
+	$info.= $html->find('div[class=descrBlock]', 1)->innertext;
+
+	$info = preg_replace('@<a[^>]*>(.*)</a>@', '\1', $info);
+	$info = preg_replace(array(
+		'@<img[^>]*>@',
+		'@<iframe[^>]*>@si',
+		'@<script[^>]*?>.*?</script>@si',
+		'@<!--.+?-->@s',
+	), '', $info);
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>'',
+		'model'=>$model,
+		'short'=>$short,
+		'pic'=>$pic,
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+}
+
+?>

@@ -1,0 +1,94 @@
+<?
+
+w('input-checkbox');
+w('input-line');
+w('input-combo');
+w('input-wiki');
+
+?>
+<form method="POST">
+<div class="white-row">
+	<div class="row">
+		<div class="form-group">
+			<div class="col-sm-4">
+				<label>Логин</label>
+				<? echo input_line($args['login'], 1); ?>
+				<p><? echo input_checkbox($args['spam']); ?></p>
+				
+			</div>
+			<div class="col-sm-4">
+				<label>Фамилия Имя Отчество</label>
+				<? echo input_line($args['name']); ?>
+				<p><? // form_checkbox($args['note']); ?></p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group">
+			<div class="col-sm-4">
+				<label>Для смены пароля введите новый пароль</label>
+				<? echo input_password($args['pass']); ?>
+			</div>
+			<div class="col-sm-4">
+				<label>Повтор нового пароля</label>
+				<? echo input_password($args['pass2']); ?>
+			</div>			
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group">
+			<div class="col-sm-4">
+				<label>Телефон</label>
+				<? echo input_line($args['phone']); ?>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group">
+			<div class="col-sm-6">
+				<label>Город</label>
+				<? echo input_combo2($args['city']); ?>
+				<label>Способ доставки</label>
+				<? echo input_combo($args['dost']); ?>
+			</div>
+			<div class="col-sm-6">
+				<label>Адрес</label>
+				<? echo input_wiki($args['adres']); ?>
+			</div>
+		</div>
+	</div>
+
+
+<? echo input_pay($args['pay']); ?>
+
+	<button class="btn btn-primary btn-lg" name="send1"><i class="fa fa-check"></i> &nbsp; СОХРАНИТЬ</button>
+</div>
+</form>
+<script>
+function payform() {
+	var cire = $('select#cire');
+	var city = $('input#city');
+	if (cire.val() > 0) { city.hide(); } else { city.show(); }
+
+	var dost = $('select#dost');
+
+	var adres = $('#adres');
+	if (dost.val() == 'self') { adres.hide(); } else { adres.show(); }
+
+	var office = cire.val() == 34 || cire.val() == 89 || cire.val() == -42;
+
+	var self = dost.children('option[value=self]');
+	self.attr('disabled', !office);
+	if (!office && self.prop('selected')) { self.prop('selected', false); }
+
+	var live = $('select#pay-combo').children('option[value=1],option[value=3]');
+	live.attr('disabled', !office);
+	if (!office) { $('select#pay-combo').children('option[value=7]').prop('selected', true); }
+}
+
+$(function () {
+	payform();
+	$('select#dost').change(payform);
+	$('select#cire').change(payform);
+});
+</script>

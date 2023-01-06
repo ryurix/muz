@@ -1,0 +1,53 @@
+<?
+
+w('load-region');
+
+$city = cache_load('city');
+$region = $config['cache-region'];
+$speed = w('speed');
+$vendor = cache_load('vendor');
+
+$filter = '';
+if (!isset($_GET['sp'])) {
+	w('clean');
+	if (isset($_GET['1'])) { $filter = ' WHERE vendor='.clean_int($_GET['1']); }
+	if (isset($_GET['2'])) { $filter = ' WHERE cire='.clean_int($_GET['2']); }
+}
+
+$q = db_query('SELECT * FROM speeds'.$filter.' ORDER BY vendor,cire');
+
+if (strlen($filter)) {
+	echo '<p><a href="/setup/delivery" class="btn">Показать всё</a></p>';
+}
+
+?>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>Поставщик</th>
+			<th>Город (регион)</th>
+			<th>Скорость</th>
+			<th>&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+function cell_link($i, $name, $num=1) {
+	return '<td><a href="/setup/delivery?'.$num.'='.$i.'">'.$name.'</a></td>';
+}
+
+while ($i = db_fetch($q)) {
+	$cire = $i['cire'] < 0 ? $region[-$i['cire']] : $city[$i['cire']];
+	echo '<tr>'.cell_link($i['vendor'], $vendor[$i['vendor']]).cell_link($i['cire'], $cire, 2).'<td>'.$speed[$i['speed']]
+	.'</td><td><a href="/setup/delivery?e1='.$i['vendor'].'&e2='.$i['cire'].'" class="btn btn-mini">&times;</a></td></tr>'."\n";
+}
+
+?>
+	</tbody>
+</table>
+<?
+
+w('form', $config['plan']);
+
+?>

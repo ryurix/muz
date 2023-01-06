@@ -1,0 +1,84 @@
+<?
+
+$q = db_query('SELECT i,url,up,name,icon,filter,hide FROM catalog ORDER BY w,name');
+
+$all = array();
+$temp = array();
+$ups = array(0=>1);
+while ($i = db_fetch($q)) {
+	$all[$i['i']] = array(
+		'up' => $i['up'],
+		'url'=> $i['url'],
+		'name'=> $i['name'].($i['hide'] == 0 ? '' : ' *'),
+		'icon'=> $i['icon'],
+//		'filter'=>$i['filter'],
+	);
+	$temp[$i['i']] = array('i'=>$i['i'], 'up'=>$i['up']);
+	$ups[$i['up']] = 1;
+}
+
+$count = 1;
+while ($count > 0) {
+	$dummy = array();
+	$roots = array();
+	foreach ($temp as $k=>$v) {
+		if (isset($ups[$k])) {
+			$roots[$k] = $v;
+		} else {
+			$dummy[$k] = $v;
+		}
+	}
+
+	$count = count($dummy);
+	foreach ($dummy as $k=>$v) {
+		$up = $v['up'];
+		if (isset($roots[$up])) {
+			$roots[$up]['/'][$k] = $v;
+		}
+	}
+
+	$ups = array(0=>1);
+	foreach ($roots as $k=>$v) {
+		$up = $v['up'];
+		$ups[$up] = 1;
+	}
+
+	$temp = $roots;
+}
+
+$back = $temp[0];
+
+$back = catalog_sort($back, $all);
+
+cache_save('catalog-hide', $back);
+
+$shop = $back;
+
+
+$children = array();
+children_up($children, $shop);
+
+cache_save('children-hide', $children);
+
+$shop['pre'] = array();
+$list = array(0=>array(
+	'name'=>'Каталог',
+	'pre'=>array(),
+	'f'=>array(),
+));
+pathway_up($list, $shop, $all);
+pathway_filter($list, $children);
+
+foreach ($list as $k=>$v) {
+	$list[$k]['count'] = db_result('SELECT COUNT(*) FROM store WHERE hide<=0 AND up IN ('.implode(',',$children[$k]).')');
+}
+
+pathway_filter($list, $children);
+
+cache_save('pathway-hide', $list);
+
+
+
+
+
+?>

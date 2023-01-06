@@ -1,0 +1,64 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+foreach ($html->find('h4') as $row) {
+	$as = $row->find('a');
+	if (count($as)) {
+		$hrefs[] = 'http://www.ctccapital.ru'.$as[0]->href;
+	}
+}
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	unset($html);
+	$html = file_get_html($href);
+
+	$model = $html->find('h1', 0)->innertext;
+	$short = '';
+
+	$brand = '';
+	$name = '';
+
+	$pic = 'http://www.ctccapital.ru'.$html->find('div[class=img] img', 0)->src;
+	$pics = array();
+	$files = array();
+
+	$price = $html->find('div[class=cost] strong', 0)->innertext;
+	if ($pos = strpos($price, '.')) {
+		$price = clean_int(substr($price, 0, $pos));
+	} else {
+		$price = 0;
+	}
+
+	$info = '<p>'.$html->find('div[class=txt]', 0)->innertext.'</p>';
+	$info.= $html->find('div[id=obj_1]', 0)->innertext;
+	$info.= $html->find('div[id=obj_2]', 0)->innertext;
+
+	$info = preg_replace('@<a[^>]*>(.*)</a>@', '\1', $info);
+	$info = preg_replace(array(
+		'@<img[^>]*>@',
+		'@<iframe[^>]*>@si',
+		'@<script[^>]*?>.*?</script>@si',
+		'@<!--.+?-->@s',
+	), '', $info);
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>'',
+		'model'=>$model,
+		'short'=>$short,
+		'pic'=>$pic,
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+}
+
+?>

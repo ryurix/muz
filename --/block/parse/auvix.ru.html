@@ -1,0 +1,103 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+foreach ($html->find('div[class="catalog_item"]') as $row) {
+	$as = $row->find('a[itemprop="url"]');
+	if (count($as)) {
+		$hrefs[] = 'http://www.auvix.ru'.$as[0]->href;
+	}
+	unset($as);
+}
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	unset($html);
+	$html = file_get_html_1251($href);
+	$html = $html->find('table[class="grid"] td', 1);
+
+	$model = $html->find('h1', 0)->innertext;
+	$short = '';
+
+	$html = $html->find('div[class=main]', 0);
+
+	$brand = $html->find('table[class=catalog_options] td a', 0)->innertext;
+	$name = '';
+
+	$pico = $html->find('img[id=catalog_detail_image]', 0);
+	if ($pico) {
+		$pic = strlen($pico->src) ? 'http://'.trim($pico->src, '/') : '';
+		$pos = strpos($pic, '?');
+		if ($pos) {
+			$pic = substr($pic, 0, $pos);
+		}
+		$pics = array();
+	} else {
+		$pico = $html->find('div[class="catalog-detail-image"] img');
+		$pics = array();
+		foreach ($pico as $i) {
+			$f = strlen($i->src) ? 'http://'.trim($i->src, '/') : '';
+			$pos = strpos($f, '?');
+			if ($pos) {
+				$f = substr($f, 0, $pos);
+			}
+			$pics[] = $f;
+		}
+		$pic = $pics[0];
+		array_shift($pics);
+	}
+	unset($pico);
+
+
+	$files = array();
+	$as = $html->find('div[class=dop_info] a');
+	foreach ($as as $k=>$v) {
+		
+		$name = $v->innertext;
+		while (isset($files[$name])) {
+			$name = $name + 1;
+		}
+		$pre = substr($v->href, 0, 2);
+		$file = $v->href;
+		if ($pre == '//') {
+			$file = 'http:'.$file;
+		} elseif ($pre !== 'ht') {
+			$file = 'http://www.auvix.ru'.$file;
+		}
+		$files[$name] = $file;
+	}
+	unset($as);
+
+	$price = $html->find('span[itemprop=price]', 0)->innertext;
+	$info = $html->find('div[class=digital] div', 0)->innertext;
+	$info.= $html->find('table[class=catalog_options]', 0)->outertext;
+
+	$info = preg_replace('@<a[^>]*>(.*)</a>@', '\1', $info);
+	$info = preg_replace(array(
+		'@<img[^>]*>@',
+		'@<iframe[^>]*>@si',
+		'@<script[^>]*?>.*?</script>@si',
+		'@<!--.+?-->@s',
+	), '', $info);
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>'',
+		'model'=>$model,
+		'short'=>$short,
+		'pic'=>$pic,
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+}
+
+unset($html);
+
+?>

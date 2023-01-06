@@ -1,0 +1,14 @@
+<?
+
+$back = array();
+
+$q = db_query('SELECT dict.name name, dict.i i, word.value value, word.i word FROM dict LEFT JOIN word ON dict.i=word.dict AND word.site='.$args);
+while ($i = db_fetch($q)) {
+	$back['i'.$i['i']] = array('name'=>$i['name'], 'type'=>'line', 'default'=>$i['value'], 'word'=>$i['word']);
+}
+db_close($q);
+
+$back['send'] = array('type'=>'submit', 'value'=>'Сохранить');
+$back['sent'] = array('type'=>'sent');
+
+?>

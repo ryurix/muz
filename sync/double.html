@@ -1,0 +1,71 @@
+<?
+
+$ups = w('catalog-all');
+$plan = array(
+	''=>array('method'=>'POST', 'default'=>array('speed'=>0)),
+	'up'=>array('name'=>'Раздел', 'type'=>'combo', 'values'=>$ups, 'default'=>0),
+	'same'=>array('name'=>'Процент совпадения', 'type'=>'int', 'default'=>95),
+	'send'=>array('type'=>'button', 'count'=>1, 1=>'Поиск', 'class'=>'btn-warning'),
+);
+
+w('request', $plan);
+w('form', $plan);
+
+if ($plan['']['valid'] && $plan['send']['value'] = 1) {
+	set_time_limit(0);
+
+	$count = 0;
+	$brand = cache_load('brand');
+
+	w('search');
+
+	$children = cache_load('children');
+	$up = $plan['up']['value'];
+	if (isset($children[$up])) {
+		$ups = $children[$up];
+	} else {
+		$ups = array();
+	}
+
+	$q = db_query('SELECT * FROM store WHERE up IN ('.implode(',', $ups).')');
+	$store = array();
+	while($i = db_fetch($q)) {
+		$i['chunk'] = search_split($brand[$i['brand']].' '.$i['model'].' '.$i['name']);
+		$store[$i['i']] = $i;
+		$count++;
+		if ($count > 5000) {
+			alert('Более пяти тысяч товаров, поиск дубликатов может занять недопустимое время, остановлен.');
+			w('alert');
+			$store = array();
+			break;
+		}
+	}
+
+	$count = 0;
+	$count2 = 0;
+	foreach ($store as $i) {
+		$count++;
+		$count2 = 0;
+		$chunk = $i['chunk'];
+		foreach ($store as $j) {
+			$count2++;
+			if ($count2 >= $count) {
+				break;
+			}
+			if ($i['i'] == $j['i'] || $i['up'] == $j['up']) {
+				continue;
+			}
+			$same = search_same($j['chunk'], $chunk);
+			if ($same >= $plan['same']['value']) {
+				echo '<p>'
+				.'<a href="/store/'.$i['i'].'">'.$brand[$i['brand']].' '.$i['model'].' '.$i['name'].'</a>'
+				.' &mdash; '
+				.'<a href="/store/'.$j['i'].'">'.$brand[$j['brand']].' '.$j['model'].' '.$j['name'].'</a>'
+				.'</p>';
+				flush();
+			}
+		}
+	}
+}
+
+?>

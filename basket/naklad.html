@@ -1,0 +1,38 @@
+<?
+w('basket');
+$basket = basket_calc($_SESSION['basket'], '');
+//	print_pre($basket);
+
+?>
+<table class="table table-bordered table-sm w-auto">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Наименование</th>
+			<th>Цена</th>
+			<th>Количество</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+$count = 0;
+foreach ($basket as $i) {
+	$count++;
+	echo '
+<tr>
+	<td>'.$count.'</td>
+	<td><a href="/store/'.$i['url'].'">'.$i['name'].'</a></td>
+	<td>'.$i['price2'].'</td>
+	<td>'.$i['count'].'</td>
+</tr>';
+}
+
+?>
+	</tbody>
+</table>
+<?
+
+w('form', $config['plan']);
+
+?>

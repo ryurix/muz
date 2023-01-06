@@ -1,0 +1,39 @@
+<?
+
+w('pager');
+$store = 0;
+$q = pager_query('SELECT * FROM sync WHERE store='.$store.' ORDER BY name', 1000);
+
+echo pager_block();
+
+?>
+<table class="table table-hover table-sm">
+<thead>
+	<tr>
+		<th>Наименование</th>
+		<th>Поставщик</th>
+		<th>Дата</th>
+		<th>&nbsp;</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$vendor = cache_load('vendor');
+
+w('ft');
+while ($i = db_fetch($q)) {
+	echo '<tr><td>'.$i['name'].'</td>'
+.'<td>'.(isset($vendor[$i['vendor']]) ? $vendor[$i['vendor']] : '').'</td>'
+.'<td>'.ft($i['dt'], 1).'</td>'
+.'<td><a href="/sync/nosync?code='.$i['i'].'" class="btn btn-sm btn-outline-default">&times;</a></td></tr>';
+}
+
+?>
+</tbody>
+</table>
+<?
+
+echo pager_block();
+
+?>

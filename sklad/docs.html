@@ -1,0 +1,40 @@
+<?
+
+$sklad = w('list-sklad');
+$sk = isset($_REQUEST['sk']) ? $_REQUEST['sk'] : '';
+if (!isset($sklad[$sk])) {
+	refile('menu.html');
+	return;
+}
+
+
+w('table');
+
+?>
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<td class="text-right">#</td>
+<td>Дата</td>
+<td>Менеджер</td>
+<td>Комментарий</td>
+</tr>
+</thead>
+<tbody>
+<?
+
+w('ft');
+
+$q = db_query('SELECT naklad.i,naklad.dt,user.name,naklad.info FROM naklad LEFT JOIN user ON naklad.user=user.i WHERE type='.$config['type'].' AND vendor='.$sk.' ORDER BY i DESC');
+while ($i = db_fetch($q)) {
+	echo '<tr>
+<td><a href="/sklad/'.$i['i'].'">'.$i['i'].'</a></td>
+<td><a href="/sklad/'.$i['i'].'">'.ft($i['dt'], 1).'</a></td>
+<td>'.$i['name'].'</td>
+<td>'.$i['info'].'</td></tr>';
+}
+db_close($q);
+
+?>
+</tbody>
+</table>

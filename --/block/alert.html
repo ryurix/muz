@@ -1,0 +1,33 @@
+<?
+
+if (isset($_SESSION['alert'])) {
+	$alert = $_SESSION['alert'];
+	foreach ($alert as $i) {
+		echo '<div class="alert alert-';
+		switch ($i['type']) {
+			case '0':
+			case 'warning':
+				echo 'warning'; break;
+			case '1':
+			case 'done':
+			case 'success':
+				echo 'success'; break;
+			case '2':
+			case 'info':
+			case 'information':
+				echo 'info'; break;
+			case '3':
+			case 'danger':
+			case 'error':
+				echo 'danger'; break;
+		}
+		if (strlen($i['text']) > 100) {
+			echo ' alert-block';
+		}
+		echo '"><button type="button" class="close" data-dismiss="alert">&times;</button>';
+		echo $i['text'].'</div>';
+	}
+	$_SESSION['alert'] = array();
+}
+
+?>

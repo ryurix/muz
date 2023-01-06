@@ -1,0 +1,34 @@
+<p><a href="/city/new" class="btn btn-default">Добавить город</a></p>
+<? w('table') ?>
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<td>ID</td>
+<td>Наименование</td>
+<td>Скрыт</td>
+<td>Регион</td>
+<td>Домен</td>
+</tr>
+</thead>
+<tbody>
+<?
+
+
+$q = db_query('SELECT city.i, city.name, city.hide, city.site, region.name region'
+.' FROM city,region WHERE city.region=region.i ORDER BY city.w,city.name');
+while ($i = db_fetch($q)) {
+	echo '<tr><td class="center">'.$i['i'].'</td>';
+	echo '<td><a href="/city/'.$i['i'].'">'.$i['name'].'</a></td>';
+	echo '<td class="center">';
+	if ($i['hide']) {
+		echo '*';
+	}
+	echo '</td><td>'.$i['region'];
+	echo '</td><td>'.$i['site'];
+	echo '</td></tr>';
+}
+db_close($q);
+
+?>
+</tbody>
+</table>

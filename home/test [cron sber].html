@@ -1,0 +1,81 @@
+<?
+
+w('autoload');
+\Marketplace\Sber::cron();
+
+/*
+w('autoload');
+
+global $goods;
+
+$user = $goods[11679];
+
+$orders = db_fetch_all(db_query('SELECT * FROM orst WHERE state=0 AND user=11679'));
+
+$insert = [];
+foreach ($orders as $i) {
+	if (isset($insert[$i['mpi']])) {
+		$insert[$i['mpi']]['data']['offers'][] = $i['store'];
+	} else {
+		$insert[$i['mpi']] = [
+			'dt'=>now(),
+			'state'=>0,
+			'typ'=>\Marketplace\Sber::CONFIRM,
+			'data'=>[
+				'token'=>$user['token'],
+				'shipmentId'=>$i['mpi'],
+				'orderCode'=>$i['i'],
+				'offers'=>[$i['store']],
+			],
+		];
+	}
+}
+
+foreach ($insert as $i) {
+	db_insert('send_sber', [
+		'dt'=>$i['dt'],
+		'state'=>$i['state'],
+		'typ'=>$i['typ'],
+		'data'=>array_encode($i['data']),
+	]);
+}
+//*/
+
+
+/*
+function sber_query($url, $data) {
+    $ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, 'https://partner.sbermegamarket.ru/api/market/v1/orderService'.$url);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	$result = curl_exec($ch);
+	curl_close($ch);
+
+    return json_decode($result, true);
+}
+
+print_pre($user);
+
+print_pre(sber_query('/order/confirm', [
+	'data'=>[
+		'token'=>$user['token'],
+		'shipments'=>[
+			[
+				'shipmentId'=>'905141881',
+				'orderCode'=>'85282',
+				'items'=>[
+					[
+						'itemIndex'=>1,
+						'offerId'=>'156197',
+					],
+				],
+			],
+		],
+	],
+	'meta'=>new Class {},
+]));
+//*/

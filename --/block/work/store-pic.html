@@ -1,0 +1,48 @@
+<?
+
+$file = $args['icon']['value'];
+$name = $args['icon']['filename'];
+
+w('clean');
+$name = str2url($name);
+
+$back = 0;
+if (strlen($file) > 0) {
+	$path = $args['']['path'];
+	$dir = $config['root'].substr($path, 1);
+
+	if (!file_exists($dir)) {
+		@mkdir($dir);
+	}
+
+	w('pic');
+	$name = basename($name, '.jpg');
+
+	$pic = pic_load($file);
+	if ($pic) {
+		$pic2 = pic_into($pic, 600, 600);
+		$fname = $name.'.jpg';
+		$stamp = pic_load($config['root'].'design/watermark.png');
+		pic_stamp($pic2, $stamp, -12, -12);
+		imagefilter($pic2['image'], IMG_FILTER_BRIGHTNESS, 5);
+		pic_jpeg($pic2, $dir.$fname, 90);
+		$args['icon']['pic'] = $path.$fname;
+
+		$pic3 = pic_into($pic, 260, 260);
+		$icon = 'icon_'.$name.'.jpg';
+		pic_jpeg($pic3, $dir.$icon, 90);
+		$args['icon']['value'] = $path.$icon;
+/*
+		$pic2 = pic_into($pic, 256, 384);
+		$mini = 'mini_'.$name.'.jpg';
+		pic_jpeg($pic2, $dir.$mini, 90);
+		$args['icon']['mini'] = $path.$mini;
+*/		$args['icon']['mini'] = '';
+
+		$back = 1;
+	} else {
+		alert('Ошибка загрузки файла: '.$file);
+	}
+}
+
+?>

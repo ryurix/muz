@@ -1,0 +1,40 @@
+<?
+
+if (is_user('catalog')) {
+	echo '<p><a href="/brand/new" class="btn btn-default"><i class="fa fa-plus"></i> Добавить</a></p>';
+}
+
+?>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Производитель</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+$select = 'SELECT * FROM brand ORDER BY w, name';
+$q = db_query($select);
+
+$edit = is_user('catalog');
+w('clean');
+
+while ($i = db_fetch($q)) {
+	$href = '/brand/'.$i['i'].'-'.str2url($i['name']);
+
+	echo '<tr>';
+	if ($edit) {
+		echo '<td><a href="'.$href.'/edit">'.$i['i'].'</a></td>';
+	} else {
+		echo '<td>'.$i['i'].'</td>';
+	}
+
+	echo '<td><a href="'.$href.'">'.$i['name'].' <i class="icon-edit"></i></a></td>';
+	echo '</tr>';
+}
+
+?>
+	</tbody>
+</table>

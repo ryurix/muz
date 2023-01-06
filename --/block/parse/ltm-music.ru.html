@@ -1,0 +1,104 @@
+<?
+
+function echo_memory($prefix = '') {
+//	echo '<p>'.$prefix.' '.memory_get_usage().'</p>';
+}
+
+$html = file_get_html($args);
+$hrefs = array();
+$html = $html->find('div[class=catalog-content]', 0);
+																						echo_memory(1);
+foreach ($html->find('div[class="name"]') as $row) {
+	$as = $row->find('a');
+	if (count($as)) {
+		$hrefs[] = 'http://www.ltm-music.ru'.$as[0]->href;
+	}
+}
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+																						echo_memory(2);
+	if (is_object($html)) {
+		$html->clear;
+		unset($html);
+	}
+	set_time_limit(0);
+																						echo_memory('3 '.$href);
+	$html = file_get_html($href);
+																						echo_memory('3 get');
+	$html = $html->find('div[class=content-block]', 0);
+																						echo_memory('3 find');
+	if (!is_object($html->find('h1', 0))) {
+		continue;
+	}
+
+	$brand = '';
+	$name = '';
+	$model = $html->find('h1', 0)->innertext;
+	$short = '';
+
+	$price = $html->find('div[class=price]', 0);
+	$price = is_object($price) ? clean_09($price->innertext) : 0;
+																						echo_memory(4);
+	$pic = $html->find('div[class=picture] a', 0);
+	$pic = is_object($pic) && strlen($pic->href) ? 'http://'.trim($pic->href, '/') : '';
+	$pos = strpos($pic, '?');
+	if ($pos) { $pic = substr($pic, 0, $pos); }
+
+	$pics = array();
+
+	$div = $html->find('div[class=more-pics]', 0);
+	if (is_object($div)) {
+		foreach ($div->find('a') as $i) {
+			if (strlen($i->href)) {
+				$url = 'http://'.trim($i->href, '/');
+				$pos = strpos($url, '?');
+				if ($pos) { $url = substr($url, 0, $pos); }
+				$pics[] = $url;
+			}
+		}
+		if (is_object($i)) { $i->clear; unset($i); }
+		$div->clear;
+		unset($div);
+	}
+																						echo_memory(5);
+	$files = array();
+	foreach ($html->find('div[class=file]') as $as) {
+		$as = $row->find('a');
+		if (count($as)) {
+			$files[$as[0]->innertext] = 'http://www.ltm-music.ru'.$as[0]->href;
+		}
+	}
+	if (is_object($as)) { $as->clear; unset($as); }
+																						echo_memory(6);
+	$info = $html->find('div[class=text-in]', 0)->innertext;
+
+	$div = $html->find('div[class=properties]', 0);
+	if (is_object($div)) {
+		$info.= "\n".$div->innertext;
+		$div->clear; unset($div);
+	}
+	
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>$name,
+		'model'=>$model,
+		'short'=>$short,
+		'pic'=>strlen($pic) ? $pic : '',
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+//print_pre($back);
+																						echo_memory(7);
+//*/
+}
+
+//exit();
+
+?>

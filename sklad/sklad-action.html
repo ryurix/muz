@@ -1,0 +1,16 @@
+<?
+
+$sklad = w('list-sklad');
+
+$a = array();
+foreach ($sklad as $k=>$v) {
+	$a[] = array('href'=>'/sklad?sk='.$k, 'action'=>$v);
+}
+
+$config['action'] = array_merge($a, array(
+	array('href'=>'/sklad/in?sk='.$args, 'action'=>'приход'),
+	array('href'=>'/sklad/out?sk='.$args, 'action'=>'расход'),
+	array('href'=>'/sklad/prices?sk='.$args, 'action'=>'оценка'),
+));
+
+?>

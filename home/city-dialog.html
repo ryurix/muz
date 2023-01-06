@@ -1,0 +1,136 @@
+<?
+
+$city = cache_load('city');
+$block['city-name'] = 'Выберите город';
+if (isset($_SESSION['city']) && isset($city[$_SESSION['city']])) {
+	$block['city-name'] = $city[$_SESSION['city']];
+}
+
+$both = cache_load('sitename');
+$name = cache_load('site');
+$name[34].= '?msk';
+//$both = array_slice($city, 0, 12, true);
+//$both = $city;
+$left = array_slice($both, 0, floor(count($both)/2), true);
+$right= array_slice($both, count($left), count($both), true);
+
+$href = rtrim($config['q'], '/');
+$href = strpos($href, '?') === FALSE ? $href.'?_city=' : '&_city=';
+
+?>
+<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+<h2 class="city_title">Ваш город</h2>
+<form action="#" id="city_form">
+	<label class="city_label ddl">
+		<p class="city_text1">Поиск</p>
+<?
+
+	w('input-cire');
+	echo input_cire(array(
+		'code'=>'_city',
+		'id'=>'city_select',
+		'value'=>isset($_SESSION['city']) ? $_SESSION['city'] : 0,
+		'more'=>'onchange="this.form.submit()"',
+//		'width'=>278,
+//		'more'=>'onchange="this.form.submit()"',
+	));
+/*
+?>
+		<select name="city" class="city_ddl select_sort" id="city_select">
+			<option></option>
+			<option value="1">Московская область</option>
+			<option value="1">Москва</option>
+			<option value="1">Ленинградская область</option>
+			<option value="1">Санкт-петербург</option>
+			<option value="1">Омская область</option>
+			<option value="1">Омск</option>
+		</select>
+<? //*/?>
+	</label>
+</form>
+<div class="row">
+	<div class="col-12 col-lg-6 leftside">
+<?
+	foreach ($left as $k=>$v) {
+		echo '<a href="https://'.kv($name, $k).'" class="city_item"><p>'.$v.'</p>'./*<span></span>*/'</a>';
+	}
+?>
+	</div>
+	<div class="col-12 col-lg-6">
+<?
+	foreach ($right as $k=>$v) {
+		echo '<a href="https://'.kv($name, $k).'" class="city_item"><p>'.$v.'</p>'./*<span></span>*/'</a>';
+	}
+?>
+	</div>
+</div> 
+<div class="modal-footer">
+	<button type="button" class="city_cancel" data-dismiss="modal">Отмена</button>
+</div>
+
+
+
+<? /*
+
+
+
+<form class="form-inline" method="POST" role="form">
+	<div class="form-group">
+	<label for="townsearch">Поиск:</label>&nbsp;
+<?
+//						<input type="text" class="form-control" placeholder="Город" id="townsearch">
+
+	w('input-cire');
+	echo input_cire(array(
+		'code'=>'_city',
+		'value'=>isset($_SESSION['city']) ? $_SESSION['city'] : 0,
+		'width'=>278,
+		'more'=>'onchange="this.form.submit()"',
+	));
+
+
+//					<button type="submit" class="btn btn-default">Найти</button>
+?>
+	<script type="text/javascript"> $(".chosen-select").chosen();</script>
+	</div>
+	<div>&nbsp;</div>
+</form>
+<div class="row">
+	<div class="col-md-6">
+		<ul>
+<?
+
+$city = cache_load('city');
+$block['city-name'] = 'Выберите город';
+if (isset($_SESSION['city']) && isset($city[$_SESSION['city']])) {
+	$block['city-name'] = $city[$_SESSION['city']];
+}
+
+$both = cache_load('sitename');
+//$both = array_slice($city, 0, 12, true);
+//$both = $city;
+$left = array_slice($both, 0, floor(count($both)/2), true);
+$right= array_slice($both, count($left), count($both), true);
+
+$href = rtrim($config['q'], '/');
+$href = strpos($href, '?') === FALSE ? $href.'?_city=' : '&_city=';
+
+			foreach ($left as $k=>$v) {
+				//echo '<li><a href="'.$href.$k.'">'.$v.'</a></li>';
+				echo '<li><form method="POST"><button type="submit">'.$v.'</button><input type="hidden" name="_city" value="'.$k.'" /></form></li>';
+			}
+?>
+		</ul>
+	</div>
+	<div class="col-md-6">
+		<ul>
+		<?
+			foreach ($right as $k=>$v) {
+				//echo '<li><a href="'.$href.$k.'">'.$v.'</a></li>';
+				echo '<li><form method="POST"><button type="submit">'.$v.'</button><input type="hidden" name="_city" value="'.$k.'" /></form></li>';
+			}
+		?>
+		</ul>
+	</div>
+</div>
+<? // */ ?>

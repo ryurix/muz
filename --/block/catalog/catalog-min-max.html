@@ -1,0 +1,55 @@
+<form method=GET>
+	<?
+
+w('input-hidden');
+$dummy = array();
+foreach ($args as $k=>$v) {
+	if (!$k || $k=='min' || $k=='max') { continue; }
+
+	$dummy['code'] = $k;
+	$dummy['value'] = $v['value'];
+	echo input_hidden($dummy);
+}
+
+$price2 = kv($config, 'price2', 100000);
+$min = $args['min']['value'] ? $args['min']['value'] : 0;
+$max = $args['max']['value'] ? $args['max']['value'] : $price2;
+
+?>
+<button type="button" class="filter_subtitle" data-list="0">Цена:</button>
+<div class="filter_list simple price" data-list="0">
+	<div class="price_cont">
+		<label class="price_label one">
+			<input type="text" name="min" class="price_input" id="price_low" value="<? echo $min ?>">
+		</label>
+
+		<p class="price_text1"> - </p>
+
+		<label class="price_label two">
+			<input type="text" name="max" class="price_input" id="price_high" value="<?	echo $max ?>">
+		</label>
+
+		<p class="price_text1"> ₽</p>
+
+		<button type="submit" class="price_btn">OK</button>
+	</div>
+	<div id="price_range"></div>
+</div>
+</form>
+<script src="/design/libs/freshslider/freshslider.1.0.0.js"></script>
+<script>
+// Range
+$("#price_range").freshslider({
+	range: true,
+	step: 1,
+	text: false,
+	min: 0,
+	max: <? echo max($price2, $max) ?>,
+	enabled: true,
+	value: [<? echo $min ?>,<? echo $max ?>], 
+	onchange:function(low, high){
+		$("#price_low").val(low);
+		$("#price_high").val(high);
+	}
+});
+</script>

@@ -1,0 +1,250 @@
+<?
+
+gc_collect_cycles();
+
+$plan = $config['plan'];
+$plan['']['close'] = 0;
+w('form', $plan);
+
+//echo '<p>Memory at start: '.number_format(memory_get_usage(), 0, '.', ' ').'</p>';
+
+if (isset($config['import']) && is_array($config['import']) && count($config['import'])) {
+
+	w('search');
+	$brands = cache_load('brand');
+	$codes = isset($_REQUEST['code']) ? $_REQUEST['code'] : array();
+	$count = 0;
+	$up = $plan['up']['value'];
+
+	if ($plan['same']['value']) {
+		w('cache-sync');
+		$chunk = $config['sync-chunk'];
+		$names = $config['sync-names'];
+	}
+
+//echo '<p>Memory before table: '.number_format(memory_get_usage(), 0, '.', ' ').'</p>';
+
+	echo '<table class="table">'
+.'<thead><tr>'
+.'<th>Производитель</th>'
+.'<th>Название</th>'
+.'<th>Модель</th>'
+.'<th>Цена</th>'
+.'<th>Картинка</th>'
+.'<th>Описание</th>';
+	if ($plan['send']['value'] == 2) {
+		$plan['same']['value'] = 0;
+	}
+	if ($plan['same']['value']) {
+		echo '<th>Аналоги</th>';
+	}
+	echo '</tr></thead><tbody>';
+
+	foreach ($config['import'] as $i) {
+		$dummy = $i['brand'];
+
+		if ($plan['brand']['value']) {
+			$i['brand'] = $plan['brand']['value'];
+		} else if (isset($i['brand']) && $i['brand'] = find_brand($dummy, $brands)) {
+		} else {
+			$i['brand'] = find_brand($i['model'], $brands);
+		}
+
+		$class = '';
+		//$code = trim($i['name'].' '.$i['model']);
+		$name = trim($i['name'].' '.$i['model']);
+		$code = $i['href'];
+		$i['name'] = trim($plan['name']['value'].' '.$i['name']);
+		$checked = 1;
+		if ($plan['send']['value'] == 2 && $up) {
+			if (array_search($code, $codes) !== FALSE) {
+				$checked = 0;
+				$count++;
+				$class = ' class="warning"';
+				store_import($i, $plan, $up);
+			}
+		}
+
+		if($plan['same']['value']) {
+			$best = search_best(search_split($name), $chunk, 12);
+			$best_values = array_values($best);
+			if (count($best) && $best_values[0] == 100) {
+				$checked = 0;
+			}
+		}
+
+		echo '<tr'.$class.'>'
+.'<td>'.$brands[$i['brand']].'</td>'
+.'<td><label class="checkbox"><input type="checkbox" name="code[]" value="'.$i['href'].'"'
+.($checked ? ' checked' : '')
+.'>'.$i['name'].'</label></td>'
+.'<td>'.(isset($i['href']) ? '<a href="'.$i['href'].'">'.$i['model'].'</a>' : $i['model']).'</td>'
+.'<td>'.$i['price'].'</td>'
+.'<td>'.(strlen($i['pic']) ? '<a href="'.$i['pic'].'" target=_BLANK" rel=lightbox><i class="fa fa-picture-o"></i></a>' : '').'</td>'
+.'<td>'.strlen($i['info']).'</td>';
+		if ($plan['same']['value']) {
+			echo '<td>'.echo_best($best, $names).'</td>';
+		}
+		echo '</tr>';
+	}
+	if ($count) {
+		alert('Импортировано '.$count.' товаров в <a href="/catalog/'.$up.'">раздел: '.$plan['up']['values'][$up].'</a>');
+		cache_delete('sync-chunk');
+		cache_delete('sync-names');
+	}
+
+	echo '</tbody></table>';
+}
+echo '</form>';
+
+w('alert');
+
+function find_brand(&$name, $brands) {
+	foreach ($brands as $k=>$v) {
+		if (strlen($v)) {
+			$pos = strpos(strtolower($name), strtolower($v));
+			if ($pos === 0) {
+				$name = substr($name, strlen($v) + 1);
+				return $k;
+			}
+		}
+	}
+	return 0;
+}
+
+function echo_best($best, $names) {
+	$first = 0;
+	$s = '<select class="sync">';
+	foreach ($best as $k=>$v) {
+		if ($first == 0) {
+			$first = $k;
+		}
+		if (isset($names[$k])) {
+			$s.= '<option value="'.$k.'">'.$names[$k].' '.$v.'%</option>';
+		}
+	}
+	$s.= '</select>';
+	return $s;
+}
+
+function store_import($store, $plan, $up) {
+	global $config;
+
+	$brand = $plan['brand']['values'][$store['brand']];
+	w('search');
+	$quick = $brand;
+	$quick.= $store['model'];
+	$quick.= $store['name'];
+	$quick.= $store['short'];
+	$quick.= $store['info'];
+	$quick = search_quick($quick);
+
+	$tags = u8lower($brand.' '.$store['model'].' '.$store['name']);
+
+	w('keys');
+	$key = key_next('store');
+
+	$data = array(
+		'i'=>$key,
+		'up'=>$up,
+		'grp'=>1,
+		'quick'=>$quick,
+		'name'=>$store['name'],
+		'model'=>$store['model'],
+		'tag1'=>$tags,
+		'tag2'=>$tags,
+		'tag3'=>$tags,
+		'brand'=>$store['brand'],
+		'vendor'=>$plan['vendor']['value'],
+		'short'=>$store['short'],
+		'price'=>0, //$store['price'],
+		'speed'=>100,
+		'sale'=>10,
+		'count'=>0,
+		'user'=>$_SESSION['i'],
+		'dt'=>now(),
+		'info'=>$store['info'],
+		'w'=>100,
+	);
+	$path = '/files/store/'.$key.'/';
+	if (strlen($store['pic'])) {
+		$pic = array(
+			'icon'=>array('value'=>$store['pic'], 'filename'=>$store['pic']),
+			''=>array('path'=>$path),
+		);
+		if (w('store-pic', $pic)) {
+			$data['icon'] = $pic['icon']['value'];
+			$data['mini'] = $pic['icon']['mini'];
+			$data['pic'] = $pic['icon']['pic'];
+		}
+	}
+	
+	if (isset($store['pics'])) {
+		w('pic');
+		w('clean');
+		$files = array();
+		foreach ($store['pics'] as $v) {
+			$name = basename($v);
+			
+			$dir = $config['root'].substr($path, 1);
+
+			$pic = pic_load($v);
+			if ($pic) {
+				$pic2 = pic_into($pic, 600, 600);
+				pic_jpeg($pic2, $dir.$name, 90);
+//				copy($v, $dir.$name);
+				$files[] = array(
+					'name'=>$name,
+//					'mini'=>$path.$mini,
+					'href'=>$path.$name,
+				);
+			}
+		}
+		$data['pics'] = php_encode($files);
+	}
+
+	if (isset($store['files'])) {
+		w('clean');
+		$files = array();
+		$dir = $config['root'].substr($path, 1);
+		if (!is_dir($dir)) {
+			mkdir($dir);
+		}
+		foreach ($store['files'] as $name=>$v) {
+			$pos = strpos($v, '?');
+			if ($pos) {$v = substr($v, 0, $pos);}
+			$filename = str2url(basename($v));
+			copy($v, $dir.$filename);
+			$files[] = array(
+				'name'=>(strlen($name) < 3 ? $filename : $name),
+				'href'=>$path.$filename,
+			);
+		}
+		$data['files'] = php_encode($files);
+	}
+
+	db_insert('store', $data);
+
+	db_insert('log', array(
+		'type'=>5,
+		'dt'=>now(),
+		'user'=>$_SESSION['i'],
+		'info'=>'store: '.$key,
+	));
+}
+
+?>
+<p>Сайты для импорта:</p>
+<ul>
+<?
+
+$files = scandir($config['root'].'--/block/parse');
+foreach ($files as $i) {
+	if (strlen($i) > 5) {
+		$name = basename($i, '.html');
+		echo '<li><a href="http://'.$name.'">'.$name.'</a>';
+	}
+}
+
+?>
+</ul>

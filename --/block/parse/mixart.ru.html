@@ -1,0 +1,67 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+foreach ($html->find('ul[class=product-catalog] a[class=name]') as $row) {
+	$hrefs[] = 'http://mixart.ru'.$row->href;
+}
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	if (isset($html) && is_object($html)) {
+		$html->clear;
+		unset($html);
+	}
+	set_time_limit(0);
+
+	$html = file_get_html($href);
+
+	$model = $html->find('h1', 0)->innertext;
+	$price = 0;
+	$brand = '';
+
+	$pic = '';
+	$pics = array();
+	foreach ($html->find('div[id=thumb] a') as $i) {
+		$pics[] = 'http://mixart.ru'.$i->href;
+	}
+	if (count($pics)) {
+		$pic = $pics[0];
+		$pics = array_slice($pics, 1);
+	}
+
+	$files = array();
+
+	$info = $html->find('div[class=description-product]', 0)->innertext;
+/*
+	$info = preg_replace('@<iframe[^>]*>@si', '', $info);
+	$info = preg_replace('@<script[^>]*?>.*?</script>@si', '', $info);
+	$info = preg_replace('@<!--.+?-->@s', '', $info);
+*/
+
+	$info = preg_replace(array(
+		'@<iframe[^>]*>@si',
+		'@<script[^>]*?>.*?</script>@si',
+		'@<!--.+?-->@s',
+	), '', $info);
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>'',
+		'model'=>$model,
+		'short'=>'',
+		'pic'=>$pic,
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+//*/
+}
+
+?>

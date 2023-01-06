@@ -1,0 +1,9 @@
+{
+	"require": {
+		"shuchkin/simplexlsx": "^0.8.27",
+		"shuchkin/simplexls": "^0.9.13"
+	},
+	"config": {
+		"vendor-dir": "lib"
+	}
+}

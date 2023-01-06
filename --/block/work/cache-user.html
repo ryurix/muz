@@ -1,0 +1,50 @@
+<?
+
+w('clean');
+$i = clean_int($args);
+
+if ($i) {
+	$where = ' WHERE i='.$i;
+} else {
+	$where = '';
+}
+
+w('search');
+$city = cache_load('city');
+
+$upd = array();
+$q = db_query('SELECT * FROM user'.$where);
+while ($i = db_fetch($q)) {
+
+	$quick = search_quick(
+		 $i['email']
+		.$i['name']
+		.$i['phone']
+		.kv($city, $i['cire'], '')
+		.$i['city']
+		.$i['adres']
+		.$i['pay']);
+
+	if ($quick != $i['quick']) {
+		$upd[$i['i']] = array('quick'=>$quick);
+	}
+}
+db_close($q);
+
+
+foreach ($upd as $i=>$v) {
+	db_update('user', $v, array('i'=>$i));
+}
+
+
+// staff cache
+
+
+$staff = array();
+$q = db_query('SELECT * FROM user WHERE roles<>""');
+while ($i = db_fetch($q)) {
+	$staff[$i['i']] = $i['name'];
+}
+cache_save('staff', $staff);
+
+?>

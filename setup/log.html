@@ -1,0 +1,80 @@
+<?
+
+w('ft');
+
+$type = array(0=>'') + w('list-log');
+
+$plan = array(
+	''=>array('method'=>'POST'),
+	'type'=>array('name'=>'Тип', 'type'=>'combo', 'values'=>$type, 'default'=>0),
+	'dt1'=>array('name'=>'Дата от', 'type'=>'date', 'default'=>ft_parse(ft(now()))-24*60*60),
+	'dt2'=>array('name'=>'Дата до', 'type'=>'date', 'default'=>now()),
+	'user'=>array('name'=>'Пользователь', 'type'=>'line'),
+	'code'=>array('name'=>'Код', 'type'=>'int'),
+    'max'=>['name'=>'Максимум записей', 'type'=>'int', 'default'=>100],
+	'send'=>array('type'=>'button', 'count'=>2, 1=>'Фильтровать', 2=>'Удалить', 'class'=>[2=>'btn-danger'], 'confirm'=>[2=>'Удалить записи лога? Восстановление невозможно!']),
+);
+
+w('request', $plan);
+w('form', $plan);
+
+$where = ' WHERE l.dt BETWEEN '.$plan['dt1']['value'].' AND '.($plan['dt2']['value']+24*60*60-1);
+
+if ($plan['type']['value']) {
+	$where.= ' AND l.type='.$plan['type']['value'];
+}
+
+if (strlen($plan['user']['value'])) {
+	if ($plan['user']['value'] == '0') {
+		$where.= ' AND l.user=0';
+	} else {
+		$where.= ' AND u.quick LIKE "%'.addslashes($plan['user']['value']).'%"';
+	}
+}
+
+if (strlen($plan['code']['value']) && $plan['code']['value']) {
+	$where.= ' AND l.code='.$plan['code']['value'];
+}
+
+if ($plan['send']['value'] == 2) {
+	$q = db_query('SELECT l.i FROM log l LEFT JOIN user u ON l.user=u.i'.$where);
+	$ids = db_fetch_array($q);
+	db_query('DELETE FROM log WHERE i IN ('.implode(',', $ids).')');
+}
+
+?>
+<table class="table table-bordered table-striped">
+<thead>
+	<tr>
+		<th>#</th>
+		<th>Дата</th>
+		<th>Тип</th>
+		<th>Пользователь</th>
+		<th>Код</th>
+		<th>Информация</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$count = 0;
+
+$q = db_query("SELECT l.dt dt, l.type type, l.user ui, l.code code, l.info info, u.name name FROM log l LEFT JOIN user u ON l.user=u.i".$where.' ORDER BY l.dt LIMIT '.$plan['max']['value']);
+while ($i = db_fetch($q)) {
+	$count++;
+	echo '
+<tr>
+	<td>'.$count.'</td>
+	<td>'.ft($i['dt'], 1).'</td>
+	<td>'.kv($type, $i['type']).'</td>
+	<td>'.$i['name'].'</td>
+	<td>'.$i['code'].'</td>
+	<td>'.$i['info'].'</td>
+</tr>';
+}
+db_close($q);
+
+?>
+</tbody>
+</table>
+<? w('calendar') ?>

@@ -1,0 +1,188 @@
+<section id="breadcrumb">
+	<div class="container">
+		<div class="row breadcrumbs with-steps">
+			<div class="col-1 col-md-1 col-lg-1">
+				<a href="/catalog" class="breadcrumbs_back">&nbsp;</a>
+			</div>
+			<div class="col-10 col-md-5 col-lg-3">
+				<ul class="breadcrumbs_links">
+					<li><a href="/">Главная</a></li>
+					<li><a href="/catalog">Каталог</a></li>
+				</ul>
+				<h1 class="title">Корзина</h1>
+			</div>
+			<div class="col-12 col-md-6 col-lg-4">
+<?
+
+$count = 0;
+$total1 = 0;
+$total2 = 0;
+
+w('basket');
+$basket = basket_calc(kv($_SESSION, 'basket', array()), kv($config, 'sale', ''));
+foreach ($basket as $i) {
+	$count+= $i['count'];
+	$total1+= $i['price1']*$i['count'];
+	$total2+= $i['price2']*$i['count'];
+}
+
+if ($count && $total2 < 500) {
+
+?>
+				<p class="basket_text1">В связи с тем, что сумма заказа <span>менее 500 руб.</span> — срок поставки может быть увеличен.</p>
+<?
+
+}
+
+?>
+			</div>
+			<div class="col-12 col-md-12 col-lg-4">
+				<ul class="basket_steps">
+					<li class="current" data-step="1">Состав заказа</li>
+					<li data-step="2">Контактные данные</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>
+
+<form method=POST class="auto">
+<section id="basket1">
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				
+				<div class="table-responsive">
+					<table class="basket_table">
+						<thead>
+							<tr>
+								<th>&nbsp;</th> 
+								<th>НАИМЕНОВАНИЕ</th> 
+								<th>ЦЕНА</th>
+								<th>КОЛ-ВО</th>
+								<th>СУММА</th>
+								<th>&nbsp;</th> 
+							</tr>
+						</thead>
+						<tbody>
+<?
+
+foreach ($basket as $i) {
+
+?>
+<tr>
+	<td>
+		<div class="basket_product">
+			<img src="<? echo $i['icon'] ?>">
+		</div>
+	</td>
+	<td>
+		<p class="basket_category"><a href="/catalog/<? echo $i['url2'] ?>"><? echo $i['name2'] ?></a></p>
+		<p class="basket_name"><a href="/store/<? echo $i['url'] ?>"><? echo $i['name'] ?></a></p>				
+	</td>
+	<td><? echo  number_format($i['price1'], 0, '.', ' ') ?> ₽</td>
+	<td>
+		<input type="hidden" name="i[]" value="<? echo $i['store'] ?>">
+		<div class="number">
+			<button type="button" class="minus">–</button>
+			<input type="number" name="c[]" class="basket_quantity auto2" value="<? echo $i['count'] ?>">
+			<button type="button" class="plus">+</button>
+		</div>
+	</td>
+	<td>
+<? if ($i['price1'] > $i['price2']) { ?>
+		<div class="price_old"><? echo number_format($i['price1']*$i['count'], 0, '.', ' ') ?> ₽</div>
+<? } ?>
+		<div class="price_new"><? echo number_format($i['price2']*$i['count'], 0, '.', ' ') ?> ₽</div>
+	</td>
+	<td>
+		<button type="button" class="basket_deletebtn buyx" data-i=<? echo $i['store'] ?>><span>×</span></button>
+	</td>
+</tr>
+<?
+
+}
+
+?>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="basket_summary">
+					<a href="/basket/save" class="basket_links save d-none d-lg-block">Сохранить</a>
+					<a href="/basket/load" class="basket_links upload d-none d-lg-block">Загрузить</a>
+					<a href="/basket/print" class="basket_links print d-none d-lg-block">Распечатать</a>
+					<div class="basket_discontform">
+						<input name="sale" type="text" name="" placeholder="Есть промокод?" value="<? echo kv($_SESSION, 'sale', '') ?>">
+						<button type="submit" name="calc">Пересчитать</button>
+					</div>
+					<div class="basket_total">Итого: <span><? echo $total2 ?> ₽</span><?
+
+if ($total1 > $total2) {
+	echo '<sub>'.number_format($total1, 0, '.', ' ').' ₽</sub>';
+}
+					?></div>
+<? if ($count) { ?>
+					<button type="submit" name="next" class="basket_btnnext">Дальше</button>
+<? } else { ?>
+					<button type="button" name="next" class="btn basket_btnnext disabled">Дальше</button>
+<? } ?>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+<?
+
+if (is_user('manager') /*|| kv($config, 'DEBUG', 0)*/) {
+
+?>
+	<div class="full-width basket_store">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					
+					<form class="basket_form" action="" method="POST">
+						<label class="basket_label ddl">
+							<p class="basket_text2">Склад</p>
+							<select name="" id="">
+								<option value="">Выберите склад</option>
+								<option value="">Выберите склад</option>
+								<option value="">Выберите склад</option>
+								<option value="">Выберите склад</option>
+							</select>
+						</label>
+						<label class="basket_label">
+							<p class="basket_text2">Комментарий</p>
+							<input type="text" placeholder="Ваш комментарий">
+						</label>
+						<button type="?">Заказать</button>
+						<button type="?" class="bg1">Приходная накладная</button>
+						<button type="?" class="bg2">Расходная накладная</button>
+						<!-- <div class="basket_documents">
+							<label>
+								<input type="radio" name="document" value="Приходная" checked>
+								<p class="basket_doctext1">Приходная</p>
+							</label>
+							<p class="basket_text3 node"> | </p>					
+							<label>
+								<input type="radio" name="document" value="Расходная">
+								<p class="basket_doctext1">Расходная</p>
+							</label>
+							<p class="basket_text3">накладная</p>					
+						</div> -->
+					</form>
+
+				</div>
+			</div>
+		</div>
+	</div>
+<?
+
+}
+
+?>
+</section>
+<input type="hidden" name="calc">
+</form>

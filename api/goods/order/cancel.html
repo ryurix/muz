@@ -1,0 +1,35 @@
+<?php
+
+$user = $exts['user'];
+
+$data = $args['data'];
+$shipments = $data['shipments'];
+
+foreach ($shipments as $shipment) {
+	$q = db_query('SELECT i,state,vendor,store,count,name FROM orst WHERE mpi="'.addslashes($shipment['shipmentId']).'"');
+    $orst = db_fetch_all($q, 'i');
+
+    w('log');
+    foreach ($orst as $k=>$v) {
+        logs(235, $k);
+        db_update('orst', ['state'=>35], ['i'=>$k]);
+        $data = array(
+            'orst'=>$k,
+            'old'=>$v['state'],
+            'new'=>35,
+            'vendor'=>$v['vendor'],
+            'store'=>$v['store'],
+            'count'=>$v['count'],
+            'name'=>'товара ('.$v['name'].')',
+        );
+        w('order-update-state', $data);
+    }
+}
+
+echo json_encode(
+	[
+		'success'=>1,
+		'meta'=>new Class() {},
+		'data'=>new Class() {},
+	]
+);

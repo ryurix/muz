@@ -1,0 +1,117 @@
+<?
+
+$vendor = 19;
+$region = 1; // 55;
+
+$yandex = 0;
+$store = 0;
+$sync = 0;
+
+$q = 'SELECT e.yandex,e.i store,0 sync FROM store e'
+.' WHERE e.yandex>0 AND NOT EXISTS (SELECT * FROM sync WHERE store=e.i AND vendor='.$vendor.') LIMIT 1';
+
+$i = db_fetch(db_query($q));
+if (is_array($i)) {
+	$yandex = $i['yandex'];
+	$store = $i['store'];
+//	print_pre($i);
+} else {
+	$q = 'SELECT e.yandex,e.i store,c.i sync FROM store e,sync c'
+.' WHERE c.vendor='.$vendor.' AND e.i=c.store ORDER BY c.dt LIMIT 1';
+
+	$i = db_fetch(db_query($q));
+	if (is_array($i)) {
+		$yandex = $i['yandex'];
+		$store = $i['store'];
+		$sync = $i['sync'];
+//		print_pre($i);
+	} else {
+		return;
+	}
+}
+
+$data = cache_load('yandex-market');
+
+//$q = 'https://api.partner.market.yandex.ru/v2/regions.xml?name=55&oauth_token='.$data['token'].'&oauth_client_id='.$data['id'].'&oauth_login='.$data['user'];
+
+//print_pre($q);
+
+function postKeys($url, $args, $headers, $post = 0) {
+	$post_arr=array();
+	foreach ($args as $key=>$value) {
+		$post_arr[]=$key."=".$value;
+	}
+	$data=implode('&',$post_arr);
+
+	$handle=curl_init();
+	curl_setopt($handle, CURLOPT_URL, $url.($post ? '' :'?'.$data));
+	curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, false);
+
+	curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+	if ($post) {
+		curl_setopt($handle, CURLOPT_POST, true);
+		curl_setopt($handle, CURLOPT_POSTFIELDS, $data);
+	}
+	$response=curl_exec($handle);
+	$code=curl_getinfo($handle, CURLINFO_HTTP_CODE);
+	curl_close($handle);
+	return array("code"=>$code,"response"=>$response);
+}
+
+//$url = 'https://api.partner.market.yandex.ru/v2/regions.json';
+
+$url = 'https://api.partner.market.yandex.ru/v2/models/'.$yandex.'/offers.json';
+$f = postKeys($url, array(
+	'regionId'=>$region,
+//	'name'=>'Тюмень',
+	'oauth_token'=>$data['token'],
+	'oauth_client_id'=>$data['id'],
+	'oauth_login'=>$data['user'],
+), array('Content-type: application/x-www-form-urlencoded'));
+
+//$f['response'] = htmlspecialchars($f['response']);
+$f['response'] = json_decode($f["response"],true);
+
+$min = 0;
+$shop = '';
+
+if ($f['code'] == 200) {
+	if (isset($f['response']['models'][0]['offers'])) {
+		$offers = $f['response']['models'][0]['offers'];
+		if (is_array($offers) && count($offers)) {
+			foreach ($offers as $i) {
+				if ($i['shopName'] != 'Музмарт') { //  && $i['inStock']
+					$price = $i['price'] + (isset($i['shippingCost']) ? $i['shippingCost'] : 0);
+					if ($i['price'] < $min || $min == 0) {
+						$min = $i['price'];
+						$shop = $i['shopName'];
+					}
+				}
+			}
+//			$info = 'min: '.$min.' '.$shop;
+//			print_pre($info);
+		}
+	}
+}
+
+$data = array(
+	'name'=>$shop,
+	'dt'=>now(),
+	'store'=>$store,
+	'vendor'=>$vendor,
+	'price'=>$min,
+//	'count'=>$min > 0 ? 1 : 0,
+	'count'=>0,
+);
+
+if ($sync) {
+	db_update('sync', $data, array('i'=>$sync));
+} else {
+	db_insert('sync', $data);
+}
+
+//print_pre($f);
+
+?>

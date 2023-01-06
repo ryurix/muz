@@ -1,0 +1,131 @@
+<? set_time_limit(0); ?>
+
+<?
+
+// catalog icons
+
+$pre = rtrim($config['exf'], '/');
+//print_pre($pre);
+
+w('pic');
+
+$q = db_query("SELECT * FROM catalog");
+while ($i = db_fetch($q)) {
+//*
+	$pic = $pre.$i['icon'];
+
+	$dir = $config['root'].'files/catalog';
+	$new = $config['root'].substr($i['icon'], 1);
+
+	if (is_file($pic) && !is_file($new)) {
+print_pre($pic);
+		$f = pic_load($pic);
+		if ($f) {
+			$f = pic_into($f, 128, 128);
+
+//print_pre($i['i']);
+
+			pic_jpeg($f, $new, 90);
+		}
+	}
+//*/
+}
+db_close($q);
+
+?>
+
+<?
+
+// store icons
+
+set_time_limit(0);
+
+
+$pre = rtrim($config['exf'], '/');
+
+//*
+w('pic');
+
+$q = db_query("SELECT * FROM store");
+while ($i = db_fetch($q)) {
+//*
+	$pic = $i['pic'];
+
+	$dir = $config['root'].'files/store/'.$i['i'];
+
+
+	if (is_file($pre.$pic) && !is_dir($dir)) {
+
+		$link = 'http://muzmarket.pro'.$pic;
+		print_pre($link);
+		
+
+		$f = pic_load($pre.$pic);
+
+		if ($f) {
+			mkdir($dir);
+			$f = pic_into($f, 260, 260);
+
+//print_pre($i['i']);
+
+			pic_jpeg($f, $config['root'].substr($i['icon'], 1), 90);
+		}
+
+//		break;
+	}
+//*/
+}
+db_close($q);
+//*/
+?>
+
+<?
+
+// store pictures
+
+w('pic');
+
+$conf = array(
+	'pre'=>rtrim($config['exf'], '/'),
+	'new'=>rtrim($config['root'],'/'),
+);
+
+function pic_convert($pic, $conf) {
+	$new = $conf['new'].$pic;
+	$pic = $conf['pre'].$pic;
+
+	if (is_file($pic) && !is_file($new)) {
+print_pre($pic);
+		$f = pic_load($pic);
+		$f = pic_into($f, 600, 600);
+		if (!file_exists(dirname($new))) { mkdir(dirname($new)); }
+		pic_jpeg($f, $new, 90);
+		return 1;
+	}
+	return 0;
+}
+
+$count = 0;
+
+$q = db_query('SELECT * FROM store');
+while ($row = db_fetch($q)) {
+//*
+	if (!strlen($row['pic'])) {
+		continue;
+	}
+	if (pic_convert($row['pic'], $conf)) {
+		$count++;
+	}
+
+	if (strlen($row['pics']) > 0) {
+		$pics = php_decode($row['pics']);
+		foreach ($pics as $i) {
+			$count+= pic_convert($i['href'], $conf);
+		}
+	}
+//*/
+}
+
+echo '<p>Обработано картинок: '.$count.'</p>';
+
+?>

@@ -1,0 +1,90 @@
+<?
+
+$plan = $config['plan'];
+
+$doc = $plan['doc']['value'];
+if ($doc) {
+	$name = $plan['doc']['values'][$doc];
+
+	$keys = cache_load('keys');
+	$key = $keys['doc'.$doc];
+
+	if ($key) {
+		$plan['send']['suffix'] = '&nbsp;<button class="btn btn-default" name="del" value="'.$key.'"'
+.' onclick="return confirm(\'Удалить '.$name.' № '.$key.'? Восстановление невозможно!\')">'
+.'Удалить '.$name.' № '.$key.'</button>';
+	}
+}
+unset($plan['del']);
+
+echo '<p>';
+w('form', $plan);
+echo '</p>';
+
+/*
+$keys = cache_load('keys');
+print_pre($keys);
+*/
+
+w('pager');
+
+$where = $plan['doc']['value'] ? ' WHERE docs.type='.$plan['doc']['value'] : '';
+
+$select = 'SELECT docs.i i'
+.',docs.name name'
+.',docs.num num'
+.',docs.dt dt'
+.',docs.type type'
+.',docs.staff staff'
+.',u.name staff_name'
+.',docs.user user'
+.',u2.name user_name'
+.',docs.total total'
+.' FROM docs LEFT JOIN user u ON docs.staff=u.i LEFT JOIN user u2 ON docs.user=u2.i '.$where.' ORDER BY docs.i DESC';
+
+w('pager');
+$q = pager_query($select, 100);
+echo pager_block('?'.($plan['doc']['value'] ? 'doc='.$plan['doc']['value'].'&' : ''));
+
+w('ft');
+
+?>
+<table class="table" id="orst">
+<thead>
+	<tr>
+		<th>Номер</th>
+		<th>Дата</th>
+		<th>Тип документа</th>
+		<th>Менеджер</th>
+		<th>Пользователь</th>
+		<th class="text-right">Сумма</th>
+		<th></th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+while ($i = db_fetch($q)) {
+	echo '<tr>'
+.'<td><a href="/doc/'.$i['i'].'">'.$i['num'].'</a></td>'
+.'<td><a href="/doc/'.$i['i'].'">'.ft($i['dt'], 1).'</a></td>'
+.'<td><a href="/doc?doc='.$i['type'].'">'
+.(isset($plan['doc']['values'][$i['type']]) ? $plan['doc']['values'][$i['type']] : '')
+.'</a></td>'
+.'<td>'.$i['staff_name'].'</td>'
+.'<td><a href="/user/'.$i['user'].'">'.$i['user_name'].'</a></td>'
+.'<td class="text-right" nowrap>'.number_format($i['total'], 2, '.', ' ').'</td>'
+.'<td>'.($plan['doc']['value'] ? '<a href="/doc?del='.$i['i'].'" value="'.$i['i'].'"'
+.' onclick="return confirm(\'Удалить '.$i['name'].'? Восстановление невозможно!\')">'
+.'<i class="fa fa-times"></i></a>' : '').'</td>'
+.'</tr>';
+}
+
+?>
+</tbody>
+</table>
+<?
+
+echo pager_block('?'.($plan['doc']['value'] ? 'doc='.$plan['doc']['value'].'&' : ''));
+
+?>

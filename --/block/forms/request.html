@@ -1,0 +1,37 @@
+<?
+
+/*
+ *	Copyright flydom.ru
+ *	Version 2016-03-09
+ */
+
+$default = isset($args['']['default']) ? $args['']['default'] : array();
+
+$all_valid = TRUE;
+foreach (array_keys($args) as $k) {
+	if (strlen($k) == 0) {continue;}
+
+	$v = &$args[$k];
+	$v['code'] = $k;
+
+	if (isset($default[$k])) {
+		$v['default'] = $default[$k];
+	}
+
+	if (isset($v['readonly']) && $v['readonly']) {
+		$v['value'] = isset($v['default']) ? $v['default'] : '';
+		$v['valid'] = 1;
+	} else {
+		if (isset($_REQUEST[$k])) {
+			$v['value'] = $_REQUEST[$k];
+		}
+		w('input-'.$v['type']);
+		call_user_func_array('parse_'.$v['type'], array(&$v));
+	}
+
+	$all_valid = $all_valid && $v['valid'];
+}
+
+$args['']['valid'] = $all_valid;
+
+$back = $args;

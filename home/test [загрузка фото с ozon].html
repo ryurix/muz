@@ -1,0 +1,89 @@
+<?
+
+
+set_time_limit(0);
+
+function load_body($id) {
+	$url = 'https://www.ozon.ru/context/detail/id/'.$id.'/';
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+//	curl_setopt($ch, CURLOPT_POST, 1);
+//	curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	$result = curl_exec($ch);
+	curl_close($ch);
+	return $result;
+}
+
+//*
+$file = $config['root'].'products.xls';
+
+w('xlsread');
+$data = new Spreadsheet_Excel_Reader();
+$data->setOutputEncoding('UTF-8');
+$data->read($file);
+
+$ids = array();
+foreach ($data->sheets[0]['cells'] as $i) {
+	$ids[$i[1]] = array($i[3], $i[4]);
+}
+unset($data);
+gc_collect_cycles();
+
+array_shift($ids);
+
+//*/
+
+//$ids = array('М131214'=>'176433931');
+
+//print_pre($ids);
+
+// {"sku":167567946,"coverImage":
+
+foreach ($ids as $m=>$i) {
+
+	$filename = $config['root'].'files/ozon/'.iconv('UTF-8', 'Windows-1251', $m).'.jpg';
+	if (file_exists($filename)) {
+		continue;
+	}
+
+	$body = load_body($i[0]);
+
+//	print_pre(htmlentities($body));
+
+	$start = mb_strpos($body, '{"sku":'.$i[0].',"coverImage":');
+
+	if (!$start) {
+		$start = mb_strpos($body, '{"sku":'.$i[1].',"coverImage":');
+	}
+
+	if (!$start) {
+		alert('Товар '.$m.' / '.$i[0].' не найден!');
+		continue;
+	}
+
+	$end = mb_strpos($body, '}', $start);
+	$code = mb_substr($body, $start, $end-$start+1);
+
+	$data = json_decode($code, true);
+
+	$count = 0;
+	if (isset($data['images'])) {
+		foreach ($data['images'] as $image) {
+			$count++;
+			$dest = $config['root'].'files/ozon/'.iconv('UTF-8', 'Windows-1251', $m).($count > 1 ? '_'.$count : '').'.jpg';
+			if (!file_exists($dest)) {
+				copy($image, $dest);
+			}
+		}
+	}
+
+//	break;
+}
+
+w('alert');
+
+?>

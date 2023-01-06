@@ -1,0 +1,23 @@
+<?
+
+$region = cache_load('region');
+
+$back = array(
+	'' => array('method' => 'POST'),
+	'name' => array('name'=>'Название', 'type'=>'line'),
+	'region'=>array('name'=>'Регион', 'type'=>'combo', 'values'=>$region),
+	'hide' => array('name'=>'Скрыть *', 'type'=>'checkbox'),
+	'w' => array('name'=>'Вес', 'type'=>'int'),
+	'phone'=>array('name'=>'Телефон', 'type'=>'line'),
+	'mail'=>array('name'=>'Электронная почта', 'type'=>'line'),
+	'adres'=>array('name'=>'Адрес', 'type'=>'rich'),
+	'sign'=> array('name'=>'Адрес в документах', 'type'=>'line'),
+	'send' => array('name'=>'', 'type'=>'button', 'count'=>1, 1=>'Отправить'),
+	'site'=>array('name'=>'Домен', 'type'=>'line'),
+	'head'=>array('name'=>'Теги', 'type'=>'line'),
+	'robots'=>array('name'=>'robots.txt', 'type'=>'text'),
+	'metrics'=>array('name'=>'Метрики', 'type'=>'text'),
+	'metrico'=>array('name'=>'Метрики', 'help'=>'только для покупателей', 'type'=>'text'),
+);
+
+?>

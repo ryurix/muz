@@ -1,0 +1,201 @@
+<?
+
+function shift_month($dt, $shift) {
+	$month = date('n', $dt);
+	$year = date('Y', $dt);
+
+	return mktime(0, 0, 0, $month + $shift, 1, $year);
+}
+
+function a_link($i, $code, $list, $plan) {
+	$staff = '';
+	if (count($plan['staff']['value'])) {
+		$staff = 'staff--=&staff%5B%5D='.implode('&staff%5B%5D=', $plan['staff']['value']).'&';
+	}
+
+	global $config;
+	return '<a href="'.$config['q'].'?'
+	.(isset($_REQUEST['month']) ? 'month='.$_REQUEST['month'].'&' : '')
+	.(isset($_REQUEST['pay']) && $code != 'pay' ? 'pay='.$_REQUEST['pay'].'&' : '')
+	.(isset($_REQUEST['state']) && $code != 'state' ? 'state='.$_REQUEST['state'].'&' : '')
+	.$staff.$code.'='.$i.'">'.$list[$i].'</a>';
+}
+
+
+$now = now();
+/*
+$months = array();
+w('ft');
+
+for($i=-6; $i<=0; $i++) {
+	$dt = shift_month($now, $i);
+	$months[$dt] = ft_month(date('n', $dt)).date(' Y', $dt);
+}
+
+$months[0] = 'Незавершенные заказы';
+$months = array_reverse($months, true);
+*/
+
+$dt1 = shift_month($now, 0);
+$dt2 = shift_month($now, 1);
+$staff = array(0=>'') + cache_load('staff');
+$ups = w('catalog-all');
+$mark = array(0=>'Нет меток') + cache_load('mark-name');
+
+$plan = array(
+	'' => array('method' => 'GET'),
+	'finish'=>array('name'=>'', 'label'=>'Незавершенные заказы', 'type'=>'checkbox'),
+//	'month' => array('name'=>'Месяц', 'type'=>'combo', 'values'=>$months, 'value'=>shift_month($now, 0), 'width'=>300),
+	'dt1'=>array('name'=>'Начало периода', 'type'=>'date', 'default'=>$dt1),
+	'dt2'=>array('name'=>'Конец периода', 'type'=>'date', 'default'=>$dt2),
+	'staff'=>array('name'=>'Менеджер', 'type'=>'multich', 'values'=>$staff, 'placeholder'=>'Выберите менеджеров...', 'width'=>400),
+	'mark'=>array('name'=>'Метки', 'type'=>'multich', 'values'=>$mark, 'width'=>400, 'placeholder'=>'Выберите метки...'),
+	'up'=>array('name'=>'Раздел', 'type'=>'combo2', 'values'=>$ups, 'width'=>400, 'placeholder'=>'Фильтр по разделу'),
+	'send' => array('name'=>'', 'type'=>'button', 'count'=>1, 1=>'Формировать', 'class'=>'btn-default'),
+);
+
+w('request', $plan);
+w('form', $plan);
+
+w('table');
+
+?>
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<td class="text-right">#</td>
+<td>Заказ</td>
+<td>Дата</td>
+<td class="text-right">Цена</td>
+<td class="text-right">Количество</td>
+<td class="text-right">Сумма</td>
+<td class="text-right">Оплачено</td>
+<td>Способ оплаты</td>
+<td>Статус заказа</td>
+<td>Метки</td>
+</tr>
+</thead>
+<tbody>
+<?
+
+$dt1 = $plan['dt1']['value'];
+$dt2 = $plan['dt2']['value'];
+
+$ch = cache_load('children-hide');
+
+w('clean');
+
+$select = 'SELECT orst.i i, orst.name name, orst.last dt, orst.money money, orst.pay pay, orst.money2 money2, orst.pay2 pay2'
+.',orst.price price, orst.count count, orst.state state, orst.money0 dost, orst.mark'
+.' FROM orst WHERE '
+.(isset($config['row']['i']) ? 'orst.staff='.$config['row']['i'] : '1')
+.(isset($_REQUEST['pay']) ? ' AND (orst.pay='.clean_09($_REQUEST['pay']).' OR orst.pay2='.clean_09($_REQUEST['pay']).')' : '')
+.(isset($_REQUEST['state']) ? ' AND orst.state='.clean_09($_REQUEST['state']) : '')
+.(isset($_REQUEST['up']) && strlen($_REQUEST['up']) ? ' AND EXISTS (SELECT 1 FROM store WHERE i=orst.store AND up IN ('.implode(',', $ch[clean_09($_REQUEST['up'])]).'))' : '')
+.(!$plan['finish']['value'] ? ' AND orst.last>='.$dt1.' AND orst.last<'.$dt2.' AND orst.state=30' : ' AND orst.state<30')
+.(count($plan['staff']['value']) ? ' AND orst.staff IN ('.implode(',', $plan['staff']['value']).')' : '');
+
+if (count($plan['mark']['value'])) {
+	$or = array();
+	foreach ($plan['mark']['value'] as $i) {
+		if ($i) {
+			$or[] = '(CONCAT(",",orst.mark,",") LIKE "%,'.$i.',%")';
+		} else {
+			$or[] = '(orst.mark="" OR orst.mark IS NULL)';			
+		}
+	}
+	$select.= ' AND ('.implode(' OR ', $or).')';
+}
+
+$select.= ' ORDER BY orst.last';
+
+$q = db_query($select);
+
+$state = w('order-state');
+$colors = w('order-state-color');
+$pays = w('list-pay');
+$pays = array(0=>'Неизвестно') + $pays;
+
+$mark_name = cache_load('mark-name');
+$mark_info = cache_load('mark-info');
+$mark_color = cache_load('mark-color');
+
+$marks = array();
+foreach ($mark_name as $k=>$v) {
+	$marks[$k] = '<span class="badge badge-'.kv($mark_color, $k).'" title="'.kv($mark_info, $k).'">'.$v.'</span>';
+}
+
+$num = 0;
+$total = 0;
+$paid = 0;
+$dost = 0;
+$dost2 = 0;
+$items = 0;
+$total_closed = 0;
+$money_closed = 0;
+$items_closed = 0;
+$closed = array();
+
+while ($i = db_fetch($q)) {
+	$num++;
+	$price = $i['price'];
+	$count = $i['count'];
+	$summa = $price * $count;
+	$money = $i['money'];
+	$pay = $i['pay'];
+	$money2 = $i['money2'];
+	$pay2 = $i['pay2'];
+	if ($i['dost'] > 0) {
+		$dost+= $i['dost'];
+	} else {
+		$dost2-= $i['dost'];
+	}
+	echo '<tr'.($colors[$i['state']] == '' ? '' : ' class='.$colors[$i['state']]).'>';
+	echo '<td class="text-right">'.$num.'</td>';
+	echo '<td><a href="/order/'.$i['i'].'">'.$i['name'].'</td>';
+	echo '<td>'.ft($i['dt']).'</td>';
+	echo '<td class="text-right" nowrap>'.number_format($price, 0, '.', ' ').'</td>';
+	echo '<td class="text-right" nowrap>'.$count.'</td>';
+	echo '<td class="text-right" nowrap>'.number_format($summa, 0, '.', ' ').'</td>';
+	echo '<td class="text-right" nowrap>'.($money ? number_format($money, 0, '.', ' '):'').($money && $money2 ? '<br>':'').($money2 ? number_format($money2, 0, '.', ' '):'').'</td>';
+	echo '<td>'.($money? a_link($pay, 'pay', $pays, $plan) : '').($money && $money2 ? '<br>':'').($money2 ? a_link($pay2, 'pay', $pays, $plan) :'').'</td>';
+	echo '<td>'.a_link($i['state'], 'state', $state, $plan).'</td>';
+	echo '<td>';
+	$mark = explode(',', trim($i['mark'], ','));
+	foreach ($mark as $j) {
+		if (isset($marks[$j])) {
+			echo $marks[$j].' ';
+		}
+	}
+	echo '</td></tr>';
+	$total+= $summa;
+	$paid+= $money + $money2;
+	$items+= $count;
+
+	if (isset($closed[$pay])) { $closed[$pay]+= $money; } else { $closed[$pay] = $money; }
+	if (isset($closed[$pay2])) { $closed[$pay2]+= $money2; } else { $closed[$pay2] = $money2; }
+}
+
+echo '<tr><td>&nbsp;</td><td colspan=9>Заказано <b>'.$items.'</b> товаров на сумму: <b>'
+	.number_format($total, 0, '.', ' ').'</b></td></tr>';
+
+
+echo '<tr><td>&nbsp;</td><td colspan=9>Доставка на сумму <b>'.number_format($dost + $dost2, 0, '.', ' ').'</b> из них оплачено: <b>'
+	.number_format($dost, 0, '.', ' ').'</b></td></tr>';
+
+if ($paid) {
+	echo '<tr><td rowspan=5 colspan=2 class="text-right">Оплачено:<br><b>'.number_format($paid, 0, '.', ' ').'</b></td>';
+	$count = 0;
+	foreach ($pays as $k=>$v) {
+		if (isset($closed[$k]) && $closed[$k]) {
+			if ($count) { echo '<tr>'; }
+			echo '<td colspan=8>'.$v.': <b>'.number_format($closed[$k], 0, '.', ' ').'</b></td></tr>';
+			$count++;
+		}
+	}
+}
+
+?>
+</tbody>
+</table>
+<? w('calendar') ?>

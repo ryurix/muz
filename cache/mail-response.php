@@ -1,0 +1,1 @@
+<p><span><strong>Мы будем Вам очень благодарны если оставите отзыв о нас и о вашей покупке. Отзыв можете оставить, пройдя по этой</strong></span>&nbsp;<a href="http://market.yandex.ru/shop/300330/reviews" target="_blank">ссылке.</a></p>

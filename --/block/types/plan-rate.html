@@ -1,0 +1,21 @@
+<?
+
+$back = array(
+	'link'=>array('type'=>''),
+	'name'=>array('type'=>'line', 'name'=>'Имя', 'default'=>$_SESSION['name']),
+	'rate'=>array('type'=>'rate', 'name'=>'Оценка'),
+	'plus'=>array('type'=>'line', 'name'=>'Плюсы'),
+	'minus'=>array('type'=>'line', 'name'=>'Минусы'),
+	'body'=>array('type'=>'wiki', 'name'=>'Комментарий', 'columns'=>1, 'rows'=>3),
+	'info'=>array('type'=>'wiki', 'rows'=>1, 'prefix'=>'<div class="inv">', 'suffix'=>'</div>'),
+	'dt'=>array('type'=>'date', 'name'=>'Дата'),
+	'state'=>array('type'=>'checkbox2', 'label'=>'Проверено', 'default'=>1, 'checked'=>10),
+	'send'=>array('type'=>'button', 'count'=>1, 1=>'Отправить отзыв', 2=>'Удалить', 'confirm'=>array(2=>'Удалить отзыв? Восстановление невозможно!'), 'class'=>array(2=>'btn-outline-danger')),
+);
+
+if (!is_user('rate')) {
+	unset($back['dt']);
+	unset($back['state']);
+}
+
+?>

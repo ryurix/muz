@@ -1,0 +1,29 @@
+<div class="row">
+<?
+
+$q = db_query('SELECT * FROM pf');
+
+while ($i = db_fetch($q)) {
+	$img = php_decode($i['pics']);
+
+	if (!count($img)) {
+		$img = '/design/no-photo.png';
+	} else {
+		$keys = array_keys($img);
+		$img = $img[$keys[0]]['href'];
+	}
+
+	echo '
+<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+	<div class="card">
+		<a href="/portfolio/'.$i['i'].'"><img src="'.$img.'" class="card-img-top"></a>
+		<div class="card-body">
+			<h5>'.$i['name'].'</h5>
+			<a href="/portfolio/'.$i['i'].'" class="card-link">подробнее</a>
+		</div>
+	</div>
+</div>';
+
+}
+
+?>

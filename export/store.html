@@ -1,0 +1,51 @@
+<?
+
+$dt = isset($_REQUEST['dt']) ? $_REQUEST['dt'] : '';
+
+$pathway = cache_load('pathway');
+$ids = array_keys($pathway);
+
+$data = array();
+
+if ($dt != '') {
+	w('clean');
+
+	if (!is_number($dt)) {
+		w('ft');
+		$dt = ft_parse($dt);
+	}
+
+	$brand = cache_load('brand');
+
+	$q = db_query('SELECT i,up,brand,name,model,price2,count,short,info,pic FROM store WHERE price2>=500 AND count>0 AND up IN ('.implode(',', $ids).') AND dt>='.$dt);
+	while ($i = db_fetch($q)) {
+		$data[$i['i']] = array(
+			'up'=>$i['up'],
+			'brand'=>$brand[$i['brand']],
+			'name'=>$i['model'].' '.$i['name'],
+			'price'=>$i['price2'],
+			'count'=>$i['count'],
+			'short'=>$i['short'],
+			'info'=>$i['info'],
+			'pic'=>$i['pic'],
+		);
+	}
+
+} else {
+	$q = db_query('SELECT i,count,price2 FROM store WHERE price2>=500 AND count>0 AND up IN ('.implode(',', $ids).')');
+	while ($i = db_fetch($q)) {
+		$data[$i['i']] = array(
+//			'up'=>$i['up'],
+//			'name'=>$i['name'],
+			'price'=>$i['price2'],
+			'count'=>$i['count'],
+		);
+	}
+}
+
+
+
+
+echo json_encode($data);
+
+?>

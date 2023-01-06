@@ -1,0 +1,74 @@
+<?php
+
+$per = 500;
+
+$args = [
+	'price'=>0,
+	'force'=>100,
+];
+
+	$select = 'SELECT wb.*,store.price s_price FROM wb LEFT JOIN store ON wb.store=store.i';
+	if (kv($args, 'price', 0)) { $select.= ' AND store.price >= '.$args['price']; }
+	$store = db_fetch_all($select, 'store');
+
+	print_pre($select);
+
+	$force = kv($args, 'force', 0);
+	$rows = [];
+	$updates = [];
+
+	$now = now();
+
+	foreach ($store as $i) {
+		print_pre($now.' - '.$i['dt'].' = '.($now - $i['dt']));
+		if (14*24*60*60 > ($now - $i['dt'])) {
+			continue;
+		}
+
+		$upd = $force == 100;
+
+		if (is_null($i['s_price'])) {
+			$i['s_price'] = $i['price'];
+		}
+
+		if ($i['price'] != $i['s_price']) {
+			$upd = true;
+
+			$updates[$i['chrt']] = [
+				'price'=>is_null($i['s_price']) ? 0 : $i['s_price']
+			];
+		}
+
+		if ($upd) {
+			$rows[$i['chrt']] = [
+				'nmId'=>(int) $i['i'],
+				'price'=>(int) $i['s_price'],
+			];
+		}
+	}
+
+	$back = '';
+	$updated = 0;
+
+	if (count($rows)) {
+		$url = 'https://suppliers-api.wildberries.ru/public/api/v1/prices';
+
+		$page = 0;
+
+		while ($page*$per < count($rows)) {
+			$post = array_slice($rows, $page*$per, $per, true);
+			$page++;
+
+			print_pre($post);
+		}
+	}
+
+	if ($updated) {
+		$back = 'Обновлено&nbsp;'.$updated.' '.$back;
+	}
+
+	$back = trim($back);
+
+
+	print_pre(count($rows));
+	print_pre($back);

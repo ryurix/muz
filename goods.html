@@ -1,0 +1,35 @@
+<?
+
+$user = $config['args'][0] ?? 0;
+$goods = $goods[$user] ?? [];
+$goods['user'] = $user;
+
+/*
+if (!kv($config, 'DEBUG', 0)) {
+	$headers = apache_request_headers();
+	$basic = substr($headers['Authorization'] ?? '', 6);
+	if ($basic != kv($goods, 'basic', '')) {
+		http_response_code(403);
+		exit;
+	}
+}
+*/
+
+header('Content-Type: application/json');
+
+$args = file_get_contents('php://input');
+
+$json = json_decode($args, true);
+
+$log = kv(end($menu), 'log', 0);
+
+if ($log) {
+	w('log');
+    $headers = apache_request_headers();
+	if (isset($headers)) {
+		$args.= ' '.php_encode($headers);
+	}
+	logs($log, 0, $args); // .' '.php_encode($headers)
+}
+
+w('body', $json, $goods);

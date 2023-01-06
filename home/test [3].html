@@ -1,0 +1,34 @@
+<?php
+
+w('autoload');
+\Marketplace\Sber::cron();
+
+/*
+
+function cron_confirm($token, $shipmentId, $orderCode, $offers) {
+	db_insert('send_sber', [
+		'dt'=>now(),
+		'state'=>0,
+		'typ'=>1,
+		'data'=> array_encode([
+			'token'=>$token,
+			'shipmentId'=>$shipmentId,
+			'orderCode'=>$orderCode,
+			'offers'=>$offers,
+		]),
+	]);
+}
+
+cron_confirm(
+	'054A8EF8-AC89-4114-B4B4-381B31400221',
+	'902296640',
+	85425,
+	[
+		[
+			'itemIndex'=>1,
+			'offerId'=>7657,
+		]
+	],
+);
+
+//*/

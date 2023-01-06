@@ -1,0 +1,90 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+foreach ($html->find('td[class="tovname"] a') as $row) {
+	$href = $row->href;
+	if (substr($href, 0, 5) == '/info') {
+		$hrefs[] = 'http://dynatone.ru'.$href;
+	}
+}
+
+$hrefs = array_unique($hrefs);
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+
+	if (isset($html) && is_object($html)) {
+		$html->clear;
+		unset($html);
+	}
+	set_time_limit(0);
+
+	$html = file_get_html_1251($href);
+
+	$tables = $html->find('table');
+	foreach ($tables as $table) {
+		if ($table->width == '95%') {
+			break;
+		}
+		$table = null;
+	}
+
+	$name = $html->find('span[class="bk_name"]', 0)->innertext;
+	$model = '';
+	$brand = '';
+
+	$price = clean_09($html->find('span[bk_param="bk_price"]', 0)->innertext);
+
+	if ($table == null) { continue; }
+	$html = $table;
+
+	$pic = $html->find('img', 0);
+
+	$short = $pic->alt;
+	$pic = 'http://dynatone.ru'.$pic->src;
+	$pics = array();
+	$files = array();
+
+	$info = '';
+	foreach ($html->find('ul') as $div) {
+		$info.= '<ul>'.$div->innertext.'</ul>';
+	}
+	foreach ($html->find('p') as $div) {
+		$info.= '<p>'.$div->innertext.'</p>';
+	}
+
+	$info = preg_replace('@<div[^>]*>@si', '<p>', $info);
+	$info = str_replace('</div>', '</p>', $info);
+	$info = str_replace(array("\n", "\r", "\t"), '', $info);
+	$info = str_replace('  ', ' ', $info);
+	$info = str_replace('src="/', 'src="http://dynatone.ru/', $info);
+
+	$info = preg_replace(array(
+		'@<p>[\\s]*</p>@si',
+		'@<br[/]*>@si',
+		'@<iframe[^>]*>@si',
+		'@<script[^>]*?>.*?</script>@si',
+		'@<!--.+?-->@s',
+	), '', $info);
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>$name,
+		'model'=>$model,
+		'short'=>$short,
+		'pic'=>$pic,
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+//*/
+}
+
+?>

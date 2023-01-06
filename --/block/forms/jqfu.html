@@ -1,0 +1,61 @@
+<p>
+<?
+
+$script = '';
+$url = '/upload';
+
+if (is_array($args)) {
+	if (isset($args['prefix'])) {
+		echo $args['prefix'];
+	}
+	if (isset($args['script'])) {
+		$script = $args['script'];
+	}
+	if (isset($args['url'])) {
+		$url = '/store/upload';
+	}
+}
+
+?>
+<span class="btn btn-info fileinput-button">
+	<i class="icon-plus icon-white"></i>
+	<span>Добавить файлы...</span>
+	<input id="fileupload" type="file" name="files[]" multiple="true" min="1" max="99">
+</span>
+</p>
+
+<div id="progress" class="progress progress-success progress-striped">
+	<div class="bar"></div>
+</div>
+
+<div id="files">
+<? //<a href="#"><i class="icon-file"></i></a> ?>
+</div>
+
+<script src="/design/jquery.ui.widget.js"></script>
+<script src="/design/jquery.iframe-transport.js"></script>
+<script src="/design/jquery.fileupload.js"></script>
+<script>
+$(function () {
+	'use strict';
+    $('#fileupload').fileupload({
+        url: '<? echo $url ?>',
+        dataType: 'json',
+        done: function (e, data) {
+			$('#progress .bar').css('width', '100%');
+            $.each(data.result, function (index, file) {
+                $(file).appendTo('#files');
+            });
+        },
+        progressall: function (e, data) {
+            //var progress = parseInt(data.loaded / data.total * 100, 10);
+            //$('#progress .bar').css('width', progress + '%');
+			$('#progress .bar').css('width', '50%');
+        }
+	}).click(function(){
+		$('#progress .bar').css('width', '0%');
+	}).prop('disabled', !$.support.fileInput)
+        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+<? echo $script ?>
+});
+</script>

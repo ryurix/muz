@@ -1,0 +1,78 @@
+<section id="breadcrumb">
+	<div class="container">
+		<div class="row breadcrumbs with-steps">
+			<div class="col-1 col-md-1 col-lg-1">
+				<a href="/basket" class="breadcrumbs_back">&nbsp;</a>
+			</div>
+			<div class="col-10 col-md-5 col-lg-3">
+				<ul class="breadcrumbs_links">
+					<li><a href="/">Главная</a></li>
+					<li><a href="/catalog">Каталог</a></li>
+				</ul>
+				<h1 class="title">Корзина</h1>
+			</div>
+			<div class="col-12 col-md-6 col-lg-4">
+<?
+
+if ($config['total'] < 500) {
+
+?>
+				<p class="basket_text1">В связи с тем, что сумма заказа <span>менее 500 руб.</span> — срок поставки может быть увеличен.</p>
+<?
+
+}
+
+?>
+			</div>
+			<div class="col-12 col-md-12 col-lg-4">
+				<ul class="basket_steps">
+					<li data-step="1">Состав заказа</li>
+					<li class="current" data-step="2">Контактные данные</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>
+
+<?
+
+$plan = $config['plan'];
+
+if ($plan['send']['value'] == 1) {
+	w('invalid', $plan);
+}
+
+//print_pre($_REQUEST);
+
+?>
+<section id="basket2">
+	<form method="POST" id="basket2_form">
+	<div class="container">
+		<div class="row">
+			<? w('form-user', $plan) ?>
+			<div class="col-12 col-sm-12 col-md-12 col-lg">
+				<div class="basket_cont31">
+					<div class="basket_gradient">						
+						<p class="basket_text5">Итого к оплате:</p>
+						<p class="basket_totalprice"><? echo number_format($config['total'], 0, '.', ' ') ?> ₽</p>
+						<p class="basket_text6">Не включает доставку!</p>
+					</div>
+					<ul class="basket_pricedelivery">
+						<li>Корзина —</li>
+						<li><span><? echo number_format($config['total'], 0, '.', ' ') ?> ₽</span></li>
+<? /*
+						<li>Доставка —</li>
+						<li><span><sup>~</sup><? echo number_format($config['dost'], 0, '.', ' ') ?> руб.</span></li>
+*/ ?>
+					</ul>
+					<button type="submit" name="send1" class="basket_btnaplly">Заказ подтверждаю</button>
+					<p class="basket_text7">Нажимая кнопку "Заказ подтверждаю", Я подтверждаю свою дееспособность, согласие на получение информации об оформлении и получении заказа, <a href="/obrabotka-dannyh">согласие на обработку персональных данных</a>.</p>
+					<p class="basket_text7">Также подтверждаю что ознакомлен и согласен с условиями <a href="/dogovoroferti">Публичной оферты</a>.</p>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	</form>
+</section>

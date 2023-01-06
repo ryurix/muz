@@ -1,0 +1,11 @@
+<?
+
+$q = db_query("SELECT * FROM region ORDER BY w,name");
+
+$region = array();
+while ($i = db_fetch($q)) {
+	$region[$i['i']] = $i['name'];
+}
+cache_save('region', $region);
+
+?>

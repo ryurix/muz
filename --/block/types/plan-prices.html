@@ -1,0 +1,46 @@
+<?
+
+$groups = cache_load('groups');
+$brands = cache_load('brand');
+$brands[0] = '[не указан]';
+$vendors = array(-1=>'Любой') + cache_load('vendor');
+$ups = w('catalog-all');
+$ups[0] = 'Любой';
+$counts = [
+	0=>'',
+	1=>'В наличии',
+	2=>'Отсутствует',
+];
+$prices = [
+	0=>'',
+	1=>'Поставщика',
+	2=>'Наличие Поставщика',
+	5=>'Оптовую',
+	11=>'Минимальную',
+	12=>'Среднюю',
+	13=>'Максимальную',
+
+	21=>'< Яндекса до оптовой',
+	22=>'= Яндекса до оптовой',
+	23=>'< Яндекса от розничной',
+	24=>'= Яндекса от розничной',
+
+	100=>'0 без синхронизации',
+	101=>'обнулить всё',
+];
+
+$back = [
+	''=>array('method'=>'POST'),
+	'code'=>array('name'=>'Номер', 'type'=>'int', 'width'=>100),
+	'up'=>array('name'=>'Каталог', 'type'=>'combo2', 'values'=>$ups),
+	'grp'=>array('name'=>'Группа', 'type'=>'multich', 'values'=>$groups, 'placeholder'=>'Любая', 'width'=>500),
+	'brand'=>array('name'=>'Производители', 'type'=>'multich', 'values'=>$brands, 'placeholder'=>'Любой', 'width'=>500),
+	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo2', 'values'=>$vendors),
+	'count'=>array('name'=>'Наличие', 'type'=>'combo', 'values'=>$counts),
+	'pmin'=>['name'=>'Мин. цена', 'type'=>'int', 'width'=>100],
+	'pmax'=>['name'=>'Макс. цена', 'type'=>'int', 'width'=>100],
+	'price'=>array('name'=>'Взять цену', 'type'=>'combo', 'values'=>$prices),
+	'sale'=>array('name'=>'Коррекция цены', 'type'=>'int', 'suffix'=>'%', 'width'=>100),
+	'days'=>array('name'=>'Дата синхронизации<br> не старше', 'type'=>'int', 'default'=>0, 'suffix'=>'дней', 'width'=>100),
+	'send'=>array('type'=>'button', 'count'=>1, 1=>'Сохранить', 2=>'Проверить', 3=>'Выполнить', 4=>'Удалить',  'class'=>array(1=>'btn-success', 2=>'btn-default', 3=>'btn-warning', 4=>'btn-danger')),
+];

@@ -1,0 +1,11 @@
+<?
+
+$q = db_query('SELECT * FROM user');
+$users = array();
+while ($i = db_fetch($q)) {
+	$users[$i['i']] = $i['name'];
+}
+
+cache_save('users', $users);
+
+?>

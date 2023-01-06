@@ -1,0 +1,51 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+foreach ($html->find('table[class=tovs] tr') as $row) {
+	if ($row->class != 'tbl_head') {
+		$hrefs[] = 'http://attrade.ru'.$row->find('td[class=cattext] a', 0)->href;
+	}
+}
+
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	unset($html);
+	$html = file_get_html_1251($href);
+	$html = $html->find('td[class=t] div[align=justify]', 0);
+
+	$info = '';
+	foreach ($html->find('div[class=catsm]') as $i) {
+		$p = '<p>'.$i->innertext.'</p>';
+		if (!isset($i->style)) {
+			$info.= "\n".$p;
+		}
+	}
+
+	$pic = $html->find('a[target=_blank] img', 0);
+	if (is_object($pic)) {
+		$pic = $pic->src;
+/*
+		$pos = strpos($pic, '=');
+		if ($pos) {
+			$pic = substr($pic, $pos + 1);
+		}
+*/
+	} else {
+		$pic = '';
+	}
+
+	$back[] = array(
+		'name'=>'',
+		'model'=>$html->find('h2', 0)->innertext,
+		'short'=>'',
+		'pic'=>strlen($pic) ? $pic : '', // 'http://attrade.ru'.$pic
+		'price'=>clean_09($html->find('div[class=catprice] b', 0)->innertext),
+		'info'=>$info,
+	);
+}
+
+?>

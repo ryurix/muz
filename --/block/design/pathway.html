@@ -1,0 +1,96 @@
+<?
+
+$steps = array('/'=>'<i class="fa fa-home"></i>');
+
+if (isset($config['breadcrumb'])) {
+	foreach ($config['breadcrumb'] as $k=>$v) {
+		$steps[$k] = $v;
+	}
+} elseif (isset($config['row']['up'])) {
+	$up = $config['row']['up'];
+
+	//w('catalog-load');
+	w('clean');
+	$list = cache_load('pathway-hide'); // $config['pathway'];
+	$cat = cache_load('catalog'); // $config['catalog'];
+
+	if (isset($list[$up])) {
+		$pre = array(0);
+		$pre = array_merge($pre, $list[$up]['pre']);
+		$pre[] = $up;
+/*
+		if (isset($config['pathway-add'])) {
+			$pre[] = $config['pathway-add'];
+		}
+*/
+		if (count($pre) > 0) {
+			foreach ($pre as $i) {
+				$url = kv($list[$i], 'url', '');
+				$href = '/catalog'.(strlen($url) ? '/'.$url : '');
+				$steps[$href] = $list[$i]['name'];
+			}
+		}
+	}
+} elseif (1 < ($level = count($menu))) {
+	for ($i = 1; $i < $level - 1; $i++) {
+		$v = $menu[$i];
+		$steps[$v['href']] = $v['name'];
+	}
+/*
+	$menus = array('sync');
+	if ($level > 2 && in_array($menu[1]['code'], $menus)) {
+		for ($i = 1; $i < $level - 1; $i++) {
+			$steps[$menu[$i]['href']] = $menu[$i]['name'];
+		}
+	}
+*/
+}
+
+if (!$args) {
+	echo '
+<section id="breadcrumb">
+	<div class="container">
+';
+}
+
+?>
+<div class="row breadcrumbs<? if ($args) { echo ' mb0'; } ?>">
+	<div class="col-1">
+<?
+
+$keys = array_keys($steps);
+$href = array_pop($keys);
+
+?>
+		<a href="<? echo $href ?>" class="breadcrumbs_back">&nbsp;</a>
+	</div>
+	<div class="col">
+		<ul class="breadcrumbs_links">
+			<?
+
+			foreach ($steps as $k=>$v) {
+				echo '<li><a href="'.$k.'">'.$v.'</a></li>';
+			}
+
+			?>
+		</ul>
+<?
+
+if (strlen($config['name'])) {
+	echo '<h1 class="title">'.dict($config['name']).'</h1>';
+}
+
+?>
+	</div>
+</div>
+<?
+
+if (!$args) {
+	echo '
+	</div>
+</div>
+';
+}
+
+?>
+	

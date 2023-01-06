@@ -1,0 +1,18 @@
+<?
+
+$groups = cache_load('portfolio');
+
+$back = array(
+	''=>array('method'=>'POST'),
+	'up'=>array('name'=>'Группа', 'type'=>'combo', 'values'=>$groups, 'class'=>'form-control', 'width'=>400),
+
+	'name'=>array('name'=>'Наименование', 'type'=>'line', 'class'=>'form-control'),
+	'dt'=>array('name'=>'Дата', 'type'=>'line', 'class'=>'form-control'),
+
+	'pics'=>array('name'=>'Фото', 'type'=>'files'),
+	'info'=>array('name'=>'Описание', 'type'=>'rich', 'rows'=>10),
+
+	'send'=>array('type'=>'button', 'count'=>1, 1=>'Сохранить', 'class'=>'btn-success'),
+);
+
+?>

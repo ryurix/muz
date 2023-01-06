@@ -1,0 +1,71 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+foreach ($html->find('td[class=catal-item]') as $row) {
+	$hrefs[] = 'http://www.imlight.ru'.$row->find('a[class=tov-title]', 0)->href;
+}
+
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	$html->clear;
+	unset($html);
+	set_time_limit(0);
+
+	$html = file_get_html($href);
+	$html = $html->find('div[class=mblock]', 0);
+
+
+	$model = $html->find('h1', 0)->innertext;
+
+	$info = $html->find('div[class=good_detail_02]', 0)->innertext;
+
+	$pic = $html->find('div[id=detail-picture-box] a', 0);
+	if (is_object($pic)) {
+		$pic = 'http://www.imlight.ru'.$pic->href;
+	} else {
+		$pic = '';
+	}
+
+	$count = 0;
+	$pics = array();
+	foreach ($html->find('div[class=highslide-gallery] a') as $i) {
+		if ($count) {
+			$pics[] = $i->href;
+		}
+		$count++;
+	}
+
+	$files = array();
+	foreach ($html->find('div[class=files_tovar_blok] a') as $i) {
+		$files[$i->title] = $i->href;
+	}
+
+	$brand = $html->find('div[class=good_detail_02] p', 0);
+	if (is_object($brand)) {
+		$brand = $brand->innertext;
+		$pos = strpos($brand, ':');
+		$brand = $pos ? trim(substr($brand, $pos +1)) : '';
+	} else {
+		$brand = '';
+	}
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>'',
+		'model'=>$model,
+		'short'=>'',
+		'pic'=>strlen($pic) ? $pic : '',
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>0,
+		'info'=>$info,
+	);
+//*/
+}
+
+?>

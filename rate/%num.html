@@ -1,0 +1,20 @@
+<?
+
+w('calendar');
+
+$plan = $config['plan'];
+$i = $plan['']['default'];
+
+$brand = cache_load('brand');
+$store = '<a href="/store/'.$i['url'].'">'.kv($brand, $i['brand']).' '.$i['model'].' '.$i['sname'].'</a>';
+$plan['link'] = array(
+	'name'=>'Товар',
+	'value'=>$store,
+	'type'=>'label'
+);
+
+$plan['send'][1] = 'Сохранить отзыв';
+
+w('form', $plan);
+
+?>

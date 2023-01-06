@@ -1,0 +1,40 @@
+<?
+
+set_time_limit(0);
+
+$pathway = cache_load('pathway-hide');
+
+function get_product_type($i, $pathway) {
+	$node = $pathway[$i];
+	$up = isset($node['up']) ? $node['up'] : 0;
+
+	if ($up) {
+		return get_product_type($up, $pathway).' '.$node['name'];
+	} else {
+		return $node['name'];
+	}
+}
+
+//*
+
+$brand = cache_load('brand');
+
+$count = 0;
+
+$q = db_query('SELECT i,up,brand,model,name,tags FROM store');
+while ($i = db_fetch($q)) {
+
+	$tags = get_product_type($i['up'], $pathway).' '.$brand[$i['brand']].' '.$i['model'].' '.$i['name'];
+
+	if ($tags != $i['tags']) {
+		$count++;
+		db_update('store', array('tags'=>$tags), array('i'=>$i['i']));
+	}
+}
+db_close($q);
+
+alert('Обновлено тегов: '.$count);
+w('alert');
+
+//*/
+?>

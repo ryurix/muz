@@ -1,0 +1,19 @@
+<?
+
+global $menu;
+
+$here = $menu[count($menu) - 1];
+if (isset($here['edit']) && is_user($here['edit'])) {
+
+	if (isset($_REQUEST['edit'])) {
+		$block['edit'] = '<a href="'.$here['href'].'/">смотр</a>'
+		.'<span>правка</span>';
+		$block['body'] = first_file(array('home', 'edit'), $dummy);
+	} else {
+		$block['edit'] = '<span>смотр</span>'
+		.'<a href="'.$here['href'].'?edit">правка</a>';
+	}
+
+}
+
+?>

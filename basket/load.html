@@ -1,0 +1,10 @@
+<?
+
+if (isset($_SESSION['basket']) && is_array($_SESSION['basket']) && count($_SESSION['basket'])) {
+	alert('Текущее содержимое корзины будет утеряно!');
+	w('alert');
+}
+
+w('form', $config['plan']);
+
+?>

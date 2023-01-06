@@ -1,0 +1,485 @@
+<?
+
+$setup = 'auto';
+
+w('ft');
+
+$vendor = array(-1=>'Поставщик') + cache_load('vendor');
+$dost = array_values(w('list-dost'));
+$dost[0] = 'Неизвестно';
+$cdost = array(-1=>'Способ') + w('list-dost');
+$states = array(-1=>'Активные заказы') + w('order-state');
+//$staff = array(0=>'Менеджер') + cache_load('staff');
+//$cire = array('na'=>'Город') + cache_load('city');
+//$pay = array('na'=>'Предоплата') + w('list-pay');
+//$pay2 = array('na'=>'Оплата') + w('list-pay');
+$mark = array(0=>'Нет меток') + cache_load('mark-name');
+
+
+$default = array(
+	'link'=>0,
+	'num'=>'',
+	'dt1'=>now() - 60*60*24*365,
+	'dt2'=>ft_parse(ft(now())) + 24*60*60 - 1,
+//	'staff'=>0,
+//	'cire'=>'na',
+	'user'=>'',
+	'store'=>'',
+//	'pay'=>'na',
+	'group'=>0,
+	'sort'=>1,
+	'vendor'=>-1,
+	'dost'=>array(),
+	'state'=>array(7, 10, 13, 15, 25),
+	'mark'=>array(9, 10),
+);
+
+w('user-config');
+
+$plan = array(
+	''=>array('method'=>'POST', 'default'=>get_user_config($setup, array())),
+
+//	'link'=>array('name'=>'Массовое изменение', 'type'=>'checkbox'),
+//	'num'=>array('name'=>'Номер заказа', 'type'=>'int', 'class'=>'form-control auto', 'width'=>80, 'placeholder'=>'№ заказа'),
+	'dt1'=>array('name'=>'Дата обновления от', 'type'=>'date', 'class'=>'auto', 'width'=>100, 'button'=>0, 'context'=>1),
+	'dt2'=>array('name'=>'до', 'type'=>'date', 'class'=>'auto', 'width'=>100, 'button'=>0, 'context'=>1), // 'width'=>65
+//	'staff'=>array('name'=>'Менеджер', 'type'=>'combo', 'values'=>$staff, 'class'=>'auto'),
+//	'cire'=>array('name'=>'Город', 'type'=>'cire', 'class'=>'form-control auto', 'values'=>$cire),
+	'user'=>array('name'=>'Пользователь', 'type'=>'line', 'placeholder'=>'ФИО', 'x'=>1, 'class'=>'form-control-lg auto'),
+	'store'=>array('name'=>'Наименование', 'type'=>'line', 'placeholder'=>'Товар', 'x'=>1, 'class'=>'form-control-lg auto'),
+//	'pay'=>array('name'=>'Оплата', 'type'=>'combo', 'values'=>$pay2, 'class'=>'auto'),
+	'group'=>array('name'=>'Группировать', 'type'=>'checkbox2', 'label'=>'Группировать', 'class'=>'auto'),
+
+	'sort'=>array('name'=>'Сортировать по', 'type'=>'combo', 'values'=>array(
+//		5=>'Номеру заказа &darr;',
+//		105=>'Номеру заказа &uarr;',
+//		0=>'Дате создания &darr;',
+//		100=>'Дате создания &uarr;',
+//		1=>'Дате обновления &darr;',
+//		101=>'Дате обновления &uarr;',
+		2=>'Пользователь &darr;',
+		102=>'Пользователь &uarr;',
+//		14=>'Менеджер &darr;',
+//		114=>'Менеджер &uarr;',
+		4=>'Наименование &darr;',
+		104=>'Наименование &uarr;',
+//		6=>'Цена &darr;',
+//		106=>'Цена &uarr;',
+		7=>'Сумма &darr;',
+		107=>'Сумма &uarr;',
+		8=>'Количество &darr;',
+		108=>'Количество &uarr;',
+		9=>'Оплачено &darr;',
+		109=>'Оплачено &uarr;',
+		11=>'Оплата &darr;',
+		111=>'Оплата &uarr;',
+		3=>'Статус &darr;',
+		103=>'Статус &uarr;',
+//		13=>'Город &darr;',
+//		113=>'Город &uarr;',
+		10=>'Доставка &darr;',
+		110=>'Доставка &uarr;',
+		12=>'Поставщик &darr;',
+		112=>'Поставщик &uarr;',
+		15=>'Метки &darr;',
+		115=>'Метки &uarr;',
+	), 'class'=>'form-control auto', 'default'=>2),
+
+	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo', 'class'=>'form-control-lg auto', 'values'=>$vendor),
+	'dost'=>array('name'=>'Доставка', 'type'=>'dropcheck', 'item-class'=>'auto2', 'values'=>$dost, 'placeholder'=>'Доставка'),
+	'state'=>array('name'=>'Состояния', 'type'=>'dropcheck', 'item-class'=>'auto2', 'values'=>$states, 'placeholder'=>'Статус'),
+//	'mark'=>array('name'=>'Метки', 'type'=>'combo', 'class'=>'auto', 'values'=>$mark),
+	'mark'=>array('name'=>'Метки', 'type'=>'dropcheck', 'item-class'=>'auto2', 'values'=>$mark, 'placeholder'=>'Метки'),
+	'send'=>array('name'=>'', 'type'=>'button', 'count'=>4, 1=>'Фильтровать', 2=>'Загрузить по умолчанию', 3=>'Сохранить по умолчанию', 4=>'Сбросить'),
+);
+
+if (is_user('ones')) {
+	$plan['staff']['type'] = 'hidden';
+	$plan['staff']['value'] = $_SESSION['i'];
+}
+
+set_array($plan, 'default', $default);
+
+//$plan = isset($_SESSION['order']) ? $_SESSION['order'] : $default;
+
+w('request', $plan);
+
+$values = w('values', $plan);
+
+/*
+unset($values['cstaff']);
+unset($values['camark']);
+unset($values['cdmark']);
+unset($values['cpay']);
+unset($values['cpay2']);
+unset($values['cstate']);
+unset($values['cdost']);
+unset($values['cvendor']);
+*/
+
+set_user_config($setup, $values);
+
+if ($plan['send']['value'] == 2) {
+	$values = get_user_config($setup.'2', array());
+	set_user_config($setup, $values);
+	set_array($plan, 'value', $values);
+}
+
+if ($plan['send']['value'] == 3) {
+	unset($values['dt1']);
+	unset($values['dt2']);
+	set_user_config($setup.'2', $values);
+}
+
+if ($plan['send']['value'] == 4) {
+	set_user_config($setup, $default);
+	set_array($plan, 'value', $default);
+}
+
+save_user_config();
+
+if (in_array(-1, $plan['state']['value'])) {
+	$plan['state']['value'] = array(1,2,3,7,10,13,15,20,23,25);
+}
+
+// SELECT
+
+$select = 'SELECT orst.i i'
+.',orst.dt dt'
+.',orst.store store'
+.',s.url url'
+.',orst.price price'
+.',orst.state state'
+.',orst.info info'
+.',orst.note note'
+.',orst.docs docs'
+.',orst.files files'
+.',orst.pay2 pay2'
+.',orst.dost dost'
+.',orst.cire'
+.',orst.vendor'
+.',orst.staff'
+.',orst.mark'
+.',user.i user'
+.',user.name user_name'
+.',user.color user_color';
+
+$where_user = '';
+
+if (strlen($plan['user']['value'])) {
+	$user = $plan['user']['value'];
+	w('clean');
+	if (is_09($user)) {
+		$where_user = ' AND orst.user='.$user;
+		if (isset($_GET['user'])) {
+			$plan['group']['value'] = 0;
+		}
+	} else {
+		w('search');
+		$where_user = ' AND user.quick LIKE "%'.search_like($user).'%"';
+	}
+}
+
+
+if (is_user('ones')) {
+	$where_user.= ' AND orst.staff='.$_SESSION['i'];
+}
+
+if ($plan['group']['value']) {
+	$select.= ',COUNT(orst.i) name'
+.',SUM(orst.count) count,SUM(orst.count*orst.price) total,SUM(orst.money+orst.money2) money';
+} else {
+	$select.= ',orst.name name'
+.',orst.count count,orst.count*orst.price total,orst.money+orst.money2 money';
+}
+
+$select.= ' FROM orst LEFT JOIN user ON orst.user=user.i LEFT JOIN store s ON orst.store=s.i LEFT JOIN cire ON orst.cire=cire.i LEFT JOIN user staff ON orst.staff=staff.i';
+
+if (strlen($plan['store']['value'])) {
+	w('search');
+	$select.= ',store WHERE orst.store=store.i AND store.quick LIKE "%'.search_like($plan['store']['value']).'%" AND';
+} else {
+	$select.= ' WHERE';
+}
+
+if ($plan['sort']['value'] == 5 || $plan['sort']['value'] == 105) {
+	$select.= ' orst.dt>'.$plan['dt1']['value'].' AND orst.dt<'.($plan['dt2']['value']+24*60*60-1);
+} else {
+	$select.= ' orst.last>'.$plan['dt1']['value'].' AND orst.last<'.($plan['dt2']['value']+24*60*60-1);
+}
+
+$select.= $where_user;
+
+w('clean');
+//if ($plan['num']['value'] && is_09($plan['num']['value'])) {
+//	$select.= ' AND orst.i='.$plan['num']['value'];
+//}
+
+//if ($plan['cire']['value'] != 'na') {
+//	$select.= ' AND orst.cire='.$plan['cire']['value'];
+//}
+
+//if ($plan['staff']['value']) {
+//	$select.= ' AND orst.staff='.$plan['staff']['value'];
+//}
+
+if (count($plan['state']['value']) && !kv($config, 'DEBUG', 0)) {
+	$select.= ' AND orst.state IN ('.implode(',', $plan['state']['value']).')';
+}
+
+//if ($plan['pay']['value'] != 'na') {
+//	$select.= ' AND (orst.pay='.$plan['pay']['value'].' OR orst.pay2='.$plan['pay']['value'].')';
+//}
+
+if ($plan['vendor']['value'] != -1) {
+	$select.= ' AND orst.vendor='.$plan['vendor']['value'];
+}
+
+if (count($plan['dost']['value'])) {
+	$codes = array_keys(w('list-dost'));
+	$values = array();
+	foreach ($plan['dost']['value'] as $i) {
+		$values[] =  '"'.kv($codes, $i).'"';
+	}
+	$select.= ' AND orst.dost IN ('.implode(',', $values).')';
+//	$select.= ' AND orst.dost="'.$plan['dost']['value'].'"';
+}
+
+if (count($plan['mark']['value']) && !kv($config, 'DEBUG', 0)) {
+	$or = array();
+	foreach ($plan['mark']['value'] as $i) {
+		if ($i) {
+			$or[] = '(orst.mark LIKE "%,'.$i.',%")';
+		} else {
+			$or[] = '(orst.mark="" OR orst.mark IS NULL)';			
+		}
+	}
+	$select.= ' AND ('.implode(' OR ', $or).')';
+}
+
+if ($plan['group']['value']) {
+	$select.= ' GROUP BY orst.user';
+}
+
+$select.= ' ORDER BY ';
+switch ($plan['sort']['value']) {
+//case 0: $select.= 'orst.dt DESC'; break;
+//case 100: $select.= 'orst.dt'; break;
+//case 1: $select.= 'orst.last DESC'; break;
+//case 101: $select.= 'orst.last'; break;
+default:
+case 2:$select.= 'user_name'; break;
+case 102:$select.= 'user_name DESC'; break;
+case 3: $select.= 'orst.state'; break;
+case 103: $select.= 'orst.state DESC'; break;
+case 4:$select.= 'orst.name'; break;
+case 104:$select.= 'orst.name DESC'; break;
+case 5: $select.= 'orst.i'; break;
+case 105: $select.= 'orst.i DESC'; break;
+//case 6: $select.= 'orst.price'; break;
+//case 106: $select.= 'orst.price DESC'; break;
+case 7: $select.= 'total'; break;
+case 107: $select.= 'total DESC'; break;
+case 8:$select.= 'orst.count'; break;
+case 108:$select.= 'orst.count DESC'; break;
+case 9:$select.= 'money'; break;
+case 109:$select.= 'money DESC'; break;
+case 10:$select.= 'dost'; break;
+case 110:$select.= 'dost DESC'; break;
+//case 11:$select.= 'orst.pay2'; break;
+//case 111:$select.= 'orst.pay2 DESC'; break;
+case 12:$select.= 'orst.vendor'; break;
+case 112:$select.= 'orst.vendor DESC'; break;
+//case 13:$select.= 'cire.w'; break;
+//case 113:$select.= 'cire.w DESC'; break;
+//case 14:$select.= 'staff.name'; break;
+//case 114:$select.= 'staff.name DESC'; break;
+case 15:$select.= 'orst.mark'; break;
+case 115:$select.= 'orst.mark DESC'; break;
+}
+$select.= ',orst.user';
+
+
+// * * *
+
+
+w('calendar');
+
+$q = db_query($select, 200);
+//echo pager_block('?');
+
+$orst = array();
+while ($i = db_fetch($q)) {
+	$orst[$i['i']] = $i;
+}
+
+function short_values(&$plan, $key, $data, $default, $multi = false) {
+	$values = $plan[$key]['values'];
+	$short = $multi ? array() : array_slice($values, 0, 1, true);
+
+	if( ($multi && count($plan[$key]['value']) == 0) || (!$multi && $plan[$key]['value'] == $default) ) {
+		foreach ($data as $i) {
+			$short[$i[$key]] = kv($values, $i[$key]);
+		}
+	} else {
+		$short[$plan[$key]['value']] = kv($values, $plan[$key]['value']);
+	}
+	$plan[$key]['values'] = $short;
+}
+
+short_values($plan, 'vendor', $orst, $default['vendor']);
+
+
+function echo_sort($name, $code, $sort) {
+	$here = 0;
+	$rev = 0;
+	if ($code == ($sort - 100)) { $here = 1; $rev = 1; }
+	if ($code == $sort) { $here = 1; } 
+
+	echo '<a href="/auto?sort='.(!$rev && $here ? $code+100 : $code).'">'.$name;
+	if ($here) {
+		if ($rev) {
+			echo '&nbsp;&uarr;';
+		} else {
+			echo '&nbsp;&darr;';
+		}		
+	}
+	echo '</a>';
+}
+$sort = $plan['sort']['value'];
+
+?>
+
+<div style="min-height:300px">
+<table class="table table-sm" id="orst">
+<form class="form-inline auto" method="POST">
+<thead>
+	<tr>
+		<th><? echo input_line($plan['user']); ?></th>
+		<th><? echo input_line($plan['store']); ?></th>
+		<th colspan=3><? echo input_dropcheck($plan['dost'], 'btn-default btn-block btn-lg'); ?></th>
+		<th colspan=2><? echo input_combo($plan['vendor']); ?></th>
+		<th></th>
+		<th nowrap>
+<?
+/*
+			<button name="send1" class="btn btn-default hidden"><i class="fa fa-search"></i></button>
+			<button name="send2" class="btn btn-default"><i class="fa fa-briefcase"></i></button>
+			<button name="send3" class="btn btn-default"><i class="fa fa-save"></i></button>
+*/
+?>
+			<button name="send4" class="btn btn-default btn-lg"><i class="fa fa-close"></i></button>
+		</th>
+		<th><? /*echo input_dropcheck($plan['mark']);*/ ?></th>
+	</tr>
+	<tr>
+		<th><? echo_sort('Пользователь', 2, $sort); ?></th>
+		<th><? echo_sort('Наименование', 4, $sort); ?></th>
+		<th class="text-right"><? echo_sort('шт.', 8, $sort); ?></th>
+		<th class="text-right"><? echo_sort('Сумма', 7, $sort); ?></th>
+		<th class="text-right"><? echo_sort('Оплачено', 9, $sort); ?></th>
+		<th class="text-center"><? echo_sort('Статус', 3, $sort); ?></th>
+		<th class="text-center"><? echo_sort('Доставка', 10, $sort); ?></th>
+		<th class="text-center"><? echo_sort('Поставщик', 12, $sort); ?></th>
+		<th>Комментарий</th>
+		<th class="text-center"><? echo_sort('Метки', 15, $sort); ?></th>
+	</tr>
+</thead>
+<tbody id="orders">
+<?
+
+function echo_check($order) {
+	$checked = isset($_REQUEST['c']) && is_array($_REQUEST['c']) && isset($_REQUEST['c'][$order]) && $_REQUEST['c'][$order];
+	return '<input type="checkbox" name="c['.$order.']" value=1'.($checked ? ' checked' : '').'>';
+}
+
+$cire = cache_load('city');
+$staff = cache_load('staff');
+
+$state = w('order-state');
+$colors = w('order-state-color');
+
+$pay = w('list-pay');
+$dost = w('list-dost');
+$vendor = array(0=>'') + cache_load('vendor');
+
+$total = 0;
+$items = 0;
+
+w('show-files');
+$style = array('icon'=>1, 'name'=>0, 'class'=>'', 'prefix'=>' ');
+$style_docs = array('icon'=>1, 'name'=>0, 'prefix'=>' ');
+
+$mark_name = cache_load('mark-name');
+$mark_info = cache_load('mark-info');
+$mark_color = cache_load('mark-color');
+
+$marks = array();
+foreach ($mark_name as $k=>$v) {
+	$marks[$k] = '<span class="badge badge-'.kv($mark_color, $k).'" title="'.kv($mark_info, $k).'">'.$v.'</span>';
+}
+
+function link_modal($order, $text) {
+	return '<a href="/auto/'.$order.'" data-toggle="modal" data-target="#modal-auto" data-load='.$order.'>'.$text.'</a>';
+}
+
+w('ft');
+w('user-name');
+foreach ($orst as $k=>$v) {
+	$name = trim($v['user_name']);
+
+	echo '<tr'.($colors[$v['state']] == '' ? '' : ' class='.$colors[$v['state']]).'>'
+.'<td>'.link_modal($k, $v['user_name']).'</a></td>';
+
+	echo '<td><a href="/store/'.$v['url'].'">'.$v['name'].'</a></td>';
+
+
+	echo '<td class="text-right">'.$v['count'].'</td>'
+.'<td class="text-right" nowrap>'.number_format($v['total'], 0, '.', ' ').'</td>'
+.'<td class="text-right" nowrap>'.number_format($v['money'], 0, '.', ' ').'</td>'
+.'<td>'.link_modal($k, $state[$v['state']]).'</td>'
+.'<td>'.$dost[$v['dost']].'</td>'
+.'<td>'.kv($vendor, $v['vendor']).'</td>'
+.'<td>'.show_files($v['files'], $style).' '.show_files($v['docs'], $style_docs).' '.$v['info'].' <i>'.$v['note'].'</i></td>'
+.'<td>';
+	$mark = explode(',', trim($v['mark'], ','));
+	foreach ($mark as $i) {
+		if (isset($marks[$i])) {
+			echo $marks[$i].' ';
+		}
+	}
+
+	echo '</td>'
+.'</tr>';
+
+	$total+= $v['price']*$v['count'];
+	$items+= $v['count'];
+}
+
+echo '<tr><td colspan=10>Итого <b>'.$items.'</b> товаров на сумму: <b>'.number_format($total, 0, '.', ' ').'</b> рублей.<input type="hidden" name="finish" value=1></td></tr>';
+
+?>
+</tbody>
+</form>
+</table>
+<? // echo pager_block('?'); ?>
+</div>
+
+<div class="modal fade" id="modal-auto" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-body"></div>
+		</div>
+	</div>
+</div>
+
+<script>
+$(document).on('click', '.dropcheck .dropdown-menu', function (e) {
+	e.stopPropagation();
+});
+
+$('#modal-auto').on('show.bs.modal', function (event) {
+	var button = $(event.relatedTarget);
+	$('#modal-auto .modal-body').load('/auto/' + button.data('load') + '?modal');
+});
+</script>

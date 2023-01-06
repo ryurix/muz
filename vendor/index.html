@@ -1,0 +1,55 @@
+<table class="table table-bordered table-sm">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Поставщик</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+$select = 'SELECT * FROM vendor WHERE up=0 OR up IS NULL ORDER BY w, name';
+$q = db_query($select);
+
+while ($i = db_fetch($q)) {
+	$href = '/vendor/'.$i['i'];
+	echo '<tr>';
+	echo '<td><a href="'.$href.'/edit">'.$i['i'].'</a></td>';
+	echo '<td><a href="'.$href.'">'.$i['name'].' <i class="icon-edit"></i></a></td>';
+	echo '</tr>';		
+}
+
+?>
+	</tbody>
+</table>
+
+<p>Дополнительные склады поставщиков</p>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Склад</th>
+			<th>Поставщик</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+$select = 'SELECT v1.i,v1.name,v2.i i2,v2.name n2 FROM vendor v1 LEFT JOIN vendor v2 ON v1.up=v2.i WHERE v1.up>0 ORDER BY v1.w, v1.name';
+$q = db_query($select);
+
+while ($i = db_fetch($q)) {
+	$href = '/vendor/'.$i['i'];
+
+	echo '<tr>';
+	echo '<td><a href="'.$href.'/edit">'.$i['i'].'</a></td>';
+	echo '<td><a href="'.$href.'">'.$i['name'].' <i class="icon-edit"></i></a></td>';
+
+	echo '<td><a href="/vendor/'.$i['i2'].'">'.$i['n2'].' <i class="icon-edit"></i></a></td>';
+	echo '</tr>';
+}
+
+?>
+	</tbody>
+</table>

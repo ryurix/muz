@@ -1,0 +1,48 @@
+<div class="col-12 col-sm-12 col-md-12 col-lg">
+	<div class="basket_cont3 basket_cont31">
+		<h3 class="basket_title">Вход</h3>
+		<div id="basket_contact">
+<? /*
+			<label class="basket2_label">
+				<p class="basket_titleinput">Логин</p>
+				<? echo input_line($args['login']); ?>
+			</label>
+*/ ?>
+			<label class="basket2_label">
+				<p class="basket_titleinput">Пароль</p>
+				<? echo input_line($args['pass1']); ?>
+			</label>
+<? if (isset($args['roles'])) { ?>
+			<label>
+				<p class="basket_titleinput">Роли</p>
+				<? echo input_roles($args['roles']); ?>
+			</label>
+<? } ?>
+			<label>
+				<p class="basket_titleinput">Склад менеджера</p>
+				<? echo input_combo($args['vendor']); ?>
+			</label>
+			<label>
+				<p class="basket_titleinput">Цвет</p>
+				<? echo input_combo($args['color']); ?>
+			</label>
+			<label>
+				<p class="basket_titleinput">Метка</p>
+				<? echo input_combo($args['mark']); ?>
+			</label>
+			<label>
+				<p class="basket_titleinput">Метка 2</p>
+				<? echo input_combo($args['mark2']); ?>
+			</label>
+			<label class="basket2_label3">
+				<? //<input type="checkbox" name="pay_entity" class="basket_checkbox" id="ur_checkbox"> ?>
+				<? echo input_checkbox($args['spam']); ?>
+			</label>
+			<label class="basket2_label3">
+				<? //<input type="checkbox" name="pay_entity" class="basket_checkbox" id="ur_checkbox"> ?>
+				<? echo input_checkbox($args['note']); ?>
+			</label>
+		</div>
+		<button type="submit" name="send1" class="basket_btnaplly">Сохранить изменения</button>
+	</div>
+</div>

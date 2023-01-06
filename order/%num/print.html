@@ -1,0 +1,174 @@
+<div class="clearfix"></div>
+<p><?
+
+$row = $config['row'];
+
+$q = db_query('SELECT * FROM docs WHERE orst LIKE "%|'.$row['i'].'|%"');
+while ($i = db_fetch($q)) {
+	echo '<a href="/doc/'.$i['i'].'" class="btn btn-xs btn-default">'.$i['name'].'</a> ';
+}
+db_close($q);
+
+$q = db_query('SELECT * FROM bill WHERE orst LIKE "%|'.$row['i'].'|%"');
+$state = w('state-bill');
+while ($i = db_fetch($q)) {
+	$name = '';
+	switch ($i['type']) {
+		case(100): $name = 'Счет Uniteller'; break;
+		case(101): $name = 'Аванс Uniteller'; break;
+		case(200): $name = 'Счет Appex'; break;
+		case(201): $name = 'Аванс Appex'; break;
+		default: $name = 'Счет';
+	}
+	$name.= ' ('.$state[$i['state']].')';
+	echo '<a href="/bill/'.$i['i'].'/edit" class="btn btn-xs btn-default">'.$name.' № '.$i['i'].'</a> ';
+}
+db_close($q);
+
+$q = db_query('SELECT * FROM kkm WHERE orst LIKE "%|'.$row['i'].'|%"');
+while ($i = db_fetch($q)) {
+	switch ($i['state']) {
+		case (0): $state = ' (новый)'; break;
+		case (5): $state = ' (печать)'; break;
+		case (15): $state = ' (ошибка)'; break;
+		default: $state = ''; break;
+	}
+	echo '<a href="/kkm/'.$i['i'].'" class="btn btn-xs btn-default">Фискальный чек № '.$i['i'].$state.'</a> ';
+}
+db_close($q);
+
+?></p>
+<form method="POST">
+
+<div class="navbar-form form-search auto" id="tools" method="POST">
+	<nav class="navbar navbar-default">
+		<div class="row">
+			
+<?
+
+$dd = array(
+	0=>array(''=>'Мобильный чек', 31=>'ИП предоплата', 32=>'(К) предоплата', 33=>'ИП', 34=>'(К)'),
+	1=>array(''=>'Товарный чек', 1=>'(К)', 2=>'(С)', 9=>'(К) предоплата', 22=>'ИП', 21=>'ИП предоплата'), // 
+	3=>array(''=>'Счет на оплату', 5=>'(К физ)', 15=>'(К юр)', 6=>'(Т физ)', 16=>'(Т юр)'), // 
+	2=>array(''=>'Накладная', 3=>'(К физ)', 13=>'(К юр)', 7=>'(Т физ)', 17=>'(Т юр)'), //, 4=>'(С физ)', 14=>'(С юр)'
+//	4=>array(''=>'Счет-фактура', 8=>'(С физ)', 18=>'(С юр)'),
+//	7=>array(''=>'УПД', 17=>'(Т)'),
+	5=>array(''=>'Онлайн', 101=>'аванс Uniteller', 100=>'оплата Uniteller', 201=>'аванс Appex', 200=>'оплата Appex'),
+	6=>array(''=>'ККМ', 90=>'фискализация', 95=>'печать с фиск.'),
+);
+
+echo '<div class="col-sm-12">';
+foreach ($dd as $dm=>$dds) {
+	echo '
+<div class="dropdown float-left">
+	<button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">'.$dds[''].'
+		<span class="caret"></span>
+	</button>
+	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
+		foreach ($dds as $k=>$v) {
+			if (strlen($k)) {
+				echo '<li><button class="btn btn-link" name="doc'.$k.'">'.$dds[''].'&nbsp;'.$v.'</button></li>';
+			}
+		}
+		echo '
+	</ul>
+</div>';
+}
+echo '</div>';
+
+/*
+
+$docs = w('list-doc');
+foreach ($docs as $k=>$v) {
+	echo '<button name="doc'.$k.'" class="btn btn-default">'.$v.'</button> ';	
+}
+
+*/ ?>
+		</div>
+    </nav>
+</div>
+
+<table class="table">
+<thead>
+	<tr>
+		<th>#, Дата</th>
+		<th>Наименование</th>
+		<th class="text-right">Цена</th>
+		<th class="text-right">шт.</th>
+		<th class="text-right">Сумма</th>
+		<th class="text-right">Оплачено</th>
+		<th>Состояние</th>
+		<th>Комментарий</th>
+	</tr>
+</thead>
+	<tbody>
+<?
+
+$ids = isset($_REQUEST['id']) && is_array($_REQUEST['id']) ? $_REQUEST['id'] : array($row['i']);
+
+$select = 'SELECT orst.i i'
+.',orst.dt dt'
+.',orst.last last'
+.',orst.user user'
+.',orst.staff staff'
+.',orst.state state'
+.',orst.adres adres'
+.',orst.store store'
+.',orst.name name'
+.',orst.price price'
+.',orst.sale sale'
+.',orst.count count'
+.',orst.info info'
+.',orst.note note'
+.',orst.docs docs'
+.',orst.files files'
+.',orst.money money'
+.',orst.pay pay'
+.',orst.money2 money2'
+.',orst.pay2 pay2'
+.',user.name fio'
+.' FROM orst LEFT JOIN user ON orst.user=user.i'
+.' WHERE orst.dt BETWEEN '.($row['dt'] - 60*60*24*31).' AND '.($row['dt'] + 60*60*24*31)
+.' AND orst.user='.$row['user']
+.' AND (orst.state<30 OR orst.i='.$row['i'].')';
+
+$q = db_query($select);
+
+$orst = array();
+while ($i = db_fetch($q)) {
+	$orst[$i['i']] = $i;
+}
+
+$state = w('order-state');
+$colors = w('order-state-color');
+
+$total = 0;
+$items = 0;
+
+w('show-files');
+$style = array('icon'=>1, 'name'=>0, 'class'=>'', 'prefix'=>' ');
+$style_docs = array('icon'=>1, 'name'=>0, 'prefix'=>' ');
+
+w('ft');
+foreach ($orst as $k=>$v) {
+	$name = trim($v['fio']);
+	$checked = in_array($k, $ids) ? ' CHECKED' : '';
+
+	echo '<tr'.($colors[$v['state']] == '' ? '' : ' class='.$colors[$v['state']]).'>'
+.'<td><input type="checkbox" name="id[]" value="'.$k.'" style="margin:2px 0 0 0"'.$checked.'> &nbsp; <a href="/order/'.$k.'">'.$k.', '.ft($v['dt'], 2).' '.ft($v['dt']).'</a></td>'
+.'<td><a href="/store/'.$v['store'].'">'.$v['name'].'</a></td>'
+.'<td class="text-right" nowrap>'.number_format($v['price'], 0, '.', ' ').'</td>'
+.'<td class="text-right">'.$v['count'].'</td>'
+.'<td class="text-right" nowrap>'.number_format($v['price']*$v['count'], 0, '.', ' ').'</td>'
+.'<td class="text-right" nowrap>'.number_format($v['money'] + $v['money2'], 0, '.', ' ').'</td>'
+.'<td>'.$state[$v['state']].'</td>'
+.'<td>'.show_files($v['files'], $style).' '.show_files($v['docs'], $style_docs).' '.$v['info'].' <i>'.$v['note'].'</i></td>';
+
+	$total+= $v['price']*$v['count'];
+	$items+= $v['count'];
+}
+
+?>
+	</tbody>
+</table>
+</form>

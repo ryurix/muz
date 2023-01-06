@@ -1,0 +1,27 @@
+<?
+
+$reset = kv($config['args'], 0) == 'reset';
+
+w('store-mini');
+$all = w('store-sale-all', $reset);
+$rows = array();
+
+while (count($all)) {
+	$rows[] = array_slice($all, 0, 6);
+	$all = array_slice($all, 6);
+}
+
+echo '
+<div class="row catalog_items">';
+
+foreach ($rows as $row) {
+	foreach ($row as $i) {
+		echo '
+	<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">'.store_mini($i).'</div>';
+	}
+}
+
+echo '
+</div>';
+
+?>

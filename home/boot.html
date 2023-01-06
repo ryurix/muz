@@ -1,0 +1,81 @@
+<?
+
+// Clean composer
+
+if (is_dir('lib/composer')) {
+	$dir = opendir('lib/composer');
+	while (false !== ($file = readdir($dir))) {
+		if ($file != '.' && $file != '..') {
+			unlink('lib/composer/'.$file);
+		}
+	}
+	closedir($dir);
+	rmdir('lib/composer');
+}
+if (is_file('lib/autoload.php')) { unlink('lib/autoload.php'); }
+
+// Autoload
+
+function scan_class($root, $path, &$class) {
+	$scan = scandir($root.'/'.$path);
+	foreach ($scan as $k=>$v) {
+		if ($v != '.' && $v != '..') {
+			$fullname = $path.'/'.$v;
+
+			if (is_dir($root.'/'.$fullname)) {
+				scan_class($root, $fullname, $class);
+				continue;
+			}
+
+			if (!is_file($root.'/'.$fullname) || substr($v, -3) !== 'php') {
+				continue;
+			}
+
+			$php = file_get_contents($root.'/'.$fullname);
+
+			if (preg_match('#class\\s+([A-Za-z0-9\\\\]+?)[\\s;]*#sUm', $php, $m)) {
+				$classname = $m[1];
+			} else {
+				$classname = null;
+			}
+
+			if (preg_match('#(namespace)(\\s+)([A-Za-z0-9\\\\]+?)(\\s*);#sm', $php, $m)) {
+				$namespace = str_replace('/', '\\', $m[3]);
+			} else {
+				$namespace = null;
+			}
+
+			if (is_null($classname)) {
+				continue;
+			}
+
+			if (mb_substr($v, 0, mb_strlen($classname)) == $classname) {
+				if (is_null($namespace)) {
+					$class[$classname] = $fullname;
+				} else {
+					$class[$namespace.'\\'.$classname] = $fullname;
+				}
+			}
+		}
+	}
+
+	return $class;
+}
+
+//$root = __DIR__.'/../class';
+
+$class = [];
+scan_class($config['root'], 'src', $class);
+scan_class($config['root'], 'lib', $class);
+
+file_put_contents($config['root'].'/--/block/autoload.php', '<?
+
+$autoload = '.php_encode($class).';
+
+spl_autoload_register(function ($name) use ($autoload) {
+	if (isset($autoload[$name])) {
+		include_once $autoload[$name];
+	}
+});
+
+unset($autoload);');

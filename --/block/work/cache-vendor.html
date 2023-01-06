@@ -1,0 +1,11 @@
+<?
+
+$q = db_query("SELECT * FROM vendor ORDER BY w,name");
+
+$vendor = array();
+while ($i = db_fetch($q)) {
+	$vendor[$i['i']] = $i['name'];
+}
+cache_save('vendor', $vendor);
+
+w('cache-speeds');

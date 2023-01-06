@@ -1,0 +1,11 @@
+<div class="clearfix"></div>
+<p><?
+
+$row = $config['row'];
+
+$q = db_query('SELECT * FROM docs WHERE user='.$row['i']);
+while ($i = db_fetch($q)) {
+	echo '<a href="/doc/'.$i['i'].'" class="btn btn-xs btn-default">'.$i['name'].'</a> ';
+}
+
+?></p>

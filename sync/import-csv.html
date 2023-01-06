@@ -1,0 +1,278 @@
+<?
+
+w('u8');
+
+$plan = array(
+	''=>array('method'=>'POST'),
+	'file'=>array('name'=>'Файл данных', 'type'=>'file', 'default'=>''),
+	'send'=>array('type'=>'button', 'count'=>3, 1=>'Тест', 2=>'Импорт', 3=>'Чистка', 'class'=>array(1=>'btn-success', 2=>'btn-warning', 3=>'btn-danger'))
+);
+
+w('request', $plan);
+
+$file = $plan['file']['value'];
+if ($plan['send']['value'] > 0 && strlen($file) == 0) {
+	$plan['']['valid'] = 0;
+	$plan['file']['valid'] = 0;
+	$plan['file']['iv'] = 1;
+}
+
+w('form', $plan);
+
+function normalize($a) {
+	$n = array();
+	foreach ($a as $k=>$v) {
+		$n[$k] = u8lower(strip_tags($v));
+	}
+	return $n;
+}
+
+function find($s, $a) {
+	$s = u8lower($s);
+	return array_search($s, $a);
+}
+
+function flatten(&$list, $catalog, $pathway) {
+	$i = $catalog['i'];
+	if ($i) {
+		$list[$i] = $pathway[$i];
+	}
+	if (isset($catalog['/'])) {
+		foreach ($catalog['/'] as $i) {
+			flatten($list, $i, $pathway);
+		}
+	}
+}
+
+if ($plan['']['valid'] && $plan['send']['value'] > 0) {
+
+	set_time_limit(0);
+//	Подгтовка
+	$brand = normalize(cache_load('brand'));
+	$vendor = normalize(cache_load('vendor'));
+	$speed = normalize(w('speed'));
+	$hide = normalize(array(0=>'Обычный', 1=>'Скрытый', -1=>'Акция'));
+	$sign = normalize(cache_load('sign'));
+
+	$pre_catalog = array();
+
+	w('catalog-load');
+	$catalog = cache_load('catalog-hide');
+	$pathway = $config['pathway'];
+
+	$list = array();
+	flatten($list, $catalog, $pathway);
+//	print_pre($list);
+	foreach ($list as $k=>$v) {
+		$pre_catalog[$k] = $k;
+	}
+
+	$store = array();
+	$pre_store = array();
+
+	$syncs = array_chunk(array_keys($pre_catalog), 100, TRUE);
+	foreach ($syncs as $chunk) {
+		$q = db_query('SELECT i,up,model,name,sale,price,count,short,vendor,brand,hide,sign1,sign2,sign3,sign4,tag0,tag1,tag2,tag3'
+		.' FROM store WHERE up IN ('.implode(',', $chunk).')');
+		while ($i = db_fetch($q)) {
+			$store[$i['i']] = $i;
+			$pre_store[] = $i['i'];
+		}
+	}
+
+	$new_catalog = array();
+	$new_store = array();
+
+	$upd_catalog = 0;
+	$upd_store = 0;
+
+//	Импорт
+//	$file = $config['root'].'files/export.csv';
+
+	//	echo '<p>Импорт: '.$file.'</p>';
+
+	$stack = array();
+	$last = 0;
+
+	$f = u8fopen($file);
+	$i = fgetcsv($f, 1000, ';');
+	while (($i = fgetcsv($f, 1000, ';')) !== FALSE) {
+		if (!isset($i[1])) { continue; }
+		$code = $i[0];
+		$name = $i[1];
+
+		for ($j=2; $j<=17; $j++) {
+			if (!isset($i[$j])) {
+				$i[$j] = '';
+			}
+		}
+
+		$tag0 = $i[13];
+		$tag1 = $i[14];
+		$tag2 = $i[15];
+		$tag3 = $i[16];
+		$level = 0;
+		while (substr($name, $level, 1) == '!') {
+			$level++;
+		}
+		$name = substr($name, $level);
+		if ($level > 0) { // раздел
+			$new_catalog[] = $code;
+			if ($level <= count($stack)) {
+				$stack = array_slice($stack, 0, $level - 1, true);
+			}
+			$stack[$code] = $name;
+			$last = $code;
+
+			$up = array_keys($stack);
+			$up = count($up) > 1 ? $up[count($up) - 2] : 0;
+/*
+			if (isset($up[count($up)])) {
+				$up = count($up) > 1 ? $up[count($up)] : 0;
+			} else {
+				print_pre($stack);
+				print_pre($level);
+			}
+*/
+			$q = db_query('SELECT i,name,up,tag0,tag1,tag2,tag3 FROM catalog where i='.$code);
+
+			if ($row = db_fetch($q)) {
+				db_close($q);
+
+				$name = trim($name, ' *');
+				if ($up != $row['up']
+				|| $name != $row['name']
+			//	|| $tag0 != $row['tag0']
+			//	|| $tag1 != $row['tag1']
+			//	|| $tag2 != $row['tag2']
+			//	|| $tag3 != $row['tag3']
+				) {
+					if ($plan['send']['value'] > 1) {
+						db_update('catalog', array(
+							'up'=>$up,
+							'name'=>$name,
+						//	'tag0'=>$tag0,
+						//	'tag1'=>$tag1,
+						//	'tag2'=>$tag2,
+						//	'tag3'=>$tag3,
+						), array('i'=>$code));
+					}
+					$upd_catalog++;
+
+//					print_pre($dummy = 'i='.$code.', up='.$up.', name='.$name);
+				}
+			}
+//			echo '<p>'.$level.' ('.$code.'): '.$name.'</p>';
+//			echo '<p>'.$i[0].' '.$i[1].'</p>';
+//			print_pre($stack);
+		} else { // товар
+			$new_store[] = $code;
+
+			if (isset($store[$code])) {
+				$data = array();
+				if ($store[$code]['up'] != $last) {
+					$data['up'] = $last;
+				}
+				$find = find($i[1], $vendor);
+				if ($find !== FALSE && $store[$code]['vendor'] != $find) {
+					$data['vendor'] = $find;
+				}
+				$find = find($i[2], $brand);
+				if ($find !== FALSE && $store[$code]['brand'] != $find) {
+					$data['brand'] = $find;
+				}
+
+				if ($store[$code]['model'] != $i[3]) {
+					$data['model'] = $i[3];
+				}
+				if ($store[$code]['name'] != $i[4]) {
+					$data['name'] = $i[4];
+				}
+				if ($store[$code]['sale'] != $i[5]) {
+					$data['sale'] = $i[5];
+				}
+				if ($store[$code]['price'] != $i[6]) {
+					$data['price'] = $i[6];
+				}
+				if ($store[$code]['count'] != $i[7]) {
+					$data['count'] = $i[7];
+				}
+				$find = find($i[8], $hide);
+				if ($find !== FALSE && $store[$code]['hide'] != $find) {
+					$data['hide'] = $find;
+				}
+				$find = find($i[9], $sign);
+				if ($find !== FALSE && $store[$code]['sign1'] != $find) {
+					$data['sign1'] = $find;
+				}
+				$find = find($i[10], $sign);
+				if ($find !== FALSE && $store[$code]['sign2'] != $find) {
+					$data['sign2'] = $find;
+				}
+				$find = find($i[11], $sign);
+				if ($find !== FALSE && $store[$code]['sign3'] != $find) {
+					$data['sign3'] = $find;
+				}
+				$find = find($i[12], $sign);
+				if ($find !== FALSE && $store[$code]['sign4'] != $find) {
+					$data['sign4'] = $find;
+				}
+
+				if ($store[$code]['tag0'] != $i[13]) {
+					$data['tag0'] = $i[13];
+				}
+				if ($store[$code]['tag1'] != $i[14]) {
+					$data['tag1'] = $i[14];
+				}
+				if ($store[$code]['tag2'] != $i[15]) {
+					$data['tag2'] = $i[15];
+				}
+				if ($store[$code]['tag3'] != $i[16]) {
+					$data['tag3'] = $i[16];
+				}
+
+				if ($store[$code]['short'] != $i[17]) {
+					$data['short'] = $i[17];
+				}
+
+				if (count($data)) {
+					if ($plan['send']['value'] > 1) {
+						db_update('store', $data, array('i'=>$code));
+					}
+					$upd_store++;
+
+//					$data['i'] = $code; print_pre($data);
+				}
+			}
+		}
+	}
+	fclose($f);
+
+	$diff_catalog = array_diff($pre_catalog, $new_catalog);
+	//foreach ($diff_catalog as $k=>$v) {echo '<p><a href="/catalog/'.$v.'">'.$v.'</a></p>';}
+	if (count($diff_catalog) <= 20) {
+		if ($plan['send']['value'] == 3 && count($diff_catalog) > 0) {
+			db_query('DELETE FROM catalog WHERE i IN ('.implode(',', $diff_catalog).')');
+		}
+	} else {
+		alert('Более двадцати разделов подлежат на удалению. Возможна ошибка. Процесс установлен.', 'danger');
+	}
+	alert('Обновлено '.$upd_catalog.', удалено '.count($diff_catalog).' разделов из '.count($pre_catalog).'.');
+//	print_pre($diff_catalog);
+
+	$diff_store = array_diff($pre_store, $new_store);
+	//foreach ($diff_catalog as $k=>$v) {echo '<p><a href="/catalog/'.$v.'">'.$v.'</a></p>';}
+	if (count($diff_store) < 100) {
+		if ($plan['send']['value'] == 3 && count($diff_store) > 0) {
+			db_query('DELETE FROM store WHERE i IN ('.implode(',', $diff_store).')');
+		}
+	} else {
+		alert('Более ста товаров подлежат удалению. Возможна ошибка. Процесс установлен.', 'danger');
+	}
+	alert('Обновлено '.$upd_store.', удалено '.count($diff_store).' товаров из '.count($pre_store).'.');
+//	print_pre($diff_store);
+
+	w('alert');
+}
+
+?>

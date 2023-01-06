@@ -1,0 +1,71 @@
+<?
+
+$plan = array(
+	''=>array('method'=>'POST', 'type'=>'inline', 'class'=>'my-1 auto'),
+	'search'=>array('type'=>'line', 'placeholder'=>'Поиск по пользователям', 'width'=>'300px'),
+	'send'=>array('type'=>'submit', 'value'=>'<i class="fa fa-search"></i>'),
+	'staff'=>array('type'=>'checkbox', 'label'=>'Персонал', 'class'=>'auto'),
+	'ul'=>array('type'=>'checkbox', 'label'=>'Юр.лицо', 'class'=>'auto'),
+);
+
+w('request', $plan);
+w('form', $plan);
+
+if (isset($_REQUEST['search']) && strlen($_REQUEST['search'])) {
+	w('search');
+	$quick = ' WHERE quick LIKE "%'.search_like($_REQUEST['search']).'%" AND ';
+} else {
+	$quick = ' WHERE ';
+}
+
+$quick.= isset($_REQUEST['staff']) && is_user('admin') ? 'roles<>""' : 'roles=""';
+$quick.= isset($_REQUEST['ul']) ? ' AND ul>0' : '';
+$ul = isset($_REQUEST['ul']) ? '&ul=1' : '';
+
+w('pager');
+$q = pager_query('SELECT * FROM user'.$quick.' ORDER BY i DESC', 100);
+echo pager_block('?', 0, $ul);
+
+?>
+<table class="table table-hover table-sm">
+<thead>
+<tr>
+<th>#</th>
+<th>Заходил</th>
+<th>Фамилия Имя Отчество</th>
+<th>Почта</th>
+<th>Телефон</th>
+<th>Адрес</th>
+</tr>
+</thead>
+<tbody>
+<?
+
+$user = array();
+
+$admin = is_user('admin');
+
+$cire = cache_load('city');
+
+w('ft');
+while ($i = db_fetch($q)) {
+	if ($admin || strlen($i['roles']) == 0) {
+		$link = 'http://'.$config['domain'].'?key='.$i['login'].':'.$i['pass'];
+		echo '<tr>';
+		echo '<td><a href="/user/'.$i['i'].'">'.$i['i'].'</a></td>';
+		echo '<td>'.ft($i['last'], 1).'</td>';
+		echo '<td>'.$i['name'].'</td>';
+		echo '<td><a href="/user/'.$i['i'].'">'.$i['email'].'</a></td>';
+		echo '<td><a href="/user/'.$i['i'].'">'.$i['phone'].'</a></td>';
+		echo '<td>'.kv($cire, $i['cire'], '').' '.$i['city'].' '.$i['adres'].'</td>';
+		echo '</tr>';
+	}
+	$user[$i['i']] = $i['name'];
+}
+
+cache_save('users', $user);
+
+?>
+</tbody>
+</table>
+<? echo pager_block('?', 0, $ul); ?>

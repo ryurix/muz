@@ -1,0 +1,30 @@
+<?
+
+//$tree = $config['catalog'];
+$tree = cache_load('catalog-hide');
+$pathway = cache_load('pathway-hide');
+$back = array();
+
+if (!function_exists('flat_tree')) {
+	function flat_tree(&$back, $node, $level, $pathway) {
+		$symbol = array('&bull;', '&rsaquo;', '&raquo;', '-', '+', '=');
+		$name = '';
+		for ($i=0; $i<$level; $i++) {
+			$name.= $symbol[$i].' ';
+		}
+		if (isset($pathway[$node['i']])) {
+			$name.= $pathway[$node['i']]['name'];
+			$back[$node['i']] = $name;
+
+			if (isset($node['/']) && count($node['/']) > 0) {
+				foreach ($node['/'] as $i) {
+					flat_tree($back, $i, $level + 1, $pathway);
+				}
+			}
+		}
+	}
+}
+
+flat_tree($back, $tree, -1, $pathway);
+
+?>

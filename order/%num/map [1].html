@@ -1,0 +1,30 @@
+<?
+
+$row = $config['row'];
+
+$lat = $row['lat'];
+$lon = $row['lon'];
+
+if ($lon && $lat) {
+	$coord = $lat.','.$lon;
+
+?>
+<p><a href="yandexnavi://build_route_on_map?lat_to=<? echo $lat ?>&lon_to=<? echo $lon ?>">Маршрут для Яндекс.Навигатора</a></p>
+<p id="map" style="height:500px; width:100%"></p>
+<script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=basic"></script>
+<script type="text/javascript">
+	var map;
+
+	DG.then(function () {
+		map = DG.map('map', {
+			center: [<? echo $coord ?>],
+			zoom: 13
+		});
+		DG.marker([<? echo $coord ?>]).addTo(map);
+	});
+</script>
+<?
+
+}
+
+?>

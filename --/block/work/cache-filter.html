@@ -1,0 +1,27 @@
+<?
+
+$f1 = array();
+$f2 = array();
+$f3 = array();
+
+$q = db_query('SELECT * FROM filter');
+while ($i = db_fetch($q)) {
+	$f1[$i['i']] = $i['name'];
+	$f2[$i['i']] = $i['info'];
+	$f3[$i['i']] = array();
+}
+db_close($q);
+
+asort($f1);
+asort($f2);
+
+$q = db_query('SELECT * FROM param');
+while ($i = db_fetch($q)) {
+	$f3[$i['filter']][$i['i']] = $i['value'];
+}
+
+cache_save('filter1', $f1);
+cache_save('filter2', $f2);
+cache_save('filter3', $f3);
+
+?>

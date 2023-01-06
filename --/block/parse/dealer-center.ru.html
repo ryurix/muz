@@ -1,0 +1,67 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+$html = $html->find('div[id=news_in]', 0);
+foreach ($html->find('div[class=a11] a') as $row) {
+	$hrefs[] = 'http://dealer-center.ru'.$row->href;
+}
+
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	if (is_object($html)) {
+		$html->clear;
+		unset($html);
+	}
+	set_time_limit(0);
+
+	$html = file_get_html_1251($href);
+	$html = $html->find('div[id=right]', 0);
+
+	$model = $html->find('h2', 0)->innertext;
+
+	$info = '';
+	foreach ($html->find('div[id=news_in]', 0)->children() as $i) {
+		if ($i->tag == 'div') {
+			$s = trim($i->innertext);
+			if (strlen($s) && strlen(strip_tags($s))) {
+				$info.= '<p>'.$s."</p>\n";
+			}
+		}
+	}
+
+	$pics = array();
+	foreach ($html->find('div[id=gridholder] a') as $a) {
+		$pics[] = 'http://dealer-center.ru'.$a->href;
+	}
+	$pic = '';
+	if (count($pics)) {
+		$pic = $pics[0];
+		$pics = array_slice($pics, 1);
+	}
+
+	$files = array();
+/*
+	foreach ($html->find('div[class=files_tovar_blok] a') as $i) {
+		$files[$i->title] = $i->href;
+	}
+*/
+
+	$back[] = array(
+		'href'=>$href,
+//		'brand'=>$brand,
+		'name'=>'',
+		'model'=>$model,
+		'short'=>'',
+		'pic'=>strlen($pic) ? $pic : '',
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>0,
+		'info'=>$info,
+	);
+}
+
+?>

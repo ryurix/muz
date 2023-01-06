@@ -1,0 +1,10 @@
+<?
+
+if (isset($_REQUEST['catalog'])) {
+	w('clean');
+	$back = clean_int($_REQUEST['catalog']);
+} else {
+	$back = 0;
+}
+
+?>

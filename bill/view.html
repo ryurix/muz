@@ -1,0 +1,22 @@
+<? $row = $config['row']; w('ft'); ?>
+<p>Номер счета: <b><? echo $row['i']; ?></b></p>
+<p>Тип счета: <? echo $row['type'] ? 'Аванс' : 'Оплата'; ?></p>
+<p>Заказы: <? $orst = explode('|', trim($row['orst'], '|'));
+	foreach ($orst as $i) {
+		echo '<a href="/order/'.$i.'">'.$i.'</a> ';
+	}
+?></p>
+<p>Пользователь: <? $name = db_result('SELECT name FROM user WHERE i='.$row['user']); echo '<a href="/user/'.$row['user'].'">'.$name.'</a>'; ?></p>
+<p>Менеджер: <? $name = db_result('SELECT name FROM user WHERE i='.$row['user']); echo '<a href="/user/'.$row['user'].'">'.$name.'</a>'; ?></p>
+<p>Дата создания: <? echo ft($row['dt1']); ?></p>
+<p>Дата оплаты: <? echo ft($row['dt2']); ?></p>
+<p>Сумма: <b><? echo number_format($row['total'], 0, '.', ' '); ?></b></p>
+<p>Состояние: <? $state = w('state-bill'); echo $state[$row['state']]; ?></p>
+<p>Примечания: <? echo $row['status']; ?></p>
+<?
+
+echo $row['info'];
+
+//print_pre($config['row']);
+
+?>

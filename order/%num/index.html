@@ -1,0 +1,47 @@
+<?
+
+$plan = $config['plan'];
+if ($plan['count']['value'] && $plan['price']['value']) {
+	$config['plan']['count']['suffix'] = number_format($plan['count']['value'] * $plan['price']['value'], 0, '.', ' ').' <i class="fa fa-rub"></i>';
+}
+w('form-order', $config['plan']);
+
+?>
+<table class="table table-bordered table-hover table-sm">
+<thead>
+	<tr>
+		<th>Поставщик</th>
+		<th>Дата</th>
+		<th>Наименование</th>
+		<th>Цена</th>
+		<th>Оптовая</th>
+		<th>Количество</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$store = $config['plan']['store']['value'];
+$vendor = cache_load('vendor');
+
+w('ft');
+foreach ($config['sync'] as $k=>$i) {
+	if (!isset($vendor[$k])) {
+		continue;
+	}
+	echo '<tr>
+<td>'.$vendor[$k].'</td>
+<td>'.ft($i['dt'], 1).'</td>
+<td>'.$i['name'].'</td>
+<td align=right>'.$i['price'].'</td>
+<td align=right>'.$i['opt'].'</td>
+<td align=right>'.$i['count'].'</td>
+</tr>';
+}
+
+?>
+</tbody>
+</table>
+<?
+
+w('comments');

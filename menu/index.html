@@ -1,0 +1,16 @@
+<?
+
+foreach ($config['rows'] as $row) {
+	echo "\n".$row;
+}
+
+if (count($config['lost'])) {
+	alert('Потерянные страницы (раздел не существует)');
+	w('alert');
+
+	foreach ($config['lost'] as $row) {
+		echo "\n".$row;
+	}
+}
+
+?>

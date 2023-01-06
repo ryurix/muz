@@ -1,0 +1,157 @@
+<?
+
+$sk = $config['sklad'];
+
+$plan = $config['plan'];
+
+$total = 0;
+$summa = 0;
+
+$osts = $config['ost'];
+
+$where = '';
+if ($plan['cut']['value'] == 2) {
+	$where.= ' AND sync.count>0';
+}
+
+$ch = cache_load('children-hide');
+if ($plan['up']['value']) {
+	$where.= ' AND up IN ('.implode(',', $ch[$plan['up']['value']]).')';
+}
+
+if ($plan['vendor']['value'] != $plan['vendor']['default']) {
+	$where.= ' AND EXISTS (SELECT 1 FROM sync s WHERE s.store=store.i AND s.vendor='.$plan['vendor']['value'].' AND s.count > 0)';
+}
+
+if ($plan['grp']['value'] == 1) {
+	$where.= ' GROUP BY store.brand';
+} else {
+	$where.= ' GROUP BY sync.i';
+}
+
+$select = 'SELECT store.i, store.brand, store.name, store.model, store.price price2, SUM(sync.count*sync.price) summa, sync.price, SUM(sync.count) count, sync.i sync, sync.vendor FROM sync,store WHERE sync.store=store.i AND sync.vendor='.$sk.$where.' ORDER BY store.brand,store.name,store.model';
+
+$q = db_query($select);
+$count = 0;
+$brand = cache_load('brand');
+
+$rows = array();
+while ($i = db_fetch($q)) {
+	$rows[$i['i']] = $i;
+}
+
+/*
+function short_values(&$plan, $key, $data, $default, $multi = false) {
+	$values = $plan[$key]['values'];
+	$short = $multi ? array() : array_slice($values, 0, 1, true);
+
+	if( ($multi && count($plan[$key]['value']) == 0) || (!$multi && $plan[$key]['value'] == $default) ) {
+		foreach ($data as $i) {
+			$short[$i[$key]] = kv($values, $i[$key]);
+		}
+//	} else {
+//		$short[$plan[$key]['value']] = kv($values, $plan[$key]['value']);
+		$plan[$key]['values'] = $short;
+	} else {
+		if (!$multi) {
+			$value = $plan[$key]['value'];
+			$short[$value] = kv($values, $value);
+			foreach ($values as $k=>$v) {
+				if( !isset($short[$k]) ) {
+					$short[$k] = $v;
+				}
+			}
+			$plan[$key]['values'] = $short;
+		}
+	}	
+}
+
+short_values($plan, 'vendor', $rows, $plan['vendor']['default']);
+*/
+
+w('form', $plan);
+
+w('table');
+
+?>
+<table class="table table-bordered table-striped table-sm">
+<thead>
+<tr>
+<th class="text-right">#</th>
+<th>Производитель</th>
+<th>Товар</th>
+<th class="text-right">Цена на сайте</th>
+<th class="text-right">Цена</th>
+<th class="text-right">Количество</th>
+<th class="text-right">План</th>
+<th class="text-right">Сумма</th>
+</tr>
+</thead>
+<tbody>
+<?
+
+foreach ($rows as $i) {
+	
+	$name = '<a href="/store/'.$i['i'].'">'.$i['name'].' '.$i['model'].'</a>';
+	$sum = $i['summa'];
+
+	$ost = '';
+	$class = '';
+	$code = $sk.':'.$i['i'];
+	if (isset($osts[$code])) {
+		$ost = $osts[$code];
+		if ($ost == $i['count']) { $class = 'success'; }
+		if ($ost < $i['count']) { $class = 'warining'; }
+		if ($ost > $i['count']) { $class = 'error'; }
+	}
+
+	if ($plan['cut']['value'] == 1 && !$ost) {
+		continue;
+	}
+
+	$count++;
+	echo '<tr'.(strlen($class) ? ' class="'.$class.'"' : $class).'>'
+.'<td>'.$count.'<input type="hidden" name="i[]" value="'.$i['sync'].'"></td>'
+.'<td>'.(isset($brand[$i['brand']]) ? $brand[$i['brand']] : '').'</td>'
+.'<td><a href="/store/'.$i['i'].'">'.$name.'</a></td>'
+.'<td class="text-right">'.number_format($i['price2'], 0, '.', ' ').'</td>'
+.'<td class="text-right td-input"><input type=text class="text-right" name="p[]" value="'.number_format($i['price'], 0, '.', ' ').'"></td>'
+.'<td class="text-right">'.number_format($i['count'], 0, '.', ' ').'</td>'
+.'<td class="text-right td-input"><input type=text class="text-right" name="o[]" value="'.(is_numeric($ost) ? number_format($ost, 0, '.', ' ') : $ost).'"></td>'
+.'<td class="text-right">'.number_format($sum, 0, '.', ' ').'</td>'
+.'</tr>';
+
+	$total+= $i['count'];
+	$summa+= $sum;
+}
+db_close($q);
+
+?>
+</tbody>
+</table>
+<p>
+<?
+
+echo 'Итого: <b>'.number_format($total, 0, '.', ' ').'</b> товаров на сумму <b>'.number_format($summa, 0, '.', ' ').'</b> рублей.';
+
+?>
+</p>
+
+<p>
+<table style="width:100%">
+<tr>
+<td><input type="text" class="form-control" name="info" value=""></td>
+<td><button name="prices" class="btn btn-default">Переоценка</button></td>
+</tr>
+</table>
+</form>
+</p>
+
+<script type="text/javascript" src="/design/jquery.tablesorter.min.js"></script>
+<script>
+$(document).ready(function()
+	{
+		$("table.sort").tablesorter();
+	}
+);
+</script>

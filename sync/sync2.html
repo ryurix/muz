@@ -1,0 +1,156 @@
+<?
+
+$sync_max = 5;
+
+function echo_best($best, $names, $cname, $code = '') {
+	$first = 0;
+	$s = '<select class="sync">';
+	foreach ($best as $k=>$v) {
+		if ($first == 0) {
+			$first = $k;
+		}
+		$s.= '<option value="'.$k.'">'.$names[$k].' '.$v.'%</option>';
+	}
+	return $s.'</select> <input type="text" class="input sync" value="'.$first.'">'
+.' <button class="btn btn-xs btn-default sync" data-code="'.$code.'">&#10003;</button> <button class="btn btn-xs btn-default nosync" data-code="'.$code.'">&times;</button>';
+}
+
+if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']['file'], 1))) {
+	$file = $config['root'].substr($_SESSION['sync']['file'], 1);
+	$vendor = $_SESSION['sync']['vendor'];
+
+	set_time_limit(0);
+
+	w('u8');
+	w('clean');
+	$range = isset($_REQUEST['range']) ? clean_09($_REQUEST['range']) + 1 : 0;
+
+//	Проверка кэша синхронизации
+
+	w('cache-sync');
+	$chunk = $config['sync-chunk'];
+	$names = $config['sync-names'];
+
+//	Берём данные по поставщику
+
+	$q = db_query('SELECT * FROM vendor WHERE i='.$vendor.' UNION SELECT * FROM vendor WHERE up='.$vendor);
+	$ven = db_fetch($q);
+	$vens = array($ven['i']=>$ven);
+	while($i = db_fetch($q)) {
+		$vens[$i['i']] = $i;
+	}
+	db_close($q);
+
+//	Читаем файл
+	w('clean');
+	w('xlsread');
+	$data = new Spreadsheet_Excel_Reader();
+
+	$data->setOutputEncoding('UTF-8');
+	$data->read($file);
+	$cells = $data->sheets[0]['cells'];
+
+	$rows = array();
+	$count = 0; // общий счетчик строк
+	foreach ($cells as $n=>$i) {
+		$count++;
+		if ($count < $range) {
+			continue;
+		}
+
+		$valid = isset($i[$ven['cname']]) && isset($i[first_int($ven['ccount'])]) && isset($i[$ven['cprice']]);
+
+		if ($valid) {
+//				$cbrand = $i[$ven['cbrand']];
+			$ccode = $ven['ccode'] && isset($i[$ven['ccode']]) ? trim($i[$ven['ccode']]) : '';
+			$ccode = u8sub($ccode, 0, 15);
+			$cname = trim($i[$ven['cname']]);
+			if ($ven['cname'] != $ven['ctype'] && isset($i[$ven['ctype']])) {
+				$cname = trim($i[$ven['ctype']]).' '.$cname;
+			}
+			if ($ven['cname'] != $ven['cbrand'] && isset($i[$ven['cbrand']])) {
+				$cname = trim($i[$ven['cbrand']]).' '.$cname;
+			}
+			$cname = u8sub($cname, 0, 64);
+			$ccount = isset($i[$ven['ccount']]) ? trim($i[$ven['ccount']]) : '';
+
+			//if (strlen($ccount) == 0) {$ccount = 0;}
+
+			//$valid = $valid && is_number($ccount);
+			$cprice = $i[$ven['cprice']];
+			$valid = $valid && is_number($cprice);
+			$valid = $valid && strlen($cname);
+		}
+
+		if ($valid) {
+			$or = '';
+			if (strlen($ccode)) {
+				$or = ' OR (vendor='.$vendor.' AND code="'.addslashes($ccode).'")';
+			}
+			$q = db_query('SELECT * FROM sync WHERE name="'.addslashes($cname).'"'.$or);
+				
+			if ($sync = db_fetch($q)) {
+				// ищем запись у всех поставщиков
+				$syncs = array($sync);
+				while ($sync = db_fetch($q)) {
+					$syncs[] = $sync;
+				}
+
+				foreach ($vens as $k=>$v) { // поставщик и его склады
+//echo '<p>ven: '.$k.'</p>';
+					foreach ($syncs as $sync) { // проверяем, есть ли своя запись
+//echo '<p>sync: '.$sync['vendor'].'</p>';
+						if ($sync['vendor'] == $k) {
+							if ($sync['code'] != $ccode || $sync['name'] != $cname) {
+								db_update('sync', array(
+									'code'=>$ccode,
+									'name'=>$cname,
+								), array('i'=>$sync['i']));
+							}
+//echo '<p>break!</p>';
+							break;
+						}
+					}
+
+					// И если у другого поставщика есть такая запись -- клонируем
+					if ($sync['vendor'] != $k) {
+						db_insert('sync', array(
+							'code'=>$ccode,
+							'name'=>$sync['name'],
+							'store'=>$sync['store'],
+							'vendor'=>$k,
+							'dt'=>now(),
+							'price'=>ceil($cprice),
+						));
+					}
+				}
+			} else { // Пробуем найти в names
+				w('search');
+				$best = search_best(search_split($cname), $chunk, 12);
+$rows[] = '<tr><td>'.$n.'</td><td><span class="sync">'.$cname.'</span>; <b>'.$cprice.'</b>&times;'.$ccount.'</td><td nowrap>'
+.echo_best($best, $names, $cname, $ccode).'</td></tr>';
+			}
+		}
+
+		if (count($rows) >= $sync_max) {
+			break;
+		}
+	}
+
+	foreach ($rows as $i) {
+		echo $i."\n";
+	}
+
+	if (count($rows) < $sync_max) {
+		alert('Всё синхронизировано: '.$count.' строк.');
+		echo '<tr><td colspan=3>';
+		w('alert');
+		echo '</td></tr>';
+	} else {
+		echo '<tr><td colspan=3><input type="text" id="sync1" value="'.$count.'"> <button class="btn btn-success" id="sync2" data-range="'.$count.'">Загрузить ещё строки</button>';
+		w('alert');
+		echo '</td></tr>';
+	}
+}
+
+?>

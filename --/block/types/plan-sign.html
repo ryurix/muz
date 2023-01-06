@@ -1,0 +1,11 @@
+<?
+
+$back = array(
+	'' => array('method' => 'POST'),
+	'name'=>array('name'=>'Название', 'type'=>'line'),
+	'mini'=>array('name'=>'Знак', 'type'=>'file0'),
+	'info'=>array('name'=>'Описание', 'type'=>'rich', 'rows'=>12),
+	'send'=>array('name'=>'', 'type'=>'button', 'count'=>2, 1=>'Сохранить', 2=>'Удалить', 'class'=>array(1=>'btn-success', 2=>'btn-danger'), 'onclick'=>array(2=>"return confirm('Восстановление невозможно! Удалить?');")),
+);
+
+?>

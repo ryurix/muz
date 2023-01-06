@@ -1,0 +1,28 @@
+<?
+
+$type = w('type-menu');
+
+$ups = array(''=>'');
+$q = db_query('SELECT * FROM menu WHERE type=0 AND code<>"'.$args.'"');
+while ($i = db_fetch($q)) {
+	$ups[$i['code']] = $i['name'];
+}
+
+$back = array(
+	'' => array('method' => 'POST'),
+	'up'=>array('name'=>'Раздел', 'type'=>'combo', 'values'=>$ups, 'width'=>400, 'class'=>'form-control'),
+	'hide'=>array('label'=>'Скрыть', 'type'=>'checkbox'),
+	'code'=>array('name'=>'Адрес', 'type'=>'line', 'min'=>2, 'class'=>'form-control'),
+	'type'=>array('name'=>'Тип', 'type'=>'combo', 'values'=>$type, 'width'=>400, 'class'=>'form-control'),
+	'tag0'=>array('name'=>'Ручные теги', 'type'=>'checkbox'),
+	'tag1'=>array('name'=>'Тег 1', 'help'=>'description', 'type'=>'line', 'class'=>'form-control'),
+	'tag2'=>array('name'=>'Тег 2', 'help'=>'keywords', 'type'=>'line', 'class'=>'form-control'),
+	'tag3'=>array('name'=>'Тег 3', 'help'=>'title', 'type'=>'line', 'class'=>'form-control'),
+	'name'=>array('name'=>'Заголовок', 'type'=>'line', 'min'=>3, 'class'=>'form-control'),
+	'w'=>array('name'=>'Вес', 'type'=>'int', 'class'=>'form-control'),
+	'send' => array('name'=>'', 'type'=>'button', 'count'=>2, 1=>'Сохранить', 2=>'Удалить', 'class'=>array(1=>'btn-success', 2=>'btn-danger'),
+		'onclick'=>array(2=>"return confirm('Удалить страницу? Восстановление невозможно!')")),
+	'body'=>array('name'=>'', 'type'=>'rich', 'rows'=>12),
+);
+
+?>

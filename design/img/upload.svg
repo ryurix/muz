@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="10" height="12" viewBox="0 0 10 12">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #f07057;
+      }
+    </style>
+  </defs>
+  <g id="upload" transform="translate(0 0)">
+    <path id="Union_19" data-name="Union 19" class="cls-1" d="M-5132-284v-1.412h10V-284Zm2.856-2.824v-4.235H-5132l5-4.941,5,4.941h-2.856v4.235Z" transform="translate(5132 296)"/>
+  </g>
+</svg>

@@ -1,0 +1,22 @@
+<? // print_pre($args); ?>
+<div class="white-row">
+	<div class="row">
+		<div class="form-group">
+			<div class="col-sm-12">
+				<label>Электронная почта</label>
+				<input name="_login" type="text" value="<? echo $args['_login']['value']; ?>" class="form-control">
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group">
+			<div class="col-sm-12">
+				<label>Пароль</label>
+				<input name="_pass" type="password" value="" class="form-control">
+			</div>
+		</div>
+	</div>
+
+	<button class="btn btn-primary" type="submit"><i class="fa fa-check"></i> &nbsp; ВХОД</button>
+	<a href="/my" class="btn btn-default">Забыли пароль?</a>
+</div>

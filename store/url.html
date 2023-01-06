@@ -1,0 +1,34 @@
+<?
+
+w('clean');
+
+$brand = cache_load('brand');
+
+$upd = array();
+
+$q = db_query('SELECT * FROM store');
+while ($i = db_fetch($q)) {
+	$url = kv($brand, $i['brand']).' '.$i['model'].' '.$i['name'];
+	$url = $i['i'].'-'.str2url(trim($url));
+
+	if ($url != $i['url']) {
+		$upd[$i['i']] = $url;
+
+		echo '<p>'.$i['url'].' &rarr; '.$url.'</p>';
+	}
+
+	if (count($upd) > 1000) {
+		break;
+	}
+}
+db_close($q);
+
+if (count($upd) == 0) {
+	echo '<p>Все ссылки в порядке!</p>';
+}
+
+foreach ($upd as $k=>$v) {
+	db_update('store', array('url'=>$v), array('i'=>$k));
+}
+
+?>

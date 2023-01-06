@@ -1,0 +1,62 @@
+<?
+
+$state = w('list-kkm');
+
+w('pager');
+$q = pager_query('SELECT kkm.i i'
+.',user.i usr'
+.',user.name name'
+.',kkm.dt dt'
+.',kkm.dt2 dt2'
+.',kkm.total total'
+.',kkm.state state'
+.',kkm.orst orst'
+.' FROM kkm LEFT JOIN user ON kkm.usr=user.i ORDER BY kkm.i DESC', 100);
+
+echo pager_block();
+
+?>
+<table class="table table-bordered table-striped table-hover">
+<thead>
+<tr>
+<th align="center">ID</th>
+<th>Заказы</th>
+<th>Выписан</th>
+<th>Пользователь</th>
+<th>Обработан</th>
+<th>Статус</th>
+<th>Сумма</th>
+</tr>
+</thead>
+<tbody>
+<?
+
+w('ft');
+while ($i = db_fetch($q)) {
+	echo '<tr>';
+	echo '<td align="center"><a href="/kkm/'.$i['i'].'">'.$i['i'].'</a></td>';
+	echo '<td>';
+
+	$orst = explode('|', trim($i['orst'], '|'));
+	foreach ($orst as $o) {
+		echo '<a href="/order/'.$o.'">'.$o.'</a> ';
+	}
+
+	echo '</td>';
+	echo '<td>'.ft($i['dt'], 1).'</td>';
+	echo '<td><a href="/user/'.$i['usr'].'">'.$i['name'].'</a></td>';
+	echo '<td>'.($i['dt2'] ? ft($i['dt2'], 1) : '').'</td>';
+	echo '<td>'.kv($state, $i['state']).'</td>';
+	echo '<td>'.$i['total'].'</td>';
+	echo '</tr>';
+}
+db_close($q);
+
+?>
+</tbody>
+</table>
+<?
+
+echo pager_block();
+
+?>

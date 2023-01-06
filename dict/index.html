@@ -1,0 +1,46 @@
+<?
+
+/*
+<div style="float:right">
+	<a href="/dict/new" class="btn btn-default"><i class="fa fa-plus"></i> Добавить слово</a>
+</div>
+*/
+
+echo '<div>';
+$sites = cache_load('sitename');
+foreach ($sites as $k=>$v) {
+	echo '<a href="/dict/site/'.$k.'" class="btn btn-default mr-1 mb-1">'.$v.'</a>';
+}
+echo '</div>';
+
+w('pager');
+$q = pager_query('SELECT * FROM dict ORDER BY i', 100);
+echo pager_block();
+
+?>
+<table class="table table-bordered table-hover table-sm">
+<thead>
+<tr>
+	<th>#</th>
+	<th>Название</th>
+	<th>Код</th>
+</tr>
+</thead>
+<tbody>
+<?
+
+$user = array();
+
+while ($i = db_fetch($q)) {
+	$link = '/dict/'.$i['i'];
+	echo '<tr>';
+	echo '<td><a href="/dict/'.$i['i'].'">'.$i['i'].'</a></td>';
+	echo '<td><a href="/dict/'.$i['i'].'">'.$i['name'].'</a></td>';
+	echo '<td><a href="/dict/'.$i['i'].'">'.$i['code'].'</a></td>';
+	echo '</tr>';
+}
+
+?>
+</tbody>
+</table>
+<? echo pager_block('?', 0); ?>

@@ -1,0 +1,57 @@
+<?
+
+/*
+ *	Copyright flydom.ru
+ *	Version 2016-05-16
+ */
+
+$type = isset($args['']['type']) ? $args['']['type'] : 'table';
+
+if (!isset($args['']['open']) || $args['']['open']) {
+	echo '<form';
+	if (isset($args['']['action'])) {
+		echo ' action="'.$args['']['action'].'"';
+	}
+	if (isset($args['']['method'])) {
+		echo ' method="'.$args['']['method'].'"';
+		if ($args['']['method'] == 'POST') {
+			echo ' enctype="multipart/form-data"';
+		}
+	} else {
+		echo ' method="POST"';
+	}
+	if (isset($args['']['name'])) {
+		echo ' name="'.$args['']['name'].'"';
+	}
+	$class = !isset($args['']['class']) ? array()
+		: (is_array($args['']['class']) ? $args['']['class'] : array($args['']['class']));
+	if ($type == 'inline') {
+		$class[] = 'form-inline';
+	}
+	if (count($class)) {
+		echo ' class="'.implode(' ', $class).'"';
+	}
+	if (isset($args['']['style'])) {
+		echo ' style="'.$args['']['style'].'"';
+	}
+	echo '>';
+}
+
+if ((isset($args['']['sent']) && $args['']['sent'])
+	|| (isset($args['sent']) && $args['sent']['value'])) {
+	foreach ($args as $k=>$v) {
+		if (strlen($k) == 0) { continue; }
+
+		if (!$v['valid']) {
+			$args[$k]['iv'] = 1;
+		}
+	}
+}
+
+w('form-'.$type, $args);
+
+if (!isset($args['']['close']) || $args['']['close']) {
+	echo '</form>';
+}
+
+?>

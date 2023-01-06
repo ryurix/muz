@@ -1,0 +1,59 @@
+<table class="table table-bordered table-striped table-hover">
+<thead>
+<tr>
+<th align="center">ID</th>
+<th>Вид</th>
+<th>Заказы</th>
+<th>Выписан</th>
+<th>Пользователь</th>
+<th>Статус</th>
+<th>Сумма</th>
+</tr>
+</thead>
+<tbody>
+<?
+
+$type = w('list-bill');
+
+w('pager');
+$q = pager_query('SELECT bill.i i'
+.',user.i user'
+.',user.name name'
+.',bill.dt1 dt1'
+.',bill.total total'
+.',bill.state state'
+.',bill.orst orst'
+.',bill.type type'
+.' FROM bill LEFT JOIN user ON bill.user=user.i ORDER BY bill.i DESC', 100);
+
+$state = w('state-bill');
+
+w('ft');
+while ($i = db_fetch($q)) {
+	echo '<tr>';
+	echo '<td align="center"><a href="/bill/'.$i['i'].'">'.$i['i'].'</a></td>';
+	echo '<td>'.kv($type, $i['type']).'</td>';
+	echo '<td>';
+
+	$orst = explode('|', trim($i['orst'], '|'));
+	foreach ($orst as $o) {
+		echo '<a href="/order/'.$o.'">'.$o.'</a> ';
+	}
+
+	echo '</td>';
+	echo '<td>'.ft($i['dt1'], 1).'</td>';
+	echo '<td><a href="/user/'.$i['user'].'">'.$i['name'].'</a></td>';
+	echo '<td>'.$state[$i['state']].'</td>';
+	echo '<td>'.$i['total'].'</td>';
+	echo '</tr>';
+}
+db_close($q);
+
+?>
+</tbody>
+</table>
+<?
+
+echo pager_block('/bill?');
+
+?>

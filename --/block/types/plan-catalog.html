@@ -1,0 +1,27 @@
+<?
+
+$filters = array(0=>'') + cache_load('filter2');
+
+$back = array(
+	''=>array('method'=>'POST'),
+	'up'=>array('name'=>'Верхний раздел', 'type'=>'combo2', 'values'=>$args),
+	'tag0'=>array('name'=>'Ручные теги', 'type'=>'checkbox'),
+	'tag1'=>array('name'=>'Тег 1', 'help'=>'description', 'type'=>'line', 'class'=>'form-control'),
+	'tag2'=>array('name'=>'Тег 2', 'help'=>'keywords', 'type'=>'line', 'class'=>'form-control'),
+	'tag3'=>array('name'=>'Тег 3', 'help'=>'title', 'type'=>'line', 'class'=>'form-control'),
+	'name'=>array('name'=>'Имя', 'help'=>'подпись под значком', 'type'=>'line', 'min'=>3),
+	'name2'=>array('name'=>'Полное имя', 'help'=>'заголовок страницы', 'type'=>'line', 'min'=>3),
+	'url'=>array('name'=>'URL', 'type'=>'line'),
+	'hide'=>array('name'=>'Скрыть', 'type'=>'checkbox'),
+	'w'=>array('name'=>'Вес', 'type'=>'int'),
+	'icon'=>array('name'=>'Значок из файла', 'type'=>'file0', 'default'=>''),
+	'size'=>array('name'=>'Изменить размер', 'type'=>'checkbox'),
+	'filter'=>array('name'=>'Фильтры', 'type'=>'filter1', 'values'=>$filters),
+	'send'=>array('type'=>'button', 'count'=>1, 1=>'Сохранить', 'class'=>'btn-success'),
+	'google'=>array('name'=>'Код категории Google', 'type'=>'int'),
+	'size'=>array('name'=>'Размеры', 'type'=>'size'),
+	'short'=>array('name'=>'Текст вверху', 'type'=>'rich', 'rows'=>7),
+	'info'=>array('name'=>'Текст внизу', 'type'=>'rich', 'rows'=>12),
+);
+
+?>

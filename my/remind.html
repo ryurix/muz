@@ -1,0 +1,21 @@
+<?
+
+/*
+echo '<p>';
+w('form', $config['plan']);
+echo '</p>';
+*/
+
+?>
+
+<div class="col-md-6">
+	<? w('form', $config['plan']); ?>
+</div>
+
+<div class="col-md-6">
+<?
+	$dummy='remind-info';
+	w('admin-line', $dummy);
+	cache_load('remind-info');
+?>
+</div>

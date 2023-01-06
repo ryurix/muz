@@ -1,0 +1,109 @@
+<?
+
+$select = 'SELECT store.i i'
+.',store.up up'
+.',store.code code'
+.',store.quick quick'
+.',store.tags tags'
+.',store.hide hide'
+.',store.name name'
+.',store.model model'
+.',store.sync sync'
+.',store.brand brand_i'
+.',store.vendor vendor'
+.',store.short short'
+.',speed2.speed speed'
+.',store.city city'
+.',store.icon icon'
+.',store.mini mini'
+.',store.pic pic'
+.',store.pics pics'
+.',store.files files'
+.',store.price price'
+.',store.sale sale'
+.',store.count count'
+.',store.user user'
+.',store.dt dt'
+.',store.info info'
+.',store.w w'
+.',store.filter filter'
+.',store.grp grp'
+.',store.yandex yandex'
+.',store.rule rule'
+.',sync.price roz'
+.',sync.opt opt'
+.',brand.name brand'
+.',IF(store.price > 0, 0, 1) worth'
+.',IF(store.count > 0, 0, 1) avail'
+.' FROM brand,store LEFT JOIN sync ON sync.store=store.i AND sync.vendor=store.vendor'
+.' WHERE store.brand=brand.i AND '.$args['where'].$config['tools'];
+
+//print_pre($select);
+
+$onpage = isset($_SESSION['onpage']) ? $_SESSION['onpage'] : 32;
+w('pager');
+$q = pager_query($select, $onpage);
+
+echo pager_block('?', 0, $args['search']);
+
+/*
+if (is_user('admin')) {
+	print_pre($select);
+}
+*/
+
+?>
+<p>
+<table class="table">
+<thead>
+<tr>
+	<th>#</th>
+	<th>Наименование</th>
+	<th>Цена</th>
+	<th>Роз./Опт.</th>
+	<th>Поставщик</th>
+	<th>Группа</th>
+	<th>Правило</th>
+</tr>
+</thead>
+<tbody>
+<?
+
+$brand = cache_load('brand');
+$ven = cache_load('vendor');
+$grps = cache_load('groups');
+
+$count = 0;
+while ($i = db_fetch($q)) {
+	$name = '<a href="/store/'.$i['i'].'">'.$brand[$i['brand_i']].' '.$i['name'].' '.$i['model'].'</a>';
+	if ($i['yandex']) {
+		$name.= ' <a href="http://market.yandex.ru/product/'.$i['yandex'].'/" target="_BLANK"><i class="icon-shopping-cart"></i></a>';
+	}
+
+	if (strlen($i['roz']) && $i['roz']) {
+		$p2 = number_format($i['roz'], 0, '.', ' ');
+		if (strlen($i['opt']) && $i['opt']) {
+			$p2.= ' / '.number_format($i['opt'], 0, '.', ' ');
+		}
+	} else {
+		$p2 = '&nbsp;';
+	}
+
+	echo '<tr>'
+.'<td>'.$i['i'].'</td>'
+.'<td>'.$name.'</td>'
+.'<td class="text-right" nowrap>'.number_format($i['price'], 0, '.', ' ').'</td>'
+.'<td nowrap>'.$p2.'</td>'
+.'<td>'.$ven[$i['vendor']].'</td>'
+.'<td>'.$grps[$i['grp']].'</td>'
+.'<td>'.$i['rule'].'</td>'
+.'</tr>';
+}
+
+?>
+</tbody></table>
+<?
+
+echo pager_block('?', 0, $args['search']);
+
+?>

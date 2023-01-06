@@ -1,0 +1,8 @@
+<?
+
+switch ($args['type']) {
+case 1: echo '<span class="muted">'.$args['name'].':</span> <span class="orange">заказ оформлен'.(strlen($args['body']) ? ': '.$args['body'] : '').'</span>'; break;
+default: echo '<span class="muted">'.($args['user'] ? $args['name'].':' : '').'</span> <span class="orange">'.$args['body'].'</span>';
+}
+
+?>

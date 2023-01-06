@@ -1,0 +1,72 @@
+<?
+
+set_time_limit(0);
+
+$all = array();
+foreach (glob("files/store/*/*") as $i) {
+	$all[] = '/'.$i;
+}
+
+//*
+$total = count($all);
+
+$list = array();
+$q = db_query('SELECT * FROM store');
+while ($i = db_fetch($q)) {
+	if (strlen($i['icon'])) {
+		$list[] = $i['icon'];
+	}
+	if (strlen($i['mini'])) {
+		$list[] = $i['mini'];
+	}
+	if (strlen($i['pic'])) {
+		$list[] = $i['pic'];
+	}
+	if (strlen($i['pics'])) {
+		$pics = php_decode($i['pics']);
+		foreach($pics as $v) {
+			if (isset($v['mini'])) {
+				$list[] = $v['mini'];
+			}
+			$list[] = $v['href'];
+		}
+	}
+	if (strlen($i['files'])) {
+		$pics = php_decode($i['files']);
+		foreach($pics as $v) {
+			$list[] = $v['href'];
+		}
+	}
+}
+
+$used = count($list);
+
+$del = array_diff($all, $list);
+
+foreach ($del as $i) {
+//	unlink($config['root'].substr($i, 1));
+	print_pre($i);
+}
+
+echo '<pre>Total '.$total.' files, '.$used.' used, deleted '.count($del).' files</pre>';
+
+//*/
+
+$all = array();
+foreach (glob("files/store/*") as $i) {
+	$all[] = $i;
+}
+
+$erased = 0;
+$skipped = 0;
+foreach ($all as $i) {
+	if (@rmdir($i)) {
+		$erased++;
+	} else {
+		$skipped++;
+	}
+}
+
+echo '<pre>Erased '.$erased.' empty directories, skipped '.$skipped.' (not empty)</pre>';
+
+?>

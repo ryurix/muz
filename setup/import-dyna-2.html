@@ -1,0 +1,53 @@
+<?
+
+w('pic');
+function clean_watermark($dirty, $clean) {
+	$x = 0;
+	$x2 = 300;
+	//$x = 180;
+	//$x2 = $x+102;
+
+	$img = pic_load(ltrim($dirty, '/'));
+	$white = imagecolorallocate($img['image'], 255, 255, 255);
+	imagefilledrectangle($img['image'], $x, 779, $x2, 800, $white);
+//	imagerectangle($img['image'], $x, 779, $x2, 800, $white);
+	pic_jpeg($img, ltrim($clean, '/'));
+}
+
+/*
+w('pic');
+$img = pic_load('files/dyna/5099/d5099-1.jpg');
+$white = imagecolorallocate($img['image'], 255, 255, 255);
+imagefilledrectangle($img['image'], 146, 779, 248, 800, $white);
+pic_jpeg($img, 'files/dyna/5099/5099-1.jpg');
+*/
+
+$q = db_query('SELECT * FROM dyna WHERE pic="" LIMIT 20');
+
+while ($row = db_fetch($q)) {
+	$images = array_decode($row['images']);
+
+	$clean = array();
+	$count = 0;
+	foreach ($images as $i) {
+		$count++;
+		$filename = '/files/dyna/'.$row['store'].'/'.$row['store'].'-'.$count.'.jpg';
+		clean_watermark($i, $filename);
+		alert('<a href="'.$filename.'">'.$filename.'</a>');
+		w('alert');
+		$clean[] = $filename;
+	}
+
+	$pic = array_shift($clean);
+	$pics = array_encode($clean);
+	db_update('dyna', array(
+		'pic'=>$pic,
+		'pics'=>$pics
+	), array('i'=>$row['i']));
+
+	db_update('store', array(
+		'size'=>$row['size']
+	), array('i'=>$row['store'], '(size IS NULL OR size="" OR size=",,,")'));
+}
+
+?>

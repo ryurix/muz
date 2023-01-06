@@ -1,0 +1,1 @@
+<?$v=array(1=>'danger',2=>'success',14=>'info')?>

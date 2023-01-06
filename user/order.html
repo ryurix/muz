@@ -1,0 +1,14 @@
+<?
+
+if (isset($_SESSION['basket'])) {
+	$count = 0;
+	foreach ($_SESSION['basket'] as $k=>$i) {
+		$count+= $i['c'];
+	}
+
+	echo '<p><form method=POST class="form-inline"><button class="btn btn-sm btn-info mx-1" name="append">Добавить</button> товары из <a href="/basket" class="btn btn-outline-default btn-sm mx-1">Корзины ('.$count.')</a> в заказ пользователя.</form></p>';
+}
+
+w('order-list', $config['args'][0]);
+
+?>

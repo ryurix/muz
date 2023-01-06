@@ -1,0 +1,92 @@
+<?
+
+w('ft');
+w('clean');
+
+if (!function_exists('ozon_query')) {
+	function ozon_query($ozon, $url, $args) {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, 'https://api-seller.ozon.ru'.$url);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($args));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			'Client-Id: '.$ozon['client'],
+			'Api-Key: '.$ozon['api'],
+			'Content-Type: application/json',
+		));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		$result = curl_exec($ch);
+		curl_close($ch);
+
+		return json_decode($result, true);
+	}
+}
+
+$user = $args['user'];
+
+if (!isset($config['ozon']) || !isset($config['ozon'][$user])) {
+    return;
+}
+
+$ozon = $config['ozon'][$user];
+
+$orst = db_get_row('orst', ['i'=>$args['orst']]);
+
+if (is_null($orst)) { return; }
+
+// Ищем другие заказы того же номера в другом статусе
+$all = db_fetch_all(db_select('i,mpi,count,sku,state', 'orst', [
+	'mpi'=>$orst['mpi'],
+//	'i<>'.$orst['i']
+]), 'i');
+
+// Если нашлись -- ждём когда все заказы будут в одинаковом статусе
+foreach ($all as $i) {
+	if ($i['state'] !== $orst['state']) {
+		return;
+	}
+}
+
+if ($args['old'] == 1 && $args['new'] < 35) {
+	$items = [];
+	foreach ($all as $i) {
+		$items[]= [
+//			'exemplar_info'=>[
+//				'is_gtd_absent'=>true,
+//				'mandatory_mark'=>'',
+//			],
+			'product_id'=>$i['sku'],
+			'quantity'=>$i['count'],
+		];
+	}
+	$post = ozon_query($ozon, '/v4/posting/fbs/ship', [
+		'packages'=>[[
+			'products'=>$items,
+		]],
+		'posting_number'=>$orst['mpi'],
+		'with'=>[
+			'additional_data'=>false,
+		]
+	]);
+
+	if (!isset($post['result'])) {
+		w('log');
+		logs(375, $user, json_encode($post));
+	}
+}
+
+/*
+if ($args['old'] < 35 && $args['new'] == 35) {
+	$post = ozon_query($ozon, '/v2/posting/fbs/cancel', [
+		'cancel_reason_id'=>352,
+		'posting_number'=>$orst['mpi'],
+	]);
+
+	if (!isset($post['result']) || !$post['result']) {
+		w('log');
+		logs(385, $user, json_encode($post));
+	}
+}
+*/

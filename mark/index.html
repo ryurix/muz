@@ -1,0 +1,23 @@
+<? w('table') ?>
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<td class="text-right">#</td>
+<td>Метка</td>
+<td>Вес</td>
+</tr>
+</thead>
+<tbody>
+<?
+
+$q = db_query('SELECT * FROM mark ORDER BY w,i');
+while ($i = db_fetch($q)) {
+	echo '<tr><td class="text-right">'.$i['i'].'</td>';
+	echo '<td><a class="badge badge-'.$i['color'].'" href="/mark/'.$i['i'].'" title="'.$i['info'].'">'.$i['name'].'</a></td>';
+	echo '<td>'.$i['w'].'</td></tr>';
+}
+db_close($q);
+
+?>
+</tbody>
+</table>

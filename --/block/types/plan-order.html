@@ -1,0 +1,62 @@
+<?
+
+$order = w('order-state');
+$staff = cache_load('staff');
+$pay = w('list-pay');
+
+$vendor = /*array(0=>'') + */cache_load('vendor');
+unset($vendor[0]);
+$dost = w('list-dost');
+$city = cache_load('city');
+
+$back = array(
+	'' => array('method' => 'POST'),
+	'store'=>array('type'=>'hidden'),
+	'last'=>array('type'=>'hidden'),
+	'user'=>array('name'=>'Пользователь', 'type'=>'label'),
+	'name'=>array('name'=>'Наименование', 'type'=>'label'),
+
+	'staff'=>array('name'=>'Менеджер', 'type'=>'combo', 'values'=>$staff, 'class'=>'form-control'),
+	'state'=>array('name'=>'Состояние', 'type'=>'combo', 'values'=>$order, 'class'=>'form-control'),
+	
+	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo', 'values'=>$vendor),
+	
+	'dost'=>array('name'=>'Способ доставки', 'type'=>'combo', 'values'=>$dost),
+	'cire'=>array('name'=>'Регион', 'type'=>'combo', 'values'=>$city),
+	'city'=>array('name'=>'Город, улица, дом', 'type'=>'adres'),
+	'adres'=>array('name'=>'Квартира', 'type'=>'line'),
+	
+	'mark'=>array('name'=>'Метки', 'type'=>'multich', 'values'=>cache_load('mark-name'), 'placeholder'=>'Выберите метки...', 'class'=>'form-control mark'),
+
+	'sale'=>array('name'=>'Скидка', 'type'=>'line', 'class'=>'form-control'),
+	'price'=>array('name'=>'Цена', 'type'=>'money', 'class'=>'form-control'),
+	'count'=>array('name'=>'Количество', 'type'=>'int', 'class'=>'form-control', 'width'=>100),
+	'pay2'=>array('name'=>'Способ оплаты', 'type'=>'combo', 'values'=>$pay, 'class'=>'form-control'),
+	'money2'=>array('name'=>'Оплачено', 'type'=>'money', 'class'=>'form-control'),
+	'pay'=>array('name'=>'Способ предоплаты', 'type'=>'combo', 'values'=>$pay, 'class'=>'form-control'),
+	'money'=>array('name'=>'Предоплата', 'type'=>'money', 'class'=>'form-control'),
+	'money0'=>array('name'=>'Цена доставки', 'type'=>'intus', 'label'=>'Оплачено', 'width'=>200),
+
+	'info'=>array('name'=>'Комментарий', 'type'=>'line', 'class'=>'form-control', 'placeholder'=>'для пользователя'),
+	'note'=>array('name'=>'Замечания', 'type'=>'line', 'class'=>'form-control', 'placeholder'=>'для менджеров'),
+
+	'send'  =>array('name'=>'', 'type'=>'button', 'count'=>array(1,4,2,3),
+		1=>'Сохранить',
+		4=>'<i class="fa fa-save"></i> закрыть',
+		2=>'<i class="fa fa-save"></i> без уведомления',
+		3=>'Удалить',
+		'class'=>array(
+			1=>'btn-success',
+			2=>'btn-warning',
+			3=>'btn-danger'
+		), 'onclick'=>array(3=>"return confirm('Удалить заказ? Восстановление невозможно!')")),
+
+	'docs'=>array('name'=>'Документы<br><small class="muted">для сотрудников</small>', 'type'=>'files'),
+	'files'=>array('name'=>'Файлы<br><small class="muted">видны всем</small>', 'type'=>'files'),
+
+	'mpdt'=>array('name'=>'Дата доставки', 'type'=>'date', 'class-row'=>'marketplace', 'default'=>''),
+	'mpi'=>array('name'=>'Код заказа', 'type'=>'line', 'class-row'=>'marketplace'),
+	
+);
+
+?>

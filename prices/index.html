@@ -1,0 +1,90 @@
+<?
+
+$typ = \Type\Price::get();
+
+$run = $config['plan']['']['valid'] && $config['plan']['send']['value'];
+if ($run) {
+	w('prices-calc');
+}
+
+$plan = w('plan-prices');
+
+$filter = 'WHERE typ='.$typ;
+$q = db_query('SELECT * FROM prices '.$filter.' ORDER BY i');
+
+?>
+<table class="table table-bordered table-striped table-sm">
+	<thead>
+		<tr>
+			<th class="text-center">#</th>
+			<th>Каталог</th>
+			<th>Группы</th>
+			<th>Производители</th>
+			<th>Поставщик</th>
+			<th>Наличие</th>
+			<th>Взять цену</th>
+			<th>Коррекция цены</th>
+			<th>Дней</th>
+<?
+	if ($run) {
+		echo '<th>Обновлено</th>';
+	}
+?>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+$brands = $plan['brand']['values'];
+$vendors = $plan['vendor']['values'];
+$groups = $plan['grp']['values'];
+$ups = $plan['up']['values'];
+$counts = $plan['count']['values'];
+$prices = $plan['price']['values'];
+
+
+while ($i = db_fetch($q)) {
+	$brand = $i['brand'];
+	if (strlen($brand)) {
+		$codes = explode(',', $brand);
+		$brand = '';
+		foreach ($codes as $b) {
+			$brand.= $brands[$b].' ';
+		}
+	}
+	$grp = $i['grp'];
+	if (strlen($grp)) {
+		$codes = explode(',', $grp);
+		$grp = '';
+		foreach ($codes as $c) {
+			$grp.= kv($groups, $c).' ';
+		}
+	}
+
+	$vendor = $vendors[$i['vendor']];
+	$up = $ups[$i['up']];
+
+	$count = $counts[$i['count']];
+	$price = $prices[$i['price']];
+
+	echo '<tr><td class="text-center"><a class="btn btn-default btn-sm" href="/prices/'.$i['i'].'?typ='.$typ.'">'.$i['i'].'</a></td>'
+.'<td>'.$up.'</td>'
+.'<td>'.$grp.'</td>'
+.'<td>'.$brand.'</td>'
+.'<td>'.$vendor.'</td>'
+.'<td nowrap>'.$count.'</td>'
+.'<td>'.$price.'</td>'
+.'<td>'.$i['sale'].' %</td>'
+.'<td>'.$i['days'].'</td>';
+	if ($run) {
+		echo '<td>'.prices_calc($i).'</td>';
+	}
+	echo '</tr>'."\n";
+}
+
+?>
+	</tbody>
+</table>
+<?
+
+w('form', $config['plan']);

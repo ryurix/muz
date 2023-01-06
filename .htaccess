@@ -1,0 +1,63 @@
+#
+# Apache/PHP/DiDash settings:
+#
+
+DirectorySlash Off # Apache 2 !!!
+
+AddDefaultCharset utf-8
+php_value magic_quotes_gpc off
+php_flag magic_quotes_gpc off
+php_flag register_globals off
+Options -MultiViews
+
+#<Directory /files/>
+#  php_value engine Off
+#  <FilesMatch "\.((php[0-9]?)|p?html?|pl|sh|java|cpp|c|h|js|rc)$">
+#    SetHandler None
+#  </FilesMatch>
+#</Directory>
+
+#<IfModule mod_headers.c>
+#  Header set Content-Security-Policy "default-src 'self' *.muzmart.com data: 'unsafe-inline' https://www.youtube.com https://yandex.ru https://mc.yandex.ru https://yastatic.net *.bitrix24.ru 'unsafe-eval'"
+#</IfModule>
+
+# Various rewrite rules.
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+
+  # If your site can be accessed both with and without the 'www.' prefix, you
+  # can use one of the following settings to redirect users to your preferred
+  # URL, either WITH or WITHOUT the 'www.' prefix. Choose ONLY one option:
+  #
+  # To redirect all users to access the site WITH the 'www.' prefix,
+  # (http://example.com/... will be redirected to http://www.example.com/...)
+  # adapt and uncomment the following:
+  # RewriteCond %{HTTP_HOST} ^example\.com$ [NC]
+  # RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
+  #
+  # To redirect all users to access the site WITHOUT the 'www.' prefix,
+  # (http://www.example.com/... will be redirected to http://example.com/...)
+  # uncomment and adapt the following:
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+  # Modify the RewriteBase if you are using DiDash in a subdirectory or in a
+  # VirtualDocumentRoot and the rewrite rules are not working properly.
+  # For example if your site is at http://example.com/didrive uncomment and
+  # modify the following line:
+  # RewriteBase /didash
+  #
+  # If your site is running in a VirtualDocumentRoot at http://example.com/,
+  # uncomment the following line:
+  # RewriteBase /
+
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteCond %{REQUEST_URI} (rich|files|design)/ [NC]
+  # RewriteCond %{REQUEST_FILENAME} sitemap\.xml$ [NC,OR]
+  # RewriteCond %{REQUEST_FILENAME} \.(jpg|gif|png|js|swf|ico)$ [NC]
+  RewriteRule .* - [L]
+
+  # Rewrite URLs of the form 'index.php?q=x'.
+
+  RewriteRule ^ index.php [L]
+</IfModule>

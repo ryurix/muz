@@ -1,0 +1,134 @@
+<?
+
+$html = file_get_html($args);
+if (!is_object($html)) {
+	alert('Ошибка загрузки url: '.$args, 'danger');
+	return;
+}
+$hrefs = array();
+
+foreach ($html->find('table[class="table-view1"] tr[class="noborder"]') as $row) {
+	$as = $row->find('a');
+	if (count($as)) {
+		$href = $as[0]->href;
+		if (substr($href, 0, 1) == '/') {
+			$hrefs[] = 'http://kramer.ru'.$href;
+		} else {
+			$hrefs[] = $args.$href;
+		}
+	}
+}
+
+if (!count($hrefs)) {
+	$hrefs[] = $args;
+}
+
+//print_pre($hrefs);
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	if (isset($html) && is_object($html)) {
+		$html->clear;
+		unset($html);
+	}
+	set_time_limit(0);
+
+//	$back[] = $href;
+
+	$html = file_get_html($href);
+
+	if (!is_object($html)) {
+		alert('Ошибка загрузки url: '.$href, 'danger');
+		continue;
+	}
+
+	$tds = $html->find('td');
+	foreach ($tds as $td) {
+		if ($td->width=='100%' && $td->valign=='top' && count($td->find('h1'))) {
+			$html = $td;
+		}
+	}
+
+	$model = $html->find('h1', 0)->innertext;
+	$name = $html->find('h2', 0)->innertext;
+	$price = 0;
+	$brand = 'Kramer';
+
+	$pic = $html->find('div[class="element-box"]', 0);
+	if (!is_object($pic)) { continue; }
+	$pic = $pic->find('a', 0);
+	if (!is_object($pic)) { continue; }
+	$pic = 'http://kramer.ru'.$pic->href;
+	/*
+	$pics = $html->find('div["element-box"]', 0)->find('a');
+	foreach ($html->find('a') as $as) {
+		if ($as->find('img')) {
+			$pic = $as->href;
+			$pos1 = strpos($pic, "'") + 1;
+			$pos2 = strrpos($pic, "'");
+			if ($pos1 && $pos2) {
+				$pic = 'http://kramer.ru'.substr($pic, $pos1, $pos2-$pos1);
+			}
+		}
+	}
+	*/
+
+	$pics = array();
+	$files = array();
+
+	$info = '';
+	$info = $html->find('div[style="line-height: 150%;"]', 0)->innertext;
+/*
+//print_pre($html->children);
+	foreach ($html->find('') as $i) {
+//		echo $i->tag;
+		if ($i->tag == 'table') {
+			if (count($i->find('table'))) {
+				$td = $i->find('td', 0);
+				foreach ($td->children() as $j) {
+					if ($j->tag != 'table') {
+						if ($j->tag == 'h2') {
+							$info.= '<h3>'.$j->innertext."</h3>\n";
+						} else {
+							$info.= $j->outertext."\n";
+						}
+					}
+				}
+			} else {
+				$info.= $i->outertext."\n";
+			}
+		}
+		if ($i->tag == 'h2') {
+			$info.= '<h3>'.$i->innertext."</h3>\n";
+		}
+	}
+*/
+
+	$info = preg_replace('@<a[^>]*>(.*)</a>@', '\1', $info);
+
+	$info = preg_replace(array(
+		'@<img[^>]*>@',
+		'@<iframe[^>]*>@si',
+		'@<script[^>]*?>.*?</script>@si',
+		'@<!--.+?-->@s',
+	), '', $info);
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>$name,
+		'model'=>$model,
+		'short'=>'',
+		'pic'=>$pic,
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+//*/
+}
+
+?>

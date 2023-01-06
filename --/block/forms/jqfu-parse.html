@@ -1,0 +1,42 @@
+<p>
+<span class="btn btn-success fileinput-button">
+	<i class="icon-plus icon-white"></i>
+	<span>Добавить файлы...</span>
+	<input id="fileupload" type="file" name="files[]" multiple="">
+</span>
+</p>
+
+<p>
+<div id="progress" class="progress progress-success progress-striped">
+	<div class="bar"></div>
+</div>
+</p>
+
+<div id="files" class="files"></div>
+
+<script src="/design/jquery.ui.widget.js"></script>
+<script src="/design/jquery.iframe-transport.js"></script>
+<script src="/design/jquery.fileupload.js"></script>
+<script>
+$(function () {
+	'use strict';
+
+    $('#fileupload').fileupload({
+        url: '/upload',
+        dataType: 'json',
+        done: function (e, data) {
+            $.each(data.result.files, function (index, file) {
+                $('<p/>').text(file.name).appendTo('#files');
+            });
+        },
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .bar').css(
+                'width',
+                progress + '%'
+            );
+        }
+    }).prop('disabled', !$.support.fileInput)
+        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+});
+</script>

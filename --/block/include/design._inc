@@ -1,0 +1,24 @@
+<?php
+
+/*
+ *	Copyright flydom.ru
+ *	Version 1.0.2008-06-10
+ */
+
+if (isset($_COOKIE['design'])) {
+
+	$config['design'] = $_COOKIE['design'];
+
+} else if (isset($_REQUEST['design'])) {
+
+	$design = $_REQUEST['design'];
+	$config['design'] = $design;
+
+	$block['design-get'] = '?design='.$design;
+	$block['design-get2'] = '&design='.$design;
+	$block['design-post'] =
+'<input type="hidden" name="design" value="'.$design.'" />';
+
+}
+
+?>

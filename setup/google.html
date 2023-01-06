@@ -1,0 +1,129 @@
+<?
+
+// CACHE CATALOG
+
+$pathway = array();
+$q = db_query('SELECT * FROM catalog');
+while ($i = db_fetch($q)) {
+	$pathway[$i['i']] = array(
+		'name'  =>$i['name'],
+		'google'=>$i['google'],
+	);
+}
+db_close($q);
+
+// IMPORT
+
+$plan = array(
+	''=>array('method'=>'POST'),
+	'file'=>array('name'=>'Файл данных', 'type'=>'file', 'default'=>''),
+	'send'=>array('type'=>'button', 'count'=>1, 1=>'Импорт', 'class'=>array(1=>'btn-warning'))
+);
+
+w('request', $plan);
+
+$file = $plan['file']['value'];
+if ($plan['send']['value'] > 0 && strlen($file) == 0) {
+	$plan['']['valid'] = 0;
+	$plan['file']['valid'] = 0;
+	$plan['file']['iv'] = 1;
+}
+
+w('form', $plan);
+
+if ($plan['send']['value'] && $plan['']['valid']) {
+	w('u8');
+	set_time_limit(0);
+
+	$stack = array();
+	$upd_catalog = 0;
+
+	$f = u8fopen($file);
+	$i = fgetcsv($f, 1000, ';');
+	while (($i = fgetcsv($f, 1000, ';')) !== FALSE) {
+		if (!isset($i[1])) { continue; }
+		$code = $i[0];
+		$name = $i[1];
+		$google = $i[2];
+
+		$level = 0;
+		while (substr($name, $level, 1) == '!') {
+			$level++;
+		}
+		$name = substr($name, $level);
+		if ($level > 0) { // раздел
+			$new_catalog[] = $code;
+			if ($level <= count($stack)) {
+				$stack = array_slice($stack, 0, $level - 1, true);
+			}
+			$stack[$code] = $name;
+			$last = $code;
+
+			$up = array_keys($stack);
+			$up = count($up) > 1 ? $up[count($up) - 2] : 0;
+
+			if (isset($pathway[$code])) {
+				if ($pathway[$code]['google'] != $google) {
+					db_update('catalog', array(
+						'google'=>$google
+					), array('i'=>$code));
+					$upd_catalog++;
+				}
+			}
+		}
+	}
+	fclose($f);
+
+	alert('Обновлено '.$upd_catalog.' категорий Google.');
+	w('alert');
+}
+
+// EXPORT
+
+function trans($s) {
+//	return iconv('UTF-8', 'windows-1251//IGNORE', $s);
+	return mb_convert_encoding($s, 'windows-1251', 'UTF-8');
+//	return $s;
+}
+
+function merge_tree($f, $node, $pathway, $level, $google) {
+	$level = $level + 1;
+
+	$google = $pathway[$node['i']]['google'] ? $pathway[$node['i']]['google'] : $google;
+
+	fputcsv($f, array(
+		$node['i'],
+		str_repeat('!', $level).trans($pathway[$node['i']]['name']),
+		$google,
+	), ';', '"');
+
+	if (isset($node['/'])) {
+//		echo '<ul>';
+		foreach ($node['/'] as &$i) {
+			merge_tree($f, $i, $pathway, $level, $google);
+		}
+//		echo '</ul>';
+	}
+}
+
+w('catalog-load');
+$catalog = cache_load('catalog-hide');
+
+//print_pre($tree);
+//*
+$f = fopen($config['root'].'files/catalog.csv', 'w+');
+
+fputcsv($f, array(
+	trans('Код'),
+	trans('Наименование'),
+	trans('Код Google'),
+), ';', '"');
+
+foreach ($catalog['/'] as &$branch) {
+	merge_tree($f, $branch, $pathway, 0, 0);
+}
+fclose($f);
+//*/
+
+?>
+<p>Ссылка для скачивания: <a href="/files/catalog.csv" class="btn btn-default" target="_BLANK"><i class="icon-download"></i> catalog.csv</a> (правой кнопкой "Сохранить как...")</p>

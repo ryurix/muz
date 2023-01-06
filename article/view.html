@@ -1,0 +1,17 @@
+<? $row = $config['row']; ?>
+<div itemscope itemtype="https://schema.org/Article">
+	<meta itemscope itemprop="mainEntityOfPage" itemType="https://schema.org/WebPage" itemid="https://<? echo $config['domain'].'/article/'.$row['url']; ?>">
+	<div itemscope itemprop="author" itemType="https://schema.org/Person">
+		<meta itemprop="name" content="<?= htmlspecialchars(kv(cache_load('staff'), $row['usr'], 'Менеджер')) ?>">
+	</div>
+	<meta itemprop="headline" content="<?= htmlspecialchars($row['name']) ?>">
+	<meta itemprop="description" content="<?= htmlspecialchars($row['tag1']) ?>">
+	<meta itemprop="image" itemscope itemtype="https://schema.org/ImageObject" contentUrl="/files/article/<?= $row['i'] ?>/mini.jpg">
+	<div itemprop="articleBody">
+<?
+
+echo dict($row['body']);
+
+?>
+	</div>
+</div>

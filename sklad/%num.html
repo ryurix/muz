@@ -1,0 +1,65 @@
+<?
+
+$row = $config['row'];
+
+echo '<p>'.$row['info'].'</p>';
+
+w('table');
+
+if ($row['type'] == 2) {
+	$th_count = 'Старая цена';
+	$th_price = 'Новая цена';
+} else {
+	$th_count = 'Количество';
+	$th_price = 'Сумма';
+}
+
+?>
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<td class="text-right">#</td>
+<td>Производитель</td>
+<td>Товар</td>
+<td>Цена на сайте</td>
+<td class="text-right"><? echo $th_count ?></td>
+<td class="text-right"><? echo $th_price ?></td>
+</tr>
+</thead>
+<tbody>
+<?
+
+$total = 0;
+$summa = 0;
+
+$q = db_query('SELECT store.i, store.brand, store.name, store.model, nakst.price, store.price price2, nakst.count FROM nakst,store WHERE nakst.store=store.i AND nakst.naklad='.$row['i'].' ORDER BY store.brand,store.name');
+$count = 0;
+$brand = cache_load('brand');
+while ($i = db_fetch($q)) {
+	$count++;
+	$name = '<a href="/store/'.$i['i'].'">'.$i['name'].' '.$i['model'].'</a>';
+	$sum = $row['type'] == 2 ? $i['price'] : ($i['count']*$i['price2']);
+	echo '<tr>'
+.'<td>'.$count.'</td>'
+.'<td>'.$brand[$i['brand']].'</td>'
+.'<td><a href="/store/'.$i['i'].'">'.$name.'</a></td>'
+.'<td class="text-right">'.number_format($i['price2'], 0, '.', ' ').'</td>'
+.'<td class="text-right">'.number_format($i['count'], 0, '.', ' ').'</td>'
+.'<td class="text-right">'.number_format($sum, 0, '.', ' ').'</td>'
+.'</tr>';
+
+	$total+= $i['count'];
+	$summa+= $sum;
+}
+db_close($q);
+
+if ($row['type'] != 2) {
+	echo '<tr><td>&nbsp;</td>'
+	.'<td colspan=3>Итого</td>'
+	.'<td class="text-right">'.number_format($total, 0, '.', ' ').'</td>'
+	.'<td class="text-right">'.number_format($summa, 0, '.', ' ').'</td></tr>';
+}
+
+?>
+</tbody>
+</table>

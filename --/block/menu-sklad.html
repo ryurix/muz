@@ -1,0 +1,13 @@
+<?
+
+$back = '<div class="dropdown-menu '.$args.'">';
+
+$sklad = w('list-sklad');
+
+foreach ($sklad as $k=>$v) {
+	$back.= '<a class="dropdown-item" href="/sklad?sk='.$k.'">'.$v.'</a>';
+}
+
+$back.= '</div>';
+
+?>

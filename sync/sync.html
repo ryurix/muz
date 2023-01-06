@@ -1,0 +1,48 @@
+<?
+
+$vendors = cache_load('vendor');
+
+$plan = array(
+	''=>array('method'=>'POST'),
+	'file'=>array('name'=>'Файл данных', 'type'=>'file0', 'default'=>''),
+	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo', 'values'=>$vendors, 'default'=>0, 'class'=>'vendor', 'width'=>300),
+	'send'=>array('type'=>'button', 'count'=>1, 1=>'Загрузить', 'class'=>array(1=>'btn-success')),
+);
+
+w('request', $plan);
+w('form', $plan);
+
+if ($plan['']['valid'] && $plan['send']['value']) {
+	$file = $plan['file']['value'];
+
+	if (strlen($file) > 0 && is_file($file)) {
+		w('clean');
+		$filename = str2url($plan['file']['filename']);
+		copy($file, $config['root'].'files/sync/'.$filename);
+		$file = '/files/sync/'.$filename;
+
+		$_SESSION['sync'] = array(
+			'file'=>$file,
+			'vendor'=>$plan['vendor']['value'],
+			'name'=>$plan['file']['filename'],
+		);
+	}
+}
+
+if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']['file'], 1))) {
+	alert('Файл: <a href="'
+.$_SESSION['sync']['file'].'">'
+.$_SESSION['sync']['name'].'</a>, поставщик: '
+.$vendors[$_SESSION['sync']['vendor']]);
+
+	w('alert');
+
+	echo '<script src="/design/js/store-sync.js"></script>'
+.'<table class="table sync" id="sync"><thead><tr>'
+.'<th>#</th><th>Наименование; Цена, руб.; Количество</th><th>Найдено в каталоге</th>'
+.'</tr></thead><tbody>'
+.'<tr><td colspan=3><input type="text" id="sync1" value="0"> <button class="btn btn-success" id="sync2">Загрузить строки</button></td></tr>'
+.'</tbody></table>';
+}
+
+?>

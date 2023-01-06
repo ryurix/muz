@@ -1,0 +1,99 @@
+<table class="table">
+<thead>
+	<tr>
+		<th>#, Дата</th>
+		<th>Наименование</th>
+		<th>шт.</th>
+		<th>Цена</th>
+		<th>Состояние</th>
+		<th>Комментарий</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$row = $config['row'];
+
+$order = w('order-state-user');
+
+$count = 0;
+w('ft');
+
+w('show-files');
+$style = array('icon'=>1, 'name'=>1, 'class'=>'', 'prefix'=>' ');
+
+$total = 0;
+$items = 0;
+
+$orst = explode('|', trim($row['orst'], '|'));
+$q = db_query('SELECT * FROM orst WHERE i IN ('.implode(',', $orst).')');
+while ($i = db_fetch($q)) {
+	$count++;
+	echo '<tr>'
+.'<td>'.$i['i'].',&nbsp;'.ft($i['dt'], 1, '&nbsp;').'</td>'
+.'<td>'.$i['name'].'</td>'
+.'<td style="text-align:center">'.$i['count'].'</td>'
+.'<td style="text-align:right" nowrap>'.number_format($i['price'], 0, '.', ' ').'</td>'
+.'<td>'.$order[$i['state']].'</td>'
+.'<td>'.show_files($i['files'], $style).$i['info'].'</td>';
+
+	$total+= $i['price'] * $i['count'];
+	$items+= $i['count'];
+}
+
+echo '<tr>
+<td>&nbsp;</td>
+<td>Итого</td>
+<td style="text-align:right">'.$items.'</td>
+<td style="text-align:right" nowrap>'.number_format($total, 0, '.', ' ').'</td>
+<td></td>
+<td></td>
+</tr>';
+
+
+?>
+</tbody>
+</table>
+<?
+
+if ($row['i'] && $row['total']) {
+	w('uniteller');
+	echo '<form id="pay_form" action="https://wpay.uniteller.ru/pay/" method="POST" target="pay_iframe">'
+.'<input type="hidden" name="Shop_IDP" value="'.$config['uniteller']['shop'].'">'
+.'<input type="hidden" name="Order_IDP" value="'.$row['i'].'">'
+.'<input type="hidden" name="Subtotal_P" value="'.$row['total'].'">'
+.'<input type="hidden" name="Lifetime" value="'.$config['uniteller']['lifetime'].'">'
+.'<input type="hidden" name="Customer_IDP" value="'.$row['user'].'">'
+.'<input type="hidden" name="Signature" value="'.u_sign($row).'">'
+.'<input type="hidden" name="URL_RETURN_OK" value="'.$config['uniteller']['return_ok'].'">'
+.'<input type="hidden" name="URL_RETURN_NO" value="'.$config['uniteller']['return_no'].'">'
+.'<input type="hidden" name="MeanType" value="0">'
+.'<input type="hidden" name="EMoneyType" value="0">';
+
+	echo '<div class="alert alert-info"><b>'.($row['type'] ? 'Предоплата' : 'К оплате').': '.number_format($row['total'], 0, '.', ' ').'</b> <i class="fa fa-rub"></i> &nbsp; <button class="btn btn-default btn-small" id="pay_btn">Оплатить</button></div>';
+
+	echo '</form>';
+?>
+<script type="text/javascript">
+function listener(event) {
+	if (event.origin!== 'https://wpay.uniteller.ru') {
+		return;
+	}
+	$('#pay_iframe').animate({height: event.data + 'px'}, 500);
+}
+if (window.addEventListener) {
+	window.addEventListener('message', listener, false);
+} else {
+	window.attachEvent('onmessage', listener);
+}
+$(function() {
+	$("#pay_form").submit();
+	$("#pay_btn").hide();
+});
+</script>
+<iframe width="100%" height="1000" name="pay_iframe"></iframe>
+<?
+
+}
+
+?>

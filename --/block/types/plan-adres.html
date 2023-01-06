@@ -1,0 +1,32 @@
+<?
+
+$city = cache_load('city');
+
+$dost = w('list-dost');
+
+$back = array(
+	''=>array('method'=>'POST', 'open'=>0, 'close'=>1),
+	'namef'=>array('name'=>'Фамилия', 'class'=>'form-control', 'type'=>'line'),
+	'namei'=>array('name'=>'Имя', 'class'=>'form-control', 'type'=>'line', 'min'=>3, 'placeholder'=>'обязательное поле'),
+	'nameo'=>array('name'=>'Отчество', 'class'=>'form-control', 'type'=>'line'),
+
+	'mail'=>array('name'=>'Email', 'class'=>'form-control', 'type'=>'line'),
+	'phone'=>array('name'=>'Телефон', 'class'=>'form-control', 'type'=>'line', 'min'=>6, 'placeholder'=>'обязательное поле'),
+
+	'dost'=>array('name'=>'Способ доставки', 'type'=>'combo', 'class'=>'form-control', 'default'=>'self', 'values'=>$dost, 'more'=>'id="dost"'),
+
+	'cire'=>array('name'=>'Город', 'more'=>'id="cire"', 'type'=>'cire', 'width'=>300, 'values'=>$city, 'default'=>$_SESSION['city']),
+	'city'=>array('name'=>'Город', 'class'=>'form-control', 'type'=>'line', 'more'=>'id="city"'),
+
+	'index'=>array('name'=>'Индекс', 'class'=>'form-control', 'type'=>'line'),
+	'adres'=>array('name'=>'Адрес', 'class'=>'form-control', 'type'=>'line'),
+
+	'comm'=>array('name'=>'Комментарий', 'class'=>'form-control', 'type'=>'wiki', 'rows'=>3),
+	
+	'pay'=>array('name'=>'Способ оплаты', 'type'=>'pay', 'more'=>'id="pay"'),
+	'ul'=>array('name'=>'Юридическое лицо', 'type'=>'checkbox'),
+
+	'send'=>array('type'=>'button', 'count'=>1, 1=>"&#10003; Заказать", 'class'=>'btn-success')
+);
+
+?>

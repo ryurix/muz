@@ -1,0 +1,66 @@
+<p><br>Добавление картинкам в статьях и товарах свойства автоматического уменьшения в размере.</p>
+<?
+
+function back_img($s) {
+	$s = $s[0];
+	$pos = strpos($s, 'img-fluid');
+	if ($pos) {
+		return $s;
+	}
+	$pos = strpos($s, ' class=');
+	if ($pos) {
+		$pos+= 7;
+		$eq = substr($s, $pos, 1);
+		if ($eq == '"' || $eq == "'") {
+			$pos++;
+		}
+		$s = substr($s, 0, $pos).'img-fluid '.substr($s, $pos);
+	} else {
+		$pos = 5;
+		$s = substr($s, 0, $pos).'class="img-fluid" '.substr($s, $pos);
+	}
+	return $s;
+//	var_dump($s);
+}
+
+//preg_replace_callback('|<img [^>]+>|', 'back_img', $s);
+
+$updates = array();
+$q = db_query('SELECT * FROM article');
+while ($i = db_fetch($q)) {
+	$body = $i['body'];
+	$upd = preg_replace_callback('|<img [^>]+>|', 'back_img', $body);
+
+	if ($body != $upd) {
+		$updates[$i['i']] = $upd;
+	}
+}
+db_close($q);
+
+foreach ($updates as $k=>$v) {
+	db_update('article', array('body'=>$v), array('i'=>$k));
+}
+
+alert('Обновлено '.count($updates).' статей.');
+
+$updates = array();
+$q = db_query('SELECT * FROM store');
+while ($i = db_fetch($q)) {
+	$body = $i['info'];
+	$upd = preg_replace_callback('|<img [^>]+>|', 'back_img', $body);
+
+	if ($body != $upd) {
+		$updates[$i['i']] = $upd;
+	}
+}
+db_close($q);
+
+foreach ($updates as $k=>$v) {
+	db_update('store', array('info'=>$v), array('i'=>$k));
+}
+
+alert('Обновлено '.count($updates).' товаров.');
+
+w('alert');
+
+?>

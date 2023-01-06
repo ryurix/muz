@@ -1,0 +1,40 @@
+<p><a href="/filter/new" class="btn btn-default"><i class="fa fa-plus"></i> Добавить фильтр</a></p>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Название</th>
+			<th>Описание</th>
+			<th>Значения</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+$select = 'SELECT * FROM filter ORDER BY name';
+$q = db_query($select);
+
+w('clean');
+
+while ($i = db_fetch($q)) {
+	$href = '/filter/'.$i['i'];
+
+	$a = php_decode($i['value']);
+	$value = array();
+	foreach ($a as $k=>$v) {
+		if (!isset($v['i']) || !$v['i']) { continue; }
+		$value[] = $v['i'].':'.$v['value'];
+	}
+
+
+	echo '<tr>';
+	echo '<td><a href="'.$href.'">'.$i['i'].'</a></td>';
+	echo '<td><a href="'.$href.'">'.$i['name'].'</a></td>';
+	echo '<td><a href="'.$href.'">'.$i['info'].'</td>';
+	echo '<td>'.implode(', ', $value).'</td>';
+	echo '</tr>';
+}
+
+?>
+	</tbody>
+</table>

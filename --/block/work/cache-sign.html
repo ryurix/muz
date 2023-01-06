@@ -1,0 +1,16 @@
+<?
+
+$q = db_query('SELECT * FROM sign ORDER BY name');
+
+$sign = array(0=>'');
+$sign2 = array(0=>'');
+
+while ($i = db_fetch($q)) {
+	$sign[$i['i']] = $i['name'];
+	$sign2[$i['i']] = $i['mini'];
+}
+
+cache_save('sign', $sign);
+cache_save('sign2', $sign2);
+
+?>

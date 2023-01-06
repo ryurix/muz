@@ -1,0 +1,47 @@
+<?
+
+set_time_limit(0);
+
+
+$pre = rtrim($config['exf'], '/');
+print_pre($pre);
+
+$root = rtrim($config['root'], '/');
+
+w('pic');
+
+$q = db_query("SELECT * FROM store");
+while ($i = db_fetch($q)) {
+	$pic = $i['pic'];
+	$icon = $i['icon'];
+
+	$dir = $root.'files/store/'.$i['i'];
+
+	if (strlen($pic) && strlen($icon) && !is_file($root.$icon) && is_file($root.$pic)) {
+		print_pre($dummy = $icon.' | '.$pic);
+
+		$f = pic_load($root.$pic);
+		$f = pic_into($f, 260, 260);
+		pic_jpeg($f, $root.$icon, 90);
+	}
+
+/*
+	if (is_file($pre.$pic) && !is_dir($dir) && $i['i'] != 24633) {
+
+		$f = pic_load($pre.$pic);
+		$f = pic_into($f, 260, 260);
+		
+
+		if (!is_dir($dir)) {
+			mkdir($dir);
+		}
+
+print_pre($i['i']);
+
+		pic_jpeg($f, $config['root'].substr($i['icon'], 1), 90);
+	}
+//*/
+}
+db_close($q);
+//*/
+?>

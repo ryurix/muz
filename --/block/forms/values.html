@@ -1,0 +1,17 @@
+<?
+
+$back = array();
+
+foreach ($args as $k=>$v) {
+	if ($k == '') {
+		continue;
+	}
+	if (isset($v['type']) && $v['type'] == 'button') {
+		continue;
+	}
+	if (isset($v['value'])) {
+		$back[$k] = $v['value'];
+	}
+}
+
+?>

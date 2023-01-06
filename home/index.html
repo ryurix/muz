@@ -1,0 +1,591 @@
+<main id="main">
+
+<div class="container">
+	<div class="row">
+		<div class="d-none d-lg-block col-lg-3">
+
+			<div class="main_catalog">
+				<h2 class="main_catalogbtn"><i class="fab fa-buromobelexperte"></i> Каталог</h2>
+				<? cache_load('catalog-home'); ?>
+			</div>
+
+		</div>
+
+		<div class="col-12 col-lg-9">
+
+			<div id="bootstrap_slider" class="carousel slide" data-ride="carousel">
+
+				<ol class="carousel-indicators">
+					<li data-target="#bootstrap_slider" data-slide-to="0" class="active"></li>
+					<li data-target="#bootstrap_slider" data-slide-to="1"></li>
+					<li data-target="#bootstrap_slider" data-slide-to="2"></li>
+					<li data-target="#bootstrap_slider" data-slide-to="3"></li>
+					<li data-target="#bootstrap_slider" data-slide-to="4"></li>
+					<li data-target="#bootstrap_slider" data-slide-to="5"></li>
+				</ol>
+				
+<?
+
+$ids = array(
+	1286, // Шоу-эффекты
+	1780, // Генераторы мыльных пузырей
+	2082, // Генераторы огня
+	1779, // Генераторы тумана
+	1853, // Конфетти машины
+
+	1, // Видео-оборудование
+	1781, // Светодиодные экраны
+	2239, // Проекторы
+	2331, // LCD и LED дисплеи
+	3, // Интерактивное оборудование
+
+	78, // Световое оборудование
+	1328, // Управляемые приборы
+	1303, // Ламповые приборы
+	2110, // Лазерные приборы
+	1708, // Прожектора следящие
+
+	30, // Звуковое оборудование
+	31, // Акустические системы
+	57, // Микшерные пульты
+	1135, // Усилители
+	1084, // Наушники
+
+	74, // Музыкальные инструменты
+	245, // Гитары
+	1574, // Клавишные
+	633, // Духовые
+	721, // Ударные
+);
+
+
+$select = 'SELECT i,url FROM catalog WHERE i in ('.implode(',', $ids).')';
+$q = db_query($select);
+
+$url = array();
+while ($i = db_fetch($q)) {
+	$url[$i['i']] = '/catalog/'.$i['url'];
+}
+db_close($q);
+
+?>
+
+				<div class="carousel-inner">
+<?
+
+//$baner = 'baner-11-22.jpg';
+$baner = '';
+
+if (strlen($baner)) {
+
+?>
+					<div class="carousel-item active img_bg" style="background-image: url(/design/home/<?= $baner ?>)">
+					</div>
+<?
+
+}
+
+?>
+					<div class="carousel-item<?= strlen($baner) ? '' : ' active' ?>">
+						<div class="row">
+							<div class="col-12 col-md-12 col-lg">
+								<a href="<? echo kv($url, 1286, '#') ?>" class="slider_contbig">
+									<p class="slider_title1">Шоу-эффекты</p>
+									<img src="/design/home/slider_imgBig.png" alt="Шоу-эффекты" class="slider_img1">
+								</a>
+							</div>
+							<div class="col-12 col-md-12 col-lg">
+								<div class="slider_contsmall">
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1780, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Генераторы мыльных пузырей</p>
+											<img src="/design/home/slider_imgSmall.png" alt="Генераторы мыльных пузырей" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 2082, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Генераторы огня</p>
+											<img src="/design/home/generator_fire.png" alt="Генераторы огня" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1779, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Генераторы тумана</p>
+											<img src="/design/home/generator_tumana.png" alt="Генераторы тумана" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1853, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Конфетти машины</p>
+											<img src="/design/home/confety_machine.png" alt="Конфетти машины" class="slider_img2">
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+					<div class="carousel-item">
+
+						<div class="row">
+							<div class="col-12 col-md-12 col-lg">
+								<a href="<? echo kv($url, 1, '#') ?>" class="slider_contbig">
+									<p class="slider_title1">Видео-оборудование</p>
+									<img src="/design/home/video_oborudovanie.png" alt="Видео-оборудование" class="slider_img1">
+								</a>
+							</div>
+							<div class="col-12 col-md-12 col-lg">
+								<div class="slider_contsmall">
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1781, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Светодиодные экраны</p>
+											<img src="/design/home/svetodionue_ekranu.png" alt="Светодиодные экраны" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 2239, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Проекторы</p>
+											<img src="/design/home/proektoru.png" alt="Проекторы" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 2331, '#') ?>" class="slider_item1">
+											<p class="slider_title2">LCD и LED дисплеи</p>
+											<img src="/design/home/lcd_i_led_displau.png" alt="LCD и LED дисплеи" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 3, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Интерактивное оборудование</p>
+											<img src="/design/home/interaktivnoe_oborudovanie.png" alt="Интерактивное оборудование" class="slider_img2">
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+					<div class="carousel-item">
+
+						<div class="row">
+							<div class="col-12 col-md-12 col-lg">
+								<a href="<? echo kv($url, 78, '#') ?>" class="slider_contbig">
+									<p class="slider_title1">Световое оборудование</p>
+									<img src="/design/home/svetlovoe_oborudovanie.png" alt="Световое оборудование" class="slider_img1">
+								</a>
+							</div>
+							<div class="col-12 col-md-12 col-lg">
+								<div class="slider_contsmall">
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1328, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Управляемые приборы</p>
+											<img src="/design/home/upravlaemue_priboru.png" alt="Управляемые приборы" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1303, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Ламповые приборы</p>
+											<img src="/design/home/lampovue_priboru.png" alt="Ламповые приборы" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 2110, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Лазерные приборы</p>
+											<img src="/design/home/lazarnue_priboru.png" alt="Лазерные приборы" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1708, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Прожектора следящие</p>
+											<img src="/design/home/projectoru_sledyaschie.png" alt="Прожектора следящие" class="slider_img2">
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+					<div class="carousel-item">
+
+						<div class="row">
+							<div class="col-12 col-md-12 col-lg">
+								<a href="<? echo kv($url, 30, '#') ?>" class="slider_contbig">
+									<p class="slider_title1">Звуковое оборудование</p>
+									<img src="/design/home/zvukovoe_oborudovanie.png" alt="Звуковое оборудование" class="slider_img1">
+								</a>
+							</div>
+							<div class="col-12 col-md-12 col-lg">
+								<div class="slider_contsmall">
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 31, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Акустические системы</p>
+											<img src="/design/home/akusticheskie_sistemu.png" alt="Акустические системы" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 57, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Микшерные пульты</p>
+											<img src="/design/home/mikshernue_pultu.png" alt="Микшерные пульты" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1135, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Усилители</p>
+											<img src="/design/home/useliteli.png" alt="Усилители" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1084, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Наушники</p>
+											<img src="/design/home/naushniki.png" alt="Наушники" class="slider_img2">
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+					<div class="carousel-item">
+
+						<div class="row">
+							<div class="col-12 col-md-12 col-lg">
+								<a href="<? echo kv($url, 74, '#') ?>" class="slider_contbig">
+									<p class="slider_title1">Музыкальные инструменты</p>
+									<img src="/design/home/muzukalnue_instrumentu.png" alt="Музыкальные инструменты" class="slider_img1">
+								</a>
+							</div>
+							<div class="col-12 col-md-12 col-lg">
+								<div class="slider_contsmall">
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 245, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Гитары</p>
+											<img src="/design/home/gitara.png" alt="Гитары" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 1574, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Клавишные</p>
+											<img src="/design/home/klavishu.png" alt="Клавишные" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 633, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Духовые</p>
+											<img src="/design/home/duhovnue.png" alt="Духовые" class="slider_img2">
+										</a>
+									</div>
+									<div class="slider_item">										
+										<a href="<? echo kv($url, 721, '#') ?>" class="slider_item1">
+											<p class="slider_title2">Ударные</p>
+											<img src="/design/home/udarnue.png" alt="Ударные" class="slider_img2">
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
+				<a class="carousel-control-prev" href="#bootstrap_slider" role="button" data-slide="prev">
+					<i class="fa fa-angle-left"></i>
+				</a>
+				<a class="carousel-control-next" href="#bootstrap_slider" role="button" data-slide="next">
+					<i class="fa fa-angle-right"></i>
+				</a>
+
+			</div>
+
+
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col">
+			<div class="main_describe">
+				<h1 class="main_title">МАГАЗИН МУЗЫКАЛЬНЫХ ИНСТРУМЕНТОВ И КОНЦЕРТНОГО ОБОРУДОВАНИЯ</h1>
+				<p class="main_text1 mb40">Эксперты в области профессионального звука и света</p>
+				<p class="main_text1 ">Комплексные поставки музыкальных инструментов, а также профессионального <br>  светового, звукового и видео оборудования в любую точку России.</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<? w('store-sale') ?>
+
+<div class="full-width about">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 col-lg-5">
+				<h2 class="about_title">О компании</h2>
+				<p class="about_text1">Компания «Музмарт» уже более 10 лет занимается поставкой музыкального оборудования, видео оборудования и музыкальных инструментов. <br><br>К вашим услугам — впечатляющий выбор видео-,светового и звукового оборудования, позволяющего укомплектовать залы для проведения концертов, конференций, выступлений, а также кинозалы, бары, рестораны, кафе, спортбары.</p>
+
+				<div class="about_garantcont">
+					<p class="garant_title">Гарантия</p>
+					<p class="garant_text1">На всю реализуемую аппаратуру <br>предоставляется гарантия. </p>
+				</div>
+
+				<h4 class="about_subtitle">Кроме того, наши клиенты могут рассчитывать на услуги:</h4>
+				<ul class="about_list">
+					<li>Монтажников, которые возьмут на себя монтажные и пусконаладочные работы на всё продаваемое оборудование.</li>
+					<li>Инженеров, готовых разработать полный проект зала. Включая звук, свет, кресельную группу, одежду сцены, механику сцены; произвести акустические и световые расчеты.</li>
+					<li>Квалифицированных электриков, готовых в любое время прийти на помощь и решить любые технические вопросы.</li>
+				</ul>
+				<button type="button" class="about_toggle">Больше о компании</button>
+				<p class="about_text1 about_hidden">Если вы решили научиться играть на музыкальном инструменте, но не знаете, какой вариант предпочесть, смело приходите к нам. У нас представлен впечатляющий ассортимент оборудования, а выбрать оптимальный вариант помогут вежливые консультанты.</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="hide_section">
+	<div class="full-width guitar">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg">
+					<div class="guitar_imgcont">
+						<img src="/design/home/guitar.jpg" alt="guitar" class="guitar_img">						
+					</div>
+				</div>
+				<div class="col-lg">
+					<h2 class="guitar_title">Выбор гитар на любой вкус</h2>
+					<p class="guitar_text1">Наибольшим спросом традиционно пользуется акустическая гитара, научиться играть на ней можно самому. В нашем каталоге представлены модели от различных брендов:</p>
+
+					<ul class="guitar_list">
+						<li>Hohner, выпускающего инструмент из красного дерева.</li>
+						<li>Fender Squier с корпусом из дредноута.</li>
+						<li>Honner, где верхняя дека сделана из ели, а корпус — из красного дерева.</li>
+						<li>Yamaha — очень элегантный вариант с корпусом из нато. Дает превосходный звук.</li>
+						<li>Crafter — модели для профессионалов. Гитары продаются в комплекте с чехлом. Для их производства используются несколько пород деревьев. Это и красное дерево, и палисандр, и ель.</li>
+					</ul>
+
+					<p class="guitar_text1">Также мы предлагаем впечатляющий выбор:</p>
+
+					<ul class="guitar_list">
+						<li>Детских гитар для маленьких музыкантов.</li>
+						<li>Укулеле (гавайских гитар). Этот вариант имеет всего 4 струны, что значительно облегчает процесс обучения на инструменте.</li>
+					</ul>
+
+					<p class="guitar_text1">В наличии есть и набор электрогитар для любителей музыки потяжелее. Они регулируются по 2 тонам. Среди таких моделей можно выделить:</p>
+
+					<ul class="guitar_list">
+						<li>Cruzer с хромированной фурнитурой — подойдет для любителей ярких цветов.</li>
+						<li>Jackson с лаковым покрытием грифа, корпус выполнен из разных пород дерева.</li>
+					</ul>
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="full-width connoisseurs">
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+
+					<div class="connoisseurs_cont">
+					
+						<h2 class="connoisseurs_title">Что еще предлагает наш магазин для ценителей музыки?</h2>
+						<p class="connoisseurs_text1">Любителям классики в современной обработке мы рекомендуем обратить внимание на клавишные инструменты:</p>
+						
+						<ul class="connoisseurs_list">
+							<li>Синтезаторы с обучающими программами и встроенными колонками.</li>
+							<li>Цифровые пианино с использованием современных молоточковых механизмов, полифонии и системы обучения.</li>
+						</ul>
+					
+						<a href="/catalog" class="connoisseurs_btn">Посмотреть каталог</a>
+						<p class="connoisseurs_text1">В нашем каталоге музыкальных инструментов можно найти такие инструменты, как скрипки, банджо, балалайки, волынки, гусли, домры и многие другие народные и национальные инструменты. <br> Также в наличии имеются тюнеры, струны, пюпитры, и прочие аксессуары для желающих научиться играть.</p>
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="full-width sound">
+		<div class="container">
+			<div class="row">
+				<div class="d-none d-sm-none d-md-block col-md-4">
+					<div class="sound_imgcont">
+						<img src="/design/home/sound_11.png" alt="" class="sound_img">						
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-4">
+					
+						<h2 class="sound_title">Звуковое и концертное оборудование</h2>
+						<p class="sound_text1">Организаторам концертов будут интересны наши акустические системы, микшеры, усилители, наушники, проигрыватели, караоке системы. Также в наличии есть большой выбор кабелей, переходников, разъемов. Для записи и обработки звука мы подобрали лучшие модели портостудий, эквалайзеров, компрессоров, микрофонов, стоек и многого другого.</p>
+			
+						<p class="sound_text1">Для проведения конференций, презентаций и концертов в наличии представлена видеоаппаратура, экраны, проекторы и системы крепления к ним. Также у нас доступен большой выбор ламп, светильников, прожекторов. Снизить риск возникновения проблем при отключении света помогут аккумуляторы, инверторы.</p>
+
+						<a href="/catalog" class="sound_btn">Посмотреть каталог</a>
+
+				</div>
+				<div class="hidden-sm col-md-4">
+					<div class="sound_imgcont">
+						<img src="/design/home/sound_22.png" alt="" class="sound_img right">						
+					</div>					
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="full-width advantages">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<h2 class="advantages_title">Преимущества сотрудничества с нами</h2>				
+				</div>		
+			</div>
+			<div class="row">
+
+				<div class="col-lg-6 col-xl">
+					<div class="advantages_cont">
+						<p class="advantages_text1 icon1">Наши цены очень привлекательные.</p>
+					</div>
+				</div>
+				<div class="col-lg-6 col-xl">
+					<div class="advantages_cont">
+						<p class="advantages_text1 icon2">На все инструменты и аппаратуру распро-страняется гарантия.</p>
+					</div>
+				</div>
+				<div class="col-lg-6 col-xl">
+					<div class="advantages_cont">
+						<p class="advantages_text1 icon3">Вы можете пробрести оборудование в рассрочку или в кредит.</p>
+					</div>
+				</div>
+				<div class="col-lg-6 col-xl">
+					<div class="advantages_cont">
+						<p class="advantages_text1 icon4">Если вы что-то не нашли у нас на сайте – сделайте запрос на нашу электронную почту.</p>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="row">
+				<div class="col-lg-9">
+					<div class="advantages_cont">						
+						<p class="advantages_text1 icon5">Доставка заказа до любого региона России и прямо до вашего дома или офиса организуется максимально оперативно. Жителям Москвы и Тюмени доступен самовывоз. В остальных случаях постоянным клиентам возможна бесплатная доставка.</p>
+					</div>
+				</div>
+				<div class="col-lg-3">
+					<p class="advantages_text2">Звоните, заходите на наш сайт — мы будем рады осуществить вашу мечту!</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<? w('eggscont') ?>
+
+<div class="full-width clients">
+	<div class="container">
+		<div class="row">
+			<div class="col">		
+				<h2 class="clients_title">Наши клиенты</h2>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+
+				<div class="clients_items">
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo1.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">Мариинский театр</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo2.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">Театр "Комедианты"</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo3.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">Школа балета</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo4.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">Рос. университет</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo5.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">Поисковая система</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo6.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">Научно-тех. центр</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo7.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">ТИУ - университет</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo8.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">Гос. компания</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo9.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">КСК "Уренгоец"</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo10.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">Общ. русской культуры</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo11.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">Компания-ретейлер</p>
+					</div>
+
+					<div class="clients_item">
+						<div class="clients_imgcont">
+							<img src="/design/home/client_logo12.png" alt="client logo" class="clients_logo">
+						</div>
+						<p class="clients_name">ОАО Бабаевский</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</main>

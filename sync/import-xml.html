@@ -1,0 +1,208 @@
+<?
+
+function merge_tree($flat, $node, $up) {
+	$key = db_result('SELECT i FROM catalog WHERE sync LIKE "%|'.addslashes($node['i']).'|%"');
+
+	if (!$key) {
+		$key = db_result('SELECT i FROM catalog WHERE name = "'.addslashes($node['name']).'" AND up='.$up);
+	}
+
+	if (!$key) {
+		db_insert('catalog', array(
+			'up'=>$up,
+			'name'=>$node['name'],
+			'hide'=>0,
+			'icon'=>'',
+			'sync'=>'|'.$node['i'].'|',
+			'w'=>100
+		));
+		$key = db_insert_id();
+	}
+
+//	$node['key'] = $key;
+	$flat[$node['i']] = $key;
+/*
+	array(
+		'key'=>$key,
+		'name'=>$node['name'],
+	);
+*/
+
+//	echo '<li>'.$node['name'].' ('.$key.')';
+
+	if (count($node['/']) > 0) {
+//		echo '<ul>';
+		foreach ($node['/'] as &$i) {
+			merge_tree(&$flat, &$i, $key);
+		}
+//		echo '</ul>';
+	}
+}
+
+function merge_store($node, $up, $vendor) {
+	$key = db_result('SELECT i FROM store WHERE sync LIKE "%|'.addslashes($node['i']).'|%"');
+
+	if (!$key) {
+		$key = db_result('SELECT i FROM store WHERE name = "'.addslashes($node['name']).'" AND up='.$up);
+	}
+
+	if (!$key) {
+		$key = key_next('store');
+
+		db_insert('store', array(
+			'i'=>$key,
+			'up'=>$up,
+			'name'=>$node['name'],
+			'sync'=>'|'.$node['i'].'|',
+			'brand'=>0,
+			'vendor'=>$vendor,
+			'dt'=>now(),
+			'speed'=>2,
+			'price'=>$node['price'],
+			'count'=>0,
+			'short'=>$node['name'],
+			'info'=>$node['info'],
+			'user'=>0,
+			'w'=>100
+		));
+echo '<p>Insert: '.$node['name'].' ('.$key.')</p>';
+	} else {
+		db_update('store', array(
+			'dt'=>now(),
+			'price'=>$node['price'],
+			'info'=>$node['info'],
+		), array(
+			'i'=>$key,
+		));
+echo '<p>Update: '.$node['name'].' ('.$key.')</p>';
+	}
+
+	$file = $node['pic'];
+	if (strlen($file) > 0) {
+		$pic = array(
+			''=>array('path'=>'/files/store/'.$key.'/'),
+			'icon'=>array(
+				'filename'=>basename($file),
+				'value'=>$file,
+			),
+		);
+		w('store-pic', $pic);
+		db_update('store', array(
+			'icon'=>$pic['icon']['value'],
+			'pic'=>$pic['icon']['pic'],
+		), array(
+			'i'=>$key,
+		));
+	}
+}
+
+/*
+$ups = array();
+$q = db_query('SELECT up, i, name FROM catalog ORDER BY i');
+while ($i = db_fetch($q)) {
+	$ups[$i['i']] = $i['name'];
+}
+*/
+
+//$ups = w('catalog-up', $dummy = 0);
+$ups = w('catalog-all');
+$vendor = cache_load('vendor');
+
+$plan = array(
+	''=>array('method'=>'POST'),
+	'file'=>array('name'=>'Файл данных', 'type'=>'file', 'default'=>''),
+	'up'=>array('name'=>'Раздел', 'type'=>'combo', 'values'=>$ups, 'default'=>0),
+	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo', 'values'=>$vendor, 'default'=>0),
+	'sync'=>array('name'=>'Ключ синхронизации', 'type'=>'line', 'default'=>''),
+	'send'=>array('type'=>'button', 'count'=>2, 1=>'Импорт', 2=>'Тест', 'class'=>array(1=>'btn-warning', 2=>'btn-success'))
+);
+
+w('request', $plan);
+w('form', $plan);
+
+if ($plan['']['valid'] && $plan['send']['value'] > 0) {
+	$file = $plan['file']['value'];
+//	$file = $config['root'].'files/yandex.xml';
+
+	echo '<p>Импорт: '.$plan['file']['value'].'</p>';
+	set_time_limit(0);
+
+	$xml = simplexml_load_file($file);
+
+	$root = '';
+
+	$temp = array(''=>array(
+		'i'=>'',
+		'up'=>'',
+		'name'=>'',
+		'/'=>array()
+	));
+	$ups = array($root=>1);
+
+	foreach ($xml->shop->categories->category as $x) {
+		$i = array(
+			'i'=>$plan['sync']['value'].(string) $x['id'],
+			'up'=>(string) $x['parentId'],
+			'name'=>(string) $x,
+			'/'=>array(),
+		);
+		$temp[$i['i']] = $i;
+		$ups[$i['up']] = 1;
+	}
+
+	$count = 1;
+	while ($count > 0) {
+		$dummy = array();
+		$roots = array();
+		foreach ($temp as $k=>$v) {
+			if (isset($ups[$k])) {
+				$roots[$k] = $v;
+			} else {
+				$dummy[$k] = $v;
+			}
+		}
+
+		$count = count($dummy);
+		foreach ($dummy as $k=>$v) {
+			$up = $v['up'];
+			$roots[$up]['/'][$k] = $v;
+		}
+
+		$ups = array($root=>1);
+		foreach ($roots as $k=>$v) {
+			$up = $v['up'];
+			$ups[$up] = 1;
+		}
+
+		$temp = $roots;
+	}
+
+	$tree = $temp[$root];
+	$flat = array();
+	foreach ($tree['/'] as &$branch) {
+		merge_tree(&$flat, &$branch, $plan['up']['value']);
+	}
+//	print_pre($flat);
+	w('catalog-cache');
+//	print_pre($tree);
+	w('wiki');
+	w('keys');
+
+	foreach ($xml->shop->offers->offer as $x) {
+		$i = array(
+			'i'=>$plan['sync']['value'].(string) $x['id'],
+			'up'=>(string) $x->categoryId,
+			'name'=>(string) $x->name,
+			'price'=>(string) $x->price,
+			'pic'=>(string) $x->picture,
+			'info'=> wiki_clean((string) $x->description),
+			'url'=>(string) $x->url,
+		);
+
+		if (isset($flat[$i['up']])) {
+			merge_store($i, $flat[$i['up']], $plan['vendor']['value']);
+		}
+	}
+}
+
+?>

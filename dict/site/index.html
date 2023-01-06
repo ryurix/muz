@@ -1,0 +1,15 @@
+<?
+
+echo '<p>';
+
+//	echo '<a href="/dict" class="btn btn-outline-default mr-1 mb-1">&larr; Словарь</a> ';
+
+$sites = cache_load('sitename');
+foreach ($sites as $k=>$v) {
+	echo '<a href="/dict/site/'.$k.'" class="btn btn-default mr-1 mb-1">'.$v.'</a>';
+}
+echo '</p>';
+
+w('form', $config['plan']);
+
+?>

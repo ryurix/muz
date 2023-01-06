@@ -1,0 +1,83 @@
+<?
+
+$plan = array(
+	''=>array('method'=>'POST'),
+	'search'=>array('name'=>'Синхронизация', 'type'=>'line'),
+	'art'=>array('name'=>'Артикул', 'type'=>'line'),
+	'send'=>array('type'=>'button', 'count'=>1, 1=>'Поиск'),
+);
+
+w('request', $plan);
+w('form', $plan);
+
+w('clean');
+
+if (isset($_REQUEST['code'])) {
+	$code = clean_int($_REQUEST['code']);
+	if ($code > 0) {
+		db_delete('sync', array(
+			'i'=>$code,
+		));
+	}
+}
+
+?>
+<table class="table table-hover table-bordered table-striped table-sm">
+<thead>
+	<tr>
+		<th>Товар</th>
+		<th>Артикул</th>
+		<th>Наименование</th>
+		<th>Поставщик</th>
+		<th>Дата</th>
+		<th>Цена</th>
+		<th>Оптовая</th>
+		<th>Наличие</th>
+		<th>&nbsp;</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$vendor = cache_load('vendor');
+$brand = cache_load('brand');
+
+w('ft');
+$q = db_query('SELECT'
+.' sync.name name'
+.',sync.code code'
+.',sync.vendor vendor'
+.',sync.dt dt'
+.',sync.price price'
+.',sync.opt opt'
+.',sync.count count'
+.',sync.i i'
+.',store.i store_i'
+.',store.model model'
+.',store.name store'
+.',store.brand brand'
+.' FROM sync LEFT JOIN store ON sync.store=store.i'
+.' WHERE sync.name LIKE "%'.addslashes($plan['search']['value']).'%"'
+.' AND sync.code LIKE "%'.addslashes($plan['art']['value']).'%" LIMIT 100');
+
+while ($i = db_fetch($q)) {
+	$name = $i['store'];
+	if (strlen($i['model']) > 0) {
+		$name = $brand[$i['brand']].' '.$i['model'].' '.$name;
+	}
+
+	echo '<tr>'
+.'<td><a href="/store/'.$i['store_i'].'">'.$name.'</a></td>'
+.'<td>'.$i['code'].'</td>'
+.'<td>'.$i['name'].'</td>'
+.'<td>'.(isset($vendor[$i['vendor']]) ? $vendor[$i['vendor']] : '').'</td>'
+.'<td>'.ft($i['dt'], 1).'</td>'
+.'<td>'.$i['price'].'</td>'
+.'<td>'.$i['opt'].'</td>'
+.'<td>'.$i['count'].'</td>'
+.'<td><a href="/sync/search?code='.$i['i'].'" class="btn btn-outline-default btn-sm" onclick="return confirm(\'Удалить синхронизацию? Восстановление невозможно!\')">&times;</a></td></tr>';
+}
+
+?>
+</tbody>
+</table>

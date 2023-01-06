@@ -1,0 +1,41 @@
+<p><a href="/sales/new" class="btn btn-default"><i class="icon-plus"></i> Добавить</a></p>
+<table class="table table-bordered table-sm">
+	<thead>
+		<tr>
+			<th>Код</th>
+			<th>Описание</th>
+			<th>Дата создания</th>
+			<th>Дата окончания</th>
+			<th>Скидка</th>
+			<th>Партнер</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+$partners = array();
+$q = db_query('SELECT * FROM user WHERE roles LIKE "%partner%"');
+while ($i = db_fetch($q)) {
+	$partners[$i['i']] = $i['name'];
+}
+
+$select = 'SELECT * FROM sale ORDER BY dt';
+$q = db_query($select);
+
+w('ft');
+while ($i = db_fetch($q)) {
+	$href = '/sales/'.$i['code'];
+
+	echo '<tr>';
+	echo '<td><a href="'.$href.'">'.$i['code'].'</a></td>';
+	echo '<td><a href="'.$href.'">'.$i['name'].' <i class="icon-edit"></i></a></td>';
+	echo '<td>'.ft($i['dt']).'</td>';
+	echo '<td>'.ft($i['dt2']).'</td>';
+	echo '<td>'.$i['perc'].'%</td>';
+	echo '<td>'.(isset($partners[$i['partner']]) ? $partners[$i['partner']] : '').'</td>';
+	echo '</tr>';
+}
+
+?>
+	</tbody>
+</table>

@@ -1,0 +1,7 @@
+<?
+
+w('autoload');
+
+//echo \Type\Price::name(\Type\Price::OZON);
+
+echo call_user_func(['\Type\Price', 'name'], \Type\Price::OZON);

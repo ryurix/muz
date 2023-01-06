@@ -1,0 +1,72 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+foreach ($html->find('div[class="catalog-section"] tr') as $row) {
+	$as = $row->find('a');
+	if (count($as)) {
+		$hrefs[] = 'http://ru.okno-tv.ru/proshop/equip/'.$as[0]->href;
+	}
+}
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	if (is_object($html)) {
+		$html->clear;
+		unset($html);
+	}
+	set_time_limit(0);
+
+	$html = file_get_html($href);
+
+	$model = $html->find('h1', 0)->innertext;
+	$price = $html->find('span[class=vltt]', 0);
+	$price = is_object($price) ? clean_09($price->innertext) : 0;
+	$brand = $html->find('div[class=producer-detail] a', 0)->innertext;
+
+	$pic = $html->find('a[class=highslide]', 0);
+	$pic = is_object($pic) ? 'http://ru.okno-tv.ru'.$pic->href : '';
+
+	$pics = array();
+	foreach ($html->find('a[rel=gallery1]') as $i) {
+		$pics[] = 'http://ru.okno-tv.ru'.$i->href;
+	}
+	if (count($pics)) {
+		$pics = array_slice($pics, 1);
+	}
+
+
+	$files = array();
+	foreach ($html->find('div[class=section] div[class=box]', 1)->find('li') as $i) {
+		$link = $i->find('a', 0)->href;
+		$pos = strrpos($link, '=');
+		if ($pos) {
+			$filename = 'http://ru.okno-tv.ru'.urldecode(substr($link, $pos + 1));
+			$files[basename($filename)] = $filename;
+		}
+	}
+
+
+	$html = $html->find('div[class=section] ', 0);
+	$info = $html->find('div[class=box]', 0)->innertext;
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>'',
+		'model'=>$model,
+		'short'=>'',
+		'pic'=>strlen($pic) ? $pic : '',
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+//*/
+}
+
+?>

@@ -1,0 +1,122 @@
+<?
+
+function trans($s) {
+//	return iconv('UTF-8', 'windows-1251//IGNORE', $s);
+	return mb_convert_encoding($s, 'windows-1251', 'UTF-8');
+//	return $s;
+}
+
+function merge_tree($f, $node, $pathway, $level, $brand, $vendor, $hide, $sign) {
+	$level = $level + 1;
+
+	$q = db_query('SELECT * FROM catalog WHERE i='.$node['i']);
+	$row = db_fetch($q);
+	db_close($q);
+
+	fputcsv($f, array(
+		$row['i'],
+		str_repeat('!', $level).trans($row['name']),
+		'',
+		'',
+		'',
+		'',
+		'',
+		'',
+		'',
+		'',
+		'',
+		'',
+		'',
+		$row['tag0'] ? 1 : 0,
+		trans($row['tag1']),
+		trans($row['tag2']),
+		trans($row['tag3']),
+	), ';', '"');
+
+	/*
+	fputcsv($f, array(
+		$node['i'],
+		str_repeat('!', $level).trans($pathway[$node['i']]['name']),
+	), ';', '"');
+	*/
+
+	$q = db_query('SELECT * FROM store WHERE up="'.$node['i'].'"');
+	while ($row = db_fetch($q)) {
+
+		fputcsv($f, array(
+			$row['i'],
+			/*$row['vendor'].': '.*/trans(isset($vendor[$row['vendor']]) ? $vendor[$row['vendor']] : ''),
+			/*$row['brand'].': '.*/trans(isset($brand[$row['brand']]) ? $brand[$row['brand']] : ''),
+			trans($row['model']),
+			trans($row['name']),
+			$row['sale'],
+			$row['price'],
+			trans($row['count']),
+			trans($hide[$row['hide']]),
+			isset($sign[$row['sign1']]) ? trans($sign[$row['sign1']]) : '',
+			isset($sign[$row['sign2']]) ? trans($sign[$row['sign2']]) : '',
+			isset($sign[$row['sign3']]) ? trans($sign[$row['sign3']]) : '',
+			isset($sign[$row['sign4']]) ? trans($sign[$row['sign4']]) : '',
+			$row['tag0'] ? 1 : 0,
+			trans($row['tag1']),
+			trans($row['tag2']),
+			trans($row['tag3']),
+			trans($row['short']),
+		), ';', '"');
+	}
+
+	if (isset($node['/'])) {
+//		echo '<ul>';
+		foreach ($node['/'] as &$i) {
+			merge_tree($f, $i, $pathway, $level, $brand, $vendor, $hide, $sign);
+		}
+//		echo '</ul>';
+	}
+}
+
+w('catalog-load');
+$catalog = cache_load('catalog-hide');
+$pathway = $config['pathway'];
+$brand = cache_load('brand');
+$vendor = cache_load('vendor');
+
+$hide = array(
+	0=>'Обычный',
+	1=>'Скрытый',
+	-1=>'Акция',
+);
+$sign = cache_load('sign');
+
+//print_pre($tree);
+//*
+$f = fopen($config['root'].'files/export.csv', 'w+');
+
+fputcsv($f, array(
+	trans('Код'),
+	trans('Поставщик'),
+	trans('Производитель'),
+	trans('Модель'),
+	trans('Наименование'),
+	trans('Скидка'),
+	trans('Цена'),
+	trans('Количество'),
+	trans('Состояние'),
+	trans('Знак 1'),
+	trans('Знак 2'),
+	trans('Знак 3'),
+	trans('Знак 4'),
+	trans('Ручные теги'),
+	trans('тег description'),
+	trans('тег keywords'),
+	trans('тег title'),
+	trans('Характеристика'),
+), ';', '"');
+
+foreach ($catalog['/'] as &$branch) {
+	merge_tree($f, $branch, $pathway, 0, $brand, $vendor, $hide, $sign);
+}
+fclose($f);
+//*/
+
+?>
+<p>Ссылка для скачивания: <a href="/files/export.csv" class="btn" target="_BLANK"><i class="icon-download"></i> export.csv</a> (правой кнопкой "Сохранить как...")</p>

@@ -1,0 +1,113 @@
+<?
+
+$plan = array(
+	''=>array('method'=>'POST'),
+	'cache'=>array('name'=>'Обновить', 'type'=>'button', 'count'=>3,
+		1=>'google-merchant.xml',
+		2=>'Фильтр по брендам',
+		3=>'Переименовать картинки',
+		'suffix'=>'<a href="/store/url" class="btn btn-default">Ссылки товаров</a>
+<a href="/setup/yml" class="btn btn-default">Выгрузка YML</a>
+<a href="/setup/ozon" class="btn btn-default">Выгрузка Ozon</a>'
+	),
+//	'hint'=>array('type'=>'label', 'value'=>''),
+);
+
+w('request', $plan);
+echo '<p>';
+w('form', $plan);
+echo '</p>';
+
+if ($plan['cache']['value'] == 1) {
+	w('google-merchant');
+	echo '<p><b>google-merchant</b> обновлён!</p>';
+}
+
+if ($plan['cache']['value'] == 2) {
+	w('cache-brand');
+	echo '<p><b>Фильтр по брендам</b> обновлён!</p>';
+}
+
+if ($plan['cache']['value'] == 3) {
+	w('rename-pics');
+	echo '<p>Картинки переименованы!</p>';
+}
+
+w('ft');
+
+$countp = db_result('SELECT COUNT(*) FROM store WHERE price>0');
+$countc = db_result('SELECT COUNT(*) FROM store WHERE count>0');
+$countpc = db_result('SELECT COUNT(*) FROM store WHERE count>0 AND price>0');
+echo '<p>Товаров с ценой: '.$countp.', с количеством: '.$countc.', с ценой и количеством: '.$countpc.'</p>';
+
+// * * *
+
+echo '<p><a href="/setup/sync-check" class="btn btn-default">'
+.'Проверка синхронизации'
+.'</a></p>';
+
+if (is_user('block')) {
+	echo '<p>';
+
+	echo '<a href="/block" class="btn btn-default">Редактирование блоков</a>';
+/*
+	echo '<br>';
+	echo '<a href="/block/description"><i class="fa fa-pencil"></i> Метатег description главной страницы</a>';
+	echo '<br>';
+	echo '<a href="/block/mail-response"><i class="fa fa-pencil"></i> Текст просьбы оставить отзыв</a>';
+	echo '<br>';
+	echo '<a href="/block/cheap"><i class="fa fa-pencil"></i> Текст сообщения "Нашли дешевле"</a>';
+*/
+	//	.'<p><a href="/block/mail-basket"><i class="fa fa-pencil"></i> Текст письма при оформлении заказа</a></p>Примечание: <i>%NAME% будет заменён на имя пользователя, %TABLE% &ndash; на таблицу с заказом.</i></p>';
+	//echo '<p><a href="/block/mail-basket"><p><i class="fa fa-pencil"></i> Текст письма при оформлении заказа</a>.</p>Примечание: <i>%NAME% будет заменён на имя пользователя, %TABLE% &ndash; на таблицу с заказом.</i>';
+	echo '</p>';
+}
+
+/*
+if (is_user('catalog')) {
+	echo '<p>
+<a href="/setup/parse" class="btn btn-default">Импорт каталога товаров с других сайтов</a>
+<a href="/setup/catalog" class="btn btn-default">Категории Google, импорт/экспорт</a>
+</p>';
+	echo '<p><a href="/setup/lost" class="btn btn-default">"Потерянные" товары (без раздела)</a> <a href="/clean-store" class="btn btn-default">Очистка лишних файлов каталога</a></p>';
+
+	$plan = array(
+		''=>array('method'=>'POST'),
+		'cache'=>array('name'=>'Обновить', 'type'=>'button', 'count'=>4,
+			1=>'yandex.xml',
+			2=>'google-merchant.xml',
+			3=>'Фильтр по брендам',
+			4=>'Переименовать картинки',
+		),
+	);
+	w('request', $plan);
+	echo '<p>';
+	w('form', $plan);
+
+	$status = cache_load('status');
+	$yandex = $status['yandex'];
+
+	w('ft');
+
+	$count = db_result('SELECT COUNT(*) FROM store WHERE price>0');
+
+	echo 'Примечание: <i>Автоматическое обновление yandex.xml происходит каждые 18 часов после ценообразования.</i><br>'
+.'yandex.xml был обновлён: '.ft($yandex['dt'], 1).', выгружено товаров: '.$yandex['count'].', товаров с ценой: '.$count.'</p>';
+}
+*/
+
+if (is_user('admin')) {
+	echo '<p>
+<a class="btn btn-default" href="/setup/update-tags">Обновить теги товаров</a>
+<a class="btn btn-default" href="/setup/img-fluid">Обновить картинки в статьях и товарах</a>
+</p>';
+}
+
+if (is_user('log')) {
+	echo '<p>
+<a class="btn btn-default" href="/setup/log">Логи</a>
+<a class="btn btn-default" href="/setup/ip">IP</a>
+</p>';
+}
+
+?>

@@ -1,0 +1,10 @@
+<?
+
+echo '<p><a href="/sales/list">&larr; Назад к списку</a> | <a href="/sales/'.$config['plan']['code']['value'].'/orders">Заказы со скидкой &darr;</a></p>';
+
+w('chosen.js');
+w('calendar');
+
+w('form', $config['plan']);
+
+?>

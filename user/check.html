@@ -1,0 +1,181 @@
+<?
+
+$log = array();
+
+$email = array();
+$phone = array();
+
+$user = array();
+
+$q = db_query('SELECT i,login,phone,email FROM user');
+while ($i = db_fetch($q)) {
+	$user[$i['i']] = $i;
+
+	if (strlen($i['email'])) {
+		if (isset($email[$i['email']])) {
+			$email[$i['email']][] = $i['i'];
+		} else {
+			$email[$i['email']] = array($i['i']);
+		}
+	}
+
+	if (strlen($i['phone'])) {
+		if (isset($phone[$i['phone']])) {
+			$phone[$i['phone']][] = $i['i'];
+		} else {
+			$phone[$i['phone']] = array($i['i']);
+		}
+	}
+}
+
+//	* * *
+
+w('clean');
+
+$upd = array();
+
+foreach ($user as $i) {
+	$num = clean_mail($i['email']);
+
+	if ($num != $i['email']) {
+
+		if (strlen($num) == strlen($i['email'])) {
+			echo '<p><a href="/user/'.$i['i'].'">'.$i['i'].'</a> &mdash; '.$i['email'].' &rarr; '.$num.'</p>';
+			$upd[$i['i']] = $num;
+		} else {
+			$i['error'] = 'Адрес почты';
+			$log[$i['i']] = $i;
+		}
+	}
+}
+
+//*
+if (count($upd)) {
+
+	foreach ($upd as $k=>$v) {
+		db_update('user',
+			array('email'=>$v),
+			array('i'=>$k)
+		);
+		$user[$k]['email'] = $v;
+	}
+
+	alert('Обновлено '.count($upd).' почтовых адресов.');
+}
+//*/
+
+//	* * *
+
+w('clean');
+
+$upd = array();
+
+foreach ($user as $i) {
+
+	$num = clean_phone($i['phone']);
+
+	if ($num != $i['phone']) {
+//		print_pre($i);
+
+		if (strlen($num)) {
+			echo '<p><a href="/user/'.$i['i'].'">'.$i['i'].'</a> &mdash; '.$i['phone'].' &rarr; '.$num.'</p>';
+			$upd[$i['i']] = $num;
+		} else {
+			$i['error'] = 'Телефон';
+			$log[$i['i']] = $i;
+		}
+	}
+}
+
+//*
+if (count($upd)) {
+
+	foreach ($upd as $k=>$v) {
+		db_update('user',
+			array('phone'=>$v),
+			array('i'=>$k)
+		);
+		$user[$k]['phone'] = $v;
+	}
+
+	alert('Обновлено '.count($upd).' телефонов.');
+}
+//*/
+
+echo '<p>';
+w('alert');
+echo '</p>';
+
+//	* * *
+
+if (count($log)) {
+
+?>
+<table class="table table-bordered table-sm w-auto">
+	<thead>
+		<tr>
+			<th>Почта</th>
+			<th>Телефон</th>
+			<th>Ошибка</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+foreach ($log as $i) {
+	echo '
+<tr>
+	<td><a href="/user/'.$i['i'].'">'.$i['email'].'</a></td>
+	<td><a href="/user/'.$i['i'].'">'.$i['phone'].'</a></td>
+	<td>'.kv($i, 'error', '').'</td>
+</tr>';
+}
+
+?>
+	</tbody>
+</table>
+<?
+
+}
+
+?>
+<h3 style="width:100%">Дубли</h3>
+<table class="table table-bordered table-sm w-auto">
+<tbody>
+<?
+
+foreach ($email as $k=>$v) {
+	if (count($v) > 1) {
+
+		$doubles = array();
+		foreach ($v as $i) {
+			$doubles[] = '<a href="/user/'.$i.'">'.$i.'</a>';
+		}
+
+		echo '
+<tr>
+<td>'.$k.'</td>
+<td>'.implode(' ', $doubles).'</td>
+</tr>';
+	}
+}
+
+foreach ($phone as $k=>$v) {
+	if (count($v) > 1) {
+
+		$doubles = array();
+		foreach ($v as $i) {
+			$doubles[] = '<a href="/user/'.$i.'">'.$i.'</a>';
+		}
+
+		echo '
+<tr>
+<td>'.$k.'</td>
+<td>'.implode(' ', $doubles).'</td>
+</tr>';
+	}
+}
+
+?>
+</tbody>
+</table>

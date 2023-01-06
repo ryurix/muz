@@ -1,0 +1,158 @@
+<?
+
+$q = db_query('SELECT i,url,up,name,icon,filter FROM catalog WHERE hide=0 ORDER BY w,name');
+
+$all = array();
+$temp = array();
+$ups = array(0=>1);
+while ($i = db_fetch($q)) {
+	$all[$i['i']] = array(
+		'up' => $i['up'],
+		'url'=> $i['url'],
+		'name'=> $i['name'],
+		'icon'=> $i['icon'],
+//		'filter'=>$i['filter'],
+	);
+	$temp[$i['i']] = array('i'=>$i['i'], 'up'=>$i['up']);
+	$ups[$i['up']] = 1;
+}
+
+
+
+$count = 1;
+while ($count > 0) {
+	$dummy = array();
+	$roots = array();
+	foreach ($temp as $k=>$v) {
+		if (isset($ups[$k])) {
+			$roots[$k] = $v;
+		} else {
+			$dummy[$k] = $v;
+		}
+	}
+
+	$count = count($dummy);
+	foreach ($dummy as $k=>$v) {
+		$up = $v['up'];
+		if (isset($roots[$up])) {
+			$roots[$up]['/'][$k] = $v;
+		}
+	}
+
+	$ups = array(0=>1);
+	foreach ($roots as $k=>$v) {
+		$up = $v['up'];
+		$ups[$up] = 1;
+	}
+
+	$temp = $roots;
+}
+
+$back = $temp[0];
+
+
+
+function catalog_sort(&$tree, $all) {
+	if (isset($tree['/'])) {
+		$pre = $tree['/'];
+		$tree['/'] = array();
+		$keys = array_intersect_key($all, $pre);
+		foreach ($keys as $k=>$v) {
+			$tree['/'][$k] = catalog_sort($pre[$k], $all);
+		}
+	}
+	return $tree;
+}
+$catalog = catalog_sort($back, $all);
+
+cache_save('catalog', $catalog);
+
+
+
+function pathway_up(&$list, $shop, $all) {
+	if (isset($shop['/'])) {
+		$pre = $shop['pre'];
+		if ($shop['i']) {
+			$pre[] = $shop['i'];
+		}
+		foreach ($shop['/'] as $i) {
+			$j = $all[$i['i']];
+			$j['pre'] = $pre;
+			$j['f'] = array();
+			$i['pre'] = $pre;
+			$list[$i['i']] = $j;
+			pathway_up($list, $i, $all);
+		}
+	}
+}
+
+$shop = $back;
+$shop['pre'] = array();
+$pathway = array(0=>array(
+	'name'=>'Каталог',
+	'pre'=>array(),
+	'f'=>array(),
+));
+pathway_up($pathway, $shop, $all);
+
+
+$list = array();
+function children_up(&$list, $shop) {
+	$key = $shop['i'];
+	$back = array($key);
+	if (isset($shop['/'])) {
+		foreach ($shop['/'] as $k=>$v) {
+			$children = children_up($list, $v);
+			$back = array_merge($back, $children);
+		}
+	}
+	$list[$key] = $back;
+	return $back;
+}
+children_up($list, $shop);
+cache_save('children', $list);
+
+foreach ($pathway as $k=>$v) {
+	$pathway[$k]['count'] = db_result('SELECT COUNT(*) FROM store WHERE hide<=0 AND up IN ('.implode(',',$list[$k]).')');
+}
+
+function pathway_filter(&$pathway, $children) {
+	$q = db_query('SELECT * FROM filter ORDER BY w');
+	$filters = array();
+	while ($i = db_fetch($q)) {
+		$filters[] = intval($i['i']);
+	}
+	db_close($q);
+
+	foreach ($filters as $f) {
+		$a = array();
+		$q = db_query('SELECT i,filter FROM catalog WHERE hide=0 AND filter LIKE "%'.$f.'%"');
+		while ($i = db_fetch($q)) {
+			if (in_array($f, explode(',', $i['filter']))) {
+				$a[] = $i['i'];
+
+				if (isset($children[$i['i']])) {
+					$a = array_merge($a, $children[$i['i']]);
+				}
+			}
+		}
+		db_close($q);
+		$a = array_unique($a);
+
+		foreach ($a as $i) {
+			$pathway[$i]['f'][] = $f;
+		}
+	}
+}
+
+pathway_filter($pathway, $list);
+
+cache_save('pathway', $pathway);
+
+
+
+w('catalog-cache-hide');
+w('catalog-cache-menu');
+w('catalog-cache-home');
+
+?>

@@ -1,0 +1,211 @@
+<?
+
+w('u8');
+
+function clean_count($i, $ccs) {
+	$count = 0;
+	foreach ($ccs as $c) {
+		if (isset($i[$c])) {
+			$val = u8lower(trim(trim($i[$c], '>')));
+
+			if (!is_num($val)) {
+				if ($val === '*') {
+					$val = 2;
+				} elseif ($val === '**') {
+					$val = 5;
+				} elseif ($val === '***') {
+					$val = 8;
+				} elseif ($val === 'много') {
+					$val = 10;
+				} else {
+					$val = 0;
+				}
+			}
+
+			$count+= $val;
+		}
+	}
+	return max(0, $count);
+}
+
+$vendors = cache_load('vendor');
+
+$plan = array(
+	''=>array('method'=>'POST'),
+	'file'=>array('name'=>'Файл данных', 'type'=>'file', 'default'=>''),
+	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo', 'values'=>$vendors, 'default'=>0, 'class'=>'vendor', 'width'=>300),
+	'send'=>array('type'=>'button', 'count'=>1, 1=>'Импорт', 'class'=>'btn-warning'),
+);
+
+w('request', $plan);
+w('form', $plan);
+
+$send = $plan['send']['value'];
+if ($plan['']['valid'] && $send > 0) {
+	$file = $plan['file']['value'];
+
+	if (strlen($file) > 0) {
+		set_time_limit(0);
+
+		$curr = 1;
+
+		$q = db_query('SELECT * FROM vendor WHERE i='.$plan['vendor']['value'].' OR (up='.$plan['vendor']['value'].' AND up>0)');
+		$ven = array();
+		while ($i = db_fetch($q)) {
+			$i['prmin'] = $i['prmin'] ? $i['prmin'] : 0;
+			$i['ccs'] = explode(' ', $i['ccount']);
+			$curr = w('currency', $i['curr']);
+			$i['curr'] = $curr;
+
+			$ven[$i['i']] = $i;
+		}
+		db_close($q);
+
+		if ($curr != 1) {
+			echo '<p>Курс валюты: '.$curr.'</p>';
+		}
+
+		w('xlsread');
+		$data = new Spreadsheet_Excel_Reader();
+		$data->setOutputEncoding('UTF-8');
+		$data->read($file);
+		$cells = array();
+		foreach ($data->sheets[0]['cells'] as $i) {
+			$cells[] = $i;
+		}
+		unset($data);
+		gc_collect_cycles();
+
+		w('u8');
+		w('clean');
+
+		$nosync = 0;
+		$nosyncv = 0;
+		$updated = array();
+		$unchanged = array();
+
+		foreach ($cells as $i) {
+			foreach ($ven as $v) {
+				$valid = isset($i[$v['cname']]);
+
+				if (!isset($i[$v['ccs'][0]])) { $i[$v['ccs'][0]] = 0; }
+				if ($v['copt']) {
+					if (!isset($i[$v['copt']])) {
+						$i[$v['copt']] = 0;
+					}
+				}
+
+				if ($valid) {
+					$ccode = isset($i[$v['ccode']]) ? $i[$v['ccode']] : '';
+					$ccode = u8sub($ccode, 0, 15);
+
+					$cname = trim($i[$v['cname']]);
+					$cprice = isset($i[$v['cprice']]) ? $i[$v['cprice']] : 0;
+					if ($v['cname'] != $v['ctype'] && isset($i[$v['ctype']])) {
+						$cname = trim($i[$v['ctype']]).' '.$cname;
+					}
+					if ($v['cname'] != $v['cbrand'] && isset($i[$v['cbrand']])) {
+						$cname = trim($i[$v['cbrand']]).' '.$cname;
+					}
+					$cname = u8sub($cname, 0, 64);
+
+					if (is_number($cprice)) {
+						$cprice = ceil($cprice);
+					} else {
+						if ($cprice == '') {
+							$cprice = 0;
+						} else {
+							$valid = FALSE;
+						}
+					}
+					if ($v['copt']) {
+						$copt = $i[$v['copt']];
+						$copt = is_number($copt) ? ceil($copt) : 0;
+
+						$valid = $copt*1.1 <= $cprice;	// Проверка на маржинальность
+					} else {
+						$copt = '';
+					}
+
+					$ccount = round($cprice*$v['curr']) < $v['prmin'] ? 0 : clean_count($i, $v['ccs']);
+				}
+
+				if ($valid && $v['price']) {
+					$cprice = ceil($cprice + $cprice*$v['price']/100);
+				}
+
+				if ($valid) {
+					$or = strlen($ccode) ? ' OR code="'.$ccode.'"' : '';
+					$select = 'SELECT * FROM sync WHERE (name="'.addslashes($cname).'"'.$or.') AND vendor='.$v['i'];
+
+					$q = db_query($select);
+					if ($sync = db_fetch($q)) { // Ищем в таблице синхронизации
+						$cprice = round($cprice * $v['curr']);
+						$copt = round($copt * $v['curr']);
+						if ($sync['price'] != $cprice || $sync['count'] != $ccount || $sync['opt'] != $copt) {
+							db_update('sync', array(
+								'code'=>$ccode,
+								'name'=>$cname,
+								'dt'=>now(),
+								'price'=>$cprice,
+								'opt'=>$copt,
+								'count'=>$ccount,
+							), 'i='.$sync['i']);
+							$updated[] = $sync['i'];
+						} else {
+							$unchanged[] = $sync['i'];
+						}
+					} else {
+						$nosync++;
+						if ($ccount) {
+							$nosyncv++;
+						}
+					}
+				}
+			}
+		}
+
+		$all = array();
+		$q = db_query('SELECT i FROM sync WHERE count>0 AND vendor IN ('.implode(',', array_keys($ven)).')');
+		while ($i = db_fetch($q)) {
+			$all[] = $i['i'];
+		}
+		$lost = array_diff($all, $updated, $unchanged);
+
+		alert('Обновлено '.count($updated).', без изменений '.count($unchanged).' позиций этого поставщика в каталоге.<br>Отмечены как недоступные для заказа: '.count($lost).', не синхронизировано: '.$nosync.' (из них с количеством: '.$nosyncv.')');
+
+		// Обновлем даты синхронизации для записей без изменений
+		$syncs = array_chunk($unchanged, 100, TRUE);
+		foreach ($syncs as $chunk) {
+			db_update('sync', array(
+				'dt'=>now(),
+			), 'i IN ('.implode(',', $chunk).')');
+		}
+
+		// Обновляем записи в таблице синхронизаций для исключенных из прайса товаров
+		$syncs = array_chunk($lost, 100, TRUE);
+		foreach ($syncs as $chunk) {
+			db_update('sync', array(
+				'dt'=>now(),
+				'count'=>'',
+			), 'i IN ('.implode(',', $chunk).')');
+		}
+
+		db_insert('log', array(
+			'type'=>6,
+			'dt'=>now(),
+			'user'=>$_SESSION['i'],
+			'info'=>$vendors[$plan['vendor']['value']],
+		));
+/*
+		// Устанавливаем дату следующей выгрузки яндекса так, чтобы выгрузка произошла сразу.
+		$last = cache_load('cron');
+		$last['yandex'] = now() - 25*60*60;
+		cache_save('cron', $last);
+*/
+	}
+}
+
+w('alert');
+
+?>	

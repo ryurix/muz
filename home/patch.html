@@ -1,0 +1,13 @@
+<?
+
+$table = db_fetch_all('DESCRIBE prices', 'Field');
+if (!array_key_exists('typ', $table)) {
+	db_query('ALTER TABLE `prices` ADD `typ` tinyint DEFAULT 0;');
+	db_query('ALTER TABLE `prices` ADD `pmax` int DEFAULT 0 AFTER price;');
+	db_query('ALTER TABLE `prices` ADD `pmin` int DEFAULT 0 AFTER price;');
+}
+
+$table = db_fetch_all('DESCRIBE store', 'Field');
+if (!array_key_exists('prices', $table)) {
+	db_query('ALTER TABLE `store` ADD `prices` tinytext AFTER price;');
+}

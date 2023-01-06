@@ -1,0 +1,56 @@
+<?
+
+$groups = cache_load('groups');
+$brands = cache_load('brand');
+$vendors = cache_load('vendor');
+$sign = cache_load('sign');
+//$speed = w('speed');
+
+$hide = array(
+	0=>'Обычный',
+	1=>'Скрытый',
+	-1=>'Приоритет',
+);
+
+$back = array(
+	''=>array('method'=>'POST', 'default'=>array('speed'=>0)),
+	'up'=>array('name'=>'Раздел', 'type'=>'combo2', 'values'=>$args, 'width'=>480),
+	'grp'=>array('name'=>'Группа', 'type'=>'combo', 'values'=>$groups, 'class'=>'form-control', 'width'=>480),
+	'hide'=>array('name'=>'Состояние', 'type'=>'combo', 'values'=>$hide, 'class'=>'form-control', 'width'=>480),
+	'brand'=>array('name'=>'Производитель', 'type'=>'combo2', 'values'=>$brands, 'width'=>480),
+	'model'=>array('name'=>'Модель', 'type'=>'line', 'class'=>'form-control', 'width'=>480),
+	'name'=>array('name'=>'Наименование', 'type'=>'line', 'class'=>'form-control', 'width'=>480),
+	'tag0'=>array('label'=>'Ручные теги', 'type'=>'checkbox'),
+	'tag1'=>array('name'=>'Тег 1', 'help'=>'description', 'type'=>'line', 'class'=>'form-control'),
+	'tag2'=>array('name'=>'Тег 2', 'help'=>'keywords', 'type'=>'line', 'class'=>'form-control'),
+	'tag3'=>array('name'=>'Тег 3', 'help'=>'title', 'type'=>'line', 'class'=>'form-control'),
+	'short'=>array('name'=>'', 'type'=>'hidden', 'class'=>'form-control'), // Характеристика
+	'count'=>array('name'=>'На складе', 'type'=>'int', 'class'=>'form-control'),
+	'price'=>array('name'=>'Цена', 'type'=>'int', 'class'=>'form-control'),
+	'price2'=>array('name'=>'Оптовая цена', 'type'=>'int', 'class'=>'form-control'),
+	'sale'=>array('name'=>'Максимальная скидка', 'type'=>'number', 'class'=>'form-control'),
+	'size'=>array('name'=>'Размеры', 'type'=>'size', 'help'=>'ширина, глубина, высота (см), вес (кг)'),
+//	'city'=>array('name'=>'Город', 'type'=>'city'),
+//	'speed'=>array('name'=>'Наличие', 'type'=>'combo', 'values'=>$speed),
+//	'link'=>array('name'=>'Ссылка', 'type'=>'line'),
+	'send'=>array('type'=>'button', 'count'=>3, 1=>'Сохранить', 2=>'Удалить бренд', 3=>'Удалить главное фото', 'class'=>array(1=>'btn-success', 2=>'btn-warning', 3=>'btn-danger')),
+	'icon'=>array('name'=>'Главное фото', 'type'=>'file0', 'default'=>''),
+	'pics'=>array('name'=>'Дополнительные фото', 'type'=>'pics'),
+	'files'=>array('name'=>'Прикрепленные файлы', 'type'=>'files'),
+	'info'=>array('name'=>'Характеристики', 'type'=>'rich', 'rows'=>10),
+	//'w'=>array('name'=>'Вес', 'type'=>'int', 'class'=>'form-control'),
+	'w'=>array('type'=>'hidden'),
+	'filter'=>array('name'=>'Фильтры', 'type'=>'filter2'),
+	
+	'sign1'=>array('name'=>'Знак 1', 'type'=>'combo', 'values'=>$sign, 'class'=>'form-control', 'width'=>400),
+	'sign2'=>array('name'=>'Знак 2', 'type'=>'combo', 'values'=>$sign, 'class'=>'form-control', 'width'=>400),
+	'sign3'=>array('name'=>'Знак 3<br><small class="muted">(только в карточке товара)</small>', 'type'=>'combo', 'values'=>$sign, 'class'=>'form-control', 'width'=>400),
+	'sign4'=>array('name'=>'Знак 4', 'type'=>'combo', 'values'=>$sign, 'class'=>'form-control', 'width'=>400),
+	'yandex'=>array('name'=>'код в Яндексе', 'type'=>'int', 'class'=>'form-control'),
+	'dt'=>array('name'=>'Дата создания/изменения', 'type'=>'date', 'readonly'=>1, 'class'=>'form-control'),
+	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo', 'values'=>$vendors, 'class'=>'form-control', 'width'=>400, 'more'=>'disabled=true'),
+	'rule'=>array('name'=>'Правило ценообразования', 'type'=>'int', 'readonly'=>1, 'class'=>'form-control'),
+//	'sync'=>array('name'=>'Дата последней синхронизации', 'type'=>'date', 'readonly'=>1),
+);
+
+?>

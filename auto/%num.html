@@ -1,0 +1,68 @@
+<?
+
+$row = $config['row'];
+
+$data = array();
+
+$data['Покупатель'] = $row['fio'];
+$data['Телефон'] = '<a href="tel:+'.$row['phone'].'">+'.$row['phone'].'</a>';
+$data['Адрес'] = $row['city'];
+$data['Квартира'] = $row['adres'];
+
+if ($row['lat'] && $row['lon']) {
+	$data['Карта'] = '<a href="yandexnavi://build_route_on_map?lat_to='.$row['lat'].'&lon_to='.$row['lon'].'">Маршрут для Яндекс.Навигатора</a>';
+}
+
+$data['Цена'] = number_format($row['price'], 0, '.', ' ');
+$data['Количество'] = $row['count'];
+$data['Сумма'] = number_format($row['price'] * $row['count'], 0, '.', ' ');
+$data['Предоплата'] = $row['money'];
+$data['Оплата'] = $row['money2'];
+$data['Доставка'] = number_format(abs($row['money0']), 0, '.', ' ').($row['money0'] <= 0 ? '' : ' Оплачено');
+
+/*
+w('show-files');
+$style = array('icon'=>1);
+$data['Документы'] = show_files($row['docs'], $style);
+$data['Файлы'] = show_files($row['files'], $style);
+*/
+
+$orst = array();
+$q = db_query('SELECT * FROM docs WHERE orst LIKE "%|'.$row['i'].'|%"');
+while ($i = db_fetch($q)) {
+	$orst[]= '<li><a href="/doc/'.$i['i'].'">'.$i['name'].'</a></li>';
+}
+
+if (count($orst)) {
+	$data['Документы'] = '<ul>'.implode('', $orst).'</ul>';
+}
+
+$data['Комментарий'] = $row['info'];
+$data['Замечания'] = $row['note'];
+
+?>
+<div class="modal-header">
+	<h5 class="modal-title"><? echo $row['name']  ?></h5>
+	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		<span aria-hidden="true">&times;</span>
+	</button>
+</div>
+<div class="modal-body">
+	<table class="table table-striped">
+		<tbody>
+<?
+	foreach ($data as $k=>$v) {
+		echo '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+	}
+/*
+	foreach ($row as $k=>$v) {
+		echo '<tr><td>'.$k.'</td><td>'.$v.'</td></tr>';
+	}
+//*/
+?>
+		</tbody>
+	</table>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+</div>

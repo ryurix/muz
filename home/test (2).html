@@ -1,0 +1,119 @@
+<?
+
+echo PHP_INT_MAX;
+
+/*
+
+//$url = 'https://wbxgate-test.wildberries.ru/stocks';
+//$token = 'f977102d98258c509ca78f781ac0eb9ec26acd849a6074d7b4179049c4930f68';
+
+$url = 'https://wbxgate.wildberries.ru/stocks';
+$token = '96e3a4a04e3d80791a421e4b45264d93a96a20df0f9417ab04c80caaeb0f8b6c';
+
+
+$storeId = 6049;
+
+$post = [
+	'token'=>$token,
+	'data'=>[
+		[
+			'nmId'=>21655701,
+			'stocks'=>[
+				[
+					'chrtId'=>54807707,
+					'price'=>6000,
+					'quantity'=>1,
+					'storeId'=>$storeId,
+				],
+			]
+		],
+	]
+];
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post));
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+//	'X-Auth-Token: '.$token,
+	'Content-Type: application/json',
+));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+$result = curl_exec($ch);
+curl_close($ch);
+
+print_pre($result);
+//*/
+
+/*
+w('ft');
+
+//$url = 'https://suppliers-orders-test.wildberries.ru';
+//$url.= '/api/v1/orders?date_start='.date('c', ft_parse(ft(now())) - 24*60*60);
+//$url = $url.'/api/v1/orders?date_start=2020-09-14T00:00:00+03:00'; // &date_end=2021-01-15T00:00:00+03:00';
+
+//$url = 'https://suppliers-orders-test.wildberries.ru/api/v1/orders?date_start=2020-09-14T00:00:00+03:00&date_end=2020-09-15T00:00:00+03:00';
+//$token = 'f977102d98258c509ca78f781ac0eb9ec26acd849a6074d7b4179049c4930f68';
+
+$url = 'https://suppliers-orders.wildberries.ru/api/v1/orders?date_start='.urlencode('2021-05-09T00:00:00+03:00');
+$token = '96e3a4a04e3d80791a421e4b45264d93a96a20df0f9417ab04c80caaeb0f8b6c';
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+//curl_setopt($ch, CURLOPT_POST, 1);
+//curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post));
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+	'X-Auth-Token: '.$token,
+	'Content-Type: application/json',
+));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+$result = curl_exec($ch);
+curl_close($ch);
+
+print_pre($url);
+print_pre(json_decode($result, 1));
+//*/
+
+/*
+try {
+    $obj = new \JpGraph\JpGraph();
+} catch (Exception $e) {
+    echo $e->getMessage(), "\n";
+}
+//*/
+
+// w('autoload');
+
+/*
+function get_classname($file) {
+	if (preg_match('#class\\s+([A-Za-z0-9\\\\]+?)[\\s;]*#sUm', $file, $m)) {
+        return $m[1];
+    }
+    return null;
+}
+
+function get_namespace($file) {
+	if (preg_match('#(namespace)(\\s+)([A-Za-z0-9\\\\]+?)(\\s*);#sUm', $file, $m)) {
+        return $m[3];
+    }
+    return null;
+}
+
+$file = '<?php
+namespace JpGraph ;
+class JpGraph {
+    static  $loaded = false ;
+    static  $modules = array();
+    static function load(){
+';
+
+$classname = get_classname($file);
+$namespace = get_namespace($file);
+
+print_pre($classname);
+print_pre($namespace);
+//*/

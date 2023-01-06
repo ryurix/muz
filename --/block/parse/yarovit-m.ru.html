@@ -1,0 +1,91 @@
+<?
+
+function echo_test($prefix = '') {
+//	echo '<p>'.$prefix.' '.memory_get_usage().'</p>';
+}
+
+$html = file_get_html($args);
+
+$hrefs = array();
+$html = $html->find('div[class=merch-container]', 0);
+																						echo_test(1);
+foreach ($html->find('div[class=merch-item]') as $row) {
+	$as = $row->find('a', 0);
+	if (count($as)) {
+		$hrefs[] = 'https://www.yarovit-m.ru'.$as->href;
+	}
+}
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+																						echo_test(2);
+	if (is_object($html)) {
+		$html->clear;
+		unset($html);
+	}
+	set_time_limit(0);
+																						echo_test('3 '.$href);
+	$html = file_get_html($href);
+																						echo_test('3 get');
+	$html = $html->find('div[class=wrapper]', 0);
+																						echo_test('3 find');
+	if (!is_object($html->find('h1', 0))) {
+		continue;
+	}
+
+	$brand = '';
+	$name = '';
+	$model = $html->find('h1', 0)->find('span', 0)->innertext;
+	$short = '';
+
+	$price = $html->find('span[class=price]', 0);
+	$price = $price->attr['data-price'];
+																						echo_test(4);
+	$pics = array();
+	$pic = $html->find('ul#thumbs_list_frame', 0);
+	foreach ($pic->find('a') as $i) {
+		$pics[] = 'https://www.yarovit-m.ru'.$i->attr['data-zoom-image'];
+	}
+	if (count($pics)) {
+		$pic = $pics[0];
+		array_shift($pics);
+	} else {
+		$pic = '';
+	}
+																						echo_test(5);
+	$files = array();	
+																						echo_test(6);
+	$info = $html->find('div[class=merch-info-tab]', 0)->find('ul', 1)->find('li', 0)->innertext
+	.' '.$html->find('div[class=merch-info-tab]', 0)->find('ul', 1)->find('li', 1)->innertext;
+
+
+	$div = $html->find('div[class=properties]', 0);
+	if (is_object($div)) {
+		$info.= "\n".$div->innertext;
+		$div->clear; unset($div);
+	}
+	
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>$name,
+		'model'=>$model,
+		'short'=>$short,
+		'pic'=>strlen($pic) ? $pic : '',
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+//print_pre($back);
+																						echo_test(7);
+}
+
+//exit();
+
+//*/
+
+?>

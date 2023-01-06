@@ -1,0 +1,29 @@
+<?
+
+w('table');
+
+?>
+<table class="table table-striped table-bordered table-sm w-auto sort">
+<thead>
+<tr>
+	<td>Код</td>
+	<td>Название</td>
+	<td>Тип</td>
+</tr>
+</thead>
+<tbody>
+<?
+
+$q = db_query('SELECT * FROM block ORDER BY code');
+while ($i = db_fetch($q)) {
+	echo '<tr>
+<td><a href="/block/'.$i['code'].'">'.$i['code'].'</a></td>
+<td><a href="/block/'.$i['code'].'">'.$i['name'].'</a></td>
+<td>'.$i['type'].'</td>
+</tr>';
+}
+db_close($q);
+
+?>
+</tbody>
+</table>

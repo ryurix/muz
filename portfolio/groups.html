@@ -1,0 +1,21 @@
+<p><a href="/portfolio">&larr; Портфолио</a></p>
+<form method="POST"><table class="table" style="width:300px">
+	<thead>
+		<tr><th class="text-right">#</th><th>Название</th></tr>
+	</thead>
+<tbody>
+<?
+
+$groups = cache_load('portfolio');
+
+//print_pre($groups);
+
+foreach ($groups as $k=>$v) {
+	echo '<tr><td><input type="text" name="code[]" value="'.$k.'" class="input input-mini text-right"></td><td><input type="text" name="name[]" value="'.$v.'" class="input"></td></tr>';
+}
+
+?>
+<tr><td><input type="text" name="code[]" value="" class="input input-mini text-right"></td><td><input type="text" name="name[]" value="" class="input"></td></tr>
+<tr><td></td><td><button name="send1" class="btn btn-success">Сохранить</button></td></tr>
+</tbody></table>
+</form>

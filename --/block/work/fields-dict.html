@@ -1,0 +1,13 @@
+<?
+
+$back = array();
+
+$sites = cache_load('sitename');
+
+$q = db_query('SELECT word.site, word.value, word.i word FROM word WHERE word.dict='.$args);
+while ($i = db_fetch($q)) {
+	$back['i'.$i['site']] = array('name'=>$sites[$i['site']], 'type'=>'line', 'default'=>$i['value'], 'word'=>$i['word']);
+}
+db_close($q);
+
+?>

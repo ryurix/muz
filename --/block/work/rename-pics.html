@@ -1,0 +1,84 @@
+<?
+
+set_time_limit(0);
+
+$brand = cache_load('brand');
+
+$root = rtrim($config['root'], '/');
+
+w('clean');
+
+function file_rename($root, $old, $new) {
+	if ($old == '') {
+		return '';
+	}
+	$info = pathinfo($old);
+
+if (!isset($info['extension'])) {
+	if ($args) {
+		alert($old, 'error');
+	}
+	//return $old;
+	$info['extension'] = 'jpg';
+}
+
+	$path = $info['dirname'];
+	$ext = $info['extension'];
+
+	$next = $path.'/'.$new.'.'.$ext;
+
+	$file1 = $root.trim($old, '/');
+	$file2 = $root.trim($next, '/');
+
+	if ($file1 == $file2) {
+		return $old;
+	}
+
+	if (is_file($file1)) {
+		rename($file1, $file2);
+	}
+
+//	print_pre($dummy = $file1.' -> '.$file2);
+	return $next;
+}
+
+$q = db_query("SELECT i,name,model,brand,icon,pic,pics,files FROM store");
+while ($i = db_fetch($q)) {
+	$name1 = $i['name'].' '.$brand[$i['brand']].' '.$i['model'];
+	$name = str2url($name1);
+
+	$icon = file_rename($config['root'], $i['icon'], 'icon_'.$name);
+	$pic = file_rename($config['root'], $i['pic'], $name);
+
+	$pics = strlen($i['pics']) > 7 ? php_decode($i['pics']) : array();
+
+	if (count($pics)) {
+		foreach ($pics as $k=>$v) {
+			$pics[$k]['name'] = $name1.' '.($k+1);
+			$pics[$k]['href'] = file_rename($config['root'], $pics[$k]['href'], $name.'_'.($k+1));
+		}
+	}
+
+	$pics = count($pics) ? php_encode($pics) : '';
+
+	if (
+		$icon != $i['icon'] ||
+		$pic != $i['pic'] ||
+		$pics != $i['pics']
+	) {
+		db_update('store', array(
+			'icon'=>$icon,
+			'pic'=>$pic,
+			'pics'=>$pics,
+		), array('i'=>$i['i']));
+
+//		alert('Обновлёны картинки <a href="/store/'.$i['i'].'">'.$name1.'</a>');
+	}
+}
+db_close($q);
+
+if ($args) {
+	w('alert');
+}
+
+?>

@@ -1,0 +1,17 @@
+<?
+
+$q = db_query("(SELECT up, i, name FROM catalog WHERE i=".$args
+.') UNION (SELECT up, i,name FROM catalog WHERE up='.$args.' ORDER BY w)');
+
+$back = array();
+if ($i = db_fetch($q)) {
+	if ($i['i'] > 0) {
+		$back[$i['up']] = '[Вверх]';
+	}
+	$back[$i['i']] = $i['name'];
+}
+while($i = db_fetch($q)) {
+	$back[$i['i']] = $i['name'];
+}
+
+?>

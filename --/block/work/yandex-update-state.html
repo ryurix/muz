@@ -1,0 +1,104 @@
+<?
+
+// docs https://yandex.ru/dev/market/partner-marketplace-cd/doc/dg/reference/put-campaigns-id-orders-id-status.html
+// logs https://partner.market.yandex.ru/supplier/21927869/api/log
+
+$user = $args['user'];
+
+global $yandex;
+if (!isset($yandex[$user])) {
+    return;
+}
+
+$campaignId = $yandex[$user]['campaignId'];
+$oauth_token = $yandex[$user]['oauth_token'];
+$oauth_client_id = $yandex[$user]['oauth_client_id'];
+
+
+$mpi = $args['mpi'];
+$state = $args['new'];
+$old = $args['old'];
+$orst = $args['orst'];
+
+$count = db_result("SELECT COUNT(1) FROM orst WHERE mpi=$mpi AND state<>$state");
+if ($count) {
+    return;
+}
+
+
+// * * *
+
+
+switch ($state) {
+case 30: $status='PROCESSING'; $substatus='SHIPPED'; break;
+case 35: $status='CANCELLED'; $substatus='SHOP_FAILED'; break;
+}
+
+$data = ['order'=>[
+    'status'=>$status,
+    'substatus'=>$substatus,
+]];
+
+$data = json_encode($data);
+
+
+// * * *
+
+
+$url = "https://api.partner.market.yandex.ru/v2/campaigns/$campaignId/orders/$mpi/status.json";
+
+/*
+$continue = true;
+
+while ($continue) {
+*/
+	$handle = curl_init();
+	curl_setopt($handle, CURLOPT_URL, $url);
+	curl_setopt($handle, CURLOPT_HTTPHEADER, [
+		"Authorization: OAuth oauth_token=$oauth_token, oauth_client_id=$oauth_client_id",
+		'Content-Type: application/json',
+		'Content-Length: '.strlen($data),
+	]);
+	curl_setopt($handle, CURLOPT_CUSTOMREQUEST, 'PUT');
+	curl_setopt($handle, CURLOPT_POSTFIELDS, $data);
+	curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+
+	$response=curl_exec($handle);
+	$code=curl_getinfo($handle, CURLINFO_HTTP_CODE);
+	curl_close($handle);
+/*
+	if ($code == 420) {
+		sleep(1);
+	} else {
+		$continue = false;
+	}
+}
+*/
+
+w('log');
+if ($code == 200) {
+	logs(250, $orst);
+} else {
+	logs(255, $orst, $code.': '.$response.' | '.$data);
+
+	$row = db_fetch_row('SELECT info,mark FROM orst WHERE i='.$orst);
+
+	$mark = explode(',', trim($row['mark'], ','));
+	if (!in_array('1', $mark)) {
+		$mark[] = 1;
+	}
+
+	$response = json_decode($response, true);
+	$error = isset($response['errors'][0]['message']) ? $response['errors'][0]['message'] : '';
+
+	$data = [
+		'mark'=>','.implode(',', $mark).',',
+		'info'=>trim($row['info'].' Ошибка закрытия в Яндексе: '.$error),
+	];
+
+	if ($old > 0 && $old < 30) {
+		$data['state'] = $old;
+	}
+
+	db_update('orst', $data, ['i'=>$orst]);
+}

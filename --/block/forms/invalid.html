@@ -1,0 +1,18 @@
+<?
+
+/*
+ *	Copyright flydom.ru
+ *	Version 2019-03-27
+ */
+
+foreach (array_keys($args) as $k) {
+	if (strlen($k) == 0) {continue;}
+
+	$v = &$args[$k];
+
+	if (!kv($v, 'readonly', 0) && !kv($v, 'valid', 0)) {
+		$v['iv'] = 1;
+	}
+}
+
+?>

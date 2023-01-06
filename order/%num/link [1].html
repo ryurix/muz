@@ -1,0 +1,100 @@
+<?
+
+$row = $config['row'];
+
+$plan = array(
+	''=>array('type'=>'inline', 'close'=>false),
+	'state'=>array('type'=>'combo', 'value'=>0, 'values'=>w('order-state')),
+	'send'=>array('type'=>'submit', 'value'=>'Изменить статусы'),
+);
+
+w('request', $plan);
+
+echo '<p>';
+w('form', $plan);
+echo '</p>';
+
+?>
+<table class="table">
+<thead>
+	<tr>
+		<th>#, Дата</th>
+		<th>Наименование</th>
+		<th class="text-right">Цена</th>
+		<th class="text-right">шт.</th>
+		<th class="text-right">Сумма</th>
+		<th class="text-right">Оплачено</th>
+		<th>Состояние</th>
+		<th>Комментарий</th>
+	</tr>
+</thead>
+	<tbody>
+<?
+
+$ids = isset($_REQUEST['id']) && is_array($_REQUEST['id']) ? $_REQUEST['id'] : array($row['i']);
+
+$select = 'SELECT orst.i i'
+.',orst.dt dt'
+.',orst.last last'
+.',orst.user user'
+.',orst.staff staff'
+.',orst.state state'
+.',orst.adres adres'
+.',orst.store store'
+.',orst.name name'
+.',orst.price price'
+.',orst.sale sale'
+.',orst.count count'
+.',orst.info info'
+.',orst.docs docs'
+.',orst.files files'
+.',orst.money money'
+.',orst.pay pay'
+.',orst.money2 money2'
+.',orst.pay2 pay2'
+.',user.name fio'
+.' FROM orst LEFT JOIN user ON orst.user=user.i'
+.' WHERE orst.dt BETWEEN '.($row['dt'] - 60*60*24*31).' AND '.($row['dt'] + 60*60*24*31)
+.' AND orst.user='.$row['user']
+.' AND orst.state<30';
+
+$q = db_query($select);
+
+$orst = array();
+while ($i = db_fetch($q)) {
+	$orst[$i['i']] = $i;
+}
+
+$state = w('order-state');
+$colors = w('order-state-color');
+
+$total = 0;
+$items = 0;
+
+w('show-files');
+$style = array('icon'=>1, 'name'=>0, 'class'=>'', 'prefix'=>' ');
+$style_docs = array('icon'=>1, 'name'=>0, 'prefix'=>' ');
+
+w('ft');
+foreach ($orst as $k=>$v) {
+	$name = trim($v['fio']);
+	$checked = in_array($k, $ids) ? ' CHECKED' : '';
+
+	echo '<tr'.($colors[$v['state']] == '' ? '' : ' class='.$colors[$v['state']]).'>'
+.'<td><input type="checkbox" name="id[]" value="'.$k.'" style="margin:2px 0 0 0"'.$checked.'> &nbsp; <a href="/order/'.$k.'">'.$k.', '.ft($v['dt'], 2).' '.ft($v['dt']).'</a></td>'
+.'<td><a href="/store/'.$v['store'].'">'.$v['name'].'</a></td>'
+.'<td class="text-right" nowrap>'.number_format($v['price'], 0, '.', ' ').'</td>'
+.'<td class="text-right">'.$v['count'].'</td>'
+.'<td class="text-right" nowrap>'.number_format($v['price']*$v['count'], 0, '.', ' ').'</td>'
+.'<td class="text-right" nowrap>'.number_format($v['money'] + $v['money2'], 0, '.', ' ').'</td>'
+.'<td>'.$state[$v['state']].'</td>'
+.'<td>'.show_files($v['files'], $style).' '.show_files($v['docs'], $style_docs).' '.$v['info'].'</td>';
+
+	$total+= $v['price']*$v['count'];
+	$items+= $v['count'];
+}
+
+?>
+	</tbody>
+</table>
+</form>

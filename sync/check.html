@@ -1,0 +1,107 @@
+<?
+
+if (isset($_REQUEST['code'])) {
+	w('clean');
+	$code = clean_09($_REQUEST['code']);
+
+	if (strlen($code)) {
+		db_query('DELETE FROM sync WHERE i='.$code);
+	}
+}
+
+// удаляем синхронизации удалённых товаров
+$q = db_query('DELETE FROM sync WHERE NOT EXISTS (SELECT 1 FROM store WHERE sync.store=store.i) AND store<>0');
+
+
+/*
+$q = db_query('SELECT sync.*,store.url,store.name sname,store.brand,store.model model FROM sync LEFT JOIN store ON sync.store=store.i WHERE sync.code NOT REGEXP "[0-9]" AND sync.code<>""');
+
+?>
+<div class="alert alert-danger">Артикул не содержит цифр</div>
+<table class="table table-hover">
+<thead>
+	<tr>
+		<th>Артикул</th>
+		<th>Наименование</th>
+		<th>Товар</th>
+		<th>Поставщик</th>
+		<th>Дата</th>
+		<th>Цена</th>
+		<th>Оптовая</th>
+		<th>Наличие</th>
+		<th>&nbsp;</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$brand = cache_load('brand');
+$vendor = cache_load('vendor');
+
+w('ft');
+while ($i = db_fetch($q)) {
+	$store = kv($brand, $i['brand']).' '.$i['name'].' '.$i['model'];
+
+	echo '<tr><td>'.$i['code'].'</td>'
+.'<td>'.$i['name'].'</td>'
+.'<td><a href="/store/'.$i['url'].'">'.$store.'</a></td>'
+.'<td>'.(isset($vendor[$i['vendor']]) ? $vendor[$i['vendor']] : '').'</td>'
+.'<td>'.ft($i['dt'], 1).'</td>'
+.'<td>'.$i['price'].'</td>'
+.'<td>'.$i['opt'].'</td>'
+.'<td>'.$i['count'].'</td>';
+
+	if (is_user('sync')) {
+		echo '
+<td><a href="/sync/check?code='.$i['i'].'" class="btn btn-default btn-sm" onclick="return confirm(\'Удалить синхронизацию? Восстановление невозможно!\')">&times;</a></td></tr>';
+	}
+}
+
+?>
+</tbody>
+</table>
+<?
+//*/
+
+$dt = now() - 60*24*60*60;
+$q = db_query('SELECT ss.*,store.url,store.name,store.brand,store.model model FROM (SELECT MIN(price) minp,MAX(price) maxp,store FROM sync WHERE store>0 AND NOT price IS NULL AND price>0 AND dt>'.$dt.' GROUP BY store) ss LEFT JOIN store ON ss.store=store.i WHERE minp*1.5<maxp');
+
+?>
+<div class="alert alert-danger">Большая разница в цене</div>
+<table class="table table-hover">
+<thead>
+	<tr>
+		<th>#</th>
+		<th>Мин.цена</th>
+		<th>Макс.цена</th>
+		<th>Товар</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$brand = cache_load('brand');
+$vendor = cache_load('vendor');
+
+$count = 0;
+
+w('ft');
+while ($i = db_fetch($q)) {
+	$store = kv($brand, $i['brand']).' '.$i['name'].' '.$i['model'];
+	$count++;
+	echo '<tr>'
+.'<td>'.$count.'</td>'
+.'<td>'.$i['minp'].'</td>'
+.'<td>'.$i['maxp'].'</td>'
+.'<td><a href="/store/'.$i['url'].'/sync">'.$store.'</a></td>';
+/*
+	if (is_user('sync')) {
+		echo '
+<td><a href="/sync/check?code='.$i['i'].'" class="btn btn-default btn-sm" onclick="return confirm(\'Удалить синхронизацию? Восстановление невозможно!\')">&times;</a></td></tr>';
+	}
+*/
+}
+
+?>
+</tbody>
+</table>

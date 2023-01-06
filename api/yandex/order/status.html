@@ -1,0 +1,127 @@
+<?
+
+$cron = $exts['cron'];
+$user = $exts['user'];
+
+$cron = array_decode($cron['data']);
+
+// Получаем код запроса
+
+$data = json_decode($args, true);
+$order = $data['order'];
+$delivery = $order['delivery'];
+
+w('clean');
+$items = [];
+if (isset($order['items'])) {
+    foreach ($order['items'] as $i) {
+        $items[clean_uint($i['offerId'])] = $i;
+    }
+}
+
+// Получаем данные из базы
+
+if (isset($cron['vendor']) && is_array($cron['vendor']) && count($cron['vendor'])) {
+	$vendor = ' AND vendor IN ('.implode(',', $cron['vendor']).')';
+} else {
+	$vendor = '';
+}
+
+$dt = now() - 30*24*60*60;
+$select = "SELECT store.i,store.name,ven.count,store.dt FROM store LEFT JOIN (SELECT store, SUM(count) count, MAX(dt) dt FROM sync WHERE dt>=$dt$vendor GROUP BY store) ven ON ven.store=store.i WHERE hide<=0";
+if (kv($cron, 'min', 0)) { $select.= ' AND '.$cron['min'].'<=ven.count'; }
+if (kv($cron, 'price', 0)) { $select.= ' AND '.$cron['price'].'<=price'; }
+if (count($items)) {
+    $select.= ' AND store.i IN ('.implode(',', array_keys($items)).')';
+}
+
+$q = db_query($select);
+$rows = db_fetch_all($q, 'i');
+
+/////////////////////////////////////////////////
+
+$order_id = $order['id'];
+$q = db_query("SELECT i, state FROM orst WHERE mpi=$order_id");
+$orst = db_fetch_all($q, 'i');
+
+if ($order['status'] == 'PROCESSING') {
+
+	foreach ($orst as $k=>$v) {
+        db_update('orst', ['state'=>1], ['i'=>$k, 'state'=>0]);
+/*
+        $data = array(
+            'orst'=>$k,
+            'old'=>1,
+            'new'=>35,
+            'vendor'=>$v['vendor'],
+            'store'=>$v['store'],
+            'count'=>$v['count'],
+            'name'=>'товара ('.$v['name'].')',
+        );
+        w('order-update-state', $data);
+*/
+    }
+
+/*
+    w('ft');
+    foreach ($items as $k=>$item) {
+        $row = kv($rows, $k, []);
+
+        db_insert('orst', [
+            'dt'=>now(),
+            'last'=>now(),
+            'user'=>$user,
+            'staff'=>null,
+            'state'=>1,
+            'cire'=>34,
+            'city'=>$delivery['region']['name'],
+            'lat'=>null,
+            'lon'=>null,
+            'adres'=>'',
+            'dost'=>'self',
+            'vendor'=>0,
+            'store'=>$k,
+            'name'=>$item['offerName'],
+            'price'=>$item['price'],
+            'count'=>$item['count'],
+            'money0'=>0,
+            'pay'=>0,
+            'money'=>0,
+            'pay2'=>0,
+            'money2'=>0,
+            'bill'=>null,
+            'sale'=>null,
+            'info'=>kv($order, 'notes', ''),
+            'note'=>count($items) > 1 ? 'парный заказ' : '',
+            'docs'=>null,
+            'files'=>null,
+            'mark'=>',14,',
+            'kkm'=>0,
+            'kkm2'=>0,
+            'mpi'=>$order['id'],
+            'mpdt'=>ft_parse($delivery['shipments'][0]['shipmentDate']),
+        ]);
+    }
+*/
+}
+
+if ($order['status'] == 'CANCELLED') {
+    $q = db_query("SELECT i,state,vendor,store,count,name FROM orst WHERE mpi=$order_id");
+    $orst = db_fetch_all($q, 'i');
+
+    w('log');
+    foreach ($orst as $k=>$v) {
+        logs(235, $k);
+        db_update('orst', ['state'=>35], ['i'=>$k]);
+        $data = array(
+            'orst'=>$k,
+            'old'=>$v['state'],
+            'new'=>35,
+            'vendor'=>$v['vendor'],
+            'store'=>$v['store'],
+            'count'=>$v['count'],
+            'name'=>'товара ('.$v['name'].')',
+        );
+        w('order-update-state', $data);
+    }
+}

@@ -1,0 +1,32 @@
+<?
+
+set_time_limit(0);
+
+$all = array();
+foreach (glob("files/catalog/*") as $i) {
+	$all[] = '/'.$i;
+}
+
+//print_pre($all);
+
+$list = array();
+
+$q = db_query("SELECT * FROM catalog");
+while ($i = db_fetch($q)) {
+	if (strlen($i['icon'])) {
+		$list[] = $i['icon'];
+	}
+}
+db_close($q);
+
+$del = array_diff($all, $list);
+
+echo '<p>'.count($all).' = '.count($list).' - '.count($del).'</p>';
+
+foreach ($del as $i) {
+	unlink($config['root'].substr($i, 1));
+}
+
+//print_pre($list);
+
+?>

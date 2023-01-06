@@ -1,0 +1,20 @@
+<?
+
+w('clean');
+if(is_mail($args['email'])) {
+	w('email2');
+
+	$theme = 'Вы успешно зарегистрировались на сайте '.$config['domain'];
+
+	$rows = array(
+		'Логин: '.$args['email'],
+		'Пароль: '.$args['pass'],
+	);
+
+	w('log');
+	logs(41, $_SESSION['i'], $args['email']);
+
+	email2($args['email'], $config['backmail'], $args['name'], $theme, $rows);
+}
+
+?>

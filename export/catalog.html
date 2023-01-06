@@ -1,0 +1,32 @@
+<?
+
+$dt = isset($_REQUEST['dt']) ? $_REQUEST['dt'] : '';
+
+$pathway = cache_load('pathway');
+$ids = array_keys($pathway);
+
+if ($dt != '') {
+	w('clean');
+	if (!is_number($dt)) {
+		w('ft');
+		$dt = ft_parse($dt);
+	}
+
+
+	$where = ' AND dt>='.$dt;
+} else {
+	$where = '';
+}
+
+$data = array();
+$q = db_query('SELECT i,up,name FROM catalog WHERE i IN ('.implode(',', $ids).')'.$where);
+while ($i = db_fetch($q)) {
+	$data[$i['i']] = array(
+		'up'=>$i['up'],
+		'name'=>$i['name'],
+	);
+}
+
+echo json_encode($data);
+
+?>

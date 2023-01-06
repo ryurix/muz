@@ -1,0 +1,30 @@
+<?
+
+$headers = apache_request_headers();
+
+$user = $config['args'][0] ?? '';
+$yandex = $yandex[$user] ?? [];
+$yandex['user'] = $user;
+
+if (!kv($config, 'DEBUG', 0) && isset($yandex['token'])) {
+	$token = kv($headers, 'Authorization', '');
+	if ($token != $yandex['token']) {
+		http_response_code(403);
+	}
+}
+
+
+header('Content-Type: application/json');
+
+$args = file_get_contents('php://input');
+
+$log = kv(end($menu), 'log', 0);
+
+if ($log) {
+	w('log');
+	logs($log, 0, $args); // .' '.php_encode($headers)
+}
+
+w('body', $args, $yandex);
+
+?>

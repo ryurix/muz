@@ -1,0 +1,47 @@
+<?
+
+$q = db_query('SELECT i,name FROM brand ORDER BY w, name');
+
+$trans = array();
+
+$count = 0;
+while ($i = db_fetch($q)) {
+	$trans[$i['i']] = $count;
+	$count++;
+}
+
+db_query('UPDATE brand SET i=i+1000');
+db_query('UPDATE store SET brand=brand+1000');
+
+//*
+foreach ($trans as $k=>$v) {
+	db_query('UPDATE brand SET i='.$v.' WHERE i='.(1000+$k));
+	db_query('UPDATE store SET brand='.$v.' WHERE brand='.(1000+$k));
+}
+//*/
+
+//*
+//db_query('UPDATE prices SET brand=brand+1000'); // ТЕКСТОВОЕ
+$q = db_query('SELECT i,brand FROM prices');
+while ($i = db_fetch($q)) {
+	$bs = explode(',', $i['brand']);
+	foreach ($bs as $k=>$v) {
+		$bs[$k] = isset($trans[$v]) ? $trans[$v] : 0;
+	}
+	db_update('prices', array('brand'=>implode(',', $bs)), array('i'=>$i['i']));
+}
+
+//db_query('UPDATE sale SET brand=brand+1000'); // ТЕКСТОВОЕ
+$q = db_query('SELECT code,brand FROM sale');
+while ($i = db_fetch($q)) {
+	$bs = explode(',', $i['brand']);
+	foreach ($bs as $k=>$v) {
+		$bs[$k] = isset($trans[$v]) ? $trans[$v] : 0;
+	}
+	db_update('sale', array('brand'=>implode(',', $bs)), array('code'=>$i['code']));
+}
+//*/
+
+w('cache-brand');
+
+?>

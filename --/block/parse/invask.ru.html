@@ -1,0 +1,116 @@
+<?
+
+function echo_memory($prefix = '') {
+//	echo '<p>'.$prefix.' '.memory_get_usage().'</p>';
+}
+
+$html = file_get_html($args);
+$hrefs = array();
+$html = $html->find('div[class=kletka-rows]', 0);
+
+foreach ($html->find('div[class=cat-name]') as $row) {
+	$as = $row->find('a');
+	if (count($as)) {
+		$hrefs[] = 'https://invask.ru'.$as[0]->href;
+	}
+}
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+
+	if (is_object($html)) {
+		$html->clear;
+		unset($html);
+	}
+	set_time_limit(0);
+
+	$html = file_get_html($href);
+
+	$html = $html->find('div[class=box-ul]', 0);
+
+	if (!is_object($html->find('h1', 0))) {
+		continue;
+	}
+
+	$brand = '';
+	$name = $html->find('span[class=kategoria]', 0)->innertext;
+	$model = $html->find('h1', 0)->innertext;
+	$short = $html->find('div[class=opisanie-right]', 0)->find('p', 1)->innertext;
+
+	if (!is_null($html->find('p[class=new-cena]', 0))) {
+		$price = $html->find('p[class=new-cena]', 0)->find('span', 1);
+		$price = is_object($price) ? clean_09($price->innertext) : 0;
+	} else {
+		$price = 0;
+	}
+
+	$pics = array();
+//*
+	$div = $html->find('ul[id=gal1]', 0);
+	if (is_object($div)) {
+		foreach ($div->find('a') as $i) {
+			$href = $i->getAttribute('data-zoom-image');
+			if (strlen($href)) {
+				$url = 'https://invask.ru'.$href;
+				$pics[] = $url;
+			}
+		}
+		if (isset($i)) {
+			if (is_object($i)) {
+				$i->clear;
+			}
+			unset($i);
+		}
+		$div->clear;
+		unset($div);
+	}
+//*/
+	if (count($pics)) {
+		$pic = $pics[0];
+		array_shift($pics);
+	} else {
+		$pic = '';
+	}
+
+	$files = array();
+/*
+	foreach ($html->find('div[class=file]') as $as) {
+		$as = $row->find('a');
+		if (count($as)) {
+			$files[$as[0]->innertext] = 'http://www.ltm-music.ru'.$as[0]->href;
+		}
+	}
+	if (is_object($as)) { $as->clear; unset($as); }
+*/
+	$info = $html->find('div[id=txt]', 0)->innertext;
+	$video = $html->find('div[id=media]', 0);
+	if (is_object($video)) {
+		foreach ($video->find('iframe') as $i) {
+			$info.= '<p>'.$i->outertext.'</p>';
+		}
+	}
+
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>$name,
+		'model'=>$model,
+		'short'=>$short,
+		'pic'=>strlen($pic) ? $pic : '',
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+//*/
+}
+
+// print_pre($back);
+
+//exit();
+
+?>

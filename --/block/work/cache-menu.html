@@ -1,0 +1,66 @@
+<?
+
+$q = db_query('SELECT * FROM menu WHERE hide=0 ORDER BY w,name');
+
+$order = array(0=>'');
+$ups = array(''=>'');
+$temp = array(''=>array());
+$roots = array(''=>1);
+while ($i = db_fetch($q)) {
+	$order[] = $i['code'];
+	$ups[$i['code']] = $i['up'];
+	$temp[$i['code']] = array(''=>$i['name']);
+	$roots[$i['up']] = 1;
+}
+$order = array_flip($order);
+
+foreach ($temp as $k=>$v) {
+	if (!isset($roots[$k])) {
+		$temp[$k] = $v[''];
+	}
+}
+
+$count = 1;
+while ($count > 0) {
+	$sort = array();
+	$last = array();
+	$next = array();
+	foreach ($temp as $k=>$v) {
+		if (isset($roots[$k])) {
+			$next[$k] = $v;
+		} else {
+			$last[$k] = $v;
+		}
+	}
+
+	$count = count($last);
+	foreach ($last as $k=>$v) {
+		$up = $ups[$k];
+		if (isset($next[$up])) {
+			$next[$up][$k] = $v;
+			$sort[$up] = 1;
+		}
+	}
+
+	foreach ($sort as $k=>$v) {
+		$sorted = array_intersect_key($order, $next[$k]);
+		foreach ($sorted as $i=>$v) {
+			$sorted[$i] = $next[$k][$i];
+		}
+		$next[$k] = $sorted;
+	}
+
+	$roots = array(''=>1);
+	foreach ($next as $k=>$v) {
+		$up = $ups[$k];
+		$roots[$up] = 1;
+	}
+
+	$temp = $next;
+}
+
+$back = $temp[''];
+
+cache_save('menus', $back);
+
+?>

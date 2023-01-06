@@ -1,0 +1,29 @@
+<?
+
+echo '<p><form method="POST"><div class="form-group" style="width:300px">';
+$dummy = array(
+	'code'=>'_city',
+	'value'=>$_SESSION['city'],
+	'width'=>278,
+	'more'=>'onchange="this.form.submit()"',
+);
+w('input-cire', $dummy);
+echo '</div></form></p>';
+
+$ci = $_SESSION['city'];
+
+if ($ci < 0) {
+	$q = db_query('SELECT * FROM city WHERE region='.(-$ci));
+	while ($row = db_fetch($q)) {
+		echo '<hr><h3>'.$row['name'].'</h3>';
+		echo $row['adres'];
+
+	}
+} elseif ($ci > 0) {
+	$q = db_query('SELECT * FROM city WHERE i='.$ci);
+	if ($row = db_fetch($q)) {
+		echo $row['adres'];
+	}
+}
+
+?>

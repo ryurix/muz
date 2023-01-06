@@ -1,0 +1,84 @@
+<?php
+
+w('ft');
+
+$user = $exts['user'];
+$mark = db_get_row('SELECT mark,mark2 FROM user WHERE i='.$user);
+if ($mark) {
+	$mark = ','.trim($mark['mark'].','.$mark['mark2'], ',').',';
+} else {
+	$mark = '';
+}
+
+$data = $args['data'];
+$shipments = $data['shipments'];
+foreach ($shipments as $shipment) {
+
+	$orders = [];
+	$items = [];
+	foreach ($shipment['items'] as $i) {
+		$orders[] = $i;
+		$items[] = [
+			'itemIndex'=>$i['itemIndex'],
+			'offerId'=>$i['offerId'],
+		];
+	}
+
+	foreach ($orders as $item) {
+		db_insert('orst', [
+			'dt'=>now(),
+			'last'=>now(),
+			'user'=>$user,
+			'staff'=>null,
+			'state'=>1,
+			'cire'=>34,
+			'city'=>$shipment['label']['city'],
+			'lat'=>null,
+			'lon'=>null,
+			'adres'=>'',
+			'dost'=>'self',
+			'vendor'=>0,
+			'store'=>$item['offerId'],
+			'name'=>$item['itemName'],
+			'price'=>$item['finalPrice'],
+			'count'=>1,
+			'money0'=>0,
+			'pay'=>0,
+			'money'=>0,
+			'pay2'=>0,
+			'money2'=>0,
+			'bill'=>null,
+			'sale'=>null,
+			'info'=>'',
+			'note'=>count($orders) > 1 ? 'парный заказ' : '',
+			'docs'=>null,
+			'files'=>null,
+			'mark'=>$mark,
+			'kkm'=>0,
+			'kkm2'=>0,
+			'mpi'=>$shipment['shipmentId'],
+			'mpdt'=>ft_parse($shipment['shipping']['shippingDate'], 1),
+			'sku'=>$item['itemIndex'],
+		]);
+
+		if (!isset($orderCode)) {
+			$orderCode = db_insert_id();
+		}
+	}
+
+	w('autoload');
+	\Marketplace\Sber::cron_confirm(
+		$exts['token'],
+		$shipment['shipmentId'],
+		$orderCode,
+		$items
+	);
+}
+
+echo json_encode(
+	[
+		'success'=>1,
+		'meta'=>new Class() {},
+		'data'=>new Class() {},
+	]
+);

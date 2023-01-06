@@ -1,0 +1,54 @@
+<?
+
+$q = db_query('SELECT city.i i'
+.',city.name name'
+.',city.w w'
+.',city.phone phone'
+.',city.mail mail'
+.',city.sign sign'
+.',city.site site'
+.',region.name region'
+.',region.i ir'
+.' FROM city,region WHERE city.region=region.i AND city.hide=0'
+.' ORDER BY w,region,name');
+
+$city = array(0=>'Другой город');
+$city2 = array();
+$site = array();
+$sitename = array();
+$region = '';
+while ($i = db_fetch($q)) {
+	if ($i['region'] != $region) {
+		$region = $i['region'];
+		$city[-$i['ir']] = $region;
+	}
+	$city[$i['i']] = $i['name'];
+	$city2[$i['i']] = array(
+		'region'=>$i['ir'],
+		'name'=>$i['name'],
+		'phone'=>$i['phone'],
+		'mail'=>$i['mail'],
+		'sign'=>$i['sign'],
+	);
+	if (strlen($i['site'])) {
+		$site[$i['i']] = $i['site'];
+		$sitename[$i['i']] = $i['name'];
+	}
+}
+cache_save('city', $city);
+cache_save('city2', $city2);
+cache_save('site', $site);
+cache_save('sitename', $sitename);
+
+$w = 0;
+db_query('DELETE FROM cire');
+foreach ($city as $k=>$v) {
+	$w++;
+	db_insert('cire', array(
+		'i'=>$k,
+		'name'=>$v,
+		'w'=>$w,
+	));
+}
+
+?>

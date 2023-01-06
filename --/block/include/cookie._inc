@@ -1,0 +1,10 @@
+<?
+
+if (isset($_COOKIE['_GPSLCS']) && strlen($_COOKIE['_GPSLCS']) > 200) {
+//	$_COOKIE['_GPSLCS'] = '';
+	$name = '_GPSLCS';
+	setcookie($name, '', time() - 1000);
+	setcookie($name, '', time() - 1000, '/');
+}
+
+?>

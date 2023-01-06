@@ -1,0 +1,50 @@
+<?
+
+w('input-checkbox2');
+w('calendar');
+w('input-date');
+w('input-line');
+w('input-multi3');
+
+?>
+<form class="form-inline auto" method="POST">
+
+<div class="my-2 mx-2">
+	От <? echo input_date($args['dt1']); ?> до <? echo input_date($args['dt2']); ?>
+</div>
+
+<div class="my-2 mx-1">
+	Фильтры:
+</div>
+<div class="my-2 mx-1">
+	<? echo input_line($args['store']); ?>
+</div>
+<div class="my-2 mx-1">
+	<? echo input_line($args['user']); ?>
+</div>
+<div class="my-2 mx-1">
+	<? echo input_checkbox2($args['group']); ?>
+</div>
+<? echo input_dropcheck($args['state']); ?>
+
+<div style="width:100%"></div>
+
+<div class="my-1 mx-1">
+	<? echo input_line($args['num']); ?>
+</div>
+<div class="my-1 mx-1">
+	<? echo input_combo($args['staff']); ?>
+</div>
+<div class="my-1 mx-1">
+	<? echo input_combo($args['vendor']); ?>
+</div>
+<div class="my-1 mx-1">
+	<? echo input_combo($args['dost']); ?>
+</div>
+
+<button class="btn btn-default" name="send1"><i class="fa fa-search"></i></button>
+<div class="my-1 mx-1">
+	<button name="send2" class="btn btn-default">Сбросить фильтр</button>
+</div>
+
+</form>

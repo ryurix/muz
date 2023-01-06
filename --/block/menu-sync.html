@@ -1,0 +1,29 @@
+<?
+
+$back = '<div class="dropdown-menu" '.$args.'>';
+
+if (is_user('sync')) {
+	$back.= '<a tabindex="-1" href="/sync/sync" class="dropdown-item">Синхронизация</a>'
+.'<a tabindex="-1" href="/sync/nosync" class="dropdown-item">Не синхронизировать</a>'
+.'<a tabindex="-1" href="/sync/check" class="dropdown-item">Проверка синхронизации</a>';
+}
+
+if (is_user('import')) {
+// .'<a tabindex="-1" href="/vendor" class="dropdown-item">Поставщики</a>'
+	$back.= '<a tabindex="-1" href="/sync/import-xls" class="dropdown-item">Импорт xls</a>'
+.'<a tabindex="-1" href="/prices" class="dropdown-item">Ценообразование</a>'
+.'<a tabindex="-1" href="/prices/groups" class="dropdown-item">Группы товаров</a>'
+.'<a tabindex="-1" href="/sync/search" class="dropdown-item">Поиск синхронизации</a>';
+}
+
+if (is_user('csv')) {
+	$back.= '<li class="divider">'
+.'<a tabindex="-1" href="/sync/export-csv" class="dropdown-item">Экспорт csv</a>'
+.'<a tabindex="-1" href="/sync/import-csv" class="dropdown-item">Импорт csv</a>'
+.'<a tabindex="-1" href="/sync/reset" class="dropdown-item">Снять все товары</a>'
+.'<a tabindex="-1" href="/sync/double" class="dropdown-item">Поиск дубликатов</a>';
+}
+
+$back.= '</div>';
+
+?>

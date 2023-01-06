@@ -1,0 +1,50 @@
+<?
+
+$plan = $config['plan'];
+
+w('form', $plan);
+
+$rows = php_decode($plan['']['default']['data']);
+
+if (is_array($rows)) {
+
+?>
+<table class="table">
+<thead>
+	<tr>
+		<th>#</th>
+		<th>Наименование</th>
+		<th>Цена</th>
+		<th>шт.</th>
+		<th>Сумма</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+foreach ($rows['#'] as $n=>$v) {
+	echo '
+	<tr>
+		<td>'.$v.'</td>
+		<td>'.$rows['Name'][$n].'</td>
+		<td>'.$rows['Price'][$n].'</td>
+		<td>'.$rows['Quantity'][$n].'</td>
+		<td>'.$rows['Amount'][$n].'</td>
+	</tr>';
+}
+
+?>
+</tbody>
+</table>
+<?
+
+} else {
+	echo '<p>';
+	$orst = explode('|', trim($plan['']['default']['orst'], '|'));
+	foreach ($orst as $o) {
+		echo '<a class="btn btn-default" href="/order/'.$o.'">Заказ № '.$o.'</a> ';
+	}
+	echo '</p>';
+}
+
+?>

@@ -1,0 +1,26 @@
+<div class="col-12 col-sm-12 col-md-12 col-lg">
+	<div class="basket_cont3 basket_cont31">
+		<h3 class="basket_title">Вход</h3>
+		<div id="basket_contact">
+<? /*
+			<label class="basket2_label">
+				<p class="basket_titleinput">Логин</p>
+				<? echo input_line($args['login']); ?>
+			</label>
+*/ ?>
+			<label class="basket2_label">
+				<p class="basket_titleinput">Новый пароль <span>*для смены</span></p>
+				<? echo input_password($args['pass1']); ?>
+			</label>
+			<label class="basket2_label">
+				<p class="basket_titleinput">Повтор нового пароля</p>
+				<? echo input_password($args['pass2']); ?>
+			</label>
+			<label class="basket2_label3">
+				<? //<input type="checkbox" name="pay_entity" class="basket_checkbox" id="ur_checkbox"> ?>
+				<? echo input_checkbox($args['spam']); ?>
+			</label>
+		</div>
+		<button type="submit" name="send1" class="basket_btnaplly">Сохранить изменения</button>
+	</div>
+</div>

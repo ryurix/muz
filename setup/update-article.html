@@ -1,0 +1,59 @@
+<?
+
+$s = '<h1 style="text-align: center;"><span style="color: #ff795c;"><strong>ВЫБИРАЕМ МИКРОФОННУЮ СТОЙКУ</strong></span></h1>
+<p><span style="color: #ff795c;"><strong><img src="https://tmn.muzmart.com/files/user/Статьи/микрофон выбор/стойки/фрагмент стойки с микрофоном 2.png" alt="" width="910" height="214" /></strong></span></p>
+<p style="text-align: justify;">Микрофонная стойка &ndash; это конструкция, на которую крепится микрофон. Гибкость конструкции позволяет изменять уровень стойки и ставить микрофон под определенным углом.</p>
+<p style="text-align: justify;">Если вы хотите купить&nbsp;микрофонную стойку, то подумайте над тем, как будете её использовать. В зависимости от применения стойки бывают прямыми или укороченными напольными, настольными и вида "журавль". Рассмотрим каждый из типов.</p>
+<p style="text-align: justify;">Если вы были на концертах, то вероятно замечали <span style="color: #ff795c;">прямые</span> напольные стойки у вокалистов. Такие конструкции используются также для крепления микрофонов, которые озвучивают музыкальные инструменты. Прямые стойки не имеют фиксированной конструкции: можно складывать ножки, регулировать высоту, угол наклона. Основание конструкции бывает круглым или с 3-4 ножками. Существует редкий вариант основания &laquo;блин&raquo;, на которое крепится вертикальная часть стойки.</p>
+<p style="text-align: justify;">Суть <span style="color: #ff795c;">настольной</span> стойки кроется в названии: она ставится на стол. Это идеальный тип стойки для ведущих и операторов. Конструкция имеет маленькую высоту, из-за чего часто называется &laquo;подставкой для микрофона&raquo;. Она крепится на плоском &laquo;блине&raquo;, отчего можно изменять угол и форму конструкции. Редким видом настольных стоек является <span style="color: #ff795c;">&laquo;пантограф&raquo;</span>, который крепится винтом на стол. Такой вид стойки подходит для эфиров и широко применяется в видеостудиях.</p>
+<p style="text-align: justify;">Тип стойки <span style="color: #ff795c;">&laquo;журавль&raquo;</span> имеет телескопический стержень и плечо. Их легко можно отрегулировать по необходимой высоте и длине. Микрофон устанавливается на треногу, которая обеспечивает устойчивость сооружения.</p>
+<p style="text-align: justify;">Кроме тех типов стоек, которые были перечислены выше, существуют и другие. Их используют для конкретных целей, например, чтобы закрепить микрофон на кайму барабана. Это делается главным образом для того, чтобы избежать звука прикосновения рук к барабанам, как это бывает с конденсаторными микрофонами.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://tmn.muzmart.com/files/user/Статьи/микрофон выбор/стойки/виды стоек.png" alt="" width="858" height="429" /></p>
+<p><img src="https://tmn.muzmart.com/test.png" alt="" width="910" height="214" class="test one"/></p>
+<h3 style="text-align: center;"><strong><span style="color: #ff795c;">Выбирайте <span style="color: #333399;"><a href="https://muzmart.com/catalog/1115-mikrofonnye-stoyki-i-derzhateli"><span style="color: #333399;">микрофонную стойку</span></a></span>&nbsp;в интернет-магазине Muzmart</span></strong></h3>	</div>
+</div>		</div>';
+
+//$s = '<img src="https://tmn.muzmart.com/test.png" alt="" width="910" height="214" />';
+
+function back_img($s) {
+	$s = $s[0];
+	$pos = strpos($s, 'img-fluid');
+	if ($pos) {
+		return $s;
+	}
+	$pos = strpos($s, ' class=');
+	if ($pos) {
+		$pos+= 7;
+		$eq = substr($s, $pos, 1);
+		if ($eq == '"' || $eq == "'") {
+			$pos++;
+		}
+		$s = substr($s, 0, $pos).'img-fluid '.substr($s, $pos);
+	} else {
+		$pos = 5;
+		$s = substr($s, 0, $pos).'class="img-fluid" '.substr($s, $pos);
+	}
+	return $s;
+//	var_dump($s);
+}
+
+//preg_replace_callback('|<img [^>]+>|', 'back_img', $s);
+
+$updates = array();
+
+$q = db_query('SELECT * FROM article');
+while ($i = db_fetch($q)) {
+	$body = $i['body'];
+	$upd = preg_replace_callback('|<img [^>]+>|', 'back_img', $body);
+
+	if ($body != $upd) {
+		$updates[$i['i']] = $upd;
+	}
+}
+db_close($q);
+
+foreach ($updates as $k=>$v) {
+	db_update('article', array('body'=>$v), array('i'=>$k));
+}
+
+?>

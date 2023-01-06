@@ -1,0 +1,25 @@
+<p>"Потерянные товары" &mdash; это товары, у которых не указан раздел.<br>С помощью этой формы можно перенести все потерянные товары в выбранный раздел.</p>
+<p>"Потерянные разделы" &mdash; это разделы которые не являются подразделом ни одного из перечисленных в поле "Раздел" формы ниже.<br>С помощью этой формы можно перенести все разделы в выбранный раздел.</p>
+<?
+
+$plan = $config['plan'];
+
+$ups = array_keys($plan['up']['values']);
+$ups[] = -1;
+
+//$count = db_result('SELECT COUNT(*) FROM store WHERE 0=(SELECT COUNT(*) FROM catalog WHERE i=store.up)');
+$count = db_result('SELECT COUNT(*) FROM store WHERE up NOT IN ('.implode(',', $ups).')');
+alert($count ? 'Потерянных товаров: '.$count : 'Потерянных товаров нет.');
+
+$count2 = db_result('SELECT COUNT(*) FROM catalog WHERE up NOT IN ('.implode(',', $ups).')');
+alert($count2 ? 'Потерянных разделов: '.$count2 : 'Потерянных разделов нет.');
+
+w('alert');
+
+if ($count + $count2) {
+	echo '<p>';
+	w('form', $config['plan']);
+	echo '</p>';
+}
+
+?>

@@ -1,0 +1,69 @@
+<?
+
+$html = file_get_html($args);
+$hrefs = array();
+
+foreach ($html->find('a[class="discounts_model"]') as $row) {
+	$hrefs[] = 'http://www.svetomuz.ru'.$row->href;
+}
+
+w('clean');
+w('u8');
+
+$back = array();
+foreach ($hrefs as $href) {
+	unset($html);
+	$html = file_get_html($href);
+//	$html = $html->find('div[class="main_container"]', 0);
+
+	$model = $html->find('h1', 0)->innertext;
+	$short = '';
+
+	$brand = '';
+	$name = $html->find('a[class="path_item_last"]', 0)->innertext;
+
+	$pic = 'http://www.svetomuz.ru'.$html->find('div[id="imga"] img', 0)->src;
+	$pics = array();
+	$pico = $html->find('div[class="p_catalogue_icon"] a');
+	foreach ($pico as $row) {
+		$pics[] = 'http://www.svetomuz.ru'.$row->href;
+	}
+
+	$files = array();
+	$filo = $html->find('div[id="tab4"] a');
+	foreach ($filo as $row) {
+		$files[] = 'http://www.svetomuz.ru'.$row->href;
+	}
+
+	$price = clean_09($html->find('div[class="p_catalogue_price"]', 0)->innertext);
+
+
+//	$info = $html->find('div[class=digital] div', 0)->innertext;
+//	$info.= $html->find('table[class=catalog_options]', 0)->outertext;
+	$info = $html->find('div[id="tab1"]', 0)->innertext;
+
+	$info = preg_replace('@<a[^>]*>(.*)</a>@', '\1', $info);
+	$info = preg_replace(array(
+		'@<img[^>]*>@',
+		'@<iframe[^>]*>@si',
+		'@<script[^>]*?>.*?</script>@si',
+		'@<!--.+?-->@s',
+	), '', $info);
+
+	$back[] = array(
+		'href'=>$href,
+		'brand'=>$brand,
+		'name'=>$name,
+		'model'=>$model,
+		'short'=>$short,
+		'pic'=>$pic,
+		'pics'=>$pics,
+		'files'=>$files,
+		'price'=>$price,
+		'info'=>$info,
+	);
+}
+
+unset($html);
+
+?>

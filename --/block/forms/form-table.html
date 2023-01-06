@@ -1,0 +1,47 @@
+<?
+
+echo '<table class="'.(isset($args['']['class']) ? $args['']['class'] : 'form').'">';
+$hide = '';
+foreach ($args as $k=>$v) {
+	if (strlen($k) == 0) { continue; }
+
+	$type = kv($v, 'type', '');
+
+	if ($type == 'hidden' || (isset($v['hide']) && $v['hide'])) {
+		$hide.= "\n".call_user_func('input_'.$type, $v);
+		continue;
+	}
+
+	$columns = isset($v['columns']) ? $v['columns'] : 1;
+
+	$class = array();
+	if (isset($v['iv']) && $v['iv']) {
+		$class[] = 'invalid';
+	}
+	if (isset($v['class-row'])) {
+		$class[] = $v['class-row'];
+	}
+
+	echo '<tr'.(count($class) ? ' class="'.implode(' ', $class).'"' : '').'>';
+
+	if ($columns < 2) {
+		$name = (isset($v['name']) ? $v['name'] : '&nbsp;')
+		.(isset($v['help']) ? '<br><span class="muted">'.$v['help'].'</span>' : '');
+
+		echo '<th'.($columns == 0 ? ' colspan=2' : '').'>'.$name.'</th>';
+	}
+
+	if ($columns > 0) {
+		$prefix = isset($v['prefix']) ? ' '.$v['prefix'] : '';
+		$suffix = isset($v['suffix']) ? ' '.$v['suffix'] : '';
+
+		w('input-'.$type);
+		echo '<td'.($columns == 2 ? ' colspan=2' : '').'>'.$prefix.call_user_func('input_'.$type, $v).$suffix.'</td>';
+	}
+
+	echo '</tr>';
+}
+
+echo '</table>'.$hide;
+
+?>

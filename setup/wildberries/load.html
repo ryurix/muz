@@ -1,0 +1,10 @@
+<?
+
+w('form', $config['plan']);
+
+if (count($config['rows'])) {
+	echo '<p>Обработано '.count($config['rows']).' строк</p>';
+}
+
+?>
+<p><a href="https://seller.wildberries.ru/analytics/nomenclatures" class="btn btn-outline-default btn-sm">Получить Excel файл</a></p>
