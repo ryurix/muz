@@ -5,20 +5,20 @@
  *	Version 2.0.2011-01-24
  */
 
-$menu = array();
-$menu[] = array('name'=>'', 'wide'=>1, '/'=>array(
+$menu = [];
+$menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 
-'api'=>array('name'=>'API', 'design'=>'none', '/'=>array(
-	'yandex'=>array('design'=>'yandex', '/'=>array(
-		'%num'=>array('virtual'=>1, '/'=>array(
-			'cart'=>array('log'=>201),
-			'order'=>array('/'=>array(
-				'accept'=>array('log'=>205),
-				'status'=>array('log'=>209),
-			)),
+'api'=>['name'=>'API', 'design'=>'none', '/'=>[
+	'yandex'=>['design'=>'yandex', '/'=>[
+		'%num'=>['virtual'=>1, '/'=>[
+			'cart'=>['log'=>201],
+			'order'=>['/'=>[
+				'accept'=>['log'=>205],
+				'status'=>['log'=>209],
+			]],
 			'stocks'=>['log'=>211],
-		)),
-	)),
+		]],
+	]],
 	'goods'=>['design'=>'goods', '/'=>[
 		'%num'=>['virtual'=>1, '/'=>[
 			'order'=>['/'=>[
@@ -27,299 +27,300 @@ $menu[] = array('name'=>'', 'wide'=>1, '/'=>array(
 			]],
 		]],
 	]],
-)),
+]],
 
-'article'=>array('name'=>'Статьи', '/'=>array(
-	'%abc'=>array('name'=>'Статья', '/'=>array(
-		'edit'=>array('virtual'=>1, 'role'=>'menu', 'action'=>'правка'),
-	)),
-	'new'=>array('name'=>'Новая статья', 'action'=>'создать', 'role'=>'menu'),
-)),
+'article'=>['name'=>'Статьи', '/'=>[
+	'%abc'=>['name'=>'Статья', '/'=>[
+		'edit'=>['virtual'=>1, 'role'=>'menu', 'action'=>'правка'],
+	]],
+	'new'=>['name'=>'Новая статья', 'action'=>'создать', 'role'=>'menu'],
+]],
 
-'auto'=>array('name'=>'Водитель', '/'=>array(
-	'%num'=>array('name'=>'Заказ'),
-)),
+'auto'=>['name'=>'Водитель', '/'=>[
+	'%num'=>['name'=>'Заказ'],
+]],
 
-'basket'=>array('name'=>'Корзина', 'wide'=>1, '/'=>array(
-	'buy'=>array('design'=>'none'),
-	'thanks'=>array('name'=>'Благодарим за заказ!'),
-	'ok'=>array('name'=>'Платеж успешен!'),
-	'no'=>array('name'=>'Оплата отменена.'),
-	'uniteller'=>array('name'=>'Уведомления Uniteller'),
-	'appex'=>array('name'=>'Appex'),
-	'print'=>array('name'=>'Коммерческое предложение', 'design'=>'print'),
-	'save'=>array('design'=>'none'),
-	'load'=>array('name'=>'Загрузить корзину'),
-	'next'=>array('name'=>'Подтверждение заказа', 'wide'=>1),
-	'naklad'=>array('name'=>'Новая накладная', 'role'=>'sklad'),
-)),
+'basket'=>['name'=>'Корзина', 'wide'=>1, '/'=>[
+	'buy'=>['design'=>'none'],
+	'thanks'=>['name'=>'Благодарим за заказ!'],
+	'ok'=>['name'=>'Платеж успешен!'],
+	'no'=>['name'=>'Оплата отменена.'],
+	'uniteller'=>['name'=>'Уведомления Uniteller'],
+	'appex'=>['name'=>'Appex'],
+	'print'=>['name'=>'Коммерческое предложение', 'design'=>'print'],
+	'save'=>['design'=>'none'],
+	'load'=>['name'=>'Загрузить корзину'],
+	'next'=>['name'=>'Подтверждение заказа', 'wide'=>1],
+	'naklad'=>['name'=>'Новая накладная', 'role'=>'sklad'],
+]],
 
-'bill'=>array('name'=>'Счета оплаты банковской картой', '/'=>array(
-	'%num'=>array('name'=>'Оплата через интернет', '/'=>array(
-		'pay'=>array('virtual'=>1),
-		'edit'=>array('virtual'=>1, 'role'=>'order'),
-		'view'=>array('virtual'=>1),
-	)),
-)),
+'bill'=>['name'=>'Счета оплаты банковской картой', '/'=>[
+	'%num'=>['name'=>'Оплата через интернет', '/'=>[
+		'pay'=>['virtual'=>1],
+		'edit'=>['virtual'=>1, 'role'=>'order'],
+		'view'=>['virtual'=>1],
+	]],
+]],
 
-'block'=>array('name'=>'Блоки', 'role'=>'block', '/'=>array(
-	'%abc'=>array(),
-)),
+'block'=>['name'=>'Блоки', 'role'=>'block', '/'=>[
+	'%abc'=>[],
+]],
 
-'brand'=>array('name'=>'Производители', '/'=>array(
-	'new'=>array('name'=>'Добавить производителя'),
-	'%abc'=>array('/'=>array(
-		'edit'=>array('role'=>'catalog', 'virtual'=>1, 'action'=>'правка'),
-		'erase'=>array('name'=>'Удалить производителя из списка?', 'role'=>'catalog'),
-	)),
-)),
+'brand'=>['name'=>'Производители', '/'=>[
+	'new'=>['name'=>'Добавить производителя'],
+	'%abc'=>['/'=>[
+		'edit'=>['role'=>'catalog', 'virtual'=>1, 'action'=>'правка'],
+		'erase'=>['name'=>'Удалить производителя из списка?', 'role'=>'catalog'],
+	]],
+]],
 
-'cache'=>array('role'=>kv($config, 'DEBUG', 0) ? 'guest admin' : 'admin'),
+'cache'=>['role'=>kv($config, 'DEBUG', 0) ? 'guest admin' : 'admin'],
 
-'captcha' => array('/'=>array(
-	'%abc'=>array('virtual'=>1),
-)),
+'captcha' => ['/'=>[
+	'%abc'=>['virtual'=>1],
+]],
 
-'catalog'=>array('name'=>'Каталог', 'wide'=>1, '/'=>array(
-	'new'=>array('name'=>'Новый раздел', 'role'=>'catalog'),
-	'%abc'=>array('wide'=>1, '/'=>array(
-		'%abc'=>array('virtual'=>1, 'wide'=>1),
-		'edit'=>array('role'=>'catalog', 'virtual'=>1),
-		'erase'=>array('role'=>'catalog', 'name'=>'Удалить раздел?'),
-		'subcat'=>array('role'=>'catalog', 'name'=>'Подкаталоги'),
-	)),
-)),
+'catalog'=>['name'=>'Каталог', 'wide'=>1, '/'=>[
+	'new'=>['name'=>'Новый раздел', 'role'=>'catalog'],
+	'%abc'=>['wide'=>1, '/'=>[
+		'%abc'=>['virtual'=>1, 'wide'=>1],
+		'edit'=>['role'=>'catalog', 'virtual'=>1],
+		'erase'=>['role'=>'catalog', 'name'=>'Удалить раздел?'],
+		'subcat'=>['role'=>'catalog', 'name'=>'Подкаталоги'],
+	]],
+]],
 
-'city'=>array('name'=>'Справочник городов', 'role'=>'adres', '/'=>array(
-	'new'=>array('name'=>'Добавить город'),
-	'%num'=>array(),
-)),
+'city'=>['name'=>'Справочник городов', 'role'=>'adres', '/'=>[
+	'new'=>['name'=>'Добавить город'],
+	'%num'=>[],
+]],
 
-'dict'=>array('name'=>'Словарь', 'role'=>'admin', '/'=>array(
-	'%num'=>array('/'=>array(
-		'erase'=>array('virtual'=>1, 'action'=>'Удалить'),
-	)),
-	'site'=>array('/'=>array(
-		'%num'=>array('virtual'=>1),
-	)),
-	'new'=>array('name'=>'Добавить слово', 'action'=>'Новое слово'),
-)),
+'dict'=>['name'=>'Словарь', 'role'=>'admin', '/'=>[
+	'%num'=>['/'=>[
+		'erase'=>['virtual'=>1, 'action'=>'Удалить'],
+	]],
+	'site'=>['/'=>[
+		'%num'=>['virtual'=>1],
+	]],
+	'new'=>['name'=>'Добавить слово', 'action'=>'Новое слово'],
+]],
 
-'doc'=>array('name'=>'Документы', '/'=>array(
-	'%num'=>array(),
-)),
+'doc'=>['name'=>'Документы', '/'=>[
+	'%num'=>[],
+]],
 
-'export'=>array('design'=>'none', '/'=>array(
-	'store'=>array(),
-	'catalog'=>array(),
-)),
+'export'=>['design'=>'none', '/'=>[
+	'store'=>[],
+	'catalog'=>[],
+]],
 
-'filter'=>array('name'=>'Фильтры', 'role'=>'catalog', '/'=>array(
-	'new'=>array('name'=>'Новый фильтр'),
-	'%num'=>array(),
-)),
+'filter'=>['name'=>'Фильтры', 'role'=>'catalog', '/'=>[
+	'new'=>['name'=>'Новый фильтр'],
+	'%num'=>[],
+]],
 
-'kkm'=>array('name'=>'Фискальные чеки', 'role'=>'kkm', '/'=>array(
-	'%num'=>array(),
-)),
+'kkm'=>['name'=>'Фискальные чеки', 'role'=>'kkm', '/'=>[
+	'%num'=>[],
+]],
 
-'mark'=>array('name'=>'Метки', 'role'=>'catalog', '/'=>array(
-	'new'=>array('name'=>'Новая метка', 'action'=>'создать'),
-	'%num'=>array(),
-)),
+'mark'=>['name'=>'Метки', 'role'=>'catalog', '/'=>[
+	'new'=>['name'=>'Новая метка', 'action'=>'создать'],
+	'%num'=>[],
+]],
 
-'menu'=>array('name'=>'Меню', 'role'=>'menu', '/'=>array(
-	'edit'=>array(),
-	'new'=>array('name'=>'Добавить страницу'),
-)),
+'menu'=>['name'=>'Меню', 'role'=>'menu', '/'=>[
+	'edit'=>[],
+	'new'=>['name'=>'Добавить страницу'],
+]],
 
-'my'=>array('name'=>'Мои заказы', '/'=>array(
-	'user'=>array('name'=>'Анкета', 'no-title'=>1),
-	'adres'=>array('name'=>'Выберите город'),
-//	'pay'=>array('name'=>'Оплата'),
-)),
+'my'=>['name'=>'Мои заказы', '/'=>[
+	'user'=>['name'=>'Анкета', 'no-title'=>1],
+	'adres'=>['name'=>'Выберите город'],
+//	'pay'=>['name'=>'Оплата'],
+]],
 
-'order'=>array('name'=>'Заказы', 'wide'=>1, 'role'=>'order', '/'=>array(
-	'%num'=>array('name'=>'Заказ', '/'=>array(
-		'edit'=>array('virtual'=>1, 'action'=>'Заказ'),
-		'print'=>array('action'=>'Документы'),
-		'link'=>array('action'=>'Связанные', 'virtual'=>1, 'wide'=>1, 'no-title'=>0),
-		'map'=>array('action'=>'Карта'),
-	)),
-//	'link'=>array('name'=>'Связанные', 'no-title'=>1, 'wide'=>1, 'role'=>'link'),
-)),
+'order'=>['name'=>'Заказы', 'wide'=>1, 'role'=>'order', '/'=>[
+	'%num'=>['name'=>'Заказ', '/'=>[
+		'edit'=>['virtual'=>1, 'action'=>'Заказ'],
+		'print'=>['action'=>'Документы'],
+		'link'=>['action'=>'Связанные', 'virtual'=>1, 'wide'=>1, 'no-title'=>0],
+		'map'=>['action'=>'Карта'],
+	]],
+//	'link'=>['name'=>'Связанные', 'no-title'=>1, 'wide'=>1, 'role'=>'link'],
+]],
 
 'patch'=>['name'=>'Патч', 'role'=>'admin'],
 
-'partner'=>array('name'=>'Партнер', 'role'=>'partner'),
+'partner'=>['name'=>'Партнер', 'role'=>'partner'],
 
-'portfolio'=>array('name'=>'Наши работы', 'nowrap'=>1, '/'=>array(
-	'%abc'=>array('/'=>array(
-		'edit'=>array('role'=>'block', 'virtual'=>1),
-		'erase'=>array('rolo'=>'block'),
-	)),
-	'new'=>array('name'=>'Новая запись', 'role'=>'block'),
-	'groups'=>array('name'=>'Группы', 'role'=>'block'),
-)),
+'portfolio'=>['name'=>'Наши работы', 'nowrap'=>1, '/'=>[
+	'%abc'=>['/'=>[
+		'edit'=>['role'=>'block', 'virtual'=>1],
+		'erase'=>['rolo'=>'block'],
+	]],
+	'new'=>['name'=>'Новая запись', 'role'=>'block'],
+	'groups'=>['name'=>'Группы', 'role'=>'block'],
+]],
 
-'prices'=>array('name'=>'Ценообразование', 'role'=>'import', '/'=>array(
-	'%num'=>array(),
-	'groups'=>array('name'=>'Группы товаров', 'action'=>'Группы товаров'),
+'prices'=>['name'=>'Ценообразование', 'role'=>'import', '/'=>[
+	'%num'=>[],
+	'groups'=>['name'=>'Группы товаров', 'action'=>'Группы товаров'],
 
 	'plan'=>['name'=>'', '/'=>[
 		'%num'=>[],
 	]],
-)),
+]],
 
-'rate'=>array('name'=>'Отзывы', 'role'=>'rate', '/'=>array(
-	'new'=>array('name'=>'Новый отзыв'),
-	'%num'=>array(),
-)),
+'rate'=>['name'=>'Отзывы', 'role'=>'rate', '/'=>[
+	'new'=>['name'=>'Новый отзыв'],
+	'%num'=>[],
+]],
 
-'region'=>array('name'=>'Справочник регионов', 'role'=>'adres', '/'=>array(
-	'new'=>array('name'=>'Добавить регион'),
-	'%num'=>array(),
-)),
+'region'=>['name'=>'Справочник регионов', 'role'=>'adres', '/'=>[
+	'new'=>['name'=>'Добавить регион'],
+	'%num'=>[],
+]],
 
-'sales'=>array('name'=>'Популярные товары', '/'=>array(
-	'list'=>array('name'=>'Скидки', 'role'=>'sale'),
-	'new'=>array('name'=>'Новая скидка', 'role'=>'sale'),
-	'%abc'=>array('role'=>'sale', '/'=>array(
-		'orders'=>array(),
-	)),
-	'cache'=>array('name'=>'Обновление кэша', 'action'=>'Обновить кэш', 'role'=>'catalog', 'virtual'=>1),
-)),
+'sales'=>['name'=>'Популярные товары', '/'=>[
+	'list'=>['name'=>'Скидки', 'role'=>'sale'],
+	'new'=>['name'=>'Новая скидка', 'role'=>'sale'],
+	'%abc'=>['role'=>'sale', '/'=>[
+		'orders'=>[],
+	]],
+	'cache'=>['name'=>'Обновление кэша', 'action'=>'Обновить кэш', 'role'=>'catalog', 'virtual'=>1],
+]],
 
-'setup'=>array('name'=>'Настройки', 'role'=>'adres catalog admin log spam', '/'=>array(
-	'adres'=>array('name'=>'Адреса и доставка', 'role'=>'adres'),
-	'delivery'=>array('name'=>'Время доставки', 'role'=>'adres'),
-	'parse'=>array('name'=>'Импорт каталога', 'role'=>'catalog', 'lib'=>'parse'),
-	'google'=>array('name'=>'Категории Google', 'role'=>'catalog'),
-	'lost'=>array('name'=>'Потерянные товары', 'role'=>'catalog'),
-	'spam'=>array('name'=>'Рассылка', 'role'=>'spam'),
-	'geoloc'=>array('name'=>'Импорт данных геолокации', 'role'=>'admin'),
-	'update-tags'=>array('name'=>'Обновление тегов', 'role'=>'admin'),
-	'log'=>array('name'=>'Логи', 'role'=>'log'),
-	'img-fluid'=>array('name'=>'Обновление картинок', 'role'=>'admin'),
-	'yml'=>array('name'=>'Выгрузка YML', 'role'=>'catalog', '/'=>array(
-		'%num'=>array(),
-	)),
-	'ozon'=>array('name'=>'Выгрузка Ozon', 'role'=>'catalog', '/'=>array(
-		'%num'=>array(),
-		'cron'=>array('name'=>'Запуск планировщика'),
-	)),
-	'wildberries'=>array('name'=>'Выгрузка Wildberries', 'role'=>'catalog', '/'=>array(
-		'%num'=>array(),
-		'cron'=>array('name'=>'Запуск планировщика'),
+'setup'=>['name'=>'Настройки', 'role'=>'adres catalog admin log spam', '/'=>[
+	'adres'=>['name'=>'Адреса и доставка', 'role'=>'adres'],
+	'delivery'=>['name'=>'Время доставки', 'role'=>'adres'],
+	'parse'=>['name'=>'Импорт каталога', 'role'=>'catalog', 'lib'=>'parse'],
+	'google'=>['name'=>'Категории Google', 'role'=>'catalog'],
+	'lost'=>['name'=>'Потерянные товары', 'role'=>'catalog'],
+	'spam'=>['name'=>'Рассылка', 'role'=>'spam'],
+	'geoloc'=>['name'=>'Импорт данных геолокации', 'role'=>'admin'],
+	'update-tags'=>['name'=>'Обновление тегов', 'role'=>'admin'],
+	'log'=>['name'=>'Логи', 'role'=>'log'],
+	'log2'=>['name'=>'Ошибки', 'role'=>'log'],
+	'img-fluid'=>['name'=>'Обновление картинок', 'role'=>'admin'],
+	'yml'=>['name'=>'Выгрузка YML', 'role'=>'catalog', '/'=>[
+		'%num'=>[],
+	]],
+	'ozon'=>['name'=>'Выгрузка Ozon', 'role'=>'catalog', '/'=>[
+		'%num'=>[],
+		'cron'=>['name'=>'Запуск планировщика'],
+	]],
+	'wildberries'=>['name'=>'Выгрузка Wildberries', 'role'=>'catalog', '/'=>[
+		'%num'=>[],
+		'cron'=>['name'=>'Запуск планировщика'],
 		'load'=>['name'=>'Загрузка номенклатуры', 'lib'=>'phpexcel'],
-	)),
+	]],
 
-	'import-dyna'=>array('name'=>'Импорт товаров динатона', 'role'=>'admin'),
-	'import-dyna-2'=>array('name'=>'Обработка товаров динатона', 'role'=>'admin'),
+	'import-dyna'=>['name'=>'Импорт товаров динатона', 'role'=>'admin'],
+	'import-dyna-2'=>['name'=>'Обработка товаров динатона', 'role'=>'admin'],
 
-	'ip'=>array('name'=>'IP', 'role'=>'admin'),
+	'ip'=>['name'=>'IP', 'role'=>'admin'],
 
-	'reset'=>array('name'=>'RESET'),
+	'reset'=>['name'=>'RESET'],
 
 	'sync-check'=>['name'=>'Проверка синхронизации'],
-)),
+]],
 
-'sign'=>array('name'=>'Знаки', 'role'=>'catalog', '/'=>array(
-	'new'=>array('name'=>'Новый знак'),
-	'%num'=>array(),
-)),
+'sign'=>['name'=>'Знаки', 'role'=>'catalog', '/'=>[
+	'new'=>['name'=>'Новый знак'],
+	'%num'=>[],
+]],
 
-'sklad'=>array('name'=>'Склады', 'role'=>'sklad', '/'=>array(
-	'%num'=>array(),
-	'in'=>array(),
-	'out'=>array(),
-	'prices'=>array(),
-)),
+'sklad'=>['name'=>'Склады', 'role'=>'sklad', '/'=>[
+	'%num'=>[],
+	'in'=>[],
+	'out'=>[],
+	'prices'=>[],
+]],
 
-'store'=>array('name'=>'Каталог', '/'=>array(
-	'new'=>array('name'=>'Новый товар', 'role'=>'catalog'),
-	'%abc'=>array('wide'=>1, '/'=>array(
-		'edit'=>array('virtual'=>1, 'role'=>'catalog'),
-		'qr'=>array('virtual'=>1, 'role'=>'catalog'),
-		'order'=>array('virtual'=>1, 'role'=>'order'),
-		'erase'=>array('name'=>'Удалить товар?', 'role'=>'catalog'),
-		'sync'=>array('name'=>'Синхронизация', 'role'=>'catalog'),
-		'clone'=>array('name'=>'Клонировать', 'role'=>'catalog'),
-	)),
-	'url'=>array('name'=>'Обновление ссылок товаров', 'role'=>'catalog'),
-)),
+'store'=>['name'=>'Каталог', '/'=>[
+	'new'=>['name'=>'Новый товар', 'role'=>'catalog'],
+	'%abc'=>['wide'=>1, '/'=>[
+		'edit'=>['virtual'=>1, 'role'=>'catalog'],
+		'qr'=>['virtual'=>1, 'role'=>'catalog'],
+		'order'=>['virtual'=>1, 'role'=>'order'],
+		'erase'=>['name'=>'Удалить товар?', 'role'=>'catalog'],
+		'sync'=>['name'=>'Синхронизация', 'role'=>'catalog'],
+		'clone'=>['name'=>'Клонировать', 'role'=>'catalog'],
+	]],
+	'url'=>['name'=>'Обновление ссылок товаров', 'role'=>'catalog'],
+]],
 
-'subcat'=>array('name'=>'Подкаталоги', 'role'=>'catalog'),
+'subcat'=>['name'=>'Подкаталоги', 'role'=>'catalog'],
 
-'sync'=>array('name'=>'Прайсы и синхронизация', '/'=>array(
-	'export-csv'=>array('name'=>'Экспорт csv', 'role'=>'csv'),
-	'import-csv'=>array('name'=>'Импорт csv', 'role'=>'csv'),
-	'import-xls'=>array('name'=>'Импорт xls', 'lib'=>'phpexcel', 'role'=>'import'),
-	'sync'=>array('name'=>'Синхронизация xls', 'lib'=>'phpexcel', 'role'=>'sync'),
-	'sync2'=>array('design'=>'none', 'lib'=>'phpexcel', 'role'=>'sync'),
-	'nosync'=>array('name'=>'Не синхронизировать', 'role'=>'sync'),
-	'check'=>array('name'=>'Проверка синхронизации', 'role'=>'sync'),
-	'reset'=>array('name'=>'Снять все товары?', 'role'=>'csv'),
-	'double'=>array('name'=>'Поиск дубликатов', 'role'=>'csv'),
-	'search'=>array('name'=>'Поиск синхронизации', 'role'=>'import'),
-)),
+'sync'=>['name'=>'Прайсы и синхронизация', '/'=>[
+	'export-csv'=>['name'=>'Экспорт csv', 'role'=>'csv'],
+	'import-csv'=>['name'=>'Импорт csv', 'role'=>'csv'],
+	'import-xls'=>['name'=>'Импорт xls', 'lib'=>'phpexcel', 'role'=>'import'],
+	'sync'=>['name'=>'Синхронизация xls', 'lib'=>'phpexcel', 'role'=>'sync'],
+	'sync2'=>['design'=>'none', 'lib'=>'phpexcel', 'role'=>'sync'],
+	'nosync'=>['name'=>'Не синхронизировать', 'role'=>'sync'],
+	'check'=>['name'=>'Проверка синхронизации', 'role'=>'sync'],
+	'reset'=>['name'=>'Снять все товары?', 'role'=>'csv'],
+	'double'=>['name'=>'Поиск дубликатов', 'role'=>'csv'],
+	'search'=>['name'=>'Поиск синхронизации', 'role'=>'import'],
+]],
 
-'user'=>array('name'=>'Пользователи', 'role'=>'users', '/'=>array(
-	'%num'=>array('name'=>'Пользователь', '/'=>array(
-		'docs'=>array('virtual'=>1),
-		'order'=>array('virtual'=>1, 'wide'=>1, 'no-title'=>0),
-		'erase'=>array('virtual'=>1),
-		'sales'=>array('virtual'=>1),
-	)),
-	'new'=>array('name'=>'Добавить пользователя'),
-	'sales'=>array('name'=>'Финансы', 'role'=>'money'),
-	'check'=>array('name'=>'Проверка авторизации', 'action'=>'Проверка'),
-)),
+'user'=>['name'=>'Пользователи', 'role'=>'users', '/'=>[
+	'%num'=>['name'=>'Пользователь', '/'=>[
+		'docs'=>['virtual'=>1],
+		'order'=>['virtual'=>1, 'wide'=>1, 'no-title'=>0],
+		'erase'=>['virtual'=>1],
+		'sales'=>['virtual'=>1],
+	]],
+	'new'=>['name'=>'Добавить пользователя'],
+	'sales'=>['name'=>'Финансы', 'role'=>'money'],
+	'check'=>['name'=>'Проверка авторизации', 'action'=>'Проверка'],
+]],
 
-'vendor'=>array('name'=>'Поставщики', 'role'=>'catalog', '/'=>array(
-	'new'=>array('name'=>'Добавить поставщика', 'action'=>'+ Поставщик', 'role'=>'import'),
-	'%num'=>array('name'=>'Поставщик', '/'=>array(
-		'edit'=>array('action'=>'Правка', 'virtual'=>1, 'role'=>'import'),
-		'view'=>array('action'=>'Смотр', 'virtual'=>1),
-		'erase'=>array('name'=>'Удалить поставщика из списка?', 'role'=>'import'),
-	)),
-)),
-
-
+'vendor'=>['name'=>'Поставщики', 'role'=>'catalog', '/'=>[
+	'new'=>['name'=>'Добавить поставщика', 'action'=>'+ Поставщик', 'role'=>'import'],
+	'%num'=>['name'=>'Поставщик', '/'=>[
+		'edit'=>['action'=>'Правка', 'virtual'=>1, 'role'=>'import'],
+		'view'=>['action'=>'Смотр', 'virtual'=>1],
+		'erase'=>['name'=>'Удалить поставщика из списка?', 'role'=>'import'],
+	]],
+]],
 
 
 
-'%abc'=>array('/'=>array(
-	'%abc'=>array('virtual'=>1, '/'=>array(
-		'%abc'=>array('virtual'=>1, '/'=>array(
-			'%abc'=>array('virtual'=>1, '/'=>array(
-				'%abc'=>array('virtual'=>1)
-			)),
-		)),
-	)),
-)),
 
-'404'=>array('name'=>'Запрошенная страница не найдена!'),
-'base'=>array('design'=>'none', 'role'=>kv($config, 'DEBASE', 0) ? 'guest admin' : 'admin'),
-'boot'=>array('name'=>'Инициализация', 'role'=>kv($config, 'DEBUG', 0) ? 'guest admin' : 'admin'),
-//'data'=>array('design'=>'none', 'role'=>kv($config, 'DEBASE', 0) ? 'guest admin' : 'admin'),
-'bases'=>array('design'=>'none', 'role'=>'admin'),
-'city-dialog'=>array('design'=>'none'),
-'clean-store'=>array('name'=>'Очистка лишних файлов каталога', 'role'=>'admin'),
-'cron'=>array(),
-'google52b158a7e10b1c51'=>array('design'=>'none'),
-'help'=>array('/'=>array('%abc'=>array('virtual'=>1))),
-'login'=>array('name'=>'Вход' /*, 'design'=>'login'*/),
-'manifest.json'=>array('design'=>'none'),
-'muz'=>array('name'=>'Импорт картинок из muzmarket.pro'),
-'muz-icon'=>array('name'=>'Проверка и регенерация иконок'),
-'oauth'=>array('name'=>'OAuth'),
-'portal'=>array(),
-'robots.txt'=>array(),
-'serviceworker.js'=>array('design'=>'none'),
-'serviceworker-update.js'=>array('design'=>'none'),
-'test'=>array('name'=>'TEST', 'lib'=>'phpexcel'),
-'unsubscribe'=>array('name'=>'Вы отписались от рассылки!'),
-'update'=>array('name'=>'Обновление', 'role'=>kv($config, 'DEBUG', 0) ? 'guest admin' : 'admin'),
 
-));
+'%abc'=>['/'=>[
+	'%abc'=>['virtual'=>1, '/'=>[
+		'%abc'=>['virtual'=>1, '/'=>[
+			'%abc'=>['virtual'=>1, '/'=>[
+				'%abc'=>['virtual'=>1]
+			]],
+		]],
+	]],
+]],
+
+'404'=>['name'=>'Запрошенная страница не найдена!'],
+'base'=>['design'=>'none', 'role'=>kv($config, 'DEBASE', 0) ? 'guest admin' : 'admin'],
+'boot'=>['name'=>'Инициализация', 'role'=>kv($config, 'DEBUG', 0) ? 'guest admin' : 'admin'],
+//'data'=>['design'=>'none', 'role'=>kv($config, 'DEBASE', 0] ? 'guest admin' : 'admin'],
+'bases'=>['design'=>'none', 'role'=>'admin'],
+'city-dialog'=>['design'=>'none'],
+'clean-store'=>['name'=>'Очистка лишних файлов каталога', 'role'=>'admin'],
+'cron'=>[],
+'google52b158a7e10b1c51'=>['design'=>'none'],
+'help'=>['/'=>['%abc'=>['virtual'=>1]]],
+'login'=>['name'=>'Вход' /*, 'design'=>'login'*/],
+'manifest.json'=>['design'=>'none'],
+'muz'=>['name'=>'Импорт картинок из muzmarket.pro'],
+'muz-icon'=>['name'=>'Проверка и регенерация иконок'],
+'oauth'=>['name'=>'OAuth'],
+'portal'=>[],
+'robots.txt'=>[],
+'serviceworker.js'=>['design'=>'none'],
+'serviceworker-update.js'=>['design'=>'none'],
+'test'=>['name'=>'TEST', 'lib'=>'phpexcel'],
+'unsubscribe'=>['name'=>'Вы отписались от рассылки!'],
+'update'=>['name'=>'Обновление', 'role'=>kv($config, 'DEBUG', 0) ? 'guest admin' : 'admin'],
+
+]];
