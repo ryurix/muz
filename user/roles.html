@@ -1,0 +1,57 @@
+<form class="form-roles" method="POST">
+<div class="row">
+	<div class="col-12 col-md-6 col-lg-3">
+		<div class="basket_cont3">
+			<h3 class="basket_title">Заказы</h3>
+<?
+
+foreach (['order', 'prices', 'sklad', 'kkm', 'doc', 'bill', 'money', 'link', 'ones', 'auto'] as $i) {
+	echo input_checkbox($plan[$i]);
+}
+
+?>
+		</div>
+	</div>
+
+	<div class="col-12 col-md-6 col-lg-3">
+		<div class="basket_cont3">
+			<h3 class="basket_title">Каталог</h3>
+<?
+
+foreach (['catalog', 'sync', 'vendor', 'filter', 'subcat', 'brand', 'sale', 'mark', 'sign', 'rate'] as $i) {
+	echo input_checkbox($plan[$i]);
+}
+
+?>
+		</div>
+	</div>
+
+	<div class="col-12 col-md-6 col-lg-3">
+		<div class="basket_cont3">
+			<h3 class="basket_title">Маркетплейсы</h3>
+<?
+
+foreach (['yandex', 'ozon', 'wildberries'] as $i) {
+	echo input_checkbox($plan[$i]);
+}
+
+echo '<div>&nbsp;</div><div>'.input_button($plan['send']).'</div>';
+
+?>
+		</div>
+	</div>
+
+	<div class="col-12 col-md-6 col-lg-3">
+		<div class="basket_cont3">
+			<h3 class="basket_title">Сервис</h3>
+<?
+
+foreach (['users', 'admin', 'roles', 'setup', 'adres', 'menu', 'block', 'dict', 'spam', 'plan', 'log'] as $i) {
+	echo input_checkbox($plan[$i]);
+}
+
+?>
+		</div>
+	</div>
+</div>
+</form>

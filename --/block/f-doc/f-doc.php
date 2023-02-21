@@ -3,12 +3,14 @@
 // Copyright © 2015 Elena Bakun Contacts: <floppox@gmail.com>
 // License: http://opensource.org/licenses/MIT
 
-
 error_reporting(0);
 
-function __autoload($classname) {
-    w(strtolower($classname) .".class");
-}
+include_once __DIR__.'/compiler.class.php';
+include_once __DIR__.'/document.class.php';
+include_once __DIR__.'/docx_processor.class.php';
+include_once __DIR__.'/request.class.php';
+include_once __DIR__.'/xlsx_processor.class.php';
+
 
 $request = new Request($args);
 

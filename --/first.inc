@@ -154,15 +154,17 @@ function first_body($force = 0) {
 		$block['body'] = first_file($config['path'], $file);
 
 		if (is_file($file.'.php')) {
-			global $menu;
-			include_once $file.'.php';
+			return $file.'.php';
 		}
 	}
+
+	return '--/first.inc';
 }
 
 function first_block($path, $body = NULL) {
 	global $config, $block;
 	$base = $config['root'].'--/block/'.$path;
+	if (!is_dir($base)) { return; }
 	$handle = @opendir($base);
 	if ($handle === FALSE) { return; }
 
@@ -200,12 +202,11 @@ function w($name, &$args = NULL, &$exts = NULL) {
 	if (substr($block[$name], 0, 1) === '$') {
 		$file = $config['root'].substr($block[$name], 1);
 		if(is_file($file)) {
-			$back = NULL;
 			if (strpos($file, ".ph") > 0) {
 				unset($block[$name]);
 			}
-			include $file;
-			return $back;
+			$back2 = include $file;
+			return (is_null($back2) || $back2 === 1) && isset($back) ? $back : $back2;
 		}
 	}
 	echo $block[$name];
@@ -213,6 +214,20 @@ function w($name, &$args = NULL, &$exts = NULL) {
 
 function w2($name, $args = NULL, $exts = NULL) {
 	return w($name, $args, $exts);
+}
+
+function body($name = 'body') {
+	global $config, $block;
+	if(isset($block[$name])) {
+		if (substr($block[$name], 0, 1) === '$') {
+			$file = $config['root'].substr($block[$name], 1);
+			if(is_file($file)) {
+				return $file;
+			}
+		}
+		echo $block[$name];
+	}
+	return '--/first.inc';
 }
 
 function client_ip() {
@@ -256,7 +271,7 @@ function rebody($where = '') {
 		}
 	}
 
-	first_body($force = 1);
+	include_once first_body($force = 1);
 }
 
 function refile($filename, $blockname = 'body') {

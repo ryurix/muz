@@ -39,7 +39,8 @@ $config['GMT'] = 0;
 
 $config['kkmserver'] = 'http://admin:@muzmart.com:5894';
 
-$config['update-url'] = 'http://ruvix.ru';
+//$config['update-url'] = 'http://ruvix.ru';
+$config['update-url'] = 'https://muzmart.com';
 
 // test
 

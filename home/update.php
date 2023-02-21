@@ -1,26 +1,22 @@
 <?
 
-/* not send, this files not exists on server */
-$exclude = array('/^custom$/', 'files', 'cache', 'design/smile', 'design/img', 'design/user'
-	, '/^config.inc$/', '/^cgi-bin$/'
-	, '/[^\\/]+\\[/', '/^_.*$/', '/^\\.htaccess$/', '/^https.*$/'
-	, '/^https.inc$/', '.svn', 'favicon.ico', 'template', 'watermark.png'
-	);
+/* not send */
+$exclude = ['/^custom$/', 'files', 'cache'
+	, 'design/img', 'doc/template', 'design/brands', 'design/catalog', 'design/images'
+	,'/^config.inc$/', '/^cgi-bin$/'
+	, '/[^\\/]+\\[/', '/^_.*$/', '/^\\.htaccess$/' , '/^https.*$/'
+	, '/^https.inc$/', '/\\.cw\\.dat$/', '/\\.cw127\\.php$/', '/\\.mtx\\.php$/', '.svn', '.git', '.vscode', 'adminer.sql.gz'
+];
 
-/* not get, this files not exists on client */
-$exclude2 = array('/^custom$/', 'files', 'cache', 'home/update-all.php', 'design/smile', 'design/img', 'design/user'
-	, '/^config.inc$/', '/^cgi-bin$/', '/^offer.html$/', 'home/custom.html', 'home/custom.php'
-	/*, '/[^\\/]+\\[/'*//*, '/^_.*$/'*/, '/^\\.htaccess$/' , '--/block/phpdocx/report/word/document.xml', '/^https.*$/'
-	, '/^https.inc$/'/*, '/^\\./'*/, 'favicon.ico', 'template', 'watermark.png'
-	);
-/*
-$exclude = array('/^files$/', '/^cache$/', '/^template$/', '/^configs$/', '/^config.inc$/',
- '/^cgi-bin$/', '/^user.anonymous.json$/', '/^sitemap.xml$/', '/\\[/', '.htaccess');
-*/
-//	$not_get = array('/^config.inc$/', '/^clone.txt$/', '/^clone.inc$/', '/^city.inc$/', '/^database.inc$/');
-$not_get = $exclude;
+/* not get */
+$not_get = ['/^custom$/', 'files', 'cache'
+	, 'design/img', 'doc/template', 'design/brands', 'design/catalog', 'design/images'
+	,'/^config.inc$/', '/^cgi-bin$/'
+	, '/[^\\/]+\\[/', '/^_.*$/', '/^\\.htaccess$/' , '/^https.*$/'
+	, '/^https.inc$/', '/\\.cw\\.dat$/', '/\\.cw127\\.php$/', '/\\.mtx\\.php$/', '.svn', '.git', '.vscode', 'adminer.sql.gz'
+];
 
-$upd_pass = 'MuzmartUp01';
+$upd_pass = 'MusicMart01';
 
 $DEBUG = !isset($_REQUEST['yes']);
 
@@ -78,9 +74,11 @@ function upd_scan($url, $pass, $exclude) {
 	$result = curl_exec($ch);
 	curl_close($ch);
 
-//print_pre($result);
+	if (isset($_REQUEST['debug'])) {
+		var_dump($result);
+	}
 
-	return eval('return '.$result.';');;
+	return eval('return '.$result.';');
 }
 
 function upd_del($url, $pass, $filename) {
@@ -224,21 +222,21 @@ function get_del($url, $pass, $filename) {
 
 //*
 
-$plan = array(
-	'file'=>array('type'=>'file0'),
-	'cmd'=>array('type'=>'line'),
-	'arg'=>array('type'=>'line', 'default'=>'array()'),
-	'pass'=>array('type'=>'line'),
-);
+$plan = [
+	'file'=>['type'=>'file0'],
+	'cmd'=>['type'=>'line'],
+	'arg'=>['type'=>'line'],
+	'pass'=>['type'=>'line'],
+];
 
-w('request', $plan);
+$plan = w('request', $plan);
 
-if ($plan['pass']['value'] == $upd_pass || kv($config, 'DEBUG', 0)) {
+if ($plan['pass']['value'] == $upd_pass) {
 	$config['design'] = 'none';
 
 	if ($plan['cmd']['value'] == 'scan') {
 		$ex = eval('return '.$plan['arg']['value'].';');
-		$a = array();
+		$a = [];
 		scan_dir(rtrim($config['root'], '/'), '', $ex, $a);
 
 		if (isset($_REQUEST['cache'])) {
@@ -254,7 +252,9 @@ if ($plan['pass']['value'] == $upd_pass || kv($config, 'DEBUG', 0)) {
 		if (is_dir($filename)) {
 /**/		rmdir($filename);
 		} else {
-/**/		unlink($filename);
+			if (is_file($filename)) {
+/**/			unlink($filename);
+			}
 		}
 		echo 'del: '.$plan['arg']['value'];
 	}
@@ -288,7 +288,7 @@ if ($plan['pass']['value'] == $upd_pass || kv($config, 'DEBUG', 0)) {
 		}
 	}
 
-	$block['body'] = '';
+	$body = '';
 }
 
 // */
@@ -341,7 +341,7 @@ if (isset($config['update-url']) && isset($_REQUEST['clone'])) { // клонир
 		$report[] = '<div class="alert alert-danger">Удалён '.$k.'</div>';
 	}
 
-	$block['body'] = implode("\n", $report);
+	$body = implode("\n", $report);
 
 } elseif (isset($config['update-url']) && isset($_REQUEST['send'])) {
 	cache_save('update-on', TRUE);
@@ -352,7 +352,7 @@ if (isset($config['update-url']) && isset($_REQUEST['clone'])) { // клонир
 
 	$tut = array();
 	scan_dir(rtrim($config['root'], '/'), '', $exclude, $tut);
-	$tam = upd_scan($config['update-url'].'/update', $upd_pass, $exclude2);
+	$tam = upd_scan($config['update-url'].'/update', $upd_pass, $not_get);
 
 	// Загрузка новых файлов
 	$miss = array_diff_key($tut, $tam);
@@ -382,5 +382,5 @@ if (isset($config['update-url']) && isset($_REQUEST['clone'])) { // клонир
 		$report[] = '<div class="alert alert-danger">Удалён '.$k.'</div>';
 	}
 ///*/
-	$block['body'] = implode("\n", $report);
+	$body = implode("\n", $report);
 }

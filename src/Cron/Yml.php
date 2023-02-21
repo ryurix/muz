@@ -12,6 +12,21 @@ class Yml extends Task {
 		return $a.$check;
 	}
 
+	static function yandex_catalog($f, $catalog, $pathway, &$list) {
+		$i = $catalog['i'];
+		$list[] = $i;
+		fwrite($f, '<category id="'.$i.'"');
+		if ($catalog['up'] > 0) {
+			fwrite($f, ' parentId="'.$catalog['up'].'"');
+		}
+		fwrite($f, '>'.htmlspecialchars($pathway[$i]['name'])."</category>\n");
+		if (isset($catalog['/'])) {
+			foreach ($catalog['/'] as $i) {
+				self::yandex_catalog($f, $i, $pathway, $list);
+			}
+		}
+	}
+
 	public static function run($data) {
 
 		global $config;
@@ -51,28 +66,11 @@ class Yml extends Task {
 				<categories>
 		');
 
-		if (!function_exists('yandex_catalog')) {
-			function yandex_catalog($f, $catalog, $pathway, &$list) {
-				$i = $catalog['i'];
-				$list[] = $i;
-				fwrite($f, '<category id="'.$i.'"');
-				if ($catalog['up'] > 0) {
-					fwrite($f, ' parentId="'.$catalog['up'].'"');
-				}
-				fwrite($f, '>'.htmlspecialchars($pathway[$i]['name'])."</category>\n");
-				if (isset($catalog['/'])) {
-					foreach ($catalog['/'] as $i) {
-						yandex_catalog($f, $i, $pathway, $list);
-					}
-				}
-			}
-		}
-
 		$pathway = cache_load('pathway'); // $config['pathway'];
 		$list = array();
 		$catalog = cache_load('catalog');
 		foreach ($catalog['/'] as $i) {
-			yandex_catalog($f, $i, $pathway, $list);
+			self::yandex_catalog($f, $i, $pathway, $list);
 		}
 
 		// <local_delivery_cost>300</local_delivery_cost>

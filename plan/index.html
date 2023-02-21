@@ -1,0 +1,29 @@
+<table class="table">
+	<thead>
+		<tr>
+			<th>Название</th>
+			<th>Следующий запуск</th>
+			<th>Последний запуск</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+w('ft');
+
+$q = db_query('SELECT * FROM cron WHERE typ>=100 ORDER BY name');
+while ($i = db_fetch($q)) {
+	echo '
+<tr>
+	<td><a href="/plan/'.$i['i'].'">'.$i['name'].'</a></td>
+	<td><a href="/plan/'.$i['i'].'">'.($i['every'] > 0 ? ft($i['dt'], 1) : '').'</a></td>
+	<td>'.$i['info'].'</td>
+</tr>
+
+';
+}
+
+?>
+	</tbody>
+</table>
+<p>Время сервера: <? echo ft(now(), 1); ?></p>

@@ -97,18 +97,19 @@ class Sber
 	}
 
 	static function cron() {
+
 		$row = db_fetch_row('SELECT * FROM send_sber WHERE state=0 ORDER BY dt LIMIT 1');
 
 		if (!is_array($row)) {
-			return;
+			return '';
 		}
 
 		$data = array_decode($row['data']);
 
 		if ($row['typ'] == self::CONFIRM) {
 			$result = self::confirm($data['token'], $data['shipmentId'], $data['orderCode'], $data['offers']);
-			print_pre($result);
 			db_update('send_sber', ['state'=>1], ['i'=>$row['i']]);
+			return 'Заказ собран ('.\Flydom\Cache::array_encode($result).')';
 		}
 	}
 } // Sber

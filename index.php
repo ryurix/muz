@@ -7,13 +7,17 @@
 
 // 1. Read config
 ini_set('include_path', '.');
+require_once 'config.php';
+
 require_once '--/config.inc';
 require_once '--/first.inc';
 require_once '--/cache.inc';
 
-// require_once 'cache/autoload.php';
-
 // 2. Connect to database
+
+require_once 'src/autoload.php';
+\Flydom\Db::connect(\Config::DATABASE);
+require_once 'lib/flydom/log2.php';
 
 if (isset($config['database'])) {
 	require_once '--/database.inc';
@@ -45,13 +49,13 @@ foreach ((array) $config['libs'] as $lib) {
 	}
 }
 
-// 6. Page body
+// 6. Find page body, include php
 
-first_body();
+include_once first_body();
 
-// 7. Process file
+// 7. Process design file
 
-include $config['root'].$config['design'].'.html';
+include $config['root'].'src/design/'.$config['design'].'.html';
 
 // 8. Cron
 
@@ -61,5 +65,3 @@ include $config['root'].$config['design'].'.html';
 //}
 
 exit();
-
-?>

@@ -2,22 +2,24 @@
 
 w('chosen.js');
 
-function geoloc($ip) {
-	$ip = explode('.', $ip);
-	if (count($ip) < 4) {
-		return 0;
-	}
-	$ip = $ip[0]*256*256*256 + $ip[1]*256*256 + $ip[2]*256 + $ip[3];
+if (!function_exists('geoloc')) {
+	function geoloc($ip) {
+		$ip = explode('.', $ip);
+		if (count($ip) < 4) {
+			return 0;
+		}
+		$ip = $ip[0]*256*256*256 + $ip[1]*256*256 + $ip[2]*256 + $ip[3];
 
-	$geoloc = cache_load('geoloc');
-	foreach ($geoloc as $k=>$v) {
-		if ($k <= $ip) {
-			if ($v[1] >= $ip) {
-				return $v[0];
+		$geoloc = cache_load('geoloc');
+		foreach ($geoloc as $k=>$v) {
+			if ($k <= $ip) {
+				if ($v[1] >= $ip) {
+					return $v[0];
+				}
 			}
 		}
+		return 0;
 	}
-	return 0;
 }
 
 // Город по домену
@@ -117,9 +119,9 @@ $config['dict-site'] = $site;
 $word = cache_load('word');
 $config['dict-word'] = isset($word[$config['dict-site']]) ? $word[$config['dict-site']] : array();
 
-function dict($text) {
-	global $config;
-	return str_replace(array_keys($config['dict-word']), array_values($config['dict-word']), $text);
+if (!function_exists('dict')) {
+	function dict($text) {
+		global $config;
+		return str_replace(array_keys($config['dict-word']), array_values($config['dict-word']), $text);
+	}
 }
-
-?>

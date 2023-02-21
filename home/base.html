@@ -1,5 +1,9 @@
 <?
 
+if (function_exists('disable_error_log')) {
+	disable_error_log();
+}
+
 $url = parse_url($config['database']);
 
 $_GET['server'] = $url['host'].(isset($url['port']) ? ':'.$url['port'] : '');
@@ -15,7 +19,7 @@ if (isset($_GET['db'])) {
 	if (isset($url['port'])) {
 		$url['host'] = $url['host'] .':'. $url['port'];
 	}
-	
+
 	$_POST['auth'] = array(
 		'driver'=>$url['scheme'] == 'mysql' ? 'server' : 'pgsql',
 		'server'=>$url['host'],
@@ -36,6 +40,4 @@ if (isset($_GET['db'])) {
 // get_password(){return $_GET['password'];
 
 
-include __DIR__.'/adminer-477.php';
-
-?>
+include __DIR__.'/adminer-481.php';

@@ -1,0 +1,10 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+
+# IDEs and editors
+.svn
+.vscode
+_files
+_old
+adminer.sql.gz
+config.php

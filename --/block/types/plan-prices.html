@@ -3,7 +3,7 @@
 $groups = cache_load('groups');
 $brands = cache_load('brand');
 $brands[0] = '[не указан]';
-$vendors = array(-1=>'Любой') + cache_load('vendor');
+$vendors = cache_load('vendor');
 $ups = w('catalog-all');
 $ups[0] = 'Любой';
 $counts = [
@@ -33,9 +33,9 @@ $back = [
 	''=>array('method'=>'POST'),
 	'code'=>array('name'=>'Номер', 'type'=>'int', 'width'=>100),
 	'up'=>array('name'=>'Каталог', 'type'=>'combo2', 'values'=>$ups),
-	'grp'=>array('name'=>'Группа', 'type'=>'multich', 'values'=>$groups, 'placeholder'=>'Любая', 'width'=>500),
-	'brand'=>array('name'=>'Производители', 'type'=>'multich', 'values'=>$brands, 'placeholder'=>'Любой', 'width'=>500),
-	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo2', 'values'=>$vendors),
+	'grp'=>array('name'=>'Группа', 'type'=>'multich', 'values'=>$groups, 'placeholder'=>'Любая'),
+	'brand'=>array('name'=>'Производители', 'type'=>'multich', 'values'=>$brands, 'placeholder'=>'Любой'),
+	'vendor'=>array('name'=>'Поставщик', 'type'=>'multich', 'values'=>$vendors, 'placeholder'=>'Любой'),
 	'count'=>array('name'=>'Наличие', 'type'=>'combo', 'values'=>$counts),
 	'pmin'=>['name'=>'Мин. цена', 'type'=>'int', 'width'=>100],
 	'pmax'=>['name'=>'Макс. цена', 'type'=>'int', 'width'=>100],

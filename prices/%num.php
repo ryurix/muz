@@ -17,8 +17,9 @@ if ($code) {
 	$q = db_query('SELECT * FROM prices WHERE i='.$code.' AND typ='.$typ);
 	if ($row = db_fetch($q)) {
 		$row['code'] = $row['i'];
-		$row['grp'] = strlen($row['grp']) ? explode(',', $row['grp']) : array();
-		$row['brand'] = strlen($row['brand']) ? explode(',', $row['brand']) : array();
+		$row['grp'] = strlen($row['grp']) ? explode(',', $row['grp']) : [];
+		$row['brand'] = strlen($row['brand']) ? explode(',', $row['brand']) : [];
+		$row['vendor'] = strlen($row['vendor']) ? explode(',', $row['vendor']) : [];
 		$plan['send']['count'] = 4;
 	}
 	db_close($q);
@@ -26,17 +27,17 @@ if ($code) {
 }
 
 if (!$row) {
-	$row = array(
+	$row = [
 		'code'=>0,
-		'grp'=>array(),
-		'brand'=>array(),
-		'vendor'=>-1,
+		'grp'=>[],
+		'brand'=>[],
+		'vendor'=>[],
 		'up'=>0,
 		'count'=>0,
 		'price'=>0,
 		'sale'=>0,
 		'days'=>0,
-	);
+	];
 	$config['name'] = 'Новое правило';
 }
 
@@ -54,7 +55,7 @@ if ($plan['']['valid'] && $plan['send']['value'] && $plan['code']['value']) {
 			'i'=>$plan['code']['value'],
 			'grp'=>implode(',', $plan['grp']['value']),
 			'brand'=>implode(',', $plan['brand']['value']),
-			'vendor'=>$plan['vendor']['value'],
+			'vendor'=>implode(',', $plan['vendor']['value']),
 			'up'=>$plan['up']['value'],
 			'count'=>$plan['count']['value'],
 			'price'=>$plan['price']['value'],
@@ -84,8 +85,7 @@ if ($plan['']['valid'] && $plan['send']['value'] && $plan['code']['value']) {
 	}
 
 	if ($plan['send']['value'] == 2) {
-		w('prices-calc');
-		$where = prices_where([
+		$where = \Cron\Prices::where([
 			'grp'=>$plan['grp']['value'],
 			'brand'=>$plan['brand']['value'],
 			'vendor'=>$plan['vendor']['value'],
@@ -103,8 +103,7 @@ if ($plan['']['valid'] && $plan['send']['value'] && $plan['code']['value']) {
 	}
 
 	if ($plan['send']['value'] == 3) {
-		w('prices-calc');
-		$count = prices_calc($rule = [
+		$count = \Cron\Prices::calc($rule = [
 			'i'=>$plan['code']['value'],
 			'up'=>$plan['up']['value'],
 			'grp'=>$plan['grp']['value'],

@@ -5,6 +5,8 @@
 
 class Document{
 
+	protected $processor;
+
 	public function process() {
 		$class = $this->file_type.'_processor';
 		w($class);
@@ -16,7 +18,7 @@ class Document{
 		return $this->processor->$name($arguments);
 	}
 
-	function Document($template, $filename) {
+	function __construct($template, $filename) {
 		$this->template = $template;
 		$this->filename = $filename;
 
@@ -28,7 +30,7 @@ class Document{
 	private $template;
 	public $filename;
 
-	public $opened; 
+	public $opened;
 	private $file_type;
 
 	private function open_archive() {

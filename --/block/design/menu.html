@@ -13,15 +13,15 @@ if (is_user('partner')) {
 	make_link('partner', 'Партнер');
 }
 
-$service = w('service');
+$setup = w('setup');
 
 $mobile = '';
 
-if (count($service)) {
+if (count($setup)) {
 	if (!isset($config['action'])) {
 		$config['action'] = array();
 	}
-	foreach ($service as $k=>$v) {
+	foreach ($setup as $k=>$v) {
 		$config['action'][] = $v;
 	}
 
@@ -31,7 +31,7 @@ if (count($service)) {
 		<a href="#" class="sm_link next">&#032;</a>
 		<ul>
 			<li><button class="sm_btn-close"><i class="fa fa-times"></i></button></li>';
-	foreach ($service as $v) {
+	foreach ($setup as $v) {
 		$sub = isset($v['/']) ? $v['/'] : array();
 
 		if (count($sub)) {
@@ -118,5 +118,3 @@ foreach ($menus as $k=>$v) {
 $config['menu-mobile'] = $mobile;
 
 //*/
-
-?>

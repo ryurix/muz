@@ -16,7 +16,8 @@ function email($to, $toname, $subject, $html, $files = array(), $copy = 1) {
 	$fromname = $config['title'];
 	$from = 'muzmart@muzmart.com';
 //	$pass = 'Gertydedtrip';
-	$pass = 'pastila970494';
+//	$pass = 'pastila970494';
+	$pass = 'wRi-FFS-sq3-uZK';
 
 	$message = Swift_Message::newInstance()
 	->setSubject($subject)

@@ -69,8 +69,8 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 'brand'=>['name'=>'Производители', '/'=>[
 	'new'=>['name'=>'Добавить производителя'],
 	'%abc'=>['/'=>[
-		'edit'=>['role'=>'catalog', 'virtual'=>1, 'action'=>'правка'],
-		'erase'=>['name'=>'Удалить производителя из списка?', 'role'=>'catalog'],
+		'edit'=>['role'=>'brand', 'virtual'=>1, 'action'=>'правка'],
+		'erase'=>['name'=>'Удалить производителя из списка?', 'role'=>'brand'],
 	]],
 ]],
 
@@ -95,7 +95,11 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'%num'=>[],
 ]],
 
-'dict'=>['name'=>'Словарь', 'role'=>'admin', '/'=>[
+'plan'=>['name'=>'Планировщик', 'role'=>'plan', '/'=>[
+	'%num'=>[],
+]],
+
+'dict'=>['name'=>'Словарь', 'role'=>'dict', '/'=>[
 	'%num'=>['/'=>[
 		'erase'=>['virtual'=>1, 'action'=>'Удалить'],
 	]],
@@ -105,7 +109,7 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'new'=>['name'=>'Добавить слово', 'action'=>'Новое слово'],
 ]],
 
-'doc'=>['name'=>'Документы', '/'=>[
+'doc'=>['name'=>'Документы', 'role'=>'doc', '/'=>[
 	'%num'=>[],
 ]],
 
@@ -114,7 +118,7 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'catalog'=>[],
 ]],
 
-'filter'=>['name'=>'Фильтры', 'role'=>'catalog', '/'=>[
+'filter'=>['name'=>'Фильтры', 'role'=>'filter', '/'=>[
 	'new'=>['name'=>'Новый фильтр'],
 	'%num'=>[],
 ]],
@@ -123,7 +127,7 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'%num'=>[],
 ]],
 
-'mark'=>['name'=>'Метки', 'role'=>'catalog', '/'=>[
+'mark'=>['name'=>'Метки', 'role'=>'mark', '/'=>[
 	'new'=>['name'=>'Новая метка', 'action'=>'создать'],
 	'%num'=>[],
 ]],
@@ -155,18 +159,18 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 
 'portfolio'=>['name'=>'Наши работы', 'nowrap'=>1, '/'=>[
 	'%abc'=>['/'=>[
-		'edit'=>['role'=>'block', 'virtual'=>1],
-		'erase'=>['rolo'=>'block'],
+		'edit'=>['role'=>'portfolio', 'virtual'=>1],
+		'erase'=>['rolo'=>'portfolio'],
 	]],
-	'new'=>['name'=>'Новая запись', 'role'=>'block'],
-	'groups'=>['name'=>'Группы', 'role'=>'block'],
+	'new'=>['name'=>'Новая запись', 'role'=>'portfolio'],
+	'groups'=>['name'=>'Группы', 'role'=>'portfolio'],
 ]],
 
-'prices'=>['name'=>'Ценообразование', 'role'=>'import', '/'=>[
+'prices'=>['name'=>'Ценообразование', 'role'=>'prices', '/'=>[
 	'%num'=>[],
 	'groups'=>['name'=>'Группы товаров', 'action'=>'Группы товаров'],
 
-	'plan'=>['name'=>'', '/'=>[
+	'plan'=>['name'=>'Ценообразование задачи', '/'=>[
 		'%num'=>[],
 	]],
 ]],
@@ -187,45 +191,47 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'%abc'=>['role'=>'sale', '/'=>[
 		'orders'=>[],
 	]],
-	'cache'=>['name'=>'Обновление кэша', 'action'=>'Обновить кэш', 'role'=>'catalog', 'virtual'=>1],
+	'cache'=>['name'=>'Обновление кэша', 'action'=>'Обновить кэш', 'role'=>'sale', 'virtual'=>1],
 ]],
 
 'setup'=>['name'=>'Настройки', 'role'=>'adres catalog admin log spam', '/'=>[
 	'adres'=>['name'=>'Адреса и доставка', 'role'=>'adres'],
 	'delivery'=>['name'=>'Время доставки', 'role'=>'adres'],
+
 	'parse'=>['name'=>'Импорт каталога', 'role'=>'catalog', 'lib'=>'parse'],
 	'google'=>['name'=>'Категории Google', 'role'=>'catalog'],
 	'lost'=>['name'=>'Потерянные товары', 'role'=>'catalog'],
+
 	'spam'=>['name'=>'Рассылка', 'role'=>'spam'],
+
 	'geoloc'=>['name'=>'Импорт данных геолокации', 'role'=>'admin'],
 	'update-tags'=>['name'=>'Обновление тегов', 'role'=>'admin'],
+	'img-fluid'=>['name'=>'Обновление картинок', 'role'=>'admin'],
+	'import-dyna'=>['name'=>'Импорт товаров динатона', 'role'=>'admin'],
+	'import-dyna-2'=>['name'=>'Обработка товаров динатона', 'role'=>'admin'],
+	'ip'=>['name'=>'IP', 'role'=>'admin'],
+	'reset'=>['name'=>'RESET', 'role'=>'admin'],
+
 	'log'=>['name'=>'Логи', 'role'=>'log'],
 	'log2'=>['name'=>'Ошибки', 'role'=>'log'],
-	'img-fluid'=>['name'=>'Обновление картинок', 'role'=>'admin'],
-	'yml'=>['name'=>'Выгрузка YML', 'role'=>'catalog', '/'=>[
+
+	'yml'=>['name'=>'Выгрузка YML', 'role'=>'yandex', '/'=>[
 		'%num'=>[],
 	]],
-	'ozon'=>['name'=>'Выгрузка Ozon', 'role'=>'catalog', '/'=>[
+	'ozon'=>['name'=>'Выгрузка Ozon', 'role'=>'ozon', '/'=>[
 		'%num'=>[],
 		'cron'=>['name'=>'Запуск планировщика'],
 	]],
-	'wildberries'=>['name'=>'Выгрузка Wildberries', 'role'=>'catalog', '/'=>[
+	'wildberries'=>['name'=>'Выгрузка Wildberries', 'role'=>'wildberries', '/'=>[
 		'%num'=>[],
 		'cron'=>['name'=>'Запуск планировщика'],
 		'load'=>['name'=>'Загрузка номенклатуры', 'lib'=>'phpexcel'],
 	]],
 
-	'import-dyna'=>['name'=>'Импорт товаров динатона', 'role'=>'admin'],
-	'import-dyna-2'=>['name'=>'Обработка товаров динатона', 'role'=>'admin'],
-
-	'ip'=>['name'=>'IP', 'role'=>'admin'],
-
-	'reset'=>['name'=>'RESET'],
-
-	'sync-check'=>['name'=>'Проверка синхронизации'],
+	'sync-check'=>['name'=>'Проверка синхронизации', 'role'=>'catalog'],
 ]],
 
-'sign'=>['name'=>'Знаки', 'role'=>'catalog', '/'=>[
+'sign'=>['name'=>'Знаки', 'role'=>'sign', '/'=>[
 	'new'=>['name'=>'Новый знак'],
 	'%num'=>[],
 ]],
@@ -252,17 +258,17 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 
 'subcat'=>['name'=>'Подкаталоги', 'role'=>'catalog'],
 
-'sync'=>['name'=>'Прайсы и синхронизация', '/'=>[
-	'export-csv'=>['name'=>'Экспорт csv', 'role'=>'csv'],
-	'import-csv'=>['name'=>'Импорт csv', 'role'=>'csv'],
-	'import-xls'=>['name'=>'Импорт xls', 'lib'=>'phpexcel', 'role'=>'import'],
-	'sync'=>['name'=>'Синхронизация xls', 'lib'=>'phpexcel', 'role'=>'sync'],
-	'sync2'=>['design'=>'none', 'lib'=>'phpexcel', 'role'=>'sync'],
-	'nosync'=>['name'=>'Не синхронизировать', 'role'=>'sync'],
-	'check'=>['name'=>'Проверка синхронизации', 'role'=>'sync'],
-	'reset'=>['name'=>'Снять все товары?', 'role'=>'csv'],
-	'double'=>['name'=>'Поиск дубликатов', 'role'=>'csv'],
-	'search'=>['name'=>'Поиск синхронизации', 'role'=>'import'],
+'sync'=>['name'=>'Синхронизация', 'role'=>'sync', '/'=>[
+	'export-csv'=>['name'=>'Экспорт csv'], // , 'action'=>'экспорт csv'
+	'import-csv'=>['name'=>'Импорт csv'],
+	'import-xls'=>['name'=>'Импорт xls', 'lib'=>'phpexcel'], // , 'action'=>'импорт xls'
+	'sync'=>['name'=>'Синхронизация xls', 'lib'=>'phpexcel'],
+	'sync2'=>['design'=>'none', 'lib'=>'phpexcel'],
+	'nosync'=>['name'=>'Не синхронизировать', 'action'=>'не синхронизировать'],
+	'check'=>['name'=>'Проверка синхронизации', 'action'=>'проверка'],
+	'reset'=>['name'=>'Снять все товары?'],
+	'double'=>['name'=>'Поиск дубликатов', 'action'=>'дубликаты'],
+	'search'=>['name'=>'Поиск синхронизации', 'action'=>'поиск'],
 ]],
 
 'user'=>['name'=>'Пользователи', 'role'=>'users', '/'=>[
@@ -271,24 +277,21 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 		'order'=>['virtual'=>1, 'wide'=>1, 'no-title'=>0],
 		'erase'=>['virtual'=>1],
 		'sales'=>['virtual'=>1],
+		'roles'=>['virtual'=>1, 'role'=>'roles'],
 	]],
 	'new'=>['name'=>'Добавить пользователя'],
 	'sales'=>['name'=>'Финансы', 'role'=>'money'],
 	'check'=>['name'=>'Проверка авторизации', 'action'=>'Проверка'],
 ]],
 
-'vendor'=>['name'=>'Поставщики', 'role'=>'catalog', '/'=>[
-	'new'=>['name'=>'Добавить поставщика', 'action'=>'+ Поставщик', 'role'=>'import'],
+'vendor'=>['name'=>'Поставщики', 'role'=>'vendor', '/'=>[
+	'new'=>['name'=>'Добавить поставщика', 'action'=>'+ Поставщик'],
 	'%num'=>['name'=>'Поставщик', '/'=>[
-		'edit'=>['action'=>'Правка', 'virtual'=>1, 'role'=>'import'],
+		'edit'=>['action'=>'Правка', 'virtual'=>1],
 		'view'=>['action'=>'Смотр', 'virtual'=>1],
-		'erase'=>['name'=>'Удалить поставщика из списка?', 'role'=>'import'],
+		'erase'=>['name'=>'Удалить поставщика из списка?'],
 	]],
 ]],
-
-
-
-
 
 '%abc'=>['/'=>[
 	'%abc'=>['virtual'=>1, '/'=>[
@@ -321,6 +324,7 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 'serviceworker-update.js'=>['design'=>'none'],
 'test'=>['name'=>'TEST', 'lib'=>'phpexcel'],
 'unsubscribe'=>['name'=>'Вы отписались от рассылки!'],
-'update'=>['name'=>'Обновление', 'role'=>kv($config, 'DEBUG', 0) ? 'guest admin' : 'admin'],
+//'update'=>['name'=>'Обновление', 'role'=>kv($config, 'DEBUG', 0) ? 'guest admin' : 'admin'],
+'update'=>[],
 
 ]];

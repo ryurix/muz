@@ -5,9 +5,12 @@ namespace Type;
 class Price
 {
 
-	const MAIN = 1;
-	const BULK = 2;
-	const OZON = 3;
+	const MAIN = 0;
+
+	const BULK = 1;
+	const OZON = 2;
+
+	const COUNT = 2;
 
 	static function list() {
         $oClass = new \ReflectionClass(__CLASS__);

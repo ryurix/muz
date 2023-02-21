@@ -305,7 +305,7 @@ if (kv($config, 'wide', 0) || kv($last, 'wide', 0)) {
 echo '<div class="container">';
 	cache_load('banner');
 echo '</div>';
-	w('body');
+	include_once body();
 } else {
 
 	if (!kv($last, 'no-title', 0)) {
@@ -321,7 +321,7 @@ echo '</div>';
 </div>
 	<div class="container">
 		<div class="body" id="body">
-			<? w('body') ?>
+			<? include_once body(); ?>
 		</div>
 	</div>
 </div>

@@ -70,7 +70,8 @@ w('invalid', $plan);
 $config['plan'] = $plan;
 
 if ($plan['']['valid']) {
-	$data = array(
+
+	$data = [
 		'time'=>$plan['time']['value'],
 		'week'=>$plan['week']['value'],
 		'form'=>$plan['form']['value'],
@@ -81,25 +82,22 @@ if ($plan['']['valid']) {
 		'site'=>$plan['site']['value'],
 		'city'=>$plan['city']['value'],
 		'vendor'=>$plan['vendor']['value'],
-	);
+	];
+
+	$new = [
+		'typ'=>1,
+		'name'=>$plan['name']['value'],
+		'info'=>'<a href="/files/'.$data['filename'].'">'.$data['filename'].'</a>',
+		'every'=>$plan['every']['value'],
+		'data'=>array_encode($data),
+	];
+
+	$new['dt'] = \Cron\Task::next($new, $data);
 
 	if ($plan['send']['value'] == 1) {
-		$new = array(
-			'typ'=>1,
-			'name'=>$plan['name']['value'],
-			'info'=>'<a href="/files/'.$data['filename'].'">'.$data['filename'].'</a>',
-			'dt'=>now() + $plan['every']['value'],
-			'every'=>$plan['every']['value'],
-			'data'=>array_encode($data),
-		);
-
-		if ($new['every'] == 1) {
-			w('cron-tools');
-			$new['dt'] = cron_next(now(), $data);
-		}
 
 		if ($row['i']) {
-			db_update('cron', $new, array('i'=>$row['i']));
+			db_update('cron', $new, ['i'=>$row['i']]);
 			alert('Выгрузка обновлена');
 			redirect('/setup/yml');
 		} else {
@@ -110,14 +108,17 @@ if ($plan['']['valid']) {
 	}
 
 	if ($plan['send']['value'] == 2) {
-		$count = w('yml', $data);
-		alert('Выгрузка выполнена! Выгружено товаров: '.$count);
+
+		$info = \Cron\Task::execute($new, $data);
+		$info.= \Cron\Task::follow($data['follow']);
+
+		alert('Выгрузка выполнена! '.$info);
 		if ($row['i']) {
 			w('ft');
-			db_update('cron', array(
-				'info'=>'<a href="/files/'.$data['filename'].'">'.$data['filename'].'</a> ('.$count.') '.ft(now(), 1),
-			), array('i'=>$row['i']));
-			redirect('/setup/yml');
+			db_update('cron', [
+				'info'=>ft(now(), 1).' '.$info,
+			], ['i'=>$row['i']]);
+//			redirect('/setup/yml');
 		}
 	}
 }

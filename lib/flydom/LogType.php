@@ -5,8 +5,8 @@ namespace Flydom;
 class LogType
 {
 
-const DEBUG  =  0;
-const ERROR  =  2;
+const DEBUG = 0;
+const ERROR = 2;
 const WARNING = 8;
 
 static function list() {

@@ -1,10 +1,10 @@
-<? namespace Flydom;
+<?php namespace Flydom;
 
 class Form
 {
     protected $fields = [];
     function getField($name) { return array_key_exists($name, $this->fields) ? $this->fields[$name] : null; }
-    function __call($name, $args) { return getField($name); }
+    function __call($name, $args) { return $this->getField($name); }
     function getKeys() { return array_keys($this->fields); }
     function getFields() { return $this->fields; }
 	function getValues($valid = null) {
@@ -29,6 +29,8 @@ class Form
     function setAction($value) { $this->action = $value; }
     protected $name = null;
     function setName($value) { $this->name = $value; }
+	protected $class = null;
+	function setClass($value) { $this->class = $value; }
     protected $valid = true;
     function isValid() { return $this->valid; }
 
@@ -102,6 +104,9 @@ class Form
             if (!empty($this->action)) {
                 $back.= ' action="'.$this->action.'"';
             }
+			if (!empty($this->class)) {
+				$back.= ' class="'.$this->class.'"';
+			}
             if ($this->method == 'REQUEST') {
                 $back.= ' method="POST"';
             } else {
@@ -117,7 +122,9 @@ class Form
         }
 
         if (empty($template)) {
-            $back.= $this->buildTable();
+            $back.= $this->buildContainer();
+		} elseif ($template == 'inline') {
+			$back.= $this->buildLine();
         } elseif (is_callable($template)) {
             $back.= $template($this->fields);
         } elseif (is_file($template)) {
@@ -146,24 +153,41 @@ class Form
         }
     }
 
-    function buildTable()
+    function buildContainer()
     {
-        $back = '<table class="table table-bordered"><tbody>';
+        $back = '<div class="container">';
         $hidden = '';
         foreach ($this->fields as $f) {
             if ($f->hidden) {
                 $hidden.= $f->build();
             } else {
                 $name = $f->name;
-                if (strlen($name)) {
-                    $name.= '&nbsp;:';
-                }
-                $back.= '<tr><td>'.$name.'</td><td>'.$f->build().'</td></tr>';
+                $back.= '<div class="row my-1"><label class="col-sm-3 col-form-label text-right">'.$name.'</label><div class="col-sm-9">'.$f->build().'</div></div>';
             }
         }
-        $back.= '</tbody></table>'.$hidden;
+        $back.= '</div>'.$hidden;
         return $back;
     }
+
+	function buildLine()
+	{
+		$back = '<div class="form-inline">';
+        $hidden = '';
+        foreach ($this->fields as $f) {
+            if ($f->hidden) {
+                $hidden.= $f->build();
+            } else {
+                $name = $f->name;
+                $back.= '<div class="form-group">';
+				if (strlen($name)) {
+					$back.= '<label class="col-sm-3 col-form-label text-right">'.$name.'</label>';
+				}
+				$back.= '<div class="col-sm-9 pl-0 pr-1">'.$f->build().'</div></div>';
+            }
+        }
+        $back.= '</div>'.$hidden;
+        return $back;
+	}
 
     public function __set($name, $value) { $this->fields[$name]->value = $value; }
     public function __get($name) { return $this->fields[$name]->value; }

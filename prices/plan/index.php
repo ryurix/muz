@@ -1,5 +1,5 @@
 <?
 
 $config['action'] = array(
-	['action'=>'добавить выгрузку', 'href'=>'/setup/prices/0'],
+	['action'=>'добавить задачу', 'href'=>'/prices/plan/0'],
 );

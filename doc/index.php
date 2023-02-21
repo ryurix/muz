@@ -1,6 +1,6 @@
 <?
 
-if (!is_user('order')) {
+if (!is_user('doc')) {
 	redirect('/');
 }
 

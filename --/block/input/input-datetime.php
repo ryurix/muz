@@ -11,5 +11,3 @@ function parse_datetime(&$v) {
 function input_datetime($v) {
 	return input_time($v).' '.input_date($v);
 }
-
-?>

@@ -1,13 +1,13 @@
 <form method=POST style="display:flex; width:100%">
+<div class="row">
 <?
 
-w('form-user', $config['plan']);
-w('form-user-admin', $config['plan']);
+w('form-user', $plan);
+w('form-user-admin', $plan);
 
 ?>
 </form>
+</div>
 <?
 
 w('comments');
-
-?>

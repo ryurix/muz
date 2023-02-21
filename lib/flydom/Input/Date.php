@@ -5,7 +5,6 @@ class Date extends Line
 	protected $prop_default = [
         'hidden'=>false,
 		'name'=>null,
-		'placeholder'=>'ДД.ММ.ГГГГ',
         'readonly'=>false,
         'valid'=>true,
     ];
@@ -23,10 +22,6 @@ class Date extends Line
 			$x_day = $matches[3];
 			$x_month = $matches[2];
 			$x_year = $matches[1];
-		} elseif (preg_match('|^[0-9]+$|', $time, $matches)) {
-			$x_day = date('d', $time);
-			$x_month = date('n', $time);
-			$x_year = date('Y', $time);
 		} else {
 			return null;
 		}
@@ -64,6 +59,7 @@ class Date extends Line
 			$v['id'] = $v['code'].'-dt';
 		}
 		$v['class'] = isset($v['class']) ? $v['class'].' input-date' : 'input-date';
+		$v['subtype'] = 'date';
 
 		return parent::build($v);
 	}

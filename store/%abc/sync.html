@@ -3,9 +3,12 @@
 $row = $config['row'];
 
 $price = $row['price'];
-$price2 = $row['price2'];
 
-echo '<p>Наша цена: розничная <b>'.$price.'</b>, оптовая <b>'.$price2.'</b></p>';
+$prices = '';
+foreach (\Cron\Prices::decode($row['prices']) as $k=>$v) {
+	$prices.= ', '.\Type\Price::name($k+1).' <b>'.$v.'</b>';
+}
+echo '<p>Наша цена: розничная <b>'.$price.'</b>'.$prices.'</p>';
 
 ?>
 <form method="POST" class="auto">

@@ -10,25 +10,46 @@ class Cron extends \Flydom\Type
 	const WILDBERRIES = 20;
 	const PRICES = 50;
 
-	protected const DATA = [
+	const SBER = 101;
+	const SITEMAP = 102;
+	const GOOGLE_MERCHANT = 103;
 
-		self::YML => [
-			'name'=>'Выгрузка YML',
-			'class'=>'\Cron\Yml',
-		],
-		self::OZON_XML => [
-			'name'=>'Выгрузка Ozon',
-			'class'=>'\Cron\Ozon',
-		],
-		self::WILDBERRIES => [
-			'name'=>'Выгрузка Wildberries',
-			'class'=>'\Cron\Wildberries',
-		],
-		self::PRICES => [
-			'name'=>'Ценообразование',
-			'class'=>'\Cron\Prices',
-		],
+	const RENAME_PICS = 105;
+	const CANON = 106;
+	const KKM = 107;
+	const MARKET72 = 108;
+	const MAIL = 109;
+	const SESSION = 110;
+	const OZON = 111;
+
+
+	const DATA = [
+		self::YML => [ 'name'=>'Выгрузка YML', 'class'=>'\Cron\Yml::run', ],
+		self::OZON_XML => [ 'name'=>'Выгрузка Ozon', 'class'=>'\Cron\OzonXml::run', ],
+		self::WILDBERRIES => [ 'name'=>'Выгрузка Wildberries', 'class'=>'\Cron\Wildberries::run', ],
+		self::PRICES => [ 'name'=>'Ценообразование', 'class'=>'\Cron\Prices::run', ],
+
+		self::SBER => [ 'name'=>'Сбер маркет', 'class'=>'\Marketplace\Sber::cron', ],
+		self::SITEMAP => [ 'name'=>'Карта сайта', 'class'=>'\Cron\Sitemap::run', ],
+		self::GOOGLE_MERCHANT => [ 'name'=>'Гугл торговля', 'class'=>'\Cron\GoogleMerchant::run', ],
+		self::RENAME_PICS => [ 'name'=>'Переименование картинок', 'class'=>'\Cron\RenamePics::run', ],
+		self::CANON => [ 'name'=>'Канонические ссылки', 'class'=>'\Cron\Canon::run', ],
+		self::KKM => [ 'name'=>'Печать чеков', 'class'=>'\Cron\Kkm::run', ],
+		self::MARKET72 => [ 'name'=>'Маркет 72', 'class'=>'\Cron\Market72::run', ],
+		self::MAIL => [ 'name'=>'Рассылка', 'class'=>'\Cron\Mail::run', ],
+		self::SESSION => [ 'name'=>'Очистка сессий', 'class'=>'\Cron\Session::run', ],
+		self::OZON => [ 'name'=>'Озон обработка заказов', 'class'=>'\Cron\Ozon::run', ],
 	];
+
+	static function names($min = 0) {
+		$names = [];
+		foreach (self::DATA as $k=>$v) {
+			if ($k >= $min) {
+				$names[$k] = $v['name'];
+			}
+		}
+		return $names;
+	}
 
 	static function name($code = null, $default = null) {
 		return parent::data_value(self::DATA, 'name', $code, $default);

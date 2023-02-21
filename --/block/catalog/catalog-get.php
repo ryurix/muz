@@ -21,5 +21,3 @@ function catalog_param($a, $def = '') {
 	}
 	return count($s) ? '?'.implode('&', $s) : $def;
 }
-
-?>

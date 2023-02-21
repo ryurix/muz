@@ -4,20 +4,20 @@
 // License: http://opensource.org/licenses/MIT
 
 class Request {
-	
+
 	public $template;
 	public $filename;
-	
+
 	public $matrix;
 
-	function Request($args) {
+	function __construct($args) {
 		$this->matrix = new stdClass();
 		$this->read_request($args);
 		$this->arrange_request();
 	}
 
 	private $request_data = array();
-	
+
 	private $request_method;
 	private $request_encoding;
 	public $action;
@@ -51,10 +51,10 @@ class Request {
 	}
 
 	private function clean_request($value) {
-		if ($this->request_method == "GET") 
+		if ($this->request_method == "GET")
 			$value = urldecode($value);
 
-		if ($this->request_encoding == "windows-1251") 
+		if ($this->request_encoding == "windows-1251")
 			$value=iconv("windows-1251", "utf-8",$value);
 
 		return $value;

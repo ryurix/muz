@@ -68,7 +68,7 @@ $class = [];
 scan_class($config['root'], 'src', $class);
 scan_class($config['root'], 'lib', $class);
 
-file_put_contents($config['root'].'/--/block/autoload.php', '<?
+file_put_contents(\Config::ROOT.'/src/autoload.php', '<?
 
 $autoload = '.php_encode($class).';
 

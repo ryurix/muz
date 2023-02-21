@@ -4,248 +4,128 @@ namespace Cron;
 
 class Ozon extends Task {
 
+	static function ozon_query($ozon, $url, $args) {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, 'https://api-seller.ozon.ru'.$url);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($args));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			'Client-Id: '.$ozon['client'],
+			'Api-Key: '.$ozon['api'],
+			'Content-Type: application/json',
+		));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		$result = curl_exec($ch);
+		curl_close($ch);
+
+		return json_decode($result, true);
+	}
+
 	public static function run($args) {
-		$test = kv($args, 'test', 0);
 
-		if ($args['form'] < 10) {
-			$url = 'https://api-seller.ozon.ru/v4/product/info/prices';
-			$url2 = 'https://api-seller.ozon.ru/v1/product/import/prices';
-		} else {
-			//$url = 'https://api-seller.ozon.ru/v3/product/info/stocks';
-			$url = 'https://api-seller.ozon.ru/v2/product/list';
-			$url2 = 'https://api-seller.ozon.ru/v1/product/import/stocks';
-		}
+		//	https://cb-api.ozonru.me/apiref/ru/#t-fbs_list
 
-		$post = array(
-			'filter'=>[
-				'visibility'=>'ALL',
-			],
-			'limit'=>1000,
-			'last_id'=>''
-		);
-
-		$items = [];
-
-		do {
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post, JSON_FORCE_OBJECT));
-			curl_setopt($ch, CURLOPT_HTTPHEADER, [
-				'Client-Id: '.$args['client'],
-				'Api-Key: '.$args['api'],
-				'Content-Type: application/json',
-			]);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			$result = curl_exec($ch);
-			curl_close($ch);
-
-			//var_dump($result);
-			if ($test) {
-				alert($url.'<br>'.json_encode($post, JSON_FORCE_OBJECT), 'primary');
-				alert($result, 'info');
-			}
-
-			$json = json_decode($result, 1);
-
-			if (!isset($json['result'])) {
-		//		print_pre($json);
-				w('log');
-				logs(395, 0, $result);
-				break;
-			}
-			$post['last_id'] = $json['result']['last_id'];
-			$chunk = kv($json['result'], 'items', []);
-			if (empty($chunk)) {
-				w('log');
-				logs(395, 0, $result);
-				break;
-			}
-			$items = array_merge($items, $chunk);
-		} while (count($chunk) == $post['limit']);
-
-		$ids = array();
-		$prices = array();
-
+		w('ft');
 		w('clean');
-		foreach ($items as $i) {
-			$id = mb_substr($i['offer_id'], 1);
-			if (!is_09($id)) {
-				if (kv($args, 'alert', 0)) {
-					alert('Неправильный артикул: '.$id);
-				}
-				continue;
-			}
-
-			if ($args['form'] < 10) {
-				$prices[$id] = $i['price']['price'];
-				$ids[] = $id;
-			} else {
-				$ids[] = $id;
-			}
-		}
-
-		if (!count($ids)) {
-			return;
-		}
-
-		//alert(php_encode($items));
-
-		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-		if (is_array($args['vendor']) && count($args['vendor'])) {
-			$vendor = ' AND vendor IN ('.implode(',', $args['vendor']).')';
-		} else {
-			$vendor = '';
-		}
-
-		$where = [
-			'hide<=0',
-			'i IN ('.implode(',', $ids).')',
-		];
-
-		if ($test) {
-			$where[] = 'i='.$test;
-		}
-
-		$dt = now() - 30*24*60*60;
-		$select = 'SELECT store.*,ven.count FROM store LEFT JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE '.implode(' AND ', $where);
-		//if (kv($args, 'min', 0)) { $select.= ' AND '.$args['min'].'<=ven.count'; }
-		//if (kv($args, 'price', 0)) { $select.= ' AND '.$args['price'].'<=price'; }
-
-
-		// print_pre($select); return;
-		$upd = array();
 
 		$count = 0;
-		$q = db_query($select);
+		$limit = 10;
 
-		$min = max(0, kv($args, 'min', 0));
+		global $config;
+		foreach ($config['ozon'] as $user=>$ozon) {
 
-		while ($i = db_fetch($q)) {
-			$count++;
+			$result = [];
+			$offset = 0;
 
-			if ($i['count']<$min) {
-				$i['count'] = 0;
-			}
+			do {
+				$new = self::ozon_query($ozon, '/v3/posting/fbs/unfulfilled/list', [
+					'dir'=>'asc',
+					'filter'=>[
+						'cutoff_from'=>date('c', now() - 3*24*60*60),
+						'cutoff_from'=>date('c', now()),
+						'status'=>'awaiting_packaging'
+					],
+					'limit'=>$limit,
+					'offset'=>$offset,
+				]);
 
-			if ($args['form'] < 10) {
-				if (!kv($args, 'zero', 1) && !$i['price']) {
-					continue;
+				$offset+= $limit;
+
+				if (!isset($new['result'])) {
+					w('log');
+					logs(355, $user, json_encode($new));
+					break;
 				}
-				if ($i['price'] == $prices[$i['i']]) {
-					continue;
-				}
-				$upd[$i['i']] = $i['price'];
-			} else {
-				if ($args['form'] == 12) {
-					$i['count'] = 0;
-				} else {
-					$i['count']-= kv($args, 'minus', 0);
-				}
 
-				if (!kv($args, 'zero', 1) && !$i['count']) {
-					continue;
-				}
-				$upd[$i['i']] = $i['count'];
-			}
-		}
+				$found = count($new['result']['postings']);
+				$result = array_merge($result, $new['result']['postings']);
+			} while ($found == $limit);
 
-		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+			$mark = db_get_row('SELECT mark,mark2 FROM user WHERE i='.$user);
+			$mark = $mark ? ','.trim($mark['mark'].','.$mark['mark2'], ',').',' : '';
 
-		$updated = count($upd);
-		while (count($upd)) {
+			foreach ($result as $order) {
 
-			$upd2 = array_slice($upd, 0, 100, true);
-			$upd = array_slice($upd, 100, count($upd), true);
+				foreach ($order['products'] as $item) {
+					$store = clean_09($item['offer_id']);
 
-			if ($args['form'] < 10) {
-				$a = array();
-				foreach ($upd2 as $k=>$v) {
-					$a[] = [
-						'offer_id'=>'М'.$k,
-						'price'=>$v,
-						'old_price'=>'0',
-						'min_price' => strval(max(0, ceil($v * 0.9)))
+					$where = [
+						'mpi="'.addslashes($order['posting_number']).'"',
+						'user='.$user,
 					];
-				}
-				$post = [ 'prices'=>$a ];
-			} else {
-				$a = array();
-				foreach ($upd2 as $k=>$v) {
-					$a[] = [
-						'offer_id'=>'М'.$k,
-						'stock'=>$v * 1,
-					];
-				}
-				$post = [ 'stocks'=>$a ];
-			}
-
-			w('log');
-			logs(399, 0, json_encode($post, JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE));
-
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url2);
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post, JSON_FORCE_OBJECT));
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-				'Client-Id: '.$args['client'],
-				'Api-Key: '.$args['api'],
-				'Content-Type: application/json',
-			));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			$result = curl_exec($ch);
-			curl_close($ch);
-
-			if ($test) {
-				alert($url2.'<br>'.json_encode($post, JSON_FORCE_OBJECT), 'primary');
-				alert($result, 'success');
-			}
-
-			$a = json_decode($result, true);
-
-			$errors = [];
-			if (isset($a['result'])) {
-				foreach ($a['result'] as $i) {
-					if (count($i['errors'])) {
-						$errors[] = $i['offer_id'].': '.$i['errors'][0]['message'];
+					if ($store) {
+						$where[] = 'store='.$store;
 					}
+
+					$exists = db_result('SELECT COUNT(*) FROM orst WHERE '.implode(' AND ', $where));
+					if ($exists) { continue; }
+
+					db_insert('orst', [
+						'dt'=>now(),
+						'last'=>now(),
+						'user'=>$user,
+						'staff'=>null,
+						'state'=>1,
+						'cire'=>34,
+						'city'=>'', // Адрес?
+						'lat'=>null,
+						'lon'=>null,
+						'adres'=>'',
+						'dost'=>'self',
+						'vendor'=>0,
+						'store'=>$store,
+						'name'=>$item['name'],
+						'price'=>$item['price'],
+						'count'=>$item['quantity'],
+						'money0'=>0,
+						'pay'=>0,
+						'money'=>0,
+						'pay2'=>0,
+						'money2'=>0,
+						'bill'=>null,
+						'sale'=>null,
+						'info'=>'', // Примечание?
+						'note'=>count($order['products']) > 1 ? 'парный заказ' : '',
+						'docs'=>null,
+						'files'=>null,
+						'mark'=>$mark,
+						'kkm'=>0,
+						'kkm2'=>0,
+						'mpi'=>$order['posting_number'],
+						'mpdt'=>ft_parse($order['shipment_date'], true),
+						'sku'=>clean_int($item['sku']),
+					]);
+
+					$count++;
 				}
-			} else {
-				w('log');
-				logs(395, 0, $result);
-				break;
 			}
 
-			if (kv($args, 'alert', 0)) {
-				foreach ($errors as $i) {
-					alert($i);
-					logs(395, 0, $i);
-				}
-			}
+		//    print_pre($packaging);
 		}
 
-		$more = '';
-		if (isset($args['follow']) && is_array($args['follow']) && count($args['follow'])) {
-			$q = db_query('SELECT * FROM cron WHERE typ=10 AND i IN ('.implode(',', $args['follow']).') ORDER BY name');
-			$datas = array();
-			while ($row = db_fetch($q)) {
-				$data = array_decode($row['data']);
-				$data['follow'] = array();
-				$datas[] = $data;
-			}
-			db_close($q);
+		return 'Создано '.$count.' заказов.';
 
-			foreach ($datas as $data) {
-				sleep(2);
-				$more.= ', '.w2('ozon', $data);
-			}
-		}
-
-		return $updated.'/'.$count.$more;
 	}
 }

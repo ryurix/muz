@@ -53,6 +53,7 @@ $plan = array(
 	'client'=>array('name'=>'Код клиента', 'type'=>'line', 'default'=>'', 'min'=>1),
 	'api'=>array('name'=>'Ключ API', 'type'=>'line', 'default'=>'', 'min'=>1),
 
+	'price'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'defaul'=>0],
 	'min'=>array('name'=>'Мин. количество', 'type'=>'int', 'default'=>0),
 	'minus'=>array('name'=>'Вычет', 'type'=>'int', 'default'=>0),
 //	'site'=>array('name'=>'Сайт', 'type'=>'line', 'default'=>'muzmart.com'),
@@ -78,6 +79,7 @@ if ($plan['']['valid']) {
 		'form'=>$plan['form']['value'],
 		'client'=>$plan['client']['value'],
 		'api'=>$plan['api']['value'],
+		'price'=>$plan['price']['value'],
 		'min'=>$plan['min']['value'],
 		'minus'=>$plan['minus']['value'],
 		'zero'=>$plan['zero']['value'],
@@ -85,23 +87,21 @@ if ($plan['']['valid']) {
 		'follow'=>$plan['follow']['value'],
 	);
 
-	if ($plan['send']['value'] == 1) {
-		$new = array(
-			'typ'=>10,
-			'name'=>$plan['name']['value'],
-			'info'=>'',
-			'dt'=>now() + $plan['every']['value'],
-			'every'=>$plan['every']['value'],
-			'data'=>array_encode($data),
-		);
+	$new = array(
+		'typ'=>10,
+		'name'=>$plan['name']['value'],
+		'info'=>'',
+		'dt'=>now() + $plan['every']['value'],
+		'every'=>$plan['every']['value'],
+		'data'=>array_encode($data),
+	);
 
-		if ($new['every'] == 1) {
-			w('cron-tools');
-			$new['dt'] = cron_next(now(), $data);
-		}
+	$new['dt'] = \Cron\Task::next($new, $data);
+
+	if ($plan['send']['value'] == 1) {
 
 		if ($row['i']) {
-			db_update('cron', $new, array('i'=>$row['i']));
+			db_update('cron', $new, ['i'=>$row['i']]);
 			alert('Выгрузка сохранена');
 			redirect('/setup/ozon');
 		} else {
@@ -112,17 +112,17 @@ if ($plan['']['valid']) {
 	}
 
 	if ($plan['send']['value'] == 2) {
-		$data['alert'] = 1;
-		$count = w('ozon', $data);
-		alert('Выгрузка выполнена! Выгружено товаров: '.$count);
+
+		$info = \Cron\Task::execute($new, $data);
+		$info.= \Cron\Task::follow($data['follow']);
+
+		alert('Выгрузка выполнена: '.$info);
 		if ($row['i']) {
 			w('ft');
-			db_update('cron', array(
-				'info'=>'('.$count.') '.ft(now(), 1),
-			), array('i'=>$row['i']));
+			db_update('cron', [
+				'info'=>ft(now(), 1).' '.$info
+			], ['i'=>$row['i']]);
 //			redirect('/setup/ozon');
 		}
 	}
 }
-
-?>

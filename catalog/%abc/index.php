@@ -284,6 +284,8 @@ $get['sort']['default'] = get_user_config('sort', 'pop');
 $get['per']['default'] = get_user_config('per', 24);
 
 w('request', $get);
+if (!$get['sort']['valid']) { $get['sort']['value'] = 'pop'; }
+if (!$get['per']['valid']) { $get['per']['value'] = 24; }
 $config['get'] = $get;
 
 // Сохраняем сортировку

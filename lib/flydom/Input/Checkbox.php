@@ -5,7 +5,6 @@ class Checkbox extends Input
 	function parse($values = null) {
 		$v = &$this->data;
 
-		$v['valid'] = 1;
 		if (isset($v['value'])) {
 			$v['value'] = 1;
 		} else {
@@ -27,10 +26,10 @@ class Checkbox extends Input
 		$key = $v['code'];
 		$id = isset($v['id']) ? $v['id'] : $key.'-checkbox';
 
-		$back = '<input type=hidden name="'.$v['code'].'--" />';
+		$back = '<div class="form-check"><input type=hidden name="'.$v['code'].'--" />';
 		$back.= '<input type=checkbox name="'.$key.'" id="'.$id.'"';
 
-		$class = array('js-switch');
+		$class = array('checkbox');
 		if (isset($v['class'])) { $class[] = $v['class']; }
 		if (count($class)) {
 			$back.=' class="'.implode(' ', $class).'"';
@@ -44,12 +43,14 @@ class Checkbox extends Input
 		$checked = isset($v['checked']) ? $v['checked'] : 1;
 		if ($v['value'] == $checked) { $back.= ' CHECKED'; }
 		if (isset($v['more'])) { $back.= ' '.$v['more']; }
-		$back.= ' value="yes">';
+		$back.= '>';
 
-		$label = $v['label'] ?? '';
+		$label = kv($v, 'label', '');
 	//	if (strlen($label)) {
-		$back.= '<label for="'.$id.'">&nbsp; '.$label.'</label>';
+		$back.= '<label for="'.$id.'">&nbsp;'.$label.'</label>';
 	//	}
+
+		$back.= '</div>';
 
 		return $back;
 	}

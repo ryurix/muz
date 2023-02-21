@@ -10,6 +10,9 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 	$action[] = array('href'=>'/user/'.$row['i'], 'action'=>'Посмотреть');
 	$action[] =	array('href'=>'/user/'.$row['i'].'/order', 'action'=>'Заказы');
 	$action[] = array('href'=>'/user/'.$row['i'].'/docs', 'action'=>'Документы');
+	if (is_user('roles')) {
+		$action[] = ['href'=>'/user/'.$row['i'].'/roles', 'action'=>'Роли'];
+	}
 	if ($sales) {
 		$action[] = array('href'=>'/user/'.$row['i'].'/sales', 'action'=>'Продажи');
 	}
@@ -21,10 +24,6 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 
 	if ($action == 'edit') {
 		$plan = w('plan-user');
-
-		if (!is_user('admin')) {
-			unset($plan['roles']);
-		}
 
 		$row['config'] = strlen($row['config'])  > 2 ? array_decode($row['config']) : array();
 		$row['vendor'] = isset($row['config']['vendor']) ? $row['config']['vendor'] : 0;
@@ -162,6 +161,29 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 			$config['plan'] = $plan;
 			refile('erase.html');
 		}
+	} elseif ($action == 'roles') {
+		refile('roles.html');
+		$plan = w('plan-roles', $row['roles']);
+		w('request', $plan);
+
+		if ($plan['']['valid']) {
+			if ($plan['send']['value'] == 1) {
+				$roles = [];
+				foreach (w('list-roles') as $k=>$v) {
+					if ($plan[$k]['value']) {
+						$roles[] = $k;
+					}
+				}
+
+				db_update('user', [
+					'roles'=>implode(' ', $roles)
+				], ['i'=>$row['i']]);
+
+				db_delete('session', ['usr'=>$row['i']]);
+				alert('Роли сохранены', 'success');
+				redirect('/user/'.$row['i']);
+			}
+		}
 	} elseif ($action == 'sales' && $sales) {
 		refile('sales.html');
 		$config['row'] = $row;
@@ -169,5 +191,3 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 } else {
 	redirect('/user');
 }
-
-?>

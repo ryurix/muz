@@ -18,7 +18,7 @@ class Multibox extends Input
 					}
 				}
 			}
-			$r['value'] = \Flydom\Cache::array_encode($value);
+			$r['value'] = $value;
 		} else {
 			if (isset($r['default'])) {
 				$r['value'] = $r['default'];
@@ -48,7 +48,9 @@ class Multibox extends Input
 
 		$value = is_array($r['value']) ? $r['value'] : \Flydom\Cache::array_decode($r['value']);
 
-		$values = $cols > 1 ? self::array_for_columns($r['values'], $cols) : $r['values'];
+		//$values = $cols > 1 ? self::array_for_columns($r['values'], $cols) : $r['values'];
+		$values = $r['values'];
+
 		foreach($values as $k=>$v) {
 			$i++;
 			if (($i - 1) % $cols == 0 && $cols > 1) $s.= '<tr>';
@@ -89,7 +91,7 @@ class Multibox extends Input
 
 		for($i=0; $i<$max; $i++) {
 			$col = $i%$columns;
-			$base = $col == 0 ? 0 : $base + $len[$col-1];
+			$base = $col == 0 ? 0 : $base ?? 0 + $len[$col-1];
 			$j = $base+floor($i/$columns)%$len[$col];
 			$key = $keys[$j];
 			$back[$key] = $array[$key];

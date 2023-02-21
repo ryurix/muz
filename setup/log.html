@@ -12,6 +12,7 @@ $plan = array(
 	'user'=>array('name'=>'Пользователь', 'type'=>'line'),
 	'code'=>array('name'=>'Код', 'type'=>'int'),
     'max'=>['name'=>'Максимум записей', 'type'=>'int', 'default'=>100],
+	'sum'=>array('name'=>'Суммировать одинаковые', 'type'=>'checkbox', 'default'=>true),
 	'send'=>array('type'=>'button', 'count'=>2, 1=>'Фильтровать', 2=>'Удалить', 'class'=>[2=>'btn-danger'], 'confirm'=>[2=>'Удалить записи лога? Восстановление невозможно!']),
 );
 
@@ -59,8 +60,9 @@ if ($plan['send']['value'] == 2) {
 
 $count = 0;
 
-$q = db_query("SELECT l.dt dt, l.type type, l.user ui, l.code code, l.info info, u.name name FROM log l LEFT JOIN user u ON l.user=u.i".$where.' ORDER BY l.dt LIMIT '.$plan['max']['value']);
-while ($i = db_fetch($q)) {
+$rows = db_fetch_all("SELECT l.dt dt, l.type type, l.user ui, l.code code, l.info info, u.name name FROM log l LEFT JOIN user u ON l.user=u.i".$where.' ORDER BY l.dt LIMIT '.$plan['max']['value']);
+
+foreach ($rows as $i) {
 	$count++;
 	echo '
 <tr>
@@ -72,7 +74,6 @@ while ($i = db_fetch($q)) {
 	<td>'.$i['info'].'</td>
 </tr>';
 }
-db_close($q);
 
 ?>
 </tbody>

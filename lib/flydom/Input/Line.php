@@ -3,9 +3,16 @@
 class Line extends Input
 {
     static $subtypes = [
+		'color',
+		'date',
+		'datetime-local',
         'email',
+		'month',
+		'number',
+		'url',
+		'week',
         'phone',
-        'number',
+        'tel',
     ];
 
 	function parse($values = null) {

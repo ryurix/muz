@@ -9,7 +9,9 @@ class Compiler {
 	public $group;
 	public $groups_map;
     private $matrix;
-	function Compiler($fields, $request) {
+	function __construct($fields, $request) {
+		$this->simple = new stdClass();
+		$this->iterative = new stdClass();
 		$this->build_matrix($fields, $request);
 		if (!empty($this->group) && !empty($request->_group_key)){
 			 $this->builg_groups_map($request);
@@ -18,7 +20,7 @@ class Compiler {
 
 	public function expand_iteratives(){
 		foreach  ($this->groups_map as $g_index => $g_content){
-			
+
 			foreach ($g_content as $row_index){
 
 				foreach ($this->iterative as $tag => $replaces) {
@@ -27,28 +29,28 @@ class Compiler {
 
 					}
 				}
-			
+
 			}
 		foreach ($extendet_iteratives as $tag => $replaces){
 			$this->iterative->$tag = $replaces;
 			}
-			
+
 		}
 
 	private function build_matrix($fields, $request) {
 		foreach ($fields->simple as $field) {
 			$this->simple->$field = $request->$field;
-			}
+		}
 		foreach ($fields->iterative as $field) {
 			$this->iterative->$field = $request->$field;
-			}
+		}
 		foreach ($fields->group as $field) {
 			$g = 'g_'.$field;
 			$this->group->$field = $request->$g;
-			}		
 		}
-	
-	
+	}
+
+
 	private function builg_groups_map($request) {
 
 		$group='';
@@ -57,16 +59,16 @@ class Compiler {
 			if ($group!==$current) {
 				$group = $current;
 				$groups_map[$group] =  array();
-				
+
 				}
 			foreach($this->iterative->$g_key as $key => $value) {
-				if($key==$index) 
+				if($key==$index)
 					$groups_map[$group][] = $key;
 				}
 			}
 		$this->groups_map = (object)$groups_map;
 
 		}
-	
+
 	}
 ?>

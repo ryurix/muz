@@ -15,7 +15,7 @@ class File extends Input
 		}
 
 		if (strlen($value)) {
-			$file = $config['root'].substr($value, 1);
+			$file = \Config::$root.substr($value, 1);
 			if (is_file($file)) {
 				if (isset($values[$key.'-erase'])) {
 					unlink($file);

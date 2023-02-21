@@ -2929,11 +2929,12 @@ footer .footer_social li a i:hover {
 
 
 
-
+.form-roles .basket_cont3 div {
+	line-height: 32px;
+}
 .basket_cont3 {
 	width: 100%;
 	height: auto;
-	min-height: 650px;
 	padding: 30px;
 	background: #fff;
 	border-radius: 5px

@@ -1,12 +1,19 @@
 <?
 
-$plan = array(
-	''=>array('method'=>'POST'),
-	'code'=>array('type'=>'line'),
-	'name'=>array('type'=>'line', 'min'=>3),
-	'store'=>array('type'=>'int'),
-	'vendor'=>array('type'=>'int'),
-);
+/*
+$config['action'] = [
+	['action'=>'нет синхронизации', 'href'=>'/sync/nosync'],
+	['action'=>'поиск', 'href'=>'/sync/search'],
+];
+*/
+
+$plan = [
+	''=>['method'=>'POST'],
+	'code'=>['type'=>'line'],
+	'name'=>['type'=>'line', 'min'=>3],
+	'store'=>['type'=>'int'],
+	'vendor'=>['type'=>'int'],
+];
 
 w('request', $plan);
 

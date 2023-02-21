@@ -430,7 +430,8 @@
 }
 #product .product_discountcode li p {
 	font: 1em/1em ProximaNova, sans-serif;
-	color: #707070
+	color: #707070;
+	margin: 0;
 }
 #product .product_discountcode li p span {
 	color: #f07057

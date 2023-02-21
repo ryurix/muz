@@ -17,7 +17,7 @@ class Password extends Input
 
 		$back = '<input type="password"';
 
-		$class = array();
+		$class = ['form-control'];
 		if (isset($v['class'])) { $class[] = $v['class']; }
 		if (count($class)) {
 			$back.=' class="'.implode(' ', $class).'"';

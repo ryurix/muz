@@ -46,7 +46,7 @@ w('ft');
 w('clean');
 w('rub2str');
 
-$q = db_query('SELECT * FROM docs WHERE i='.$key.(is_user('order') || is_user('auto') ? '' : ' AND user='.$_SESSION['i']));
+$q = db_query('SELECT * FROM docs WHERE i='.$key.(is_user('doc') || is_user('auto') ? '' : ' AND user='.$_SESSION['i']));
 if ($i = db_fetch($q)) {
 
 	w('list-doc', $templates);

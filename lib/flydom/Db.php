@@ -358,6 +358,22 @@ static function fetchMap($query = null) {
 	return $array;
 }
 
+static function fetchArray($query = null) {
+	if (is_null($query)) { $q = self::$res;
+	} elseif (is_object($query)) { $q = $query;
+	} else { $q = self::query2($query); }
+
+	$array = [];
+	if (!$q) {
+		echo '<p class="error-db">'.$query.'</p>';
+	}
+	while ($i = mysqli_fetch_array($q)) {
+		$array[] = $i[0];
+	}
+	self::free($q);
+	return $array;
+}
+
 static function fetchRow($query = null) {
 	if (is_null($query)) { $q = self::$res;
 	} elseif (is_object($query)) { $q = $query;
@@ -389,4 +405,4 @@ static function rows() {
 	return mysqli_affected_rows(self::$db);
 }
 
-}
+} // class Db

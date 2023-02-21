@@ -435,6 +435,6 @@ class Wildberries extends Task {
 			$page++;
 		} while (count($result) >= $limit);
 
-		$back = 'Отменено '.$count.' заказов';
+		return 'Отменено '.$count.' заказов';
 	}
 }

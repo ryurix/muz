@@ -1,0 +1,12 @@
+<?
+
+$roles = w('list-roles');
+
+$back = [];
+
+foreach ($roles as $k=>$v) {
+	$check = strpos($args, $k) !== false;
+	$back[$k] = ['label'=>$v, 'type'=>'checkbox', 'default'=>$check];
+}
+
+$back['send'] = ['type'=>'button', 'count'=>1, 1=>'Сохранить'];

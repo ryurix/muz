@@ -55,8 +55,8 @@ form,.form {width:99%}
 .form input[type="text"], .form input[type="password"] {padding:2px 5px}
 .form div.form-group {margin:0}
 .form .form-control {display:inline}
-.input-date {width:110px}
-.form-check {padding-left:0}
+.input-date {width:120px}
+.form-check {padding-left:0; line-height: 38px;}
 .form-control {padding-left:0.375rem}
 .chosen-container {width:100% !important}
 .inline-int {width: 65px; text-align: right;}

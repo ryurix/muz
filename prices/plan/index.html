@@ -2,8 +2,8 @@
 	<thead>
 		<tr>
 			<th>Название</th>
-			<th>Дата следующего запуска</th>
-			<th>Последняя синхронизация</th>
+			<th>Следующий запуск</th>
+			<th>Последний запуск</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -11,12 +11,12 @@
 
 w('ft');
 
-$q = db_query('SELECT * FROM cron WHERE typ=10 ORDER BY name');
+$q = db_query('SELECT * FROM cron WHERE typ='.\Type\Cron::PRICES.' ORDER BY name');
 while ($i = db_fetch($q)) {
 	echo '
 <tr>
-	<td><a href="/setup/ozon/'.$i['i'].'">'.$i['name'].'</a></td>
-	<td><a href="/setup/ozon/'.$i['i'].'">'.($i['every'] > 0 ? ft($i['dt'], 1) : '').'</a></td>
+	<td><a href="/prices/plan/'.$i['i'].'">'.$i['name'].'</a></td>
+	<td><a href="/prices/plan/'.$i['i'].'">'.($i['every'] > 0 ? ft($i['dt'], 1) : '').'</a></td>
 	<td>'.$i['info'].'</td>
 </tr>
 

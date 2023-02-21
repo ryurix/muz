@@ -1,73 +1,73 @@
 <? namespace Flydom\Input;
 
-
-class Datetime extends Line
+class Datetime extends Input
 {
-	protected $prop_default = [
-        'hidden'=>false,
-		'name'=>null,
-		'placeholder'=>'ДД.ММ.ГГГГ ЧЧ:ММ',
-        'readonly'=>false,
-        'valid'=>true,
-    ];
-
-	static function ft_parse($s, $back = false) {
-		$sec = 0;
-		$min = 0;
-		$hour = 0;
-		$day = date('d');
-		$month = date('n');
-		$year = date('Y');
-
-		if ($back) {
-			list($x_year, $x_month, $x_day, $x_hour, $x_min, $x_sec) = preg_split('![ \\-T:]!', $s.'-- ::');
-		} else {
-			list($x_day, $x_month, $x_year, $x_hour, $x_min, $x_sec) = preg_split('![ /,\\-\\.:]!', $s.'.. ::');
-		}
-		$x_day = ft_09($x_day);
-		$x_month = ft_09($x_month);
-		$x_year = ft_09($x_year);
-		$x_hour = ft_09($x_hour);
-		$x_min = ft_09($x_min);
-		$x_sec = ft_09($x_sec);
-
-		if ($x_day > 0 && $x_day <= 31) $day = $x_day;
-		if ($x_month > 0 && $x_month <= 12) $month = $x_month;
-		if ($x_year > 1900) $year = $x_year;
-		if ($x_hour >= 0 && $x_hour < 24) $hour = strlen($x_hour) > 0 ? $x_hour : 0;
-		if ($x_min >= 0 && $x_min < 60) $min = strlen($x_min) > 0 ? $x_min : 0;
-		if ($x_sec >= 0 && $x_sec < 60) $sec = strlen($x_sec) > 0 ? $x_sec : 0;
-
-		return mktime($hour, $min, $sec, $month, $day, $year);
-	}
-
 	function parse($values = null) {
 		$v = &$this->data;
+		$code = $v['code'];
 
-		$v['valid'] = 1;
-		if (isset($v['value'])) {
-			$value = DateTime::ft_parse($v['value']);
-			if (empty($value)) {
-				$v['valid'] = 0;
-			} else {
-				$v['value'] = $value;
+		if (isset($values[$code.'-dt'])) {
+			$v['value'] = Date::ft_parse($values[$code.'-dt']);
+		}
+
+		$dt = isset($v['value']) ? $v['value'] : $v['default'];
+
+		if (!isset($v['hours'])) {
+			$hours = array();
+			for ($i=0; $i<24; $i++) {
+				$hours[$i] = strlen($i) < 2 ? '0'.$i : $i;
 			}
-		} else {
-			$v['value'] = isset($v['default']) ? DateTime::ft_parse($v['default']) : time();
+			$v['hours'] = $hours;
 		}
-		if (!empty($v['value'])) {
-			$v['value'] = date('d.m.Y H:i', $v['value']);
+
+		$hh = ((isset($values[$code.'-hh']) ? $values[$code.'-hh'] : date('H', $dt)) - date('H', 0));
+		if ($hh < 0) { $hh+= 24; }
+		if (!isset($v['hours'][$hh])) {
+			reset($v['hours']);
+			$hh = key($v['hours']);
 		}
+
+		$step = isset($v['step']) ? $v['step'] : 5;
+		if (!isset($v['minutes'])) {
+			$minutes = array();
+			for ($i=0; $i<60; $i+=$step) {
+				$minutes[$i] = strlen($i) < 2 ? '0'.$i : $i;
+			}
+			$v['minutes'] = $minutes;
+		}
+
+		$mm = isset($values[$code.'-mm']) ? $values[$code.'-mm'] : round(date('i', $dt) / $step) * $step;
+		if (!isset($v['minutes'][$mm])) {
+			reset($v['minutes']);
+			$mm = key($v['minutes']);
+		}
+
+		$v['value'] = mktime($hh, $mm, 00, date('n', $dt), date('d', $dt), date('Y', $dt)) + date('H', 0)*60*60;
+		$v['valid'] = TRUE;
 	}
 
-	function build($class = '') {
+	function build() {
 		$v = &$this->data;
 
-		if (!isset($v['id'])) {
-			$v['id'] = $v['code'].'-dt';
-		}
-		$v['class'] = isset($v['class']) ? $v['class'].' input-date' : 'input-date';
+		$date = new Date($v);
 
-		return parent::build($v);
+		$hh = date('H', $v['value']) * 1;
+		$step = isset($v['step']) ? $v['step'] : 5;
+		$mm = round(date('i', $v['value']) / $step) * $step;
+		$dt = date('Y-m-d', $v['value']);
+
+		if (!isset($v['hours'])) { $v['hours'] = []; }
+		if (!isset($v['hours'][$hh])) { $v['hours'][$hh] = strlen($hh) < 2 ? '0'.$hh : $hh; ksort($v['hours']); }
+
+		if (!isset($v['minutes'])) { $v['minutes'] = []; }
+		if (!isset($v['minutes'][$mm])) { $v['minutes'][$mm] = strlen($mm) < 2 ? '0'.$mm : $mm; ksort($v['minutes']); }
+
+		$code = $v['code'];
+
+		$hour = new Select(['code'=>$code.'-hh', 'value'=>$hh, 'values'=>$v['hours'], 'width'=>70, 'readonly'=>isset($v['readonly']) ? $v['readonly'] : 0]);
+		$minute = new Select(['code'=>$code.'-mm', 'value'=>$mm, 'values'=>$v['minutes'], 'width'=>70, 'readonly'=>isset($v['readonly']) ? $v['readonly'] : 0]);
+		$date = new Line(['code'=>$code.'-dt', 'value'=>$dt, 'subtype'=>'date']);
+
+		return '<div class="form-inline">'.$hour->build().' '.$minute->build().' '.$date->build().'</div>';
 	}
 }
