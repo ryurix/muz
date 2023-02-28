@@ -25,7 +25,8 @@ class OzonStock {
 class OzonXml extends Task {
 
 	public static function run($args) {
-		$test = kv($args, 'test', 0);
+		w('clean');
+		$test = clean_09(kv($args, 'test', 0));
 
 		if ($args['form'] < 10) {
 			$url = 'https://api-seller.ozon.ru/v4/product/info/prices';
@@ -46,63 +47,61 @@ class OzonXml extends Task {
 
 		$items = [];
 
-		do {
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post, JSON_FORCE_OBJECT));
-			curl_setopt($ch, CURLOPT_HTTPHEADER, [
-				'Client-Id: '.$args['client'],
-				'Api-Key: '.$args['api'],
-				'Content-Type: application/json',
-			]);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			$result = curl_exec($ch);
-			curl_close($ch);
+		$ids = [];
+		$prices = [];
 
-			//var_dump($result);
-			if ($test) {
-				alert($url.'<br>'.json_encode($post, JSON_FORCE_OBJECT), 'primary');
-				alert($result, 'info');
-			}
+		if ($test && false) {
+			$ids[] = $test;
+			$prices[$test] = 1;
+		} else {
+			do {
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $url);
+				curl_setopt($ch, CURLOPT_POST, 1);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post, JSON_FORCE_OBJECT));
+				curl_setopt($ch, CURLOPT_HTTPHEADER, [
+					'Client-Id: '.$args['client'],
+					'Api-Key: '.$args['api'],
+					'Content-Type: application/json',
+				]);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+				$result = curl_exec($ch);
+				curl_close($ch);
 
-			$json = json_decode($result, 1);
+				$json = json_decode($result, 1);
 
-			if (!isset($json['result'])) {
-		//		print_pre($json);
-				w('log');
-				logs(395, 0, $result);
-				break;
-			}
-			$post['last_id'] = $json['result']['last_id'];
-			$chunk = kv($json['result'], 'items', []);
-			if (empty($chunk)) {
-				w('log');
-				logs(395, 0, $result);
-				break;
-			}
-			$items = array_merge($items, $chunk);
-		} while (count($chunk) == $post['limit']);
-
-		$ids = array();
-		$prices = array();
-
-		w('clean');
-		foreach ($items as $i) {
-			$id = mb_substr($i['offer_id'], 1);
-			if (!is_09($id)) {
-				if (kv($args, 'alert', 0)) {
-					alert('Неправильный артикул: '.$id);
+				if (!isset($json['result'])) {
+			//		print_pre($json);
+					w('log');
+					logs(395, 0, $result);
+					break;
 				}
-				continue;
-			}
+				$post['last_id'] = $json['result']['last_id'];
+				$chunk = kv($json['result'], 'items', []);
+				if (empty($chunk)) {
+					w('log');
+					logs(395, 0, $result);
+					break;
+				}
+				$items = array_merge($items, $chunk);
+			} while (count($chunk) == $post['limit']);
 
-			if ($args['form'] < 10) {
-				$prices[$id] = $i['price']['price'];
+			foreach ($items as $i) {
+				$id = mb_substr($i['offer_id'], 1);
+				if (!is_09($id)) {
+					if (kv($args, 'alert', 0)) {
+						alert('Неправильный артикул: '.$id);
+					}
+					continue;
+				}
+
+				if ($args['form'] < 10) {
+					$prices[$id] = $i['price']['price'];
+				}
+				$ids[] = $id;
 			}
-			$ids[] = $id;
 		}
 
 		if (!count($ids)) {
@@ -135,7 +134,8 @@ class OzonXml extends Task {
 
 
 		// print_pre($select); return;
-		$upd = array();
+		//$force = kv($args, 'force', 0);
+		$upd = [];
 
 		$count = 0;
 		$q = db_query($select);
@@ -156,6 +156,9 @@ class OzonXml extends Task {
 					$decoded = \Cron\Prices::decode($i['prices']);
 					if (isset($decoded[$args['price'] - 1])) {
 						$price = $decoded[$args['price'] - 1];
+						if (!strlen($price)) {
+							$price = 0;
+						}
 					} else {
 						continue;
 					}
@@ -186,7 +189,7 @@ class OzonXml extends Task {
 
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-		$updated = count($upd);
+		$updated = 0;
 		while (count($upd)) {
 
 			$upd2 = array_slice($upd, 0, 100, true);
@@ -212,7 +215,7 @@ class OzonXml extends Task {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url2);
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post));
+			curl_setopt($ch, CURLOPT_POSTFIELDS, \Flydom\Cache::json_encode($post, true, true));
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 				'Client-Id: '.$args['client'],
 				'Api-Key: '.$args['api'],
@@ -225,7 +228,7 @@ class OzonXml extends Task {
 			curl_close($ch);
 
 			if ($test) {
-				alert($url2.'<br>'.json_encode($post), 'primary');
+				alert($url2.'<br>'.\Flydom\Cache::json_encode($post, true, true), 'info');
 				alert($result, 'success');
 			}
 
@@ -238,9 +241,10 @@ class OzonXml extends Task {
 						$errors[] = $i['offer_id'].': '.$i['errors'][0]['message'];
 					}
 				}
+				$updated+= count($upd2);
 			} else {
 				w('log');
-				logs(395, 0, $result);
+				logs(395, 0, $result.' | '.\Flydom\Cache::json_encode($post, true, true));
 				break;
 			}
 

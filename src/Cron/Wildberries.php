@@ -2,6 +2,8 @@
 
 namespace Cron;
 
+use stdClass;
+
 // https://suppliers-api.wildberries.ru/swagger/index.html#/
 
 class Wildberries extends Task {
@@ -28,7 +30,7 @@ class Wildberries extends Task {
 			$store = [];
 			$q = db_query($select);
 			while ($row = db_fetch($q)) {
-				if (!in_array($row['i'], $exclude)) {
+				if (!in_array($row['barcode'], $exclude)) {
 					$key = $row['store'];
 					unset($row['store']);
 					$store[$key] = $row;
@@ -84,42 +86,52 @@ class Wildberries extends Task {
 					$i['s_count'] = 0;
 				}
 
-				if ($i['quantity'] != $i['s_count']
-				) {
+				if ($i['quantity'] != $i['s_count']) {
 					$upd = true;
 
 					$updates[$i['i']] = [
-						'quantity'=>is_null($i['s_count']) ? 0 : (int) $i['s_count'],
+						'quantity'=>is_null($i['s_count']) ? 0 : $i['s_count'],
 					];
 				}
 
 				if ($upd) {
-					$rows[] = [
+
+					//$rows[] = [
+					//	'sku'=>$i['barcode'],
+					//	'amount'=>is_null($i['s_count']) ? 0 : (int) $i['s_count'],
+					//];
+
+					$obj = new stdClass();
+					$obj->sku = $i['barcode'];
+					$obj->amount = is_null($i['s_count']) ? 0 : $i['s_count'];
+
+					$rows[] = $obj;
+
 					//	'nmId'=>(int) $i['i'],
 					//	'chrtId'=>(int) $i['chrt'],
-						'barcode'=>$i['barcode'],
-						'stock'=>is_null($i['s_count']) ? 0 : (int) $i['s_count'],
-						'warehouseId'=>(int) $con['storeId'],
-					];
+					//	'warehouseId'=>(int) $con['storeId'],
 				}
 			}
 
 			if (count($rows)) {
-				$url = 'https://suppliers-api.wildberries.ru/api/v2/stocks';
+				$url = 'https://suppliers-api.wildberries.ru/api/v3/stocks/'.$con['storeId'];
 
 				$page = 0;
 				while ($page*$per < count($rows)) {
 					$post = array_slice($rows, $page*$per, $per);
 					$page++;
 
+					$payload = \Flydom\Cache::json_encode(['stocks'=>$post]);
+
 					$ch = curl_init();
 					curl_setopt($ch, CURLOPT_URL, $url);
-					curl_setopt($ch, CURLOPT_POST, 1);
-					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post));
-					curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+					curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+					curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+					curl_setopt($ch, CURLOPT_HTTPHEADER, [
 						'Authorization: '.$con['authorization'],
 						'Content-Type: application/json',
-					));
+						'Content-Length: '.strlen($payload)
+					]);
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -127,7 +139,7 @@ class Wildberries extends Task {
 					$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 					curl_close($ch);
 
-					if ($code != 200) {
+					if (($code != 200 && $code != 204) && strlen($result)) {
 						break;
 					}
 				}
@@ -135,7 +147,7 @@ class Wildberries extends Task {
 				$code = 200;
 			}
 
-			if ($code == 200) {
+			if ($code == 200 || $code == 204) {
 				$back = ($form == 10 ? 'Обнулено' : 'Обновлено').'&nbsp;'.count($rows);
 
 				foreach ($updates as $k=>$v) {
@@ -145,7 +157,7 @@ class Wildberries extends Task {
 				$back = 'Ошибка: '.$result;
 
 				w('log');
-				logs(401, $result);
+				logs(401, $code, $result.' | '.$payload);
 			}
 
 		}
@@ -167,7 +179,7 @@ class Wildberries extends Task {
 
 	static function price($args, $con, $exclude, $per = 500) {
 
-		$select = 'SELECT wb.*,store.price s_price FROM wb LEFT JOIN store ON wb.store=store.i WHERE wb.client='.$con['user'];
+		$select = 'SELECT wb.*,store.price s_price,store.prices s_prices FROM wb LEFT JOIN store ON wb.store=store.i WHERE wb.client='.$con['user'];
 		if (kv($args, 'price', 0)) { $select.= ' AND store.price >= '.$args['price']; }
 		//$store = db_fetch_all($select, 'store');
 
@@ -192,24 +204,38 @@ class Wildberries extends Task {
 			//if (14*24*60*60 > ($now - $i['dt'])) { continue; }
 			if ($now < $i['dt']) { continue; }
 
-			$upd = $force == 100;
-
-			if (is_null($i['s_price'])) {
-				$i['s_price'] = $i['price'];
+			if (kv($args, 'type', 0) > 0) {
+				$decoded = \Cron\Prices::decode($i['s_prices']);
+				if (isset($decoded[$args['type'] - 1])) {
+					$price = $decoded[$args['type'] - 1];
+					if (!strlen($price)) {
+						$price = 0;
+					}
+				} else {
+					continue;
+				}
+			} else {
+				$price = $i['s_price'];
 			}
 
-			if ($i['price'] != $i['s_price']) {
+			$upd = $force == 100;
+
+			if (is_null($price)) {
+				$price = $i['price'];
+			}
+
+			if ($i['price'] != $price) {
 				$upd = true;
 
 				$updates[$i['chrt']] = [
-					'price'=>is_null($i['s_price']) ? 0 : $i['s_price']
+					'price'=>$price
 				];
 			}
 
 			if ($upd) {
 				$rows[$i['chrt']] = [
-					'nmId'=>(int) $i['i'],
-					'price'=>(int) $i['s_price'],
+					'nmId'=>$i['i'],
+					'price'=>$price,
 				];
 			}
 		}
@@ -226,10 +252,12 @@ class Wildberries extends Task {
 				$post = array_slice($rows, $page*$per, $per, true);
 				$page++;
 
+				$payload = \Flydom\Cache::json_encode(array_values($post), false, true);
+
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, $url);
 				curl_setopt($ch, CURLOPT_POST, 1);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array_values($post)));
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 				curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 					'Authorization: '.$con['authorization'],
 					'Content-Type: application/json',
@@ -254,7 +282,7 @@ class Wildberries extends Task {
 					$back.= ' '.$page.':'.$result;
 
 					w('log');
-					logs(403, 0, $result);
+					logs(403, 0, $result.' | '.$payload);
 				}
 			}
 		}

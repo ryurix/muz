@@ -31,7 +31,7 @@ if ($plan['send']['value'] == 1) {
 
 		$delim = mb_substr($i[3], 0, 1);
         $store = explode($delim, $i[3])[1] ?? 0;
-        if (!$store) {
+        if (!$store || !is_number($store)) {
         	continue;
         }
 

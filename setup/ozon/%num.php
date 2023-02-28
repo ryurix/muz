@@ -53,12 +53,13 @@ $plan = array(
 	'client'=>array('name'=>'Код клиента', 'type'=>'line', 'default'=>'', 'min'=>1),
 	'api'=>array('name'=>'Ключ API', 'type'=>'line', 'default'=>'', 'min'=>1),
 
-	'price'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'defaul'=>0],
+	'price'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
 	'min'=>array('name'=>'Мин. количество', 'type'=>'int', 'default'=>0),
 	'minus'=>array('name'=>'Вычет', 'type'=>'int', 'default'=>0),
 //	'site'=>array('name'=>'Сайт', 'type'=>'line', 'default'=>'muzmart.com'),
 //	'city'=>array('name'=>'Город', 'type'=>'combo', 'values'=>array(0=>'') + cache_load('city'), 'default'=>0),
 	'zero'=>array('label'=>'Передавать нули', 'type'=>'checkbox', 'default'=>1),
+//	'force'=>['lable'=>'Передавать всё (по умолчанию только обновления)', 'type'=>'checkbox', 'default'=>0],
 	'vendor'=>array('name'=>'Поставщики', 'type'=>'multich', 'values'=>cache_load('vendor'), 'placeholder'=>'Выберите поставщиков...'),
 	'follow'=>array('name'=>'Следующая', 'type'=>'multich', 'values'=>$others, 'default'=>array(), 'placeholder'=>'Выберите выгрузку...'),
 
@@ -85,6 +86,7 @@ if ($plan['']['valid']) {
 		'zero'=>$plan['zero']['value'],
 		'vendor'=>$plan['vendor']['value'],
 		'follow'=>$plan['follow']['value'],
+		'test'=>$plan['test']['value'],
 	);
 
 	$new = array(

@@ -108,6 +108,21 @@ class Yml extends Task {
 			if (!isset($pathway[$i['up']]) || !strlen($i['name']) || !strlen($i['pic'])) {
 				continue;
 			}
+
+			if (kv($data, 'type', 0) > 0) {
+				$decoded = \Cron\Prices::decode($i['prices']);
+				if (isset($decoded[$data['type'] - 1])) {
+					$price = $decoded[$data['type'] - 1];
+					if (!strlen($price)) {
+						$price = 0;
+					}
+				} else {
+					continue;
+				}
+			} else {
+				$price = $i['price'];
+			}
+
 			$count++;
 			$brand = htmlspecialchars($brands[$i['brand']]);
 			$i['count'] = $i['count'] - kv($data, 'minus', 0);
@@ -142,7 +157,7 @@ class Yml extends Task {
 			}
 
 			fwrite($f, '<url>https://'.$site.'/store/'.$i['url'].'</url>'."\n");
-			fwrite($f, '<price>'.$i['price'].'</price>'."\n");
+			fwrite($f, '<price>'.$price.'</price>'."\n");
 			fwrite($f, '<currencyId>RUR</currencyId>'."\n");
 			fwrite($f, '<categoryId>'.$i['up'].'</categoryId>'."\n");
 			if (strlen($i['pic'])) {

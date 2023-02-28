@@ -218,4 +218,57 @@ static function array_decode($var) {
 	}
 }
 
+static function json_encode($var, $number_string = false, $name_string = true, $number_length = 10) {
+	if (is_array($var)) {
+		$count = count($var);
+		if ($count == 0) { return '[]'; }
+
+		$is_flat = TRUE;
+
+		$a = '';
+		$i = 0;
+		foreach ($var as $k => $v) {
+			if ($i !== $k) {
+				$is_flat = FALSE;
+				break;
+			}
+			$a.= ','.self::json_encode($v, $number_string, $name_string, $number_length);
+			$i++;
+		}
+
+		if ($is_flat) {
+			return '['.substr($a, 1).']';
+		} else {
+			$a = '';
+			foreach ($var as $k => $v) {
+				$a.=','.(self::is_name($k) && !$name_string ? $k : '"'.addcslashes($k, '"\\').'"').':'.self::json_encode($v, $number_string, $name_string, $number_length);
+			}
+			return '{'.substr($a, 1).'}';
+		}
+
+	} elseif (is_object($var)) {
+		$vars = get_object_vars($var);
+		$a = '';
+		foreach ($vars as $k => $v) {
+			$a.=','.(self::is_name($k) && !$name_string ? $k : '"'.addcslashes($k, '"\\').'"').':'.self::json_encode($v, $number_string, $name_string);
+		}
+		return '{'.substr($a, 1).'}';
+	} elseif (!$number_string && self::is_number($var, $number_length)) {
+		return $var;
+	} elseif (is_null($var)) {
+		return 'null';
+	} elseif (is_bool($var)) {
+		return $var ? 'true' : 'false';
+	}
+	return '"'.addcslashes($var, '"\\').'"';
+}
+
+static function is_name($var) {
+	return preg_match('?^[a-zA-Z_][a-zA-Z0-9_]*$?', $var);
+}
+
+static function is_number($var, $number_length = 10) {
+	return is_numeric($var) && strlen($var) <= $number_length;
+}
+
 } // class Cache

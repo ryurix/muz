@@ -12,7 +12,7 @@ class Prices extends Task {
 		$count = [];
 		$rules = \Flydom\Db::fetchAll('SELECT * FROM prices WHERE typ='.$type.' ORDER BY i');
 		foreach ($rules as $rule) {
-			$count[] = self::calc($rule);
+			$count[]= self::calc($rule);
 		}
 		return max($count);
 	}
@@ -24,6 +24,9 @@ class Prices extends Task {
 		}
 		if (!is_array($rule['brand'])) {
 			$rule['brand'] = explode(',', $rule['brand']);
+		}
+		if (!is_array($rule['vendor'])) {
+			$rule['vendor'] = explode(',', $rule['vendor']);
 		}
 
 		$upd = 0;
@@ -56,13 +59,15 @@ class Prices extends Task {
 
 	static function update($rule, $i) {
 
-		if ($rule['typ'] > 0) {
-			$prices = self::decode($i['_prices']);
-			$prices[$rule['typ'] - 1] = $i['price'];
-			$i['prices'] = self::encode($prices);
-			$i['price'] = $i['_price'];
-		} else {
-			$i['prices'] = $i['_prices'];
+		if (isset($i['price'])) {
+			if ($rule['typ'] > 0) {
+				$prices = self::decode($i['_prices']);
+				$prices[$rule['typ'] - 1] = $i['price'];
+				$i['prices'] = self::encode($prices);
+				$i['price'] = $i['_price'];
+			} else {
+				$i['prices'] = $i['_prices'];
+			}
 		}
 
 
@@ -94,7 +99,7 @@ class Prices extends Task {
 
 		$array = explode(',', $prices);
 		while (count($array) < \Type\Price::COUNT) {
-			$array[] = 0;
+			$array[]= 0;
 		}
 
 		return $array;
@@ -150,7 +155,7 @@ class Prices extends Task {
 				if ($i['count'] > 0 && $i['price'] > 0) {
 					$pre = &$row[$store];
 					if ($avg) {
-						$prices[] = $i['price'];
+						$prices[]= $i['price'];
 					}
 					if (($i['price'] < $pre['price']) xor $max) {
 						$pre = $i;
@@ -187,31 +192,31 @@ class Prices extends Task {
 
 		$grp = implode(',', $rule['grp']);
 		if (strlen($grp)) {
-			$where[] = 'store.grp IN ('.$grp.')';
+			$where[]= 'store.grp IN ('.$grp.')';
 		}
 		$brand = implode(',', $rule['brand']);
 		if (strlen($brand)) {
-			$where[] = 'store.brand IN ('.$brand.')';
+			$where[]= 'store.brand IN ('.$brand.')';
 		}
 		$vendor = implode(',', $rule['vendor']);
 		if (strlen($vendor)) {
-			$where[] = 'store.vendor in ('.$vendor.')';
+			$where[]= 'store.vendor in ('.$vendor.')';
 		}
 		if ($rule['up']) {
 			$children = cache_load('children');
-			$where[] = 'store.up IN ('.implode(',', $children[$rule['up']]).')';
+			$where[]= 'store.up IN ('.implode(',', $children[$rule['up']]).')';
 		}
 		if ($rule['count']) {
 			if ($rule['count'] == 1) {
-				$where[] = 'store.count>0';
+				$where[]= 'store.count>0';
 			}
 			if ($rule['count'] == 2) {
-				$where[] = 'store.count<1';
+				$where[]= 'store.count<1';
 			}
 		}
 		$where_sync = $rule['days'] ? ' AND sync.dt>='.(now() - 24*60*60*$rule['days']) : '';
 		if (!$all) {
-			$where[] = 'NOT EXISTS (SELECT 1 FROM sync WHERE sync.store=store.i'.$where_sync.')';
+			$where[]= 'NOT EXISTS (SELECT 1 FROM sync WHERE sync.store=store.i'.$where_sync.')';
 		}
 
 		$where = count($where) ? ' WHERE '.implode(' AND ', $where) : '';

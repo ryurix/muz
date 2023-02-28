@@ -51,7 +51,7 @@ foreach ($config['wildberries'] as $k=>$v) {
 $plan = [
 	''=>array('default'=>$data),
 	'name'=>array('name'=>'Название', 'type'=>'line', 'min'=>3),
-	'every'=>array('name'=>'Период', 'type'=>'combo', 'values'=>array(
+	'every'=>array('name'=>'Период', 'type'=>'combo', 'values'=>[
 		0=>'Не запускать автоматически',
 		1=>'Ежедневно по расписанию',
 		300=>'5 мин',
@@ -62,12 +62,13 @@ $plan = [
 		64800=>'18 часов',
 		86400=>'1 день',
 		259200=>'3 дня'
-	), 'default'=>0),
+	], 'default'=>0),
 
 	'time'=>array('name'=>'Время запуска', 'type'=>'time', 'default'=>0),
 	'week'=>array('name'=>'Дни недели', 'type'=>'multich', 'values'=>array(1=>'пн', 2=>'вт', 3=>'ср', 4=>'чт', 5=>'пт', 6=>'сб', 7=>'вс'), 'placeholder'=>'ежедневно'),
 	'form'=>array('name'=>'Формат', 'type'=>'combo', 'values'=>$forms),
 	'client'=>array('name'=>'Клиент', 'type'=>'combo', 'default'=>'16838', 'values'=>$clients),
+	'type'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
 ];
 
 if ($data['form'] < 20) {
@@ -93,7 +94,7 @@ $plan+= [
 	'follow'=>array('name'=>'Следующая', 'type'=>'multich', 'values'=>$others, 'default'=>array(), 'placeholder'=>'Выберите выгрузку...'),
 
 	'send'=>array('type'=>'button', 'count'=>2, 1=>'Сохранить', 2=>'Выгрузить'),
-	'exclude'=>['name'=>'Исключения', 'type'=>'text', 'help'=>'список артикулов через пробел'],
+	'exclude'=>['name'=>'Исключения', 'type'=>'text', 'help'=>'список штрихкодов через пробел'],
 ];
 
 w('request', $plan);
@@ -116,6 +117,7 @@ if ($plan['']['valid']) {
 		'week'=>$plan['week']['value'],
 		'form'=>$plan['form']['value'],
 		'client'=>$plan['client']['value'],
+		'type'=>$plan['type']['value'],
 
 		'price'=>isset($plan['price']) ? $plan['price']['value'] : 0,
 		'min'=>isset($plan['min']) ? $plan['min']['value'] : 0,
@@ -165,5 +167,3 @@ if ($plan['']['valid']) {
 		}
 	}
 }
-
-?>

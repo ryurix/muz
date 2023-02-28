@@ -57,6 +57,7 @@ $plan = array(
 	'filename'=>array('name'=>'Имя файла', 'type'=>'line', 'default'=>'yandex.xml'),
 	'min'=>array('name'=>'Мин. количество', 'type'=>'int', 'default'=>0),
 	'minus'=>array('name'=>'Вычет', 'type'=>'int', 'default'=>0),
+	'type'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
 	'price'=>array('name'=>'Мин. цена', 'type'=>'int', 'default'=>500),
 	'site'=>array('name'=>'Сайт', 'type'=>'line', 'default'=>'muzmart.com'),
 	'city'=>array('name'=>'Город', 'type'=>'combo', 'values'=>array(0=>'') + cache_load('city'), 'default'=>0),
@@ -78,6 +79,7 @@ if ($plan['']['valid']) {
 		'filename'=>$plan['filename']['value'],
 		'min'=>$plan['min']['value'],
 		'minus'=>$plan['minus']['value'],
+		'type'=>$plan['type']['value'],
 		'price'=>$plan['price']['value'],
 		'site'=>$plan['site']['value'],
 		'city'=>$plan['city']['value'],
@@ -110,7 +112,7 @@ if ($plan['']['valid']) {
 	if ($plan['send']['value'] == 2) {
 
 		$info = \Cron\Task::execute($new, $data);
-		$info.= \Cron\Task::follow($data['follow']);
+		//$info.= \Cron\Task::follow($data['follow']);
 
 		alert('Выгрузка выполнена! '.$info);
 		if ($row['i']) {
@@ -122,5 +124,3 @@ if ($plan['']['valid']) {
 		}
 	}
 }
-
-?>
