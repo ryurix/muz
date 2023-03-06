@@ -1,18 +1,16 @@
 <?
 
 global $menu;
-$root = count($menu) <= 1;
-if () {
-}
 
-if (is_user()) {
-	if ($root) {
-		redirect('/order');
+if (count($menu) > 1) {
+	if ($menu[1]['code'] == 'update') {
+		return;
 	}
-} else {
-	if (!$root) {
-		redirect('/');
+	if ($menu[1]['code'] == 'base') {
+		return;
 	}
 }
 
-?>
+if (!is_user()) {
+	$config['design'] = 'login';
+}

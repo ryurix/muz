@@ -215,7 +215,7 @@ class OzonXml extends Task {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url2);
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, \Flydom\Cache::json_encode($post, true, true));
+			curl_setopt($ch, CURLOPT_POSTFIELDS, \Flydom\Cache::json_encode($post, 0));
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 				'Client-Id: '.$args['client'],
 				'Api-Key: '.$args['api'],
@@ -228,7 +228,7 @@ class OzonXml extends Task {
 			curl_close($ch);
 
 			if ($test) {
-				alert($url2.'<br>'.\Flydom\Cache::json_encode($post, true, true), 'info');
+				alert($url2.'<br>'.\Flydom\Cache::json_encode($post, 0), 'info');
 				alert($result, 'success');
 			}
 
@@ -244,7 +244,7 @@ class OzonXml extends Task {
 				$updated+= count($upd2);
 			} else {
 				w('log');
-				logs(395, 0, $result.' | '.\Flydom\Cache::json_encode($post, true, true));
+				logs(395, 0, $result.' | '.\Flydom\Cache::json_encode($post, 0));
 				break;
 			}
 

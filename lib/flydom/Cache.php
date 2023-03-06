@@ -218,7 +218,7 @@ static function array_decode($var) {
 	}
 }
 
-static function json_encode($var, $number_string = false, $name_string = true, $number_length = 10) {
+static function json_encode($var, $number_length = 10, $name_string = true) {
 	if (is_array($var)) {
 		$count = count($var);
 		if ($count == 0) { return '[]'; }
@@ -232,7 +232,7 @@ static function json_encode($var, $number_string = false, $name_string = true, $
 				$is_flat = FALSE;
 				break;
 			}
-			$a.= ','.self::json_encode($v, $number_string, $name_string, $number_length);
+			$a.= ','.self::json_encode($v, $number_length, $name_string, );
 			$i++;
 		}
 
@@ -241,7 +241,8 @@ static function json_encode($var, $number_string = false, $name_string = true, $
 		} else {
 			$a = '';
 			foreach ($var as $k => $v) {
-				$a.=','.(self::is_name($k) && !$name_string ? $k : '"'.addcslashes($k, '"\\').'"').':'.self::json_encode($v, $number_string, $name_string, $number_length);
+				$a.=','.(!$name_string && self::is_name($k) ? $k : '"'.addcslashes($k, '"\\').'"')
+				.':'.self::json_encode($v, $number_length, $name_string);
 			}
 			return '{'.substr($a, 1).'}';
 		}
@@ -250,10 +251,11 @@ static function json_encode($var, $number_string = false, $name_string = true, $
 		$vars = get_object_vars($var);
 		$a = '';
 		foreach ($vars as $k => $v) {
-			$a.=','.(self::is_name($k) && !$name_string ? $k : '"'.addcslashes($k, '"\\').'"').':'.self::json_encode($v, $number_string, $name_string);
+			$a.=','.(!$name_string && self::is_name($k) ? $k : '"'.addcslashes($k, '"\\').'"')
+			.':'.self::json_encode($v, $number_length, $name_string);
 		}
 		return '{'.substr($a, 1).'}';
-	} elseif (!$number_string && self::is_number($var, $number_length)) {
+	} elseif (self::is_number($var, $number_length)) {
 		return $var;
 	} elseif (is_null($var)) {
 		return 'null';
@@ -263,12 +265,19 @@ static function json_encode($var, $number_string = false, $name_string = true, $
 	return '"'.addcslashes($var, '"\\').'"';
 }
 
+static function json_decode($json) {
+	return json_decode($json, true, 512, JSON_BIGINT_AS_STRING);
+}
+
 static function is_name($var) {
 	return preg_match('?^[a-zA-Z_][a-zA-Z0-9_]*$?', $var);
 }
 
 static function is_number($var, $number_length = 10) {
-	return is_numeric($var) && strlen($var) <= $number_length;
+	if (strlen($var) > $number_length) {
+		return false;
+	}
+	return preg_match('/^[-]?((0|[1-9][0-9]*)\\.[0-9]*[1-9]|[1-9][0-9]*)$/', $var);
 }
 
 } // class Cache

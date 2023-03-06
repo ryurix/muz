@@ -252,7 +252,7 @@ class Wildberries extends Task {
 				$post = array_slice($rows, $page*$per, $per, true);
 				$page++;
 
-				$payload = \Flydom\Cache::json_encode(array_values($post), false, true);
+				$payload = \Flydom\Cache::json_encode(array_values($post));
 
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, $url);
@@ -425,7 +425,6 @@ class Wildberries extends Task {
 			$result = curl_exec($ch);
 			curl_close($ch);
 
-			$brand = cache_load('brand');
 			$user = $con['user'];
 			$mark = db_get_row('SELECT mark,mark2 FROM user WHERE i='.$user);
 			$mark = ','.trim($mark['mark'].','.$mark['mark2'], ',').',';
