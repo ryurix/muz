@@ -43,5 +43,3 @@ if ($plan['']['valid'] && $plan['send']['value']) {
 }
 
 $config['plan'] = $plan;
-
-?>

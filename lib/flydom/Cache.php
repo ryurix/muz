@@ -11,13 +11,12 @@ class Cache
 {
 
 const folder = 'cache/';
+protected static $cache;
 
 static function exists($key) {
-	global $cache, $config;
-
 	$filename = self::folder.$key.'.php';
 
-	if (isset($cache[$key])) {
+	if (isset(self::$cache[$key])) {
 		return $filename;
 	}
 
@@ -25,7 +24,7 @@ static function exists($key) {
 }
 
 static function clear($key, $percent = 100) {
-	$f = Cache::exists($key);
+	$f = self::exists($key);
 
 	if ($f && $percent >= rand(1, 100)) {
 		@unlink($f);
@@ -34,16 +33,14 @@ static function clear($key, $percent = 100) {
 }
 
 static function set($key, $value) {
-	global $config;
-
-	$f = fopen(Cache::folder.$key.'.php', 'w+');
+	$f = fopen(self::folder.$key.'.php', 'w+');
 	fwrite($f, $value);
 	fflush($f);
 	fclose($f);
 }
 
 static function get($key, $default = NULL) {
-	$f = Cache::exists($key);
+	$f = self::exists($key);
 
 	if ($f) {
 		return file_get_contents($f);
@@ -53,7 +50,7 @@ static function get($key, $default = NULL) {
 }
 
 static function delete($key) {
-	Cache::clear($key);
+	self::clear($key);
 }
 
 /*
@@ -68,13 +65,12 @@ wddx -- second SAVE, second SAVE+LOAD, very large SIZE
 */
 
 static function save($key, $var, $type = 'php') {
-	global $cache;
-	$cache[$key] = $var;
+	self::$cache[$key] = $var;
 
 	switch ($type) {
-		case 'php': self::set($key, '<?$v='.Cache::php_encode($var)); break;
+		case 'php': self::set($key, '<?$v='.self::php_encode($var)); break;
 		case 'export': self::set($key, '<?$v='.var_export($var, true)); break;
-		case 'json': self::set($key, json_encode($var)); break;
+		case 'json': self::set($key, self::json_encode($var)); break;
 		case 'serialize': self::set($key, serialize($var)); break;
 	//	case 'wddx': self::set($key, wddx_serialize_value($var)); break;
 	}
@@ -82,9 +78,8 @@ static function save($key, $var, $type = 'php') {
 }
 
 static function reset($key) {
-	global $cache;
-	if (isset($cache[$key])) {
-		unset($cache[$key]);
+	if (isset(self::$cache[$key])) {
+		unset(self::$cache[$key]);
 	}
 }
 
@@ -94,12 +89,11 @@ static function reload($key, $default = NULL, $type = 'php') {
 }
 
 static function load($key, $default = NULL, $type = 'php') {
-	global $cache;
-	if (isset($cache[$key])) {
-		return $cache[$key];
+	if ( isset(self::$cache[$key])) {
+		return self::$cache[$key];
 	}
 
-	$f = Cache::exists($key);
+	$f = self::exists($key);
 	if ($f) {
 		switch ($type) {
 			case 'php':
@@ -108,10 +102,7 @@ static function load($key, $default = NULL, $type = 'php') {
 				break;
 			case 'json':
 				$s = file_get_contents($f);
-				$v = json_decode($s);
-				if (is_object($v)) {
-					$v = get_object_vars($v);
-				}
+				$v = self::json_decode($s);
 				break;
 			case 'serialize':
 				$s = file_get_contents($f);
@@ -124,7 +115,7 @@ static function load($key, $default = NULL, $type = 'php') {
 		}
 	}
 	if (isset($v)) {
-		$cache[$key] = $v;
+		self::$cache[$key] = $v;
 	} else {
 		$v = $default;
 	}
@@ -145,14 +136,14 @@ static function php_encode($var) {
 				$is_flat = FALSE;
 				break;
 			}
-			$a.= ','.Cache::php_encode($v);
+			$a.= ','.self::php_encode($v);
 			$i++;
 		}
 
 		if (!$is_flat) {
 			$a = '';
 			foreach ($var as $k => $v) {
-				$a.=','.Cache::php_encode($k).'=>'.Cache::php_encode($v);
+				$a.=','.self::php_encode($k).'=>'.self::php_encode($v);
 			}
 		}
 		return '['.substr($a, 1).']';
@@ -161,7 +152,7 @@ static function php_encode($var) {
 		$vars = get_object_vars($var);
 		$a = '';
 		foreach ($vars as $k => $v) {
-			$a.=','.Cache::php_encode($k).'=>'.Cache::php_encode($v);
+			$a.=','.self::php_encode($k).'=>'.self::php_encode($v);
 		}
 		return '['.substr($a, 1).']';
 	} elseif (is_string($var)) {
@@ -184,7 +175,6 @@ static function php_decode($var) {
 
 static function array_encode($var) {
 	if (is_array($var)) {
-		$count = count($var);
 		$is_flat = TRUE;
 
 		$a = '';
@@ -194,19 +184,19 @@ static function array_encode($var) {
 				$is_flat = FALSE;
 				break;
 			}
-			$a.= ','.Cache::php_encode($v);
+			$a.= ','.self::php_encode($v);
 			$i++;
 		}
 
 		if (!$is_flat) {
 			$a = '';
 			foreach ($var as $k => $v) {
-				$a.=','.Cache::php_encode($k).'=>'.Cache::php_encode($v);
+				$a.=','.self::php_encode($k).'=>'.self::php_encode($v);
 			}
 		}
 		return substr($a, 1);
 	} else {
-		return Cache::php_encode($var);
+		return self::php_encode($var);
 	}
 }
 

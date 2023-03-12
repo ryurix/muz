@@ -104,6 +104,14 @@ if ($row = db_fetch($q)) {
 			$plan['']['valid'] = 0;
 		}
 
+		if ($row['vendor'] != $plan['vendor']['value'] && $plan['vendor']['value'] != 45) {
+			if ($plan['count']['value'] > kv($sync, $plan['vendor']['value'], ['count'=>0])['count']) {
+				alert('Недостаточно товаров у поставщика!', 'danger');
+				$plan['']['valid'] = 0;
+				$plan['vendor']['iv'] = 1;
+			}
+		}
+
 		if ($plan['']['valid'] && ($plan['send']['value'] == 1 || $plan['send']['value'] == 2 || $plan['send']['value'] == 4)) {
 			w('comment');
 			$changes = changes($plan,

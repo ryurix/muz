@@ -2,26 +2,6 @@
 
 namespace Cron;
 
-class OzonPrices { function __construct ($data) { $this->prices = $data; } public $prices; }
-class OzonPrice {
-	function __construct ($id, $price) {
-		$this->offer_id = 'М'.$id;
-		$this->price = $price;
-		$this->old_price = "0";
-		$this->min_price = strval(max(0, ceil($price * 0.9)));
-	}
-	public $offer_id, $price, $old_price, $min_price;
-}
-
-class OzonStocks { function __construct ($data) { $this->stocks = $data; } public $stocks; }
-class OzonStock {
-	function __construct ($id, $stock) {
-		$this->offer_id = 'М'.$id;
-		$this->stock = max(0, $stock * 1);
-	}
-	public $offer_id, $stock;
-}
-
 class OzonXml extends Task {
 
 	public static function run($args) {
@@ -196,31 +176,43 @@ class OzonXml extends Task {
 			$upd = array_slice($upd, 100, count($upd), true);
 
 			if ($args['form'] < 10) {
-				$a = array();
+				$a = [];
 				foreach ($upd2 as $k=>$v) {
-					$a[] = new OzonPrice($k, $v);
+					$a[] = [
+						'offer_id'=>'М'.$k,
+						'price'=>$v,
+						'old_price'=>0,
+						'min_price'=>strval(max(0, ceil($v * 0.9))),
+					]; // new OzonPrice($k, $v);
 				}
-				$post = new OzonPrices($a);
+				$post = [
+					'prices'=>$a
+				]; // new OzonPrices($a);
 			} else {
-				$a = array();
+				$a = [];
 				foreach ($upd2 as $k=>$v) {
-					$a[] = new OzonStock($k, $v);
+					$a[] = [
+						'offer_id'=>'М'.$k,
+						'stock'=>max(0, $v * 1),
+					]; // new OzonStock($k, $v);
 				}
-				$post = new OzonStocks($a);
+				$post = [
+					'stocks'=>$a
+				]; // new OzonStocks($a);
 			}
 
 			w('log');
-			logs(399, 0, json_encode($post));
+			logs(399, 0, \Flydom\Cache::json_encode($post, 0));
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url2);
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, \Flydom\Cache::json_encode($post, 0));
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			curl_setopt($ch, CURLOPT_HTTPHEADER, [
 				'Client-Id: '.$args['client'],
 				'Api-Key: '.$args['api'],
 				'Content-Type: application/json',
-			));
+			]);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -255,62 +247,6 @@ class OzonXml extends Task {
 				}
 			}
 		}
-
-/*
-		$more = '';
-		if (isset($args['follow']) && is_array($args['follow']) && count($args['follow'])) {
-			$q = db_query('SELECT * FROM cron WHERE typ='.\Type\Cron::OZON_XML.' AND i IN ('.implode(',', $args['follow']).') ORDER BY name');
-			$datas = array();
-			while ($row = db_fetch($q)) {
-				$data = array_decode($row['data']);
-				$data['follow'] = array();
-				$datas[] = $data;
-			}
-			db_close($q);
-
-			foreach ($datas as $data) {
-				sleep(2);
-				$more.= ', '.w2('ozon', $data);
-
-				$class = \Type\Cron::class(\Type\Cron::OZON_XML);
-				if ($class) {
-					try {
-						$info = call_user_func($class, $data);
-					} catch (\Exception $ex) {
-						$info = $ex->getMessage();
-					}
-				} else {
-					$info = 'Тип задачи не опознан: '.$row['typ'];
-				}
-
-				$more.= $info;
-			}
-		}
-*/
-
-/*
-		$more = '';
-		if (isset($args['follow']) && is_array($args['follow']) && count($args['follow'])) {
-			$rows = db_fetch_all('SELECT * FROM cron WHERE typ='.\Type\Cron::WILDBERRIES.' AND i IN ('.implode(',', $args['follow']).') ORDER BY name');
-
-			foreach ($rows as $row) {
-				sleep(2);
-
-				$class = \Type\Cron::class(\Type\Cron::WILDBERRIES);
-				if ($class) {
-					try {
-						$info = call_user_func($class, array_decode($row['data']));
-					} catch (\Exception $ex) {
-						$info = $ex->getMessage();
-					}
-				} else {
-					$info = 'Тип задачи не опознан: '.$row['typ'];
-				}
-
-				$more.= ', '.$info;
-			}
-		}
-*/
 
 		return $updated.'/'.$count;
 	}

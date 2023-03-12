@@ -23,5 +23,3 @@ if ($row = db_fetch($q)) {
 } else {
 	redirect('/sklad');
 }
-
-?>
