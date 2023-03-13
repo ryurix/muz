@@ -222,7 +222,7 @@ static function json_encode($var, $number_length = 10, $name_string = true) {
 				$is_flat = FALSE;
 				break;
 			}
-			$a.= ','.self::json_encode($v, $number_length, $name_string, );
+			$a.= ','.self::json_encode($v, $number_length, $name_string);
 			$i++;
 		}
 
@@ -267,7 +267,7 @@ static function is_number($var, $number_length = 10) {
 	if (strlen($var) > $number_length) {
 		return false;
 	}
-	return preg_match('/^[-]?((0|[1-9][0-9]*)\\.[0-9]*[1-9]|[1-9][0-9]*)$/', $var);
+	return preg_match('/^[-]?((0|[1-9][0-9]*)\\.[0-9]*[1-9]|[1-9][0-9]*|0)$/', $var);
 }
 
 } // class Cache

@@ -269,6 +269,13 @@ class Wildberries extends Task {
 				$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 				curl_close($ch);
 
+
+				if ($code != 200) {
+					if (strpos($result, "все номенклатуры с ценами из списка уже загружены")) {
+						$code = 200;
+					}
+				}
+
 				if ($code == 200) {
 					$updated+= count($post);
 

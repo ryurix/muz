@@ -381,8 +381,21 @@ if ((is_user('link') || $filter_user)
 
 	w('comment');
 
-	$q = db_query($select);
-	while ($i = db_fetch($q)) {
+	$rows = db_fetch_all($select);
+
+	foreach ($rows as $i) {
+		if (!isset($orst[$i['i']]) || !$orst[$i['i']]) { continue; }
+		if ($plan['cvendor']['value'] >= 0 && $plan['cvendor']['value'] != $i['vendor'] && $plan['cvendor']['value'] != 45) {
+			$count = db_result('SELECT count FROM sync WHERE store='.$i['store'].' AND vendor='.$plan['cvendor']['value']);
+			if (empty($count) || $count < $i['count']) {
+				$plan['cvendor']['value'] = 0;
+				$plan['cvendor']['iv'] = 1;
+				$rows = [];
+			}
+		}
+	}
+
+	foreach ($rows as $i) {
 		if (!isset($orst[$i['i']]) || !$orst[$i['i']]) { continue; }
 
 		//	alert($i['i']);

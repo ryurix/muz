@@ -3,7 +3,7 @@
 function parse_pics(&$r) {
 	global $config;
 	$r['valid'] = 1;
-	
+
 	$value = isset($r['value']) ? $r['value'] : (
 		isset($r['default']) ? $r['default'] : array()
 	);
@@ -15,10 +15,14 @@ function parse_pics(&$r) {
 
 	foreach ($value as $k=>$v) {
 		if (isset($_REQUEST[$key.$k])) {
-			$trash = $config['root'].substr($v['href'], 1);
-			unlink($trash);
-			$trash = $config['root'].substr($v['mini'], 1);
-			unlink($trash);
+			if (isset($v['href'])) {
+				$trash = $config['root'].substr($v['href'], 1);
+				unlink($trash);
+			}
+			if (isset($v['mini'])) {
+				$trash = $config['root'].substr($v['mini'], 1);
+				unlink($trash);
+			}
 			unset($value[$k]);
 		}
 	}
@@ -87,7 +91,7 @@ function input_pics($r) {
 	}
 	$s.= '</div>
 <span class="btn btn-info fileinput-button filesel">
-	<i class="icon-plus icon-white"></i> 
+	<i class="icon-plus icon-white"></i>
 	<span>Выбрать файл...</span>
 	<input type="file" name="'.$r['code'].'-[]" multiple>
 </span>

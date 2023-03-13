@@ -7,7 +7,7 @@ function naklad_commit($naklad, $vendor, $type) {
 
 	while ($i = db_fetch($q)) {
 		if ($i['i']) {
-			db_update('sync', array('count=count'.$sign.$i['count'], 'dt'=>now()+60*60*24*365*5), array('i'=>$i['i']));
+			db_update('sync', array('count=count'.$sign.$i['count'], 'dt'=>now()+60*60*24*365*5, 'price'=>0, 'opt'=>0), array('i'=>$i['i']));
 		} else {
 			if (isset($brand[$i['brand']]) && strlen($brand[$i['brand']])) {
 				$name = $brand[$i['brand']];
