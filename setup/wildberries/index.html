@@ -16,7 +16,7 @@ $q = db_query('SELECT * FROM cron WHERE typ=20 ORDER BY name');
 while ($i = db_fetch($q)) {
 	echo '
 <tr>
-	<td class="text-center"><a href="/setup/ozon/'.$i['i'].'">'.$i['i'].'</a></td>
+	<td class="text-center"><a href="/setup/wildberries/'.$i['i'].'">'.$i['i'].'</a></td>
 	<td><a href="/setup/wildberries/'.$i['i'].'">'.$i['name'].'</a></td>
 	<td><a href="/setup/wildberries/'.$i['i'].'">'.($i['every'] > 0 ? ft($i['dt'], 1) : '').'</a></td>
 	<td>'.$i['info'].'</td>
