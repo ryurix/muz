@@ -54,7 +54,7 @@ function db_insert($table, $data) {
 		if (is_bool($value)) {
 			$res->bindValue(':'.$key, $value, PDO::PARAM_BOOL);
 		} else {
-			$res->bindValue(':'.$key, $value);
+			$res->bindValue(':'.$key, $value, PDO::PARAM_STR);
 		}
 	}
 

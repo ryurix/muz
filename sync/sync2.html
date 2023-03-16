@@ -43,12 +43,9 @@ if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']
 
 //	Читаем файл
 	w('clean');
-	w('xlsread');
-	$data = new Spreadsheet_Excel_Reader();
 
-	$data->setOutputEncoding('UTF-8');
-	$data->read($file);
-	$cells = $data->sheets[0]['cells'];
+	w('phpexcel');
+	$cells = phpexcel($file, $plan['file']['filename']);
 
 	$rows = array();
 	$count = 0; // общий счетчик строк
@@ -57,6 +54,8 @@ if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']
 		if ($count < $range) {
 			continue;
 		}
+
+		array_unshift($i, 0);
 
 		$valid = isset($i[$ven['cname']]) && isset($i[first_int($ven['ccount'])]) && isset($i[$ven['cprice']]);
 
@@ -88,7 +87,7 @@ if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']
 				$or = ' OR (vendor='.$vendor.' AND code="'.addslashes($ccode).'")';
 			}
 			$q = db_query('SELECT * FROM sync WHERE name="'.addslashes($cname).'"'.$or);
-				
+
 			if ($sync = db_fetch($q)) {
 				// ищем запись у всех поставщиков
 				$syncs = array($sync);

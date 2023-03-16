@@ -65,16 +65,8 @@ if ($plan['']['valid'] && $send > 0) {
 			echo '<p>Курс валюты: '.$curr.'</p>';
 		}
 
-		w('xlsread');
-		$data = new Spreadsheet_Excel_Reader();
-		$data->setOutputEncoding('UTF-8');
-		$data->read($file);
-		$cells = array();
-		foreach ($data->sheets[0]['cells'] as $i) {
-			$cells[] = $i;
-		}
-		unset($data);
-		gc_collect_cycles();
+		w('phpexcel');
+		$cells = phpexcel($file);
 
 		w('u8');
 		w('clean');
@@ -85,6 +77,7 @@ if ($plan['']['valid'] && $send > 0) {
 		$unchanged = array();
 
 		foreach ($cells as $i) {
+			array_unshift($i, 0);
 			foreach ($ven as $v) {
 				$valid = isset($i[$v['cname']]);
 
@@ -208,4 +201,4 @@ if ($plan['']['valid'] && $send > 0) {
 
 w('alert');
 
-?>	
+?>

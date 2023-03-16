@@ -1,5 +1,75 @@
 # Changelog
 
+## 1.0.18 (2023-02-04)
+* fixed regex to detect date/datetime in cell
+* added $this->sheetMeta($worksheetIndex = null) to get metadata from workbook.xml
+* added $this->isHiddenSheet($worksheetIndex)
+* deleted $this->sheetNemes (use $this-sheetMetadata)
+
+## 1.0.17 (2022-10-13)
+
+* fixed readRowsEx (Undefined index: fontId)
+
+## 1.0.16 (2022-03-18)
+
+* fixed rowsEx(), _format_ returns now
+
+## 1.0.15 (2022-03-11)
+
+* Added requirements PHP 5.5+ in composer.json and README.md
+
+## 1.0.14 (2022-03-01)
+
+* PHP 5 generators capability, thx [maxiben](https://github.com/maxiben)
+
+## 1.0.13 (2022-02-22)
+
+* fixed basic usage example
+
+## 1.0.12 (2022-02-21)
+
+* 1.0 VERSION: Memory and styles
+* PHP 5.5+, namespace `Shuchkin`, 4 spaces indents
+* memory: added readRows() and readRowsEx() returns Generator. Help to read huge files
+* memory: in my tests ~100k rowsEx() used 880 MB, readRowsEx() used 162 MB
+* memory: added SimpleXLSXEx companion class for extract styles, used in rowsEx & toHTMLEx() only
+* styles: alignment, fonts, fills, borders
+* styles: rowsEx() return style info, cell width & height, css to apply in TD tag 
+* styles: added toHTMLEx() to export worksheet to HTML formatted table
+* fixed author in license.md
+* fixed examples
+
+## 0.9.11 (2022-02-05)
+
+* type "str" (formula and value)
+
+## 0.9.10 (2022-02-04)
+
+* class namespaced as Shuchkin\SimpleXLSX
+* fixed reading from XML datetime as float and datetime as ISO  
+
+## 0.8.33 (2022-01-23)
+
+* getting xml error  
+
+## 0.8.32 (2022-01-22)
+
+* added LIBXML_COMPACT | LIBXML_PARSEHUGE
+
+## 0.8.31 (2021-12-01)
+
+* added $xlsx->activeSheet (thx reptile)
+
+## 0.8.30 (2021-12-01)
+
+* added $limit to $xlsx->rows( $sheetIndex = 0, $limit = 0 ) and to $xlsx->rowsEx( $seetIndex = 0, $limit = 0)
+* Anyway SimpleXML loaded all XML data, so memory economy is minimal
+
+## 0.8.29 (2021-10-28)
+* 
+* prevent not exists `cols` notice
+* if cell type undefined, then parse it as number 
+
 ## 0.8.27 (2021-09-30)
 * [] to array() for PHP 5.2 backward compatibility. Tested from PHP 5.2.7 to 8.0.9
 

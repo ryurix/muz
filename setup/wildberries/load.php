@@ -23,24 +23,30 @@ if ($plan['send']['value'] == 1) {
 
 	$wb = db_fetch_all('SELECT * FROM wb WHERE client='.$plan['client']['value'], 'chrt');
 
+	/*
+	$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($plan['file']['value']);
+	$sheet = $spreadsheet->getSheet($spreadsheet->getFirstSheetIndex());
+	$rows = $sheet->toArray();
+	*/
+
+
 	w('phpexcel');
 	$rows = phpexcel($plan['file']['value'], $plan['file']['filename']);
 	unset($rows[0]);
 	foreach ($rows as $i) {
 		$chrt = $i[2];
 
-		$delim = mb_substr($i[3], 0, 1);
-        $store = explode($delim, $i[3])[1] ?? 0;
-        if (!$store || !is_number($store)) {
-        	continue;
-        }
+		$store = \Cron\Wildberries::parse_article($i[3]);
+		if (!$store) {
+			continue;
+		}
 
 		if (isset($wb[$chrt])) {
 			if ($wb[$chrt]['i'] != $i[4]
 			|| $wb[$chrt]['price'] != $i[7]
-			|| $wb[$chrt]['barcode'] != $i[6]
+			|| strcmp($wb[$chrt]['barcode'], $i[6]) != 0
 			|| $wb[$chrt]['store'] != $store) {
-				db_update('wb', [
+				\Flydom\Db::update('wb', [
 					'i'=>$i[4],
 					'price'=>$i[7],
 					'barcode'=>$i[6],
@@ -52,7 +58,7 @@ if ($plan['send']['value'] == 1) {
 			}
 			unset($wb[$chrt]);
 		} else {
-			db_insert('wb', [
+			\Flydom\Db::insert('wb', [
 				'i'=>$i[4],
 				'dt'=>now(),
 				'chrt'=>$chrt,

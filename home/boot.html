@@ -33,20 +33,32 @@ function scan_class($root, $path, &$class) {
 
 			$php = file_get_contents($root.'/'.$fullname);
 
-			if (preg_match('#class\\s+([A-Za-z0-9\\\\]+?)[\\s;]*#sUm', $php, $m)) {
+			$classname = null;
+
+			if (preg_match('#^\\s*class\\s+([A-Za-z0-9\\\\]+?)[\\s;]*#sUm', $php, $m)) {
 				$classname = $m[1];
-			} else {
-				$classname = null;
+			}
+
+			if ($classname == null) {
+				if (preg_match('#^\\s*abstract\\s+class\\s+([A-Za-z0-9\\\\]+?)[\\s;]*#sUm', $php, $m)) {
+					$classname = $m[1];
+				}
+			}
+
+			if ($classname == null) {
+				if (preg_match('#^\\s*interface\\s+([A-Za-z0-9\\\\]+?)[\\s;]*#sUm', $php, $m)) {
+					$classname = $m[1];
+				}
+			}
+
+			if (is_null($classname)) {
+				continue;
 			}
 
 			if (preg_match('#(namespace)(\\s+)([A-Za-z0-9\\\\]+?)(\\s*);#sm', $php, $m)) {
 				$namespace = str_replace('/', '\\', $m[3]);
 			} else {
 				$namespace = null;
-			}
-
-			if (is_null($classname)) {
-				continue;
 			}
 
 			if (mb_substr($v, 0, mb_strlen($classname)) == $classname) {

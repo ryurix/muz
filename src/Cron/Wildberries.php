@@ -4,7 +4,7 @@ namespace Cron;
 
 use stdClass;
 
-// https://suppliers-api.wildberries.ru/swagger/index.html#/
+// https://openapi.wb.ru/
 
 class Wildberries extends Task {
 
@@ -101,11 +101,14 @@ class Wildberries extends Task {
 					//	'amount'=>is_null($i['s_count']) ? 0 : (int) $i['s_count'],
 					//];
 
-					$obj = new stdClass();
-					$obj->sku = $i['barcode'];
-					$obj->amount = is_null($i['s_count']) ? 0 : $i['s_count'];
+					//$obj = new stdClass();
+					//$obj->sku = $i['barcode'];
+					//$obj->amount = is_null($i['s_count']) ? 0 : $i['s_count'];
 
-					$rows[] = $obj;
+					$rows[] = [
+						'sku'=>$i['barcode'],
+						'amount'=>is_null($i['s_count']) ? 0 : $i['s_count'],
+					];
 
 					//	'nmId'=>(int) $i['i'],
 					//	'chrtId'=>(int) $i['chrt'],
@@ -306,11 +309,13 @@ class Wildberries extends Task {
 		global $config;
 		$con = $config['wildberries'][$args['client']];
 
+		$not_found = [];
+
 		$count = 0;
 		$page = 0;
 		do {
 
-			$url = 'https://suppliers-api.wildberries.ru/api/v2/orders?status=0&take=1000&skip='.($page * 1000).'&date_start='.urlencode(date('c', now() - 7*24*60*60));
+			$url = 'https://suppliers-api.wildberries.ru/api/v3/orders/new';
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
@@ -335,32 +340,36 @@ class Wildberries extends Task {
 			$result = kv(json_decode($result, 1), 'orders', []);
 			foreach ($result as $order) {
 
-				if ($order['status'] > 0) {
+				if ($order['warehouseId'] != $con['storeId']) {
 					continue;
 				}
 
-				if ($order['storeId'] != $con['storeId']) {
-					continue;
-				}
-
-				$exists = db_result('SELECT COUNT(*) FROM orst WHERE mpi="'.$order['orderId'].'" AND user='.$user);
+				$exists = db_result('SELECT COUNT(*) FROM orst WHERE mpi="'.$order['id'].'" AND user='.$user);
 				if ($exists) { continue; }
 
-				$mpdt = date_create($order['dateCreated'])->getTimestamp();
+				$mpdt = date_create($order['createdAt'])->getTimestamp();
 
 		//		'count'=>1,
 		//		'price'=>$item['total_price'] / 100,
 		//		'sku'=>$item['rid'],
 
-				$q = db_query('SELECT wb.chrt,store.name,store.model,store.brand,store.i store FROM store,wb WHERE wb.store=store.i AND wb.chrt="'.$order['chrtId'].'"');
-				$i = db_fetch($q);
-				db_close($q);
+				//$q = db_query('SELECT wb.chrt,store.name,store.model,store.brand,store.i store FROM store,wb WHERE wb.store=store.i AND wb.chrt="'.$order['chrtId'].'"');
+				//$i = db_fetch($q);
+				//db_close($q);
+				$store = \Flydom\Db::fetchRow('SELECT wb.chrt,store.name,store.model,store.brand,store.i FROM store,wb WHERE wb.store=store.i AND wb.chrt="'.$order['chrtId'].'"');
+				if (!$store) {
+					$i = self::parse_article($order['article']);
+					if ($i) {
+						$store = \Flydom\Db::fetchRow('SELECT wb.chrt,store.name,store.model,store.brand,store.i FROM store,wb WHERE wb.store=store.i AND store.i='.$i);
+					}
+				}
 
-				if ($i) {
-					$order['name'] = trim(kv($brand, $i['brand'], '').' '.$i['model'].' '.$i['name']);
-					$order['store'] = $i['store'];
+				if ($store) {
+					$order['name'] = trim(kv($brand, $store['brand'], '').' '.$store['model'].' '.$store['name']);
+					$order['store'] = $store['i'];
 				} else {
-					// TODO: Логировать ошибку поиска товара по chrt
+					// TODO: Логировать ошибку поиска товара
+					$not_found[] = \Flydom\Cache::php_encode($order);
 					continue;
 				}
 
@@ -380,7 +389,7 @@ class Wildberries extends Task {
 					'vendor'=>0,
 					'store'=>$order['store'],
 					'name'=>$order['name'],
-					'price'=>$order['totalPrice'] / 100,
+					'price'=>$order['price'] / 100,
 					'count'=>1,
 					'money0'=>0,
 					'pay'=>0,
@@ -396,32 +405,43 @@ class Wildberries extends Task {
 					'mark'=>$mark,
 					'kkm'=>0,
 					'kkm2'=>0,
-					'mpi'=>$order['orderId'],
+					'mpi'=>$order['id'],
 					'mpdt'=>$mpdt + 48*60*60,
 					'sku'=>$order['rid'],
 				]);
 			}
 
 			$page++;
-		} while (count($result) > 990);
+		} while ($page < 1);
 
-		return 'Загружено '.$count.' заказов';
+		$error = '';
+		if (count($not_found)) {
+			$error = ', не найдены товары: '.implode(', ', $not_found);
+		}
+
+		return 'Загружено '.$count.' заказов'.$error;
 	}
 
 	static function order_cancel($args) {
 
 		global $config;
 		$con = $config['wildberries'][$args['client']];
+		$user = $con['user'];
 
 		$count = 0;
-		$page = 0;
-		$limit = 1000;
-		do {
 
-			$url = 'https://suppliers-api.wildberries.ru/api/v2/orders?status=7&take='.$limit.'&skip='.($page * $limit).'&date_start='.urlencode(date('c', now() - 7*24*60*60));
+		$orders = \Flydom\Db::fetchArray('SELECT mpi FROM orst WHERE state<30 AND user="'.$user.'"');
+
+		if (count($orders)) {
+
+			$url = 'https://suppliers-api.wildberries.ru/api/v3/orders/status';
+
+			$payload = \Flydom\Cache::json_encode(['orders'=>$orders]);
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 				'Authorization: '.$con['authorization'],
 				'Content-Type: application/json',
@@ -432,25 +452,18 @@ class Wildberries extends Task {
 			$result = curl_exec($ch);
 			curl_close($ch);
 
-			$user = $con['user'];
-			$mark = db_get_row('SELECT mark,mark2 FROM user WHERE i='.$user);
-			$mark = ','.trim($mark['mark'].','.$mark['mark2'], ',').',';
-
 			w('log');
 			logs(425, 0, $result);
 
 			$result = kv(json_decode($result, 1), 'orders', []);
 			foreach ($result as $order) {
 
-				if ($order['status'] != 7) {
+				if ($order['wbStatus'] != 'canceled'
+				&& $order['wbStatus'] != 'canceled_by_client') {
 					continue;
 				}
 
-				if ($order['storeId'] != $con['storeId']) {
-					continue;
-				}
-
-				$orst = db_fetch_all('SELECT * FROM orst WHERE state<>35 AND mpi="'.$order['orderId'].'" AND user='.$user);
+				$orst = db_fetch_all('SELECT * FROM orst WHERE state<>35 AND mpi="'.$order['id'].'" AND user='.$user);
 				if (!$orst) { continue; }
 
 				db_update('orst', ['state'=>35], ['i'=>$orst['i']]);
@@ -464,11 +477,21 @@ class Wildberries extends Task {
 					'name'=>'товара ('.$orst['name'].')',
 				);
 				w('order-update-state', $data);
+
+				$count++;
 			}
 
-			$page++;
-		} while (count($result) >= $limit);
+		}
 
 		return 'Отменено '.$count.' заказов';
+	}
+
+	static function parse_article($artikul) {
+		$delim = mb_substr($artikul, 0, 1);
+        $store = explode($delim, $artikul)[1] ?? 0;
+        if (!$store || !ctype_digit($store)) {
+        	return false;
+        }
+		return $store;
 	}
 }
