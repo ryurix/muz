@@ -41,7 +41,7 @@ $back = array(
 	//'w'=>array('name'=>'Вес', 'type'=>'int', 'class'=>'form-control'),
 	'w'=>array('type'=>'hidden'),
 	'filter'=>array('name'=>'Фильтры', 'type'=>'filter2'),
-	
+
 	'sign1'=>array('name'=>'Знак 1', 'type'=>'combo', 'values'=>$sign, 'class'=>'form-control', 'width'=>400),
 	'sign2'=>array('name'=>'Знак 2', 'type'=>'combo', 'values'=>$sign, 'class'=>'form-control', 'width'=>400),
 	'sign3'=>array('name'=>'Знак 3<br><small class="muted">(только в карточке товара)</small>', 'type'=>'combo', 'values'=>$sign, 'class'=>'form-control', 'width'=>400),
@@ -51,6 +51,5 @@ $back = array(
 	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo', 'values'=>$vendors, 'class'=>'form-control', 'width'=>400, 'more'=>'disabled=true'),
 	'rule'=>array('name'=>'Правило ценообразования', 'type'=>'int', 'readonly'=>1, 'class'=>'form-control'),
 //	'sync'=>array('name'=>'Дата последней синхронизации', 'type'=>'date', 'readonly'=>1),
+	'complex'=>['label'=>'Составной', 'type'=>'checkbox'],
 );
-
-?>

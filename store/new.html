@@ -1,9 +1,7 @@
 <?
 
-$plan = $config['plan'];
+//$plan = $config['plan'];
 if (isset($plan['icon']['link']) && strlen($plan['icon']['link']) > 0) {
 	$plan['']['style'] = "background:url(".$plan['icon']['link'].") no-repeat top right;";
 }
 w('form', $plan);
-
-?>

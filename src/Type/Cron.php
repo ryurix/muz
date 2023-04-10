@@ -13,7 +13,7 @@ class Cron extends \Flydom\Type
 	const SBER = 101;
 	const SITEMAP = 102;
 	const GOOGLE_MERCHANT = 103;
-
+	const COMPLEX = 104;
 	const RENAME_PICS = 105;
 	const CANON = 106;
 	const KKM = 107;
@@ -28,6 +28,7 @@ class Cron extends \Flydom\Type
 		self::OZON_XML => [ 'name'=>'Выгрузка Ozon', 'class'=>'\Cron\OzonXml::run', ],
 		self::WILDBERRIES => [ 'name'=>'Выгрузка Wildberries', 'class'=>'\Cron\Wildberries::run', ],
 		self::PRICES => [ 'name'=>'Ценообразование', 'class'=>'\Cron\Prices::run', ],
+		self::COMPLEX => [ 'name'=>'Составные товары', 'class'=>'\Cron\Complex::run', ],
 
 		self::SBER => [ 'name'=>'Сбер маркет', 'class'=>'\Marketplace\Sber::cron', ],
 		self::SITEMAP => [ 'name'=>'Карта сайта', 'class'=>'\Cron\Sitemap::run', ],

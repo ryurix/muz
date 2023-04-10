@@ -23,5 +23,3 @@ function parse_int(&$v) {
 function input_int($v) {
 	return input_line($v);
 }
-
-?>

@@ -148,7 +148,7 @@ function prices_calc_avg_max($rule, $avg = 0, $max = 0) {
 }
 
 function prices_calc_zero($rule, $all = 0) {
-	$where = array();
+	$where = ['NOT store.complex'];
 
 	$grp = implode(',', $rule['grp']);
 	if (strlen($grp)) {
@@ -173,8 +173,9 @@ function prices_calc_zero($rule, $all = 0) {
 			$where[] = 'store.count<1';
 		}
 	}
-	$where_sync = $rule['days'] ? ' AND sync.dt>='.(now() - 24*60*60*$rule['days']) : '';
+
 	if (!$all) {
+		$where_sync = $rule['days'] ? ' AND sync.dt>='.(now() - 24*60*60*$rule['days']) : '';
 		$where[] = 'NOT EXISTS (SELECT 1 FROM sync WHERE sync.store=store.i'.$where_sync.')';
 	}
 
@@ -201,7 +202,7 @@ function prices_calc_zero($rule, $all = 0) {
 
 
 function prices_where($rule) {
-	$where = [];
+	$where = ['NOT store.complex'];
 	$grp = implode(',', $rule['grp']);
 	if (strlen($grp)) {
 		$where[]= 'store.grp IN ('.$grp.')';

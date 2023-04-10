@@ -71,7 +71,7 @@ $plan = [
 	'type'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
 ];
 
-if ($data['form'] < 20) {
+if (isset($data['form']) && $data['form'] < 20) {
 $plan+= [
 	'price'=>array('name'=>'Мин. цена', 'type'=>'int', 'default'=>0),
 	'min'=>array('name'=>'Мин. количество', 'type'=>'int', 'default'=>0),

@@ -463,22 +463,24 @@ class Wildberries extends Task {
 					continue;
 				}
 
-				$orst = db_fetch_all('SELECT * FROM orst WHERE state<>35 AND mpi="'.$order['id'].'" AND user='.$user);
-				if (!$orst) { continue; }
+				$found = db_fetch_all('SELECT * FROM orst WHERE state<>35 AND mpi="'.$order['id'].'" AND user='.$user);
 
-				db_update('orst', ['state'=>35], ['i'=>$orst['i']]);
-				$data = array(
-					'orst'=>$orst['i'],
-					'old'=>$orst['state'],
-					'new'=>35,
-					'vendor'=>$orst['vendor'],
-					'store'=>$orst['store'],
-					'count'=>$orst['count'],
-					'name'=>'товара ('.$orst['name'].')',
-				);
-				w('order-update-state', $data);
+				foreach ($found as $orst) {
 
-				$count++;
+					db_update('orst', ['state'=>35], ['i'=>$orst['i']]);
+					$data = array(
+						'orst'=>$orst['i'],
+						'old'=>$orst['state'],
+						'new'=>35,
+						'vendor'=>$orst['vendor'],
+						'store'=>$orst['store'],
+						'count'=>$orst['count'],
+						'name'=>'товара ('.$orst['name'].')',
+					);
+					w('order-update-state', $data);
+
+					$count++;
+				}
 			}
 
 		}

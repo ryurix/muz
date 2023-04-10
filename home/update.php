@@ -1,7 +1,7 @@
 <?
 
 /* not send */
-$exclude = ['/^custom$/', 'files', 'cache'
+$exclude = ['/^custom$/', 'files', 'cache', 'design/logo.png', 'config.php'
 	, 'design/img', 'doc/template', 'design/brands', 'design/catalog', 'design/images'
 	,'/^config.inc$/', '/^cgi-bin$/'
 	, '/[^\\/]+\\[/', '/^_.*$/', '/^\\.htaccess$/' , '/^https.*$/'
@@ -9,7 +9,7 @@ $exclude = ['/^custom$/', 'files', 'cache'
 ];
 
 /* not get */
-$not_get = ['/^custom$/', 'files', 'cache'
+$not_get = ['/^custom$/', 'files', 'cache', 'design/logo.png', 'config.php'
 	, 'design/img', 'doc/template', 'design/brands', 'design/catalog', 'design/images'
 	,'/^config.inc$/', '/^cgi-bin$/'
 	, '/[^\\/]+\\[/', '/^_.*$/', '/^\\.htaccess$/' , '/^https.*$/'

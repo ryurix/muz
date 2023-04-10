@@ -252,6 +252,7 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 		'erase'=>['name'=>'Удалить товар?', 'role'=>'catalog'],
 		'sync'=>['name'=>'Синхронизация', 'role'=>'catalog'],
 		'clone'=>['name'=>'Клонировать', 'role'=>'catalog'],
+		'complex'=>['virtual'=>1, 'role'=>'catalog'],
 	]],
 	'url'=>['name'=>'Обновление ссылок товаров', 'role'=>'catalog'],
 ]],

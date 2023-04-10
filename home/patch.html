@@ -25,3 +25,22 @@ CREATE TABLE `log2` (
 KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
 }
+
+$table = db_fetch_all('DESCRIBE store', 'Field');
+if (!array_key_exists('complex', $table)) {
+	db_query('ALTER TABLE `store` ADD `complex` tinyint DEFAULT 0;');
+	db_query('ALTER TABLE `store` DROP COLUMN `rule2`');
+}
+
+$exist = count(\Flydom\Db::fetchAll('SHOW TABLES LIKE "complex"'));
+if (!$exist) {
+	\Flydom\Db::query('
+CREATE TABLE `complex` (
+`up` int(11) DEFAULT NULL,
+`store` int(11) DEFAULT NULL,
+`amount` int(11) DEFAULT NULL,
+`minus` int(11) DEFAULT NULL,
+`sale` int(11) DEFAULT NULL,
+INDEX `up` (`up`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+}

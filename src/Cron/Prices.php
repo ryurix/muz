@@ -29,7 +29,7 @@ class Prices extends Task {
 			$rule['vendor'] = explode(',', $rule['vendor']);
 		}
 
-		$upd = 0;
+		$upd = [];
 		switch ($rule['price']) {
 		case 1: $upd = self::calc_vendor($rule); break;
 		case 2: $upd = self::calc_vendor($rule); break;

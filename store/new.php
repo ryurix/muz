@@ -88,6 +88,7 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 		'files'=>$plan['files']['value'],
 		'pics'=>$plan['pics']['value'],
 		'yandex'=>$plan['yandex']['value'],
+		'complex'=>$plan['complex']['value'],
 	);
 	if (w('store-pic', $plan)) {
 		$data['icon'] = $plan['icon']['value'];
@@ -112,5 +113,3 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	$plan['filter']['up'] = $plan['up']['value'];
 	$config['plan'] = $plan;
 }
-
-?>

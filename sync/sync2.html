@@ -45,7 +45,7 @@ if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']
 	w('clean');
 
 	w('phpexcel');
-	$cells = phpexcel($file, $plan['file']['filename']);
+	$cells = phpexcel($file, $_SESSION['sync']['name']);
 
 	$rows = array();
 	$count = 0; // общий счетчик строк

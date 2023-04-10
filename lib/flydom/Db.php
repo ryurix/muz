@@ -316,7 +316,7 @@ static function fetch($res = null) {
 	if (is_null($res)) {
 		$res = self::$res;
 	}
-	return is_object($res) ? mysqli_fetch_assoc($res) : $res;
+	return is_object($res) ? mysqli_fetch_assoc($res) : false;
 }
 
 static function fetchAll($query = null, $key = null, $unset_key = false) {
@@ -337,7 +337,7 @@ static function fetchAll($query = null, $key = null, $unset_key = false) {
 		}
 	}
 	if (is_object(self::$res)) {
-		mysqli_free_result(self::$res);
+		self::free($q);
 	}
 	return $a;
 }

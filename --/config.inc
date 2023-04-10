@@ -41,6 +41,7 @@ $config['kkmserver'] = 'http://admin:@muzmart.com:5894';
 
 //$config['update-url'] = 'http://ruvix.ru';
 $config['update-url'] = 'https://muzmart.com';
+//$config['update-url'] = 'http://muz2';
 
 // test
 
@@ -95,7 +96,7 @@ $config['ozon'] = [
 
 $config['wildberries'] = [
 	16838=>[
-		'name'=>'WILDBERRIES Маркет',
+		'name'=>'WILDBERRIES KAIROS MSK',
 		'token'=>'96e3a4a04e3d80791a421e4b45264d93a96a20df0f9417ab04c80caaeb0f8b6c',
 		'storeId'=>6049,
 //		'storeId'=>61062,
@@ -105,11 +106,27 @@ $config['wildberries'] = [
 		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjYwMTZhYzZlLTAxMjUtNGM1Ny04Mzc5LTc4NzNjYmQ1MzlkOCJ9.sPhZEtkthtHykKnEJD3CSsa7Icqi_eJIII1u1cVvDcU',
 	],
 
+	19801=>[
+		'name'=>'WILDBERRIES KAIROS TMN',
+		'token'=>'96e3a4a04e3d80791a421e4b45264d93a96a20df0f9417ab04c80caaeb0f8b6c',
+		'storeId'=>167133,
+		'user'=>19801,
+		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjYwMTZhYzZlLTAxMjUtNGM1Ny04Mzc5LTc4NzNjYmQ1MzlkOCJ9.sPhZEtkthtHykKnEJD3CSsa7Icqi_eJIII1u1cVvDcU',
+	],
+
 	19773=>[
-		'name'=>'WILDBERRIES Маркет RX',
+		'name'=>'WILDBERRIES RX MSK',
 		'token'=>'96e3a4a04e3d80791a421e4b45264d93a96a20df0f9417ab04c80caaeb0f8b6c',
 		'storeId'=>242899,
 		'user'=>19773,
+		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImVmOGI1M2Y4LTljMTktNDkwZC04MThmLWExNDk4NmIzNDQ1NSJ9.keIIWmz7ibj-0t8dN4u1lqaOmMJaQIeIkTIYD41_rfA',
+	],
+
+	22024=>[
+		'name'=>'WILDBERRIES RX TMN',
+		'token'=>'96e3a4a04e3d80791a421e4b45264d93a96a20df0f9417ab04c80caaeb0f8b6c',
+		'storeId'=>726514,
+		'user'=>22024,
 		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImVmOGI1M2Y4LTljMTktNDkwZC04MThmLWExNDk4NmIzNDQ1NSJ9.keIIWmz7ibj-0t8dN4u1lqaOmMJaQIeIkTIYD41_rfA',
 	],
 ];

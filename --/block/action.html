@@ -50,7 +50,7 @@ if (count($actions)) {
 foreach ($actions as $i) {
 	if (isset($i['action'])) {
 		if (kv($i, 'here', 0)) {
-			echo '<a href="#" class="btn btn-sm btn-outline-secondary my-1 mx-1" disabled>'.$i['action']."</a>\n";
+			echo '<a href="#" class="btn btn-sm btn-secondary my-1 mx-1" disabled>'.$i['action']."</a>\n";
 		} else {
 			if (isset($i['/'])) {
 				echo '
