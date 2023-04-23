@@ -44,7 +44,7 @@ function exceptions_error_logger($severity, $message, $filename, $lineno, $fatal
 	if (\Flydom\Db::connected()) {
 
 		$type = in_array($severity, [8,32,128,512,1024,2048,8192]) ? \Flydom\LogType::WARNING : \Flydom\LogType::ERROR;
-		\Flydom\Log::add($type, $severity, $message);
+		\Flydom\Log::new($type, $severity, $message);
 	}
 }
 
@@ -79,5 +79,5 @@ function log_debug($message) {
 		$message = \Flydom\Cache::array_encode($message);
 	}
 
-	\Flydom\Log::add(\Flydom\LogType::DEBUG, 0, $message);
+	\Flydom\Log::new(\Flydom\LogType::DEBUG, 0, $message);
 }

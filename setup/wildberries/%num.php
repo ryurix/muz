@@ -95,6 +95,7 @@ $plan+= [
 
 	'send'=>array('type'=>'button', 'count'=>2, 1=>'Сохранить', 2=>'Выгрузить'),
 	'exclude'=>['name'=>'Исключения', 'type'=>'text', 'help'=>'список штрихкодов через пробел'],
+	'test'=>['name'=>'Тест', 'type'=>'line'],
 ];
 
 w('request', $plan);
@@ -127,6 +128,7 @@ if ($plan['']['valid']) {
 
 		'follow'=>$plan['follow']['value'],
 		'exclude'=>$plan['exclude']['value'],
+		'test'=>$plan['test']['value'],
 	);
 
 	$new = array(

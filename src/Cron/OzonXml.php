@@ -149,9 +149,9 @@ class OzonXml extends Task {
 				if (!kv($args, 'zero', 1) && !$price) {
 					continue;
 				}
-				if ($price == $prices[$i['i']]) {
-					continue;
-				}
+				//if ($price == $prices[$i['i']]) {
+				//	continue;
+				//}
 				$upd[$i['i']] = $price;
 			} else {
 				if ($args['form'] == 12) {
@@ -169,6 +169,7 @@ class OzonXml extends Task {
 
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+		$upd_count = count($upd);
 		$updated = 0;
 		while (count($upd)) {
 
@@ -182,7 +183,7 @@ class OzonXml extends Task {
 						'offer_id'=>'М'.$k,
 						'price'=>$v,
 						'old_price'=>0,
-						'min_price'=>strval(max(0, ceil($v * 0.9))),
+						'min_price'=>strval(max(0, ceil($v * 0.98))),
 					]; // new OzonPrice($k, $v);
 				}
 				$post = [
@@ -248,6 +249,6 @@ class OzonXml extends Task {
 			}
 		}
 
-		return $updated.'/'.$count;
+		return 'Обновлено '.$updated.' из '.$count.($upd_count > $updated ? ', не обновились: '.($upd_count - $updated) : '');
 	}
 }

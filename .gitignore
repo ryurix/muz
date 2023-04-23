@@ -4,7 +4,21 @@
 # IDEs and editors
 .svn
 .vscode
+
+#
 _files
 _old
+cache/*.php
 adminer.sql.gz
 config.php
+*.csv
+*.docx
+*].php
+*.xml
+
+
+
+# font cache
+*.cw.dat
+*.mtx.php
+*.cw127.php

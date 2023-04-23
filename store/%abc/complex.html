@@ -1,0 +1,60 @@
+<?
+
+$price = $row['price'];
+
+?>
+<form method="POST" class="auto">
+<table class="table table-hover">
+<thead>
+	<tr>
+		<th>Артикул</th>
+		<th>Наименование</th>
+		<th>Количество</th>
+		<th>Вычет</th>
+		<th>Наценка</th>
+		<th>&nbsp;</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$rows = db_fetch_all('SELECT c.*,s.brand,s.name,s.model FROM complex c LEFT JOIN store s ON c.store=s.i WHERE c.up='.$row['i']);
+
+w('input-int');
+
+$brand = \Flydom\Cache::load('brand');
+
+w('ft');
+foreach ($rows as $i) {
+	$name = trim(kv($brand, $i['brand'], '').' '.$i['model'].' '.$i['name']);
+	echo '
+<tr>
+	<td>'.input_int(['code'=>'store[]', 'class'=>'form-control-sm', 'value'=>$i['store']]).'</td>
+	<td>'.$name.'</td>
+	<td>'.input_int(['code'=>'amount[]', 'class'=>'form-control-sm', 'value'=>$i['amount']], 'value').'</td>
+	<td>'.input_int(['code'=>'minus[]', 'class'=>'form-control-sm', 'value'=>$i['minus']]).'</td>
+	<td>'.input_int(['code'=>'sale[]', 'class'=>'form-control-sm', 'value'=>$i['sale']]).'</td>
+	<td></td>
+</tr>';
+}
+
+for ($i=0; $i<2; $i++) {
+	echo '
+<tr>
+	<td>'.input_int(['code'=>'store[]', 'class'=>'form-control-sm']).'</td>
+	<td></td>
+	<td>'.input_int(['code'=>'amount[]', 'class'=>'form-control-sm']).'</td>
+	<td>'.input_int(['code'=>'minus[]', 'class'=>'form-control-sm']).'</td>
+	<td>'.input_int(['code'=>'sale[]', 'class'=>'form-control-sm']).'</td>
+	<td></td>
+</tr>';
+}
+
+?>
+</tbody>
+</table>
+<p>
+<? w('input-button'); echo input_button(['code'=>'send', 'count'=>1, 1=>'Сохранить']); ?>
+</p>
+<input type="hidden" name="send" value=1>
+</form>

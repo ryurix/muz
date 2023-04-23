@@ -23,9 +23,13 @@ class Wildberries extends Task {
 
 		if ($form == 1 || $form == 10) { // Обновление (обнуление) количества
 
-			$select = 'SELECT wb.*,store.price s_price FROM wb LEFT JOIN store ON wb.store=store.i WHERE wb.client='.$client;
+			$select = 'SELECT wb.*,store.price s_price,0 s_count FROM wb LEFT JOIN store ON wb.store=store.i WHERE wb.client='.$client;
 			if (kv($args, 'price', 0)) { $select.= ' AND store.price >= '.$args['price']; }
 			//$store = db_fetch_all($select, 'store');
+
+			if (strlen(kv($args, 'test', ''))) {
+				$select.= ' AND (wb.barcode="'.addcslashes($args['test'], '"\\').'" OR store.i="'.clean_09($args['test']).'")';
+			}
 
 			$store = [];
 			$q = db_query($select);
@@ -81,8 +85,6 @@ class Wildberries extends Task {
 				}
 
 				if ($form == 10) {
-					$i['s_count'] = 0;
-				} elseif (!isset($i['s_count'])) {
 					$i['s_count'] = 0;
 				}
 
@@ -142,6 +144,11 @@ class Wildberries extends Task {
 					$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 					curl_close($ch);
 
+					if (strlen(kv($args, 'test', ''))) {
+						w('log');
+						logs(401, $code, $result.' | '.$payload);
+					}
+
 					if (($code != 200 && $code != 204) && strlen($result)) {
 						break;
 					}
@@ -185,6 +192,10 @@ class Wildberries extends Task {
 		$select = 'SELECT wb.*,store.price s_price,store.prices s_prices FROM wb LEFT JOIN store ON wb.store=store.i WHERE wb.client='.$con['user'];
 		if (kv($args, 'price', 0)) { $select.= ' AND store.price >= '.$args['price']; }
 		//$store = db_fetch_all($select, 'store');
+
+		if (strlen(kv($args, 'test', ''))) {
+			$select.= ' AND (wb.barcode="'.addcslashes($args['test'], '"\\').'" OR store.i="'.clean_09($args['test']).'")';
+		}
 
 		$store = [];
 		$q = db_query($select);
@@ -272,6 +283,10 @@ class Wildberries extends Task {
 				$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 				curl_close($ch);
 
+				if (strlen(kv($args, 'test', ''))) {
+					w('log');
+					logs(403, $code, $result.' | '.$payload);
+				}
 
 				if ($code != 200) {
 					if (strpos($result, "все номенклатуры с ценами из списка уже загружены")) {

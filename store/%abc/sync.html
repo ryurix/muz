@@ -37,7 +37,7 @@ if (is_user('sync')) {
 		if (isset($_REQUEST['c'.$i['i']])) {
 			$c = clean_int($_REQUEST['c'.$i['i']]);
 			$rows[$k]['count'] = $c;
-			db_update('sync', ['count'=>$c], ['i'=>$i['i']]);
+			db_update('sync', ['count'=>$c, 'dt'=>now()], ['i'=>$i['i']]);
 		}
 	}
 }

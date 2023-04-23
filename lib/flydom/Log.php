@@ -8,7 +8,7 @@ class Log
 protected static $enabled = true;
 
 // Сохраняет лог в базу
-static function add($type, $code = 0, $info = null, $user = null) {
+static function new($type, $code = 0, $info = null, $user = null) {
 	if (self::$enabled && \Flydom\Db::connected()) {
 		\Flydom\Db::insert('log2', [
 			'dt=NOW()',
