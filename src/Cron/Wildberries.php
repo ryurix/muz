@@ -389,7 +389,7 @@ class Wildberries extends Task {
 				}
 
 				$count++;
-				db_insert('orst', [
+				\Tool\Complex::insert([
 					'dt'=>now(),
 					'last'=>now(),
 					'user'=>$user,

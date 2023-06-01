@@ -61,7 +61,7 @@ do {
 		}
 
 		$count++;
-		db_insert('orst', [
+		\Tool\Complex::insert([
 			'dt'=>now(),
 			'last'=>now(),
 			'user'=>$user,

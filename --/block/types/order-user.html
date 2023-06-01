@@ -22,7 +22,7 @@ if (isset($_REQUEST['append']) && isset($_SESSION['basket']) && is_array($_SESSI
 			if ($user['mark']) { $mark[] = $user['mark']; }
 			if ($user['mark2']) { $mark[] = $user['mark2']; }
 
-			db_insert('orst', array(
+			$ids = \Tool\Complex::insert([
 				'dt'=>now(),
 				'last'=>now(),
 				'user'=>$args,
@@ -48,9 +48,11 @@ if (isset($_REQUEST['append']) && isset($_SESSION['basket']) && is_array($_SESSI
 				'docs'=>'',
 				'files'=>'',
 				'mark'=>count($mark) ? ','.implode(',', $mark).',' : '',
-			));
-			$i = db_insert_id();
-			comment_type('o'.$i, 1);
+			]);
+
+			foreach ($ids as $i) {
+				comment_type('o'.$i, 1);
+			}
 		}
 //*/
 		$_SESSION['basket'] = array();

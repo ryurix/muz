@@ -74,7 +74,7 @@ foreach ($config['ozon'] as $user=>$ozon) {
             $exists = db_result('SELECT COUNT(*) FROM orst WHERE '.implode(' AND ', $where));
             if ($exists) { continue; }
 
-            db_insert('orst', [
+			\Tool\Complex::insert([
                 'dt'=>now(),
                 'last'=>now(),
                 'user'=>$user,

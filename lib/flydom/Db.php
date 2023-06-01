@@ -151,6 +151,8 @@ static function update($table, $data, $where) {
 		foreach ($where as $key => $value) {
 			if (is_int($key)) {
 				$a[] = $value;
+			} elseif (is_array($value)) {
+				$a[] = $key.' IN ('.self::implode($value).')';
 			} else {
 				$a[] = $key.'=?';
 				self::append_bind($value, $types, $keys, $values);
@@ -213,13 +215,10 @@ static function select($table, $data, $where = '', $more = '') {
 		foreach ($where as $key => $value) {
 			if (is_int($key)) {
 				$a[] = $value;
+			} elseif (is_array($value)) {
+				$a[] = $key.' IN ('.self::implode($value).')';
 			} else {
-				if (is_array($value)) {
-					$a[] = $key.' '.$value[0].' ?';
-					$value = $value[1];
-				} else {
-					$a[] = $key.'=?';
-				}
+				$a[] = $key.'=?';
 				self::append_bind($value, $types, $keys, $values);
 			}
 		}
@@ -403,6 +402,22 @@ static function count($res = null) {
 
 static function rows() {
 	return mysqli_affected_rows(self::$db);
+}
+
+protected static function implode($array) {
+	$s = '';
+	foreach($array as $i) {
+		if ($s !== '') {
+			$s.= ',';
+		}
+
+		if (ctype_digit($i.'')) {
+			$s.= $i;
+		} else {
+			$s.= '"'.addcslashes($i, '"').'"';
+		}
+	}
+	return $s;
 }
 
 } // class Db

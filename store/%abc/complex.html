@@ -18,7 +18,7 @@ $price = $row['price'];
 <tbody>
 <?
 
-$rows = db_fetch_all('SELECT c.*,s.brand,s.name,s.model FROM complex c LEFT JOIN store s ON c.store=s.i WHERE c.up='.$row['i']);
+$rows = db_fetch_all('SELECT c.*,s.brand,s.name,s.model,s.url FROM complex c LEFT JOIN store s ON c.store=s.i WHERE c.up='.$row['i']);
 
 w('input-int');
 
@@ -30,7 +30,7 @@ foreach ($rows as $i) {
 	echo '
 <tr>
 	<td>'.input_int(['code'=>'store[]', 'class'=>'form-control-sm', 'value'=>$i['store']]).'</td>
-	<td>'.$name.'</td>
+	<td><a href="/store/'.$i['url'].'">'.$name.'</a></td>
 	<td>'.input_int(['code'=>'amount[]', 'class'=>'form-control-sm', 'value'=>$i['amount']], 'value').'</td>
 	<td>'.input_int(['code'=>'minus[]', 'class'=>'form-control-sm', 'value'=>$i['minus']]).'</td>
 	<td>'.input_int(['code'=>'sale[]', 'class'=>'form-control-sm', 'value'=>$i['sale']]).'</td>

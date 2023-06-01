@@ -23,8 +23,13 @@ $plan['dt']['default'] = now();
 //$plan['speed']['default'] = 100;
 $plan['hide']['default'] = 0;
 $plan['vendor']['default'] = 1;
+$plan['filter']['up'] = $catalog;
 
 w('request', $plan);
+
+if (!$plan['']['valid'] && $plan['send']['value'] == 1) {
+	$plan = w('invalid', $plan);
+}
 
 if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	w('search');
@@ -103,12 +108,11 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 		'user'=>$_SESSION['i'],
 		'info'=>'store: '.$key,
 	));
-	alert('<a href="/store/'.$key.'">Товар</a> добавлен');
+	alert('<a href="/store/'.$url.'">Товар</a> добавлен');
 	cache_delete('sync-chunk');
 	cache_delete('sync-names');
 	//redirect('/catalog/'.$plan['up']['value']);
-	redirect('/store/'.$key);
-	//$config['plan'] = $plan;
+	redirect('/store/'.$url);
 } else {
 	$plan['filter']['up'] = $plan['up']['value'];
 	$config['plan'] = $plan;

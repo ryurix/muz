@@ -1,7 +1,5 @@
 <?
 
-alert($row['i']);
-
 if (isset($_REQUEST['send'])) {
 	$store = $_REQUEST['store'];
 	$amount = $_REQUEST['amount'];

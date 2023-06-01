@@ -20,5 +20,3 @@ function key_get($key) {
 	}
 	return $keys[$key];
 }
-
-?>

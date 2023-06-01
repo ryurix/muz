@@ -57,7 +57,7 @@ function input_filter2($r) {
 	$values = cache_load('filter3');
 
 	$filter = filters($r['up']);
-	$value = explode(',', $r['value']); // is_array($r['value']) ? $r['value'] : 
+	$value = explode(',', $r['value']); // is_array($r['value']) ? $r['value'] :
 	foreach ($filter as $f) {
 		$val = array_intersect($value, array_keys($values[$f]));
 		$val = count($val) ? array_shift($val) : 0;
@@ -71,5 +71,3 @@ function input_filter2($r) {
 	}
 	return $s;
 }
-
-?>

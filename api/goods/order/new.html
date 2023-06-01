@@ -25,7 +25,7 @@ foreach ($shipments as $shipment) {
 	}
 
 	foreach ($orders as $item) {
-		db_insert('orst', [
+		$ids = \Tool\Complex::insert([
 			'dt'=>now(),
 			'last'=>now(),
 			'user'=>$user,
@@ -62,7 +62,7 @@ foreach ($shipments as $shipment) {
 		]);
 
 		if (!isset($orderCode)) {
-			$orderCode = db_insert_id();
+			$orderCode = reset($ids);
 		}
 	}
 

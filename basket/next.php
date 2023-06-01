@@ -267,13 +267,12 @@ if ($plan['send']['value'] == 1 && $plan['']['valid']) {
 			if (isset($user['lat'])) { $data['lat'] = $user['lat']; }
 			if (isset($user['lon'])) { $data['lon'] = $user['lon']; }
 
-			db_insert('orst', $data);
-			$i = db_insert_id();
+			$ids = \Tool\Complex::insert($data);
 
-			if(! $transID) $transID = $i;
+			if(!$transID) $transID = reset($ids);
 
 			$table.= '<tr>'
-.'<td align=center>'.$i.'</td>'
+.'<td align=center>'.reset($ids).'</td>'
 .'<td>'.$v['name'].'</td>'
 .'<td align=center nowrap>'.number_format($v['price2'], 0, '.', ' ').'</td>'
 .'<td align=center nowrap>'.number_format($v['count'], 0, '.', ' ').'</td>'

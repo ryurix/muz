@@ -17,6 +17,7 @@ $preferences->setCharset('utf-8');
 
 // The @ operator in front of is_writable calls is to avoid PHP warnings
 // when using open_basedir
+/*
 $tmp = getenv('TMPDIR');
 if ($tmp && @is_writable($tmp)) {
     $preferences
@@ -27,6 +28,7 @@ if ($tmp && @is_writable($tmp)) {
         ->setTempDir(sys_get_temp_dir())
         ->setCacheType('disk');
 }
+*/
 
 // this should only be done when Swiftmailer won't use the native QP content encoder
 // see mime_deps.php

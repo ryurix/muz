@@ -246,7 +246,7 @@ static function str2url($str) {
 
 // Переводит строку в список тегов
 static function str2tag($str) {
-	$str = Clean::u8lower($str);
+	$str = U8::lower($str);
 	$str = preg_replace('~[^-a-zа-я0-9_. !]+~u', ' ', $str);
 	$str = preg_replace('~( ){2,}~u', ' ', $str);
 	$str = trim($str);

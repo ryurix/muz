@@ -92,25 +92,32 @@ class OzonXml extends Task {
 
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-		if (is_array($args['vendor']) && count($args['vendor'])) {
-			$vendor = ' AND vendor IN ('.implode(',', $args['vendor']).')';
-		} else {
-			$vendor = '';
-		}
-
 		$where = [
 			'hide<=0',
 			'i IN ('.implode(',', $ids).')',
 		];
 
-		if ($test) {
-			$where[] = 'store.i='.$test;
-		}
+		if ($args['form'] == 3 || $args['form'] == 13) {
+			$where[] = 'complex=1';
+			$select = 'SELECT * FROM store WHERE '.implode(' AND ', $where);
+		} else {
+			if (is_array($args['vendor']) && count($args['vendor'])) {
+				$vendor = ' AND vendor IN ('.implode(',', $args['vendor']).')';
+			} else {
+				$vendor = '';
+			}
 
-		$dt = now() - 30*24*60*60;
-		$select = 'SELECT store.*,ven.count FROM store LEFT JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE '.implode(' AND ', $where);
-		//if (kv($args, 'min', 0)) { $select.= ' AND '.$args['min'].'<=ven.count'; }
-		//if (kv($args, 'price', 0)) { $select.= ' AND '.$args['price'].'<=price'; }
+
+
+			if ($test) {
+				$where[] = 'store.i='.$test;
+			}
+
+			$dt = now() - 30*24*60*60;
+			$select = 'SELECT store.*,ven.count FROM store LEFT JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE '.implode(' AND ', $where);
+			//if (kv($args, 'min', 0)) { $select.= ' AND '.$args['min'].'<=ven.count'; }
+			//if (kv($args, 'price', 0)) { $select.= ' AND '.$args['price'].'<=price'; }
+		}
 
 
 		// print_pre($select); return;
@@ -154,7 +161,7 @@ class OzonXml extends Task {
 				//}
 				$upd[$i['i']] = $price;
 			} else {
-				if ($args['form'] == 12) {
+				if ($args['form'] == 19) {
 					$i['count'] = 0;
 				} else {
 					$i['count']-= kv($args, 'minus', 0);

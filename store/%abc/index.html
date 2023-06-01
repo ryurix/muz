@@ -39,7 +39,7 @@ if (strlen($row['files']) > 7) {
 if (kv($config, 'DEBUG', 0) || ($row['price'] >= 5000 && $row['count'])) {
 	$row['cheap'] = 1;
 	w('cheap');
-	cheap_dialog();	
+	cheap_dialog();
 }
 
 ?>
@@ -160,19 +160,24 @@ if (isset($row['cheap'])) {
 
 					<div class="product_pricecont">
 <?
-	$sklad = array();
-	$total = 0;
 
-	$q = db_query('SELECT vendor.typ,sync.count FROM sync,vendor WHERE sync.store='.$row['i'].' AND sync.vendor=vendor.i ORDER BY sync.count DESC'); //  AND sync.count>0 AND dt>='.(now()-14*24*60*60
-	while ($i = db_fetch($q)) {
-		if (isset($sklad[$i['typ']])) {
-			$sklad[$i['typ']]+= $i['count'];
-		} else {
-			$sklad[$i['typ']] = $i['count'];
+	$sklad = [];
+
+	if ($row['complex']) {
+		$sklad = \Tool\Complex::typeCount($row['i']);
+	} else {
+		$q = db_query('SELECT vendor.typ,sync.count FROM sync,vendor WHERE sync.store='.$row['i'].' AND sync.vendor=vendor.i ORDER BY sync.count DESC'); //  AND sync.count>0 AND dt>='.(now()-14*24*60*60
+		while ($i = db_fetch($q)) {
+			if (isset($sklad[$i['typ']])) {
+				$sklad[$i['typ']]+= $i['count'];
+			} else {
+				$sklad[$i['typ']] = $i['count'];
+			}
 		}
-		$total+= $i['count'];
+		db_close($q);
 	}
-	db_close($q);
+
+	$total = array_sum($sklad);
 ?>
 						<p class="product_article<? echo $total>0 ? '">Есть в наличии' : ' preorder">На заказ'; ?><button class="qa d-none d-md-block" type="button" data-toggle="modal" data-target="#modal-help" data-load="store-sklad">?</button></p>
 						<div class="product_pricecontin">
@@ -180,12 +185,11 @@ if (isset($row['cheap'])) {
 							<ul class="product_list">
 <?
 	$typ = w('list-vendor-type');
-	
+
 //	foreach ($sklad as $k=>$cnt) {
 	foreach ($typ as $k=>$vname) {
 		$cnt = kv($sklad, $k, 0);
 
-		$total+= $cnt;
 		$class = 'zero';
 		if ($cnt == 1) { $class = 'one'; }
 		elseif ($cnt == 2) { $class = 'more'; }
@@ -199,7 +203,7 @@ if (isset($row['cheap'])) {
 	}
 
 ?>
-<? /*					
+<? /*
 								<li>
 									<p class="product_stock more">Салон Москва:</p>
 									<p class="product_counts more">2 шт</p>
@@ -269,7 +273,7 @@ echo implode("\n", $signs);
 							<li><button type="button" data-prodbtn="1" class="product_tab current"><h2>Характеристики</h2></button></li>
 							<li><button type="button" data-prodbtn="2" class="product_tab"><h2>Видео</h2></button></li>
 							<li><button type="button" data-prodbtn="3" class="product_tab"><h2>Инструкции</h2></button></li>
-							
+
 <?
 
 $q = db_query('SELECT * FROM rate WHERE state=10 AND store='.$row['i']);
@@ -302,13 +306,13 @@ while ($i = db_fetch($q)) {
 */
 
 ?>
-						</ul>						
+						</ul>
 						<ul class="product_socials">
 							<li><div class="text">Поделиться:</div></li>
 							<li>
 								<script async src="//yastatic.net/es5-shims/0.0.2/es5-shims.min.js"></script>
 								<script async src="//yastatic.net/share2/share.js"></script>
-								<div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,telegram"></div>	
+								<div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,telegram"></div>
 							</li>
 
 							<!-- <li><a href="#" class="link"><img src="/design/img/share_vk.svg" alt="social icon"></a></li>
@@ -412,7 +416,7 @@ if (is_user('rate')) {
 	<?= $i['body'] ?>
 </div>
 <?
-	
+
 }
 
 if ($cntrating) {
@@ -528,7 +532,7 @@ $row = $config['row'];
 if ($row['price'] >= 5000 && $row['count']) {
 	$row['cheap'] = 1;
 	w('cheap');
-	cheap_dialog();	
+	cheap_dialog();
 }
 
 $brand = cache_load('brand');

@@ -67,10 +67,12 @@ $mark = db_get_row('SELECT mark,mark2 FROM user WHERE i='.$user);
 $mark = ','.trim($mark['mark'].','.$mark['mark2'], ',').',';
 
 w('ft');
+
+$ids = [];
 foreach ($items as $k=>$item) {
 	$row = kv($rows, $k, []);
 
-	db_insert('orst', [
+	$ids = array_merge($ids, \Tool\Complex::insert([
 		'dt'=>now(),
 		'last'=>now(),
 		'user'=>$user,
@@ -103,13 +105,12 @@ foreach ($items as $k=>$item) {
 		'kkm2'=>0,
 		'mpi'=>$order['id'],
 		'mpdt'=>ft_parse($delivery['shipments'][0]['shipmentDate']),
-	]);
+	]));
 }
-$id = db_insert_id();
 
-echo json_encode(
+echo \Flydom\Cache::json_encode(
 	['order'=>[
 		'accepted'=>true,
-		'id'=>$id,
+		'id'=>reset($ids),
 	]]
-);
+, 0);
