@@ -9,7 +9,7 @@
 _files
 _old
 cache/*.php
-adminer.sql.gz
+*adminer.sql.gz
 config.php
 *.csv
 *.docx
