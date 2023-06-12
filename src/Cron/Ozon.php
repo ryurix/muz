@@ -30,106 +30,6 @@ class Ozon extends Task {
 
 		return 'Создано '.self::create().', удалено '.self::cancel().' заказов.';
 
-		/*
-		w('ft');
-		w('clean');
-
-		$count = 0;
-		$limit = 10;
-
-		global $config;
-		foreach ($config['ozon'] as $user=>$ozon) {
-
-			$result = [];
-			$offset = 0;
-
-			do {
-				$new = self::ozon_query($ozon, '/v3/posting/fbs/unfulfilled/list', [
-					'dir'=>'asc',
-					'filter'=>[
-						'cutoff_from'=>date('c', now() - 3*24*60*60),
-						'cutoff_from'=>date('c', now()),
-						'status'=>'awaiting_packaging'
-					],
-					'limit'=>$limit,
-					'offset'=>$offset,
-				]);
-
-				$offset+= $limit;
-
-				if (!isset($new['result'])) {
-					w('log');
-					logs(355, $user, json_encode($new));
-					break;
-				}
-
-				$found = count($new['result']['postings']);
-				$result = array_merge($result, $new['result']['postings']);
-			} while ($found == $limit);
-
-			$mark = db_get_row('SELECT mark,mark2 FROM user WHERE i='.$user);
-			$mark = $mark ? ','.trim($mark['mark'].','.$mark['mark2'], ',').',' : '';
-
-			foreach ($result as $order) {
-
-				foreach ($order['products'] as $item) {
-					$store = clean_09($item['offer_id']);
-
-					$where = [
-						'mpi="'.addslashes($order['posting_number']).'"',
-						'user='.$user,
-					];
-					if ($store) {
-						$where[] = 'store='.$store;
-					}
-
-					$exists = db_result('SELECT COUNT(*) FROM orst WHERE '.implode(' AND ', $where));
-					if ($exists) { continue; }
-
-					\Tool\Complex::insert([
-						'dt'=>now(),
-						'last'=>now(),
-						'user'=>$user,
-						'staff'=>null,
-						'state'=>1,
-						'cire'=>34,
-						'city'=>'', // Адрес?
-						'lat'=>null,
-						'lon'=>null,
-						'adres'=>'',
-						'dost'=>'self',
-						'vendor'=>0,
-						'store'=>$store,
-						'name'=>$item['name'],
-						'price'=>$item['price'],
-						'count'=>$item['quantity'],
-						'money0'=>0,
-						'pay'=>0,
-						'money'=>0,
-						'pay2'=>0,
-						'money2'=>0,
-						'bill'=>null,
-						'sale'=>null,
-						'info'=>'', // Примечание?
-						'note'=>count($order['products']) > 1 ? 'парный заказ' : '',
-						'docs'=>null,
-						'files'=>null,
-						'mark'=>$mark,
-						'kkm'=>0,
-						'kkm2'=>0,
-						'mpi'=>$order['posting_number'],
-						'mpdt'=>ft_parse($order['shipment_date'], true),
-						'sku'=>clean_int($item['sku']),
-					]);
-
-					$count++;
-				}
-			}
-		}
-
-		return 'Создано '.$count.'.';
-		*/
-
 	}
 
 	public static function create() {
@@ -157,41 +57,24 @@ class Ozon extends Task {
 				$mark = db_get_row('SELECT mark,mark2 FROM user WHERE i='.$order['user']);
 				$mark = $mark ? ','.trim($mark['mark'].','.$mark['mark2'], ',').',' : '';
 
-				\Tool\Complex::insert([
-					'dt'=>now(),
-					'last'=>now(),
+				(new \Model\Order([
 					'user'=>$order['user'],
 					'staff'=>null,
-					'state'=>1,
 					'cire'=>34,
 					'city'=>'', // Адрес?
-					'lat'=>null,
-					'lon'=>null,
 					'adres'=>'',
 					'dost'=>'self',
-					'vendor'=>0,
 					'store'=>$store,
 					'name'=>$item['name'],
 					'price'=>$item['price'],
 					'count'=>$item['quantity'],
-					'money0'=>0,
-					'pay'=>0,
-					'money'=>0,
-					'pay2'=>0,
-					'money2'=>0,
-					'bill'=>null,
-					'sale'=>null,
 					'info'=>'', // Примечание?
 					'note'=>count($order['products']) > 1 ? 'парный заказ' : '',
-					'docs'=>null,
-					'files'=>null,
 					'mark'=>$mark,
-					'kkm'=>0,
-					'kkm2'=>0,
 					'mpi'=>$order['posting_number'],
 					'mpdt'=>ft_parse($order['shipment_date'], true),
 					'sku'=>clean_int($item['sku']),
-				]);
+				]))->create();
 
 				$count++;
 			}
@@ -285,6 +168,55 @@ class Ozon extends Task {
 		}
 
 		return $data;
+
+	}
+
+	public static function pack($order) {
+		global $config;
+
+		if (!isset($config['ozon']) || !isset($config['ozon'][$order->getUser()])) {
+			return;
+		}
+
+		$ozon = $config['ozon'][$order->getUser()];
+
+		// Ищем другие заказы того же номера в другом статусе
+		$all = db_fetch_all(db_select('i,mpi,count,sku,state', 'orst', [
+			'mpi'=>$order->getMpi(),
+		]), 'i');
+
+		// Если нашлись -- ждём когда все заказы будут в одинаковом статусе
+		foreach ($all as $i) {
+			if ($i['state'] !== $order->getState()) {
+				return;
+			}
+		}
+
+		$items = [];
+		foreach ($all as $i) {
+			$items[]= [
+	//			'exemplar_info'=>[
+	//				'is_gtd_absent'=>true,
+	//				'mandatory_mark'=>'',
+	//			],
+				'product_id'=>$i['sku'],
+				'quantity'=>$i['count'],
+			];
+		}
+		$post = self::ozon_query($ozon, '/v4/posting/fbs/ship', [
+			'packages'=>[[
+				'products'=>$items,
+			]],
+			'posting_number'=>$order->getMpi(),
+			'with'=>[
+				'additional_data'=>false,
+			]
+		]);
+
+		if (!isset($post['result'])) {
+			w('log');
+			logs(375, $order->getUser(), json_encode($post));
+		}
 
 	}
 }

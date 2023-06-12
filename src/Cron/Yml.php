@@ -102,6 +102,7 @@ class Yml extends Task {
 
 		$q = db_query($select);
 
+		$reserve = \Tool\Reserve::get();
 		$brands = cache_load('brand');
 		$count = 0;
 		while ($i = db_fetch($q)) {
@@ -125,7 +126,7 @@ class Yml extends Task {
 
 			$count++;
 			$brand = htmlspecialchars($brands[$i['brand']]);
-			$i['count'] = $i['count'] - kv($data, 'minus', 0);
+			$i['count'] = max(0, $i['count'] - kv($data, 'minus', 0) - kv($reserve, $i['i'], 0));
 			$available = $i['count'] ? 'true' : 'false';
 			if (strlen($i['model']) && strlen($brand)) {
 				$name = $brand.' '.$i['model'].' '.$i['name'];

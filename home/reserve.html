@@ -1,0 +1,29 @@
+<? w('table') ?>
+<table class="table table-bordered table-striped table-sm">
+<thead>
+<tr>
+<td>Заказ</td>
+<td>Товар</td>
+<td class="text-right">Количество</td>
+<td>Дата</td>
+</tr>
+</thead>
+<tbody>
+<?
+
+w('ft');
+
+$rows = \Flydom\Db::fetchAll('SELECT * FROM reserve ORDER BY dt DESC');
+foreach ($rows as $i) {
+	echo '
+<tr>
+	<td><a href="/order/'.$i['orst'].'">'.$i['orst'].'</a></td>
+	<td><a href="/store/'.$i['store'].'">'.$i['store'].'</a></td>
+	<td class="text-right">'.$i['cnt'].'</td>
+	<td>'.ft($i['dt'], 1).'</td>
+</tr>';
+}
+
+?>
+</tbody>
+</table>

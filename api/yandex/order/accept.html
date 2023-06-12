@@ -72,40 +72,24 @@ $ids = [];
 foreach ($items as $k=>$item) {
 	$row = kv($rows, $k, []);
 
-	$ids = array_merge($ids, \Tool\Complex::insert([
-		'dt'=>now(),
-		'last'=>now(),
+	$ids = array_merge($ids, (new \Model\Order([
 		'user'=>$user,
 		'staff'=>null,
 		'state'=>0,
 		'cire'=>34,
 		'city'=>$delivery['region']['name'],
-		'lat'=>null,
-		'lon'=>null,
 		'adres'=>'',
 		'dost'=>'self',
-		'vendor'=>0,
 		'store'=>$k,
 		'name'=>$item['offerName'],
 		'price'=>$item['price'],
 		'count'=>$item['count'],
-		'money0'=>0,
-		'pay'=>0,
-		'money'=>0,
-		'pay2'=>0,
-		'money2'=>0,
-		'bill'=>null,
-		'sale'=>null,
 		'info'=>kv($order, 'notes', ''),
 		'note'=>count($items) > 1 ? 'парный заказ' : '',
-		'docs'=>null,
-		'files'=>null,
 		'mark'=>$mark,
-		'kkm'=>0,
-		'kkm2'=>0,
 		'mpi'=>$order['id'],
 		'mpdt'=>ft_parse($delivery['shipments'][0]['shipmentDate']),
-	]));
+	]))->create());
 }
 
 echo \Flydom\Cache::json_encode(

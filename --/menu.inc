@@ -185,6 +185,8 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'%num'=>[],
 ]],
 
+'reserve'=>['name'=>'Резервы', 'role'=>'order'],
+
 'sales'=>['name'=>'Популярные товары', '/'=>[
 	'list'=>['name'=>'Скидки', 'role'=>'sale'],
 	'new'=>['name'=>'Новая скидка', 'role'=>'sale'],

@@ -22,12 +22,9 @@ if (isset($_REQUEST['append']) && isset($_SESSION['basket']) && is_array($_SESSI
 			if ($user['mark']) { $mark[] = $user['mark']; }
 			if ($user['mark2']) { $mark[] = $user['mark2']; }
 
-			$ids = \Tool\Complex::insert([
-				'dt'=>now(),
-				'last'=>now(),
+			$ids = (new \Model\Order([
 				'user'=>$args,
 				'staff'=>$_SESSION['i'],
-				'state'=>1,
 				'cire'=>$user['cire'],
 				'city'=>$user['city'],
 				'lat'=>$user['lat'],
@@ -38,17 +35,8 @@ if (isset($_REQUEST['append']) && isset($_SESSION['basket']) && is_array($_SESSI
 				'name'=>(isset($brand[$store[$k]['brand']]) ? $brand[$store[$k]['brand']].' ' : '').(strlen($store[$k]['model']) ? $store[$k]['model'].' ' : '').$store[$k]['name'],
 				'price'=>$store[$k]['price'],
 				'count'=>$v['c'],
-				'money'=>0,
-				'pay'=>0,
-				'money2'=>0,
-				'pay2'=>0,
-				'bill'=>0,
-				'sale'=>0,
-				'info'=>'',
-				'docs'=>'',
-				'files'=>'',
 				'mark'=>count($mark) ? ','.implode(',', $mark).',' : '',
-			]);
+			]))->create();
 
 			foreach ($ids as $i) {
 				comment_type('o'.$i, 1);

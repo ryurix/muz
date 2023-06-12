@@ -69,7 +69,9 @@ class Wildberries extends Task {
 			$rows = [];
 			$updates = [];
 
-			foreach ($store as $i) {
+			$reserve = \Tool\Reserve::get(array_keys($store));
+
+			foreach ($store as $k=>$i) {
 				if (empty($i['barcode'])) {
 					continue;
 				}
@@ -82,6 +84,10 @@ class Wildberries extends Task {
 
 				if (is_null($i['s_price'])) {
 					$i['s_count'] = 0;
+				}
+
+				if (isset($reserve[$k])) {
+					$i['s_count'] = max(0, $i['s_count'] - $reserve[$k]);
 				}
 
 				if ($form == 10) {
@@ -389,7 +395,7 @@ class Wildberries extends Task {
 				}
 
 				$count++;
-				\Tool\Complex::insert([
+				(new \Model\Order([
 					'dt'=>now(),
 					'last'=>now(),
 					'user'=>$user,
@@ -397,33 +403,19 @@ class Wildberries extends Task {
 					'state'=>1,
 					'cire'=>34,
 					'city'=>'', // Адрес?
-					'lat'=>null,
-					'lon'=>null,
 					'adres'=>'',
 					'dost'=>'self',
-					'vendor'=>0,
 					'store'=>$order['store'],
 					'name'=>$order['name'],
 					'price'=>$order['price'] / 100,
 					'count'=>1,
-					'money0'=>0,
-					'pay'=>0,
-					'money'=>0,
-					'pay2'=>0,
-					'money2'=>0,
-					'bill'=>null,
-					'sale'=>null,
 					'info'=>'', // Примечание?
 					'note'=>'',
-					'docs'=>null,
-					'files'=>null,
 					'mark'=>$mark,
-					'kkm'=>0,
-					'kkm2'=>0,
 					'mpi'=>$order['id'],
 					'mpdt'=>$mpdt + 48*60*60,
 					'sku'=>$order['rid'],
-				]);
+				]))->create();
 			}
 
 			$page++;
@@ -482,17 +474,9 @@ class Wildberries extends Task {
 
 				foreach ($found as $orst) {
 
-					db_update('orst', ['state'=>35], ['i'=>$orst['i']]);
-					$data = array(
-						'orst'=>$orst['i'],
-						'old'=>$orst['state'],
-						'new'=>35,
-						'vendor'=>$orst['vendor'],
-						'store'=>$orst['store'],
-						'count'=>$orst['count'],
-						'name'=>'товара ('.$orst['name'].')',
-					);
-					w('order-update-state', $data);
+					$order = new \Model\Order($orst);
+					$order->setState(35);
+					$order->update();
 
 					$count++;
 				}

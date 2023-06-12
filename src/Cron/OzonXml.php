@@ -107,8 +107,6 @@ class OzonXml extends Task {
 				$vendor = '';
 			}
 
-
-
 			if ($test) {
 				$where[] = 'store.i='.$test;
 			}
@@ -125,11 +123,17 @@ class OzonXml extends Task {
 		$upd = [];
 
 		$count = 0;
-		$q = db_query($select);
+
 
 		$min = max(0, kv($args, 'min', 0));
 
-		while ($i = db_fetch($q)) {
+		$rows = \Flydom\Db::fetchAll($select, 'i');
+
+		$reserve = \Tool\Reserve::get(array_keys($rows));
+
+		//$q = db_query($select);
+		//while ($i = db_fetch($q)) {
+		foreach ($rows as $i) {
 
 			$count++;
 
@@ -166,6 +170,8 @@ class OzonXml extends Task {
 				} else {
 					$i['count']-= kv($args, 'minus', 0);
 				}
+
+				$i['count']-= kv($reserve, $i['i'], 0);
 
 				if (!kv($args, 'zero', 1) && !$i['count']) {
 					continue;

@@ -89,7 +89,7 @@ static function reload($key, $default = NULL, $type = 'php') {
 }
 
 static function load($key, $default = NULL, $type = 'php') {
-	if ( isset(self::$cache[$key])) {
+	if (isset(self::$cache[$key])) {
 		return self::$cache[$key];
 	}
 

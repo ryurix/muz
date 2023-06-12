@@ -61,16 +61,12 @@ do {
 		}
 
 		$count++;
-		\Tool\Complex::insert([
-			'dt'=>now(),
-			'last'=>now(),
+
+		(new \Model\Order([
 			'user'=>$user,
 			'staff'=>null,
-			'state'=>1,
 			'cire'=>34,
 			'city'=>'', // Адрес?
-			'lat'=>null,
-			'lon'=>null,
 			'adres'=>'',
 			'dost'=>'self',
 			'vendor'=>0,
@@ -78,24 +74,13 @@ do {
 			'name'=>$order['name'],
 			'price'=>$order['totalPrice'] / 100,
 			'count'=>1,
-			'money0'=>0,
-			'pay'=>0,
-			'money'=>0,
-			'pay2'=>0,
-			'money2'=>0,
-			'bill'=>null,
-			'sale'=>null,
 			'info'=>'', // Примечание?
 			'note'=>'',
-			'docs'=>null,
-			'files'=>null,
 			'mark'=>$mark,
-			'kkm'=>0,
-			'kkm2'=>0,
 			'mpi'=>$order['orderId'],
 			'mpdt'=>$mpdt + 48*60*60,
 			'sku'=>$order['rid'],
-		]);
+		]))->create();
 	}
 
 	$page++;

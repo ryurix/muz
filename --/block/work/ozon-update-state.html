@@ -76,17 +76,3 @@ if ($args['old'] == 1 && $args['new'] < 35) {
 		logs(375, $user, json_encode($post));
 	}
 }
-
-/*
-if ($args['old'] < 35 && $args['new'] == 35) {
-	$post = ozon_query($ozon, '/v2/posting/fbs/cancel', [
-		'cancel_reason_id'=>352,
-		'posting_number'=>$orst['mpi'],
-	]);
-
-	if (!isset($post['result']) || !$post['result']) {
-		w('log');
-		logs(385, $user, json_encode($post));
-	}
-}
-*/

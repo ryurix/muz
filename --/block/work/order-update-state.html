@@ -9,7 +9,7 @@ $store = $args['store'];
 $count = $args['count'];
 $name = kv($args, 'name', 'товара');
 
-if ($old == 1 && $new > 1 && $new <= 30) {
+if ($old == 1 && $new > 1 && $new <= 30) { // Заказ принят в работу
 	$sklad = kv($vendors, $vendor);
 	$cnt = db_result('SELECT count FROM sync WHERE vendor='.$vendor.' AND store='.$store);
 	$text = $sklad.' '.$cnt.' - '.$count.' = '.($cnt - $count);
@@ -24,7 +24,7 @@ if ($old == 1 && $new > 1 && $new <= 30) {
 	logs(36, $orst, $text);
 }
 
-if ($old > 1 && $old < 35 && $new == 1) {
+if ($old > 1 && $old < 35 && $new == 1) { // Возвращение заказа в начальный статус
 	$sklad = kv($vendors, $vendor);
 	$cnt = db_result('SELECT count FROM sync WHERE vendor='.$vendor.' AND store='.$store);
 	$text = $sklad.' '.$cnt.' + '.$count.' = '.($cnt + $count);
@@ -64,7 +64,7 @@ if ($old > 1 && $old != 35 && $old != 30 && $new == 35) { // Отмена зак
 	db_close($q);
 }
 
-if ($old < $new) {
+if ($old < $new) { // обработка заказа маркетплейсами
 	if (isset($args['user']) && isset($args['mpi']) && strlen($args['mpi'])) {
 		$dummy = $args;
 		w('ozon-update-state', $dummy);

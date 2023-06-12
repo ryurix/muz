@@ -74,41 +74,23 @@ foreach ($config['ozon'] as $user=>$ozon) {
             $exists = db_result('SELECT COUNT(*) FROM orst WHERE '.implode(' AND ', $where));
             if ($exists) { continue; }
 
-			\Tool\Complex::insert([
-                'dt'=>now(),
-                'last'=>now(),
+			(new \Model\Order([
                 'user'=>$user,
-                'staff'=>null,
-                'state'=>1,
                 'cire'=>34,
                 'city'=>'', // Адрес?
-                'lat'=>null,
-                'lon'=>null,
                 'adres'=>'',
                 'dost'=>'self',
-                'vendor'=>0,
                 'store'=>$store,
                 'name'=>$item['name'],
                 'price'=>$item['price'],
                 'count'=>$item['quantity'],
-                'money0'=>0,
-                'pay'=>0,
-                'money'=>0,
-                'pay2'=>0,
-                'money2'=>0,
-                'bill'=>null,
-                'sale'=>null,
                 'info'=>'', // Примечание?
                 'note'=>count($order['products']) > 1 ? 'парный заказ' : '',
-                'docs'=>null,
-                'files'=>null,
                 'mark'=>$mark,
-                'kkm'=>0,
-                'kkm2'=>0,
                 'mpi'=>$order['posting_number'],
                 'mpdt'=>ft_parse($order['shipment_date'], true),
 				'sku'=>clean_int($item['sku']),
-            ]);
+			]))->create();
         }
     }
 

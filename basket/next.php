@@ -267,7 +267,7 @@ if ($plan['send']['value'] == 1 && $plan['']['valid']) {
 			if (isset($user['lat'])) { $data['lat'] = $user['lat']; }
 			if (isset($user['lon'])) { $data['lon'] = $user['lon']; }
 
-			$ids = \Tool\Complex::insert($data);
+			$ids = (new \Model\Order($data))->create();
 
 			if(!$transID) $transID = reset($ids);
 

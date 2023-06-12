@@ -1,53 +1,18 @@
 <?
 
-$select = 'SELECT orst.i i'
-.',orst.dt dt'
-.',orst.last last'
-.',orst.user user'
-.',orst.staff staff'
-.',orst.state state'
-.',orst.cire cire'
-.',orst.city city'
-.',orst.lat lat'
-.',orst.lon lon'
-.',orst.adres adres'
-.',orst.dost dost'
-.',orst.vendor vendor'
-.',orst.store store'
-.',orst.name name'
-.',orst.price price'
-.',orst.sale sale'
-.',orst.count count'
-.',orst.info info'
-.',orst.note note'
-.',orst.docs docs'
-.',orst.files files'
-.',orst.mark mark'
-.',orst.money0 money0'
-.',orst.kkm kkm'
-.',orst.pay pay'
-.',orst.money money'
-.',orst.kkm2 kkm2'
-.',orst.pay2 pay2'
-.',orst.money2 money2'
-.',orst.mpi mpi'
-.',orst.mpdt mpdt'
-.',user.name username'
-.' FROM orst LEFT JOIN user ON orst.user=user.i'
-.' WHERE orst.i="'.$config['args'][0].'"';
-if (is_user('ones')) {
-	$select.= ' AND orst.staff='.$_SESSION['i'];
+$order = new \Model\Order($config['args'][0]);
+
+if (is_user('ones') && $order->getStaff() != $_SESSION['i']) {
+	$order = new \Model\Order();
 }
-$q = db_query($select);
+
 $root = '/order';
 
-//alert($select);
-
-if ($row = db_fetch($q)) {
+if ($order->getId()) {
 	w('ft');
-	$config['name'] = 'Заказ №'.$row['i'].' от '.ft($row['dt'], 1).' &mdash; '.ft($row['last'], 1);
+	$config['name'] = 'Заказ №'.$order->getId().' от '.ft($order->getDt(), 1).' &mdash; '.ft($order->getLast(), 1);
 
-	$sync = db_fetch_all('SELECT * FROM sync WHERE store='.$row['store'].' ORDER BY count DESC', 'vendor');
+	$sync = db_fetch_all('SELECT * FROM sync WHERE store='.$order->getStore().' ORDER BY count DESC', 'vendor');
 	$config['sync'] = $sync;
 
 	$action = count($config['args']) > 1 ? $config['args'][1] : 'edit';
@@ -64,23 +29,24 @@ if ($row = db_fetch($q)) {
 		$plan = w('plan-order');
 		$plan['vendor']['values'] = $vendors;
 //		$row['sale'] = '<a href="/sale/'.$row['sale'].'">'.$row['sale'].'</a>';
-		if (!$row['staff']) { $row['staff'] = $_SESSION['i']; }
-		$row['mark'] = explode(',', trim($row['mark'], ','));
-		$row['mp'] = in_array(MARKETPLACE_MARK, $row['mark']);
-		$plan['']['default'] = $row;
+		if (!$order->getStaff()) { $order->setStaff($_SESSION['i']); }
+		$order->setMark(explode(',', trim($order->getMark(), ',')));
 
-		if ($row['state'] == 0) {
+		$data = $order->getData();
+		$plan['']['default'] = $data;
+
+		if ($order->getState() == 0) {
 			$plan['state']['readonly'] = 1;
 		}
 
-		$path = '/files/order/'.$row['i'].'/';
+		$path = '/files/order/'.$order->getId().'/';
 		$plan['']['path'] = $path;
 		$plan['docs']['path'] = $path;
 		$plan['files']['path'] = $path;
 
-		if ($row['state'] < 35) { // Отменённые заказы в любом случае можно редактировать
-			if ($row['kkm']) { $plan['pay']['readonly'] = 1; $plan['money']['readonly'] = 1; }
-			if ($row['kkm2']) { $plan['pay2']['readonly'] = 1; $plan['money2']['readonly'] = 1; }
+		if ($order->getState() < 35) { // Отменённые заказы в любом случае можно редактировать
+			if ($order->getKkm()) { $plan['pay']['readonly'] = 1; $plan['money']['readonly'] = 1; }
+			if ($order->getKkm2()) { $plan['pay2']['readonly'] = 1; $plan['money2']['readonly'] = 1; }
 		}
 		w('request', $plan);
 
@@ -99,12 +65,12 @@ if ($row = db_fetch($q)) {
 			}
 		}
 
-		if ($plan['last']['value'] < $row['last']) {
+		if ($plan['last']['value'] < $order->getLast()) {
 			alert('Заказ изменён другим пользователем! Сохранение невозможно!', 'danger');
 			$plan['']['valid'] = 0;
 		}
 
-		if ($row['vendor'] != $plan['vendor']['value'] && $plan['vendor']['value'] != 45) {
+		if ($order->getVendor() != $plan['vendor']['value'] && $plan['vendor']['value'] != 45) {
 			if ($plan['count']['value'] > kv($sync, $plan['vendor']['value'], ['count'=>0])['count']) {
 				alert('Недостаточно товаров у поставщика!', 'danger');
 				$plan['']['valid'] = 0;
@@ -128,90 +94,78 @@ if ($row = db_fetch($q)) {
 			}
 
 			if (!is_null($changes)) {
-				$type = $row['state'] == $plan['state']['value'] ? -1 : $plan['state']['value'];
-				comment_type('o'.$row['i'], $type, $changes);
-				$data = array(
-					'last'=>$row['state'] < 30 || $plan['state']['value'] < 30 ? now() : $row['last'],
-					'staff'=>$plan['staff']['value'],
-					'state'=>$plan['state']['value'],
-					'cire'=>$plan['cire']['value'],
-					'city'=>$plan['city']['value'],
-					'adres'=>$plan['adres']['value'],
-					'dost'=>$plan['dost']['value'],
-					'vendor'=>$plan['vendor']['value'],
-					'price'=>$plan['price']['value'],
-					'sale'=>$plan['sale']['value'],
-					'count'=>$plan['count']['value'],
-					'info'=>$plan['info']['value'],
-					'note'=>$plan['note']['value'],
-					'money0'=>$plan['money0']['value'],
-					'pay'=>$plan['pay']['value'],
-					'money'=>$plan['money']['value'],
-					'pay2'=>$plan['pay2']['value'],
-					'money2'=>$plan['money2']['value'],
-					'docs'=>$plan['docs']['value'],
-					'files'=>$plan['files']['value'],
-					'mark'=>count($plan['mark']['value']) ? ','.implode(',', $plan['mark']['value']).',' : '',
-					'mpi'=>$plan['mpi']['value'],
-					'mpdt'=>$plan['mpdt']['value'],
-				);
+				$type = $order->getState() == $plan['state']['value'] ? -1 : $plan['state']['value'];
+				comment_type('o'.$order->getId(), $type, $changes);
+
+				$order->setStaff($plan['staff']['value'])
+					->setState($plan['state']['value'])
+					->setCire($plan['cire']['value'])
+					->setCity($plan['city']['value'])
+					->setAdres($plan['adres']['value'])
+					->setDost($plan['dost']['value'])
+					->setVendor($plan['vendor']['value'])
+					->setPrice($plan['price']['value'])
+					->setSale($plan['sale']['value'])
+					->setCount($plan['count']['value'])
+					->setInfo($plan['info']['value'])
+					->setNote($plan['note']['value'])
+					->setMoney0($plan['money0']['value'])
+					->setPay($plan['pay']['value'])
+					->setMoney($plan['money']['value'])
+					->setPay2($plan['pay2']['value'])
+					->setMoney2($plan['money2']['value'])
+					->setDocs($plan['docs']['value'])
+					->setFiles($plan['files']['value'])
+					->setMark(count($plan['mark']['value']) ? ','.implode(',', $plan['mark']['value']).',' : '')
+					->setMpi($plan['mpi']['value'])
+					->setMpdt($plan['mpdt']['value']);
+
 				if (kv($plan['city'], 'lat', 0) && kv($plan['city'], 'lon', 0)) {
-					$data['lat'] = $plan['city']['lat'];
-					$data['lon'] = $plan['city']['lon'];
+					$order->setLat($plan['city']['lat'])
+						->setLon($plan['city']['lon']);
 				}
-				db_update('orst', $data, array('i'=>$row['i']));
+
+				$order->update();
+
 				$plan['last']['value'] = now();
-				alert('<a href="/order/'.$row['i'].'">Заказ</a> изменён: '.$changes);
+				alert('<a href="/order/'.$order->getId().'">Заказ</a> изменён: '.$changes);
 
-				if ((($plan['send']['value'] == 1 || $plan['send']['value'] == 4) && $row['state'] != $plan['state']['value']) || $plan['dost']['value'] != $row['dost']) {
+				if ((($plan['send']['value'] == 1 || $plan['send']['value'] == 4) && $order->getState() != $plan['state']['value']) || $plan['dost']['value'] != $order->getDost()) {
 					w('mail');
-					mail_order($row['user'], $row['i']);
+					mail_order($order->getUser(), $order->getId());
 				}
-
-				$dummy = [
-					'orst'=>$row['i'],
-					'old'=>$row['state'],
-					'new'=>$plan['state']['value'],
-					'vendor'=>$plan['vendor']['value'],
-					'store'=>$row['store'],
-					'count'=>$plan['count']['value'],
-					'name'=>$row['name'],
-					'user'=>$row['user'],
-					'mpi'=>$plan['mpi']['value'],
-				];
-				w('order-update-state', $dummy);
 
 				// Фискализация
 				$kkm = false;
-				if (!$row['kkm'] && $row['money'] != $plan['money']['value'] && $plan['money']['value'] && $plan['pay']['value'] == 3) { // Банковская карта (Терминал)
+				if (!$order->getKkm() && $order->getMoney() != $plan['money']['value'] && $plan['money']['value'] && $plan['pay']['value'] == 3) { // Банковская карта (Терминал)
 					$kkm = true;
 				}
 
-				if (!$row['kkm2'] && $row['money2'] != $plan['money2']['value'] && $plan['money2']['value'] && $plan['pay2']['value'] == 3) { // Банковская карта (Терминал)
+				if (!$order->getKkm2() && $order->getMoney2() != $plan['money2']['value'] && $plan['money2']['value'] && $plan['pay2']['value'] == 3) { // Банковская карта (Терминал)
 					$kkm = true;
 				}
 
 				if ($kkm && ($plan['money']['value'] + $plan['money2']['value']) < 200000) {
 					// Автоматическая фискализация на сумму меньше 200 000
-					$q = db_query('SELECT * FROM kkm WHERE state<10 AND usr='.$row['user']);
+					$q = db_query('SELECT * FROM kkm WHERE state<10 AND usr='.$order->getUser());
 					if ($old = db_fetch($q)) {
 						// Добавляем к чеку
 						db_update('kkm', array(
-							'orst'=>$old['orst'].$row['i'].'|',
+							'orst'=>$old['orst'].$order->getId().'|',
 							'dt'=>now(),
-						), array(
+						), [
 							'i='.$old['i'],
-						));
+						]);
 						alert('Добавлено в <a href="/kkm/'.$old['i'].'">фискальный чек</a>');
 					} else {
 						// Создаём новый чек
-						db_insert('kkm', array(
+						db_insert('kkm', [
 							'dt'=>now(),
 							'state'=>0,
-							'usr'=>$row['user'],
+							'usr'=>$order->getUser(),
 							'staff'=>$_SESSION['i'],
-							'orst'=>'|'.$row['i'].'|',
-						));
+							'orst'=>'|'.$order->getId().'|',
+						]);
 						alert('Создан <a href="/kkm">фискальный чек</a>');
 					}
 				}
@@ -221,32 +175,28 @@ if ($row = db_fetch($q)) {
 				redirect($root);
 			}
 		} elseif ($plan['']['valid'] && $plan['send']['value'] == 3) {
-			db_delete('orst', array(
-				'i'=>$row['i']
-			));
+			$id = $order->getId();
+			$order->delete();
 			alert('Заказ удален.');
 
 			w('log');
-			logs(39, $row['i']);
+			logs(39, $id);
 			redirect($root);
 
 			db_delete('bill', array(
-				'orst'=>$row['i'],
+				'orst'=>$id,
 				'state<10',
 			));
 		}
 	}
 
 	if ($action == 'link') {
-		$config['row'] = $row;
 		rebody('link');
 	}
 
-	$plan['name']['value'] = '<a href="/store/'.$row['store'].'">'.$row['name'].'</a>';
-	$name = trim($row['username']);
-	$plan['user']['value'] = '<a href="/user/'.$row['user'].'">'.(strlen($name) < 3 ? $row['user'].' '.$name : $name).'</a>';
-	$config['plan'] = $plan;
-	$config['row'] = $row;
+	$plan['name']['value'] = '<a href="/store/'.$order->getStore().'">'.$order->getName().'</a>';
+	$name = trim($order->getUserName());
+	$plan['user']['value'] = '<a href="/user/'.$order->getUser().'">'.(strlen($name) < 3 ? $order->getUser().' '.$name : $name).'</a>';
 } else {
 	redirect($root);
 }

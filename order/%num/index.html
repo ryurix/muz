@@ -1,10 +1,9 @@
 <?
 
-$plan = $config['plan'];
 if ($plan['count']['value'] && $plan['price']['value']) {
-	$config['plan']['count']['suffix'] = number_format($plan['count']['value'] * $plan['price']['value'], 0, '.', ' ').' <i class="fa fa-rub"></i>';
+	$plan['count']['suffix'] = number_format($plan['count']['value'] * $plan['price']['value'], 0, '.', ' ').' <i class="fa fa-rub"></i>';
 }
-w('form-order', $config['plan']);
+w('form-order', $plan);
 
 ?>
 <table class="table table-bordered table-hover table-sm">
@@ -21,7 +20,7 @@ w('form-order', $config['plan']);
 <tbody>
 <?
 
-$store = $config['plan']['store']['value'];
+$store = $plan['store']['value'];
 $vendor = cache_load('vendor');
 
 w('ft');

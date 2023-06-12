@@ -50,6 +50,10 @@ if (is_user('auto')) {
 	$sub[] = array('action'=>'Водитель', 'href'=>'/auto');
 }
 
+if (is_user('order')) {
+	$sub[] = array('action'=>'Резервы', 'href'=>'/reserve');
+}
+
 if (count($sub)) {
 	$back[] = array('action'=>$sub[0]['action'], 'href'=>$sub[0]['href'], '/'=>$sub);
 }
@@ -83,7 +87,7 @@ if (is_user('sale')) {
 }
 
 if (is_user('mark')) {
-	$sub[] = ['action'=>'Метки', 'href'=>'/setup/mark'];
+	$sub[] = ['action'=>'Метки', 'href'=>'/mark'];
 }
 
 if (is_user('sign')) {

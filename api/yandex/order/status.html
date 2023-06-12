@@ -48,80 +48,20 @@ if ($order['status'] == 'PROCESSING') {
 
 	foreach ($orst as $k=>$v) {
         db_update('orst', ['state'=>1], ['i'=>$k, 'state'=>0]);
-/*
-        $data = array(
-            'orst'=>$k,
-            'old'=>1,
-            'new'=>35,
-            'vendor'=>$v['vendor'],
-            'store'=>$v['store'],
-            'count'=>$v['count'],
-            'name'=>'товара ('.$v['name'].')',
-        );
-        w('order-update-state', $data);
-*/
-    }
-
-/*
-    w('ft');
-    foreach ($items as $k=>$item) {
-        $row = kv($rows, $k, []);
-
-        db_insert('orst', [
-            'dt'=>now(),
-            'last'=>now(),
-            'user'=>$user,
-            'staff'=>null,
-            'state'=>1,
-            'cire'=>34,
-            'city'=>$delivery['region']['name'],
-            'lat'=>null,
-            'lon'=>null,
-            'adres'=>'',
-            'dost'=>'self',
-            'vendor'=>0,
-            'store'=>$k,
-            'name'=>$item['offerName'],
-            'price'=>$item['price'],
-            'count'=>$item['count'],
-            'money0'=>0,
-            'pay'=>0,
-            'money'=>0,
-            'pay2'=>0,
-            'money2'=>0,
-            'bill'=>null,
-            'sale'=>null,
-            'info'=>kv($order, 'notes', ''),
-            'note'=>count($items) > 1 ? 'парный заказ' : '',
-            'docs'=>null,
-            'files'=>null,
-            'mark'=>',14,',
-            'kkm'=>0,
-            'kkm2'=>0,
-            'mpi'=>$order['id'],
-            'mpdt'=>ft_parse($delivery['shipments'][0]['shipmentDate']),
-        ]);
-    }
-*/
+	}
 }
 
 if ($order['status'] == 'CANCELLED') {
-    $q = db_query("SELECT i,state,vendor,store,count,name FROM orst WHERE mpi=$order_id");
-    $orst = db_fetch_all($q, 'i');
+    $q = db_query("SELECT * FROM orst WHERE mpi=$order_id");
+    $orst = db_fetch_all($q);
 
     w('log');
-    foreach ($orst as $k=>$v) {
+    foreach ($orst as $row) {
+
+		$order = new \Model\Order($row);
+		$order->setState(35);
+		$order->update();
+
         logs(235, $k);
-        db_update('orst', ['state'=>35], ['i'=>$k]);
-        $data = array(
-            'orst'=>$k,
-            'old'=>$v['state'],
-            'new'=>35,
-            'vendor'=>$v['vendor'],
-            'store'=>$v['store'],
-            'count'=>$v['count'],
-            'name'=>'товара ('.$v['name'].')',
-        );
-        w('order-update-state', $data);
     }
 }
