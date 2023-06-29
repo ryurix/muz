@@ -452,9 +452,15 @@ if ((is_user('link') || $filter_user)
 		}
 
 		if ($plan['cstate']['value'] && $plan['cstate']['value'] != $i['state']) {
-			db_update('orst', array('state'=>$plan['cstate']['value'], 'last'=>$plan['cstate']['value'] < 30 || $i['state'] < 30 ? now() : $i['last']), array('i'=>$i['i'], 'state>0'));
+			// db_update('orst', array('state'=>$plan['cstate']['value'], 'last'=>$plan['cstate']['value'] < 30 || $i['state'] < 30 ? now() : $i['last']), array('i'=>$i['i'], 'state>0'));
+
+			$order = new \Model\Order($i);
+			$order->setState($plan['cstate']['value']);
+			$order->update();
+
 			comment_type('o'.$i['i'], $plan['cstate']['value'], 'Связанное изменение статуса ('.kv($plan['cstate']['values'], $i['state']).')');
 
+			/*
 			$data = array(
 				'orst'=>$i['i'],
 				'old'=>$i['state'],
@@ -467,6 +473,7 @@ if ((is_user('link') || $filter_user)
 				'mpi'=>$i['mpi'],
 			);
 			w('order-update-state', $data);
+			*/
 
 			w('mail');
 			mail_order($i['user'], $i['i']);

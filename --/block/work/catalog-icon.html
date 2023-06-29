@@ -6,6 +6,8 @@ $name = $args['icon']['filename'];
 w('clean');
 $name = str2url($name);
 
+$back = '';
+
 if (strlen($file) > 0) {
 	$full = $config['root'].'files/catalog/'.$name;
 	if (!copy($file, $full)) {
@@ -31,5 +33,3 @@ if (strlen($file) > 0) {
 		}
 	}
 }
-
-?>

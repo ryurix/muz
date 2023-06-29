@@ -50,7 +50,7 @@ class Order {
 	{
 
 		if (is_array($id)) {
-			$row = $id + $this->default();
+			$row = array_intersect_key($id, $this->default());
 		} else {
 			$row = $id ? \Flydom\Db::fetchRow('SELECT * FROM orst WHERE i='.$id) : null;
 		}
@@ -142,7 +142,7 @@ class Order {
 	}
 
 	function create() {
-		$data = $this->row;
+		$data = $this->row + $this->default();
 		unset($data['i']);
 
 		if (!$data['dt']) { $data['dt'] = now(); }
@@ -185,7 +185,7 @@ class Order {
 		} else {
 			\Flydom\Db::insert('orst', $data);
 			$data['i'] = \Flydom\Db::insert_id();
-			$ids[] = $this->getId();
+			$ids[] = $data['i'];
 
 			\Tool\Reserve::create($data['i'], $this->getStore(), $this->getCount());
 		}
@@ -197,13 +197,13 @@ class Order {
 	}
 
 	function update() {
-		$data = $this->row;
-		unset($data['i']);
 
 		if ($this->row['state'] < 30 || $this->orig['state'] < 30) {
 			$this->row['last'] = now();
 		}
 
+		$data = $this->row;
+		unset($data['i']);
 		\Flydom\Db::update('orst', $data, ['i'=>$this->getId()]);
 
 		$new = $this->row['state'];
@@ -211,15 +211,16 @@ class Order {
 
 		if ($old <= 1 && $new > 1 && $new <= 30) {
 			$this->process();
-			\Tool\Reserve::delete($this->getId(), $this->getStore());
 		} else if ($old > 1 && $old < 35 && $new <= 1) {
 			$this->revert();
 			\Tool\Reserve::create($this->getId(), $this->getStore(), $this->getCount());
 		} else if ($old > 1 && $old != 35 && $old != 30 && $new == 35) {
 			$this->cancel();
-			\Tool\Reserve::delete($this->getId(), $this->getStore());
 		}
 
+		if ($old <= 1 && $new > 1) {
+			\Tool\Reserve::delete($this->getId(), $this->getStore());
+		}
 
 		if ($old <= 1 && $old < $new && $new < 35) { // обработка заказа маркетплейсами
 			\Cron\Ozon::pack($this);

@@ -3,6 +3,38 @@
 
 
 <li>
+	<a href="/catalog/" class="has-submenu">Автохимия</a>
+	<ul class="level_1">
+
+<li><a href="/catalog/">Автомобильные жидкости</a></li>
+<li><a href="/catalog/">Автошампуни</a></li>
+<li><a href="/catalog/">Антигели</a></li>
+<li><a href="/catalog/">Антикоррозийная обработка</a></li>
+<li><a href="/catalog/">Герметики</a></li>
+<li><a href="/catalog/">Жидкости стеклоомывателя зимние</a></li>
+<li><a href="/catalog/">Жидкости стеклоомывателя летние, антидождь</a></li>
+<li><a href="/catalog/">Клеи</a></li>
+<li><a href="/catalog/">Нанокерамика</a></li>
+<li><a href="/catalog/">Нейтрализаторы запахов</a></li>
+<li><a href="/catalog/">Очистители (двигатель)</a></li>
+<li><a href="/catalog/">Очистители (разное)</a></li>
+<li><a href="/catalog/">Очистители дисков</a></li>
+<li><a href="/catalog/">Очистители кузова</a></li>
+<li><a href="/catalog/">Очистители рук</a></li>
+<li><a href="/catalog/">Очистители салона</a></li>
+<li><a href="/catalog/">Очистители стёкол</a></li>
+<li><a href="/catalog/">Очистители топливных систем</a></li>
+<li><a href="/catalog/">Пасты для притирки клапанов</a></li>
+<li><a href="/catalog/">Полироли</a></li>
+<li><a href="/catalog/">Присадки</a></li>
+<li><a href="/catalog/">Промывки</a></li>
+<li><a href="/catalog/">Размораживатели</a></li>
+<li><a href="/catalog/">Разное</a></li>
+<li><a href="/catalog/">Смазки</a></li>
+	</ul>
+</li>
+
+<li>
 	<a href="/catalog/74-muzykalnye-instrumenty" class="has-submenu">Музыкальные инструменты</a>
 	<ul class="level_1">
 

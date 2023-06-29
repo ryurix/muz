@@ -7,7 +7,15 @@ function naklad_commit($naklad, $vendor, $type) {
 
 	while ($i = db_fetch($q)) {
 		if ($i['i']) {
-			db_update('sync', array('count=count'.$sign.$i['count'], 'dt'=>now()+60*60*24*365*5, 'price'=>0, 'opt'=>0), array('i'=>$i['i']));
+			$data = [
+				'count=count'.$sign.$i['count'],
+				'dt'=>now()+60*60*24*365*5
+			];
+			if ($type > 0) {
+				$data['price'] = 0;
+				$data['opt'] = 0;
+			}
+			db_update('sync', $data, ['i'=>$i['i']]);
 		} else {
 			if (isset($brand[$i['brand']]) && strlen($brand[$i['brand']])) {
 				$name = $brand[$i['brand']];
@@ -19,7 +27,7 @@ function naklad_commit($naklad, $vendor, $type) {
 			}
 			$name.= ' '.$i['name'];
 
-			db_insert('sync', array(
+			db_insert('sync', [
 				'code'=>$i['store'],
 				'name'=>$name,
 				'dt'=>now()+60*60*24*365*5,
@@ -28,7 +36,7 @@ function naklad_commit($naklad, $vendor, $type) {
 				'price'=>0,
 				'opt'=>0,
 				'count'=>$sign.$i['count'],
-			));
+			]);
 		}
 	}
 	db_close($q);
