@@ -12,7 +12,7 @@ if ($row = db_fetch($q)) {
 
 w('store-action', $row);
 
-if (is_user('sync')) {
+if (is_user('sync_count')) {
 	if (isset($_REQUEST['code'])) {
 		$code = clean_int($_REQUEST['code']);
 		if ($code > 0) {

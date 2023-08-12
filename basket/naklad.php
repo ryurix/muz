@@ -16,30 +16,37 @@ if ($plan['']['valid'] && $plan['send']['value']) {
 
 	w('basket');
 	$basket = basket_calc($_SESSION['basket'], '');
-	$type = $plan['send']['value'] == 1 ? 1 : -1;
 
-	db_insert('naklad', array(
-		'dt'=>now(),
-		'user'=>$_SESSION['i'],
-		'vendor'=>$plan['vendor']['value'],
-		'type'=>$type,
-		'info'=>$plan['info']['value'],
-	));
+	if (count($basket)) {
 
-	$naklad = db_insert_id();
+		$type = $plan['send']['value'] == 1 ? 1 : -1;
 
-	foreach ($basket as $v) {
-		db_insert('nakst', array(
-			'naklad'=>$naklad,
-			'store'=>$v['store'],
-			'count'=>$v['count'],
+		db_insert('naklad', array(
+			'dt'=>now(),
+			'user'=>$_SESSION['i'],
+			'vendor'=>$plan['vendor']['value'],
+			'type'=>$type,
+			'info'=>$plan['info']['value'],
 		));
-	}
-	w('naklad');
-	naklad_commit($naklad, $plan['vendor']['value'], $type);
-	$_SESSION['basket'] = array();
 
-	alert('<a href="/sklad/'.$naklad.'">Накладная</a> создана!');
+		$naklad = db_insert_id();
+
+		foreach ($basket as $v) {
+			db_insert('nakst', array(
+				'naklad'=>$naklad,
+				'store'=>$v['store'],
+				'count'=>$v['count'],
+			));
+		}
+		w('naklad');
+		naklad_commit($naklad, $plan['vendor']['value'], $type);
+		$_SESSION['basket'] = array();
+
+		alert('<a href="/sklad/'.$naklad.'">Накладная</a> создана!');
+
+	} else {
+		alert('Ошибка создания накладной: корзина пустая', 'danger');
+	}
 }
 
 $config['plan'] = $plan;

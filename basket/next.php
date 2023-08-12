@@ -295,7 +295,7 @@ if ($plan['send']['value'] == 1 && $plan['']['valid']) {
 			}
 			$products[] = $p;
 
-			logs(25, $i, $v['store'].' '.$v['name'].' '.$v['count'].'*'.$v['price2'].' '.array_encode($_REQUEST));
+			logs(25, $v['store'], $v['name'].' '.$v['count'].'*'.$v['price2'].' '.array_encode($_REQUEST));
 		}
 
 		$_SESSION['basket'] = array();

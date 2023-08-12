@@ -62,6 +62,6 @@ if ($order['status'] == 'CANCELLED') {
 		$order->setState(35);
 		$order->update();
 
-        logs(235, $k);
+        logs(235, $order->getId());
     }
 }

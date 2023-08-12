@@ -17,11 +17,6 @@ if (isset($first['order'])) {
 	$sub[] = ['action'=>'Заказы', 'href'=>'/order'];
 }
 
-if (isset($first['sync'])) {
-	$sub[] = ['action'=>'Синхронизация', 'href'=>'/sync'];
-	$sub[] = ['action'=>'Импорт xls', 'href'=>'/sync/import-xls'];
-}
-
 if (isset($first['prices'])) {
 	$sub[] = ['action'=>'Ценообразование', 'href'=>'/prices'];
 }
@@ -62,8 +57,9 @@ if (count($sub)) {
 
 $sub = [];
 
-if (is_user('sync')) {
+if (isset($first['sync'])) {
 	$sub[] = ['action'=>'Синхронизация', 'href'=>'/sync'];
+	$sub[] = ['action'=>'Импорт xls', 'href'=>'/sync/import-xls'];
 }
 
 if (is_user('vendor')) {

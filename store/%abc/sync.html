@@ -51,7 +51,7 @@ foreach ($rows as $i) {
 .'<td align=center>'.$i['price'].'</td>'
 .'<td align=center>'.$i['opt'].'</td>';
 
-	if (is_user('sync')) {
+	if (is_user('sync_count')) {
 		echo '
 <td><input type="text" class="inline-int auto" name="c'.$i['i'].'" value="'.$i['count'].'"></td>
 <td><a href="/store/'.$row['url'].'/sync?code='.$i['i'].'" class="btn btn-default btn-sm" onclick="return confirm(\'Удалить синхронизацию? Восстановление невозможно!\')">&times;</a></td>';

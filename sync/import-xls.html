@@ -1,5 +1,7 @@
 <?
 
+set_time_limit(0);
+
 w('u8');
 
 function clean_count($i, $ccs) {
@@ -93,7 +95,7 @@ if ($plan['']['valid'] && $send > 0) {
 					$ccode = u8sub($ccode, 0, 15);
 
 					$cname = trim($i[$v['cname']]);
-					$cprice = isset($i[$v['cprice']]) ? $i[$v['cprice']] : 0;
+					$cprice = str_replace([' ', ','], ['', '.'], isset($i[$v['cprice']]) ? $i[$v['cprice']] : 0);
 					if ($v['cname'] != $v['ctype'] && isset($i[$v['ctype']])) {
 						$cname = trim($i[$v['ctype']]).' '.$cname;
 					}

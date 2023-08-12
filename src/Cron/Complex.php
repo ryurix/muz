@@ -8,7 +8,7 @@ class Complex extends Task {
 		$data = [];
 		$store = [];
 
-		$q = \Flydom\Db::query('SELECT * FROM complex');
+		$q = \Flydom\Db::query('SELECT * FROM complex'); // WHERE up=176418
 		while ($i = \Flydom\Db::fetch($q)) {
 			if (isset($data[$i['up']])) {
 				$data[$i['up']][] = $i;
@@ -27,9 +27,9 @@ class Complex extends Task {
 		.' WHERE vendor.typ<>21 AND sync.store IN ('.implode(',', array_keys($store)).') GROUP BY sync.store,vendor.typ');
 		foreach ($sync as $i) {
 			if (isset($store[$i['store']]['sync'])) {
-				$store[$i['store']]['sync'] = [$i['typ'] => $i['cnt']];
-			} else {
 				$store[$i['store']]['sync'][$i['typ']] = $i['cnt'];
+			} else {
+				$store[$i['store']]['sync'] = [$i['typ'] => $i['cnt']];
 			}
 		}
 		unset($sync);

@@ -5,7 +5,7 @@
 			<h3 class="basket_title">Заказы</h3>
 <?
 
-foreach (['order', 'prices', 'sklad', 'kkm', 'doc', 'bill', 'money', 'link', 'ones', 'auto'] as $i) {
+foreach (['order', 'prices', 'sklad', 'kkm', 'doc', 'bill', 'money', 'link', 'ones', 'auto', 'order_code'] as $i) {
 	echo input_checkbox($plan[$i]);
 }
 
@@ -18,7 +18,7 @@ foreach (['order', 'prices', 'sklad', 'kkm', 'doc', 'bill', 'money', 'link', 'on
 			<h3 class="basket_title">Каталог</h3>
 <?
 
-foreach (['catalog', 'sync', 'vendor', 'filter', 'subcat', 'brand', 'sale', 'mark', 'sign', 'rate'] as $i) {
+foreach (['catalog', 'sync', 'sync_count', 'vendor', 'filter', 'subcat', 'brand', 'sale', 'mark', 'sign', 'rate'] as $i) {
 	echo input_checkbox($plan[$i]);
 }
 

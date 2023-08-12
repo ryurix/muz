@@ -1,5 +1,7 @@
 <?
 
+$show_code = is_user('order_code');
+
 $filter_user = $args;
 $filter_store = $exts;
 
@@ -238,13 +240,13 @@ if (is_user('ones')) {
 
 if ($plan['group']['value']) {
 	$select.= ',COUNT(orst.i) name'
-.',SUM(orst.count) count,SUM(orst.count*orst.price) total,SUM(orst.money+orst.money2) money';
+.',"" code,SUM(orst.count) count,SUM(orst.count*orst.price) total,SUM(orst.money+orst.money2) mon';
 } else {
 	$select.= ',orst.name name'
-.',orst.count count,orst.count*orst.price total,orst.money+orst.money2 money';
+.',sync.code,orst.count count,orst.count*orst.price total,orst.money+orst.money2 mon';
 }
 
-$select.= ' FROM orst LEFT JOIN user ON orst.user=user.i LEFT JOIN store s ON orst.store=s.i LEFT JOIN cire ON orst.cire=cire.i LEFT JOIN user staff ON orst.staff=staff.i';
+$select.= ' FROM orst LEFT JOIN user ON orst.user=user.i LEFT JOIN store s ON orst.store=s.i LEFT JOIN cire ON orst.cire=cire.i LEFT JOIN user staff ON orst.staff=staff.i LEFT JOIN sync ON orst.store=sync.store AND orst.vendor=sync.vendor';
 
 if (strlen($plan['store']['value'])) {
 	w('search');
@@ -342,8 +344,8 @@ case 7: $select.= 'total'; break;
 case 107: $select.= 'total DESC'; break;
 case 8:$select.= 'orst.count'; break;
 case 108:$select.= 'orst.count DESC'; break;
-case 9:$select.= 'money'; break;
-case 109:$select.= 'money DESC'; break;
+case 9:$select.= 'mon'; break;
+case 109:$select.= 'mon DESC'; break;
 case 10:$select.= 'dost'; break;
 case 110:$select.= 'dost DESC'; break;
 case 11:$select.= 'orst.pay2'; break;
@@ -358,6 +360,8 @@ case 15:$select.= 'orst.mark'; break;
 case 115:$select.= 'orst.mark DESC'; break;
 case 16:$select.= 'orst.mpdt'; break;
 case 116:$select.= 'orst.mpdt DESC'; break;
+case 17:$select.= 'code'; break;
+case 117:$select.= 'code DESC'; break;
 }
 $select.= ',orst.user';
 
@@ -584,6 +588,7 @@ $sort = $plan['sort']['value'];
 		<th><? if (!$filter_user) { echo input_line($plan['user']); } ?></th>
 		<th><? echo input_combo($plan['staff']); ?></th>
 		<th><? if (!$filter_store) { echo input_line($plan['store']); } ?></th>
+		<? if ($show_code) echo '<th>&nbsp;</th>'; ?>
 		<th colspan=4 style="min-width:220px">
 			<div class="form-inline">
 				<? echo input_date($plan['dt1']); ?>
@@ -617,6 +622,7 @@ $sort = $plan['sort']['value'];
 		<th><? if (!$filter_user) { echo_sort('Пользователь', 2, $sort); } ?></th>
 		<th><? echo_sort('Менеджер', 14, $sort); ?></th>
 		<th><? if (!$filter_store) { echo_sort('Наименование', 4, $sort); } ?></th>
+		<? if ($show_code) { echo '<th>'; echo_sort('Артикул', 17, $sort); echo '</th>'; } ?>
 		<th class="text-right"><? echo_sort('Цена', 6, $sort); ?></th>
 		<th class="text-right"><? echo_sort('шт.', 8, $sort); ?></th>
 		<th class="text-right"><? echo_sort('Сумма', 7, $sort); ?></th>
@@ -641,7 +647,7 @@ $sort = $plan['sort']['value'];
 <? } ?>
 		<td></td>
 		<td colspan=1><? echo input_combo($plan['cstaff']); ?></td>
-		<td colspan=3></td>
+		<td colspan=<? echo $show_code ? 4 : 3 ?>></td>
 		<td colspan=2><? echo input_combo($plan['cpay']); ?></td>
 		<td colspan=1><? echo input_combo($plan['cpay2']); ?></td>
 		<td colspan=1><? echo input_combo($plan['cstate']); ?></td>
@@ -715,10 +721,14 @@ foreach ($orst as $k=>$v) {
 		}
 	}
 
+	if ($show_code) {
+		echo '<td>'.($v['code'] ? $v['code'] : '&nbsp;').'</td>';
+	}
+
 	echo '<td class="text-right" nowrap>'.number_format($v['price'], 0, '.', ' ').'</td>'
 .'<td class="text-right">'.$v['count'].'</td>'
 .'<td class="text-right" nowrap>'.number_format($v['total'], 0, '.', ' ').'</td>'
-.'<td class="text-right" nowrap>'.number_format($v['money'], 0, '.', ' ').'</td>'
+.'<td class="text-right" nowrap>'.number_format($v['mon'], 0, '.', ' ').'</td>'
 .'<td>'.$pay[$v['pay2']].'</td>'
 .'<td>'.$state[$v['state']].'</td>'
 .'<td>'.kv($cire, $v['cire']).'</td>'

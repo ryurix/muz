@@ -269,7 +269,10 @@ if (!$subcat) {
 // Сортировка и ограничения
 
 //$where = array('speed2.vendor=store.vendor', 'speed2.cire='.kv($_SESSION, 'cire', 0));
-$where = array();
+$worth = ',IF(store.price > 0, 0, IF(store.count > 0, 1, 2)) worth';
+$avail = ',IF(store.count > 0, IF(store.price > 0, 0, 1), IF(store.price > 0, 2, 3)) avail';
+$from = ['store'];
+$where = [];
 
 if (!is_user('catalog')) {
 	$where[] = 'hide<=0';
@@ -314,7 +317,12 @@ switch ($sort) {
 }
 
 if ($get['sklad']['value'] && $get['sklad']['valid']) {
-	$where[] = 'EXISTS (SELECT * FROM sync WHERE sync.store=store.i AND sync.vendor='.$get['sklad']['value'].' AND sync.count>0)';
+	$from[] = 'sync';
+	$where[] = 'sync.store=store.i';
+	$where[] = 'sync.vendor='.$get['sklad']['value'];
+	$worth = ',IF(sync.price > 0, 0, IF(sync.count > 0, 1, 2)) worth';
+	$avail = ',IF(sync.count > 0, IF(sync.price > 0, 0, 1), IF(sync.price > 0, 2, 3)) avail';
+	//$where[] = 'EXISTS (SELECT * FROM sync WHERE sync.store=store.i AND sync.vendor='.$get['sklad']['value'].')'; //  AND sync.count>0
 }
 
 if ($get['group']['value'] && $get['group']['valid']) {
@@ -351,10 +359,10 @@ $select = 'SELECT store.i,store.url,store.brand,store.filter'
 .',store.sign1'
 .',store.sign2'
 .',store.sign4'
-.',IF(store.price > 0, 0, IF(store.count > 0, 1, 2)) worth'
-.',IF(store.count > 0, IF(store.price > 0, 0, 1), IF(store.price > 0, 2, 3)) avail'
+.$worth
+.$avail
 //.',speed2.speed speed'
-.' FROM store WHERE '.implode(' AND ', $where).' ORDER BY '.$order; // ,speed2
+.' FROM '.implode(',', $from).' WHERE '.implode(' AND ', $where).' ORDER BY '.$order; // ,speed2
 
 $fil = array(); // Собираем фильтры и параметры в один массив
 foreach ($filter as $k=>$f) {

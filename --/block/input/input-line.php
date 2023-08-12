@@ -43,7 +43,7 @@ function input_line($v, $class = '') {
 	if (isset($v['required']) && $v['required']) { $back.= ' required aria-required="true"'; }
 	if (isset($v['more'])) { $back.= ' '.$v['more']; }
 
-	$value = str_replace('"', '&quot;', $v['value']);
+	$value = isset($v['value']) ? str_replace('"', '&quot;', $v['value']) : '';
 	$more = isset($v['more']) ? ' '.$v['more'] : '';
 
 	$back.=' value="'.$value.'"'.$more.'>';

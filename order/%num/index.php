@@ -97,6 +97,17 @@ if ($order->getId()) {
 				$type = $order->getState() == $plan['state']['value'] ? -1 : $plan['state']['value'];
 				comment_type('o'.$order->getId(), $type, $changes);
 
+
+				// Фискализация
+				$kkm = false;
+				if (!$order->getKkm() && $order->getMoney() != $plan['money']['value'] && $plan['money']['value'] && $plan['pay']['value'] == 3) { // Банковская карта (Терминал)
+					$kkm = true;
+				}
+
+				if (!$order->getKkm2() && $order->getMoney2() != $plan['money2']['value'] && $plan['money2']['value'] && $plan['pay2']['value'] == 3) { // Банковская карта (Терминал)
+					$kkm = true;
+				}
+
 				$order->setStaff($plan['staff']['value'])
 					->setState($plan['state']['value'])
 					->setCire($plan['cire']['value'])
@@ -133,16 +144,6 @@ if ($order->getId()) {
 				if ((($plan['send']['value'] == 1 || $plan['send']['value'] == 4) && $order->getState() != $plan['state']['value']) || $plan['dost']['value'] != $order->getDost()) {
 					w('mail');
 					mail_order($order->getUser(), $order->getId());
-				}
-
-				// Фискализация
-				$kkm = false;
-				if (!$order->getKkm() && $order->getMoney() != $plan['money']['value'] && $plan['money']['value'] && $plan['pay']['value'] == 3) { // Банковская карта (Терминал)
-					$kkm = true;
-				}
-
-				if (!$order->getKkm2() && $order->getMoney2() != $plan['money2']['value'] && $plan['money2']['value'] && $plan['pay2']['value'] == 3) { // Банковская карта (Терминал)
-					$kkm = true;
 				}
 
 				if ($kkm && ($plan['money']['value'] + $plan['money2']['value']) < 200000) {
