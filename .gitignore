@@ -15,6 +15,7 @@ config.php
 *.docx
 *].php
 *.xml
+files/sync/*.*
 
 
 
