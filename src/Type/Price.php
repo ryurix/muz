@@ -7,10 +7,13 @@ class Price
 
 	const MAIN = 0;
 
-	const BULK = 1;
+	const WB = 1;
 	const OZON = 2;
+	const WB2 = 3;
+	const OZON2 = 4;
+	const YANDEX = 5;
 
-	const COUNT = 2;
+	const COUNT = 6;
 
 	static function list() {
         $oClass = new \ReflectionClass(__CLASS__);
@@ -20,8 +23,11 @@ class Price
 	static function names() {
 		return [
 			self::MAIN => 'основная',
-			self::BULK => 'оптовая',
+			self::WB => 'WB',
 			self::OZON => 'озон',
+			self::WB2 => 'WB2',
+			self::OZON2 => 'озон2',
+			self::YANDEX => 'yandex',
 		//	self::
 		];
 	}

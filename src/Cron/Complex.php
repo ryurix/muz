@@ -65,12 +65,14 @@ class Complex extends Task {
 					break;
 				}
 
-				foreach ($store[$i['store']]['sync'] as $typ=>$cnt) {
-					$cnt = floor(max(0, $cnt - $i['minus']) / $i['amount']);
-					if (isset($typcnt[$typ])) {
-						$typcnt[$typ][] = $cnt;
-					} else {
-						$typcnt[$typ] = [$cnt];
+				if (isset($store[$i['store']]['sync'])) {
+					foreach ($store[$i['store']]['sync'] as $typ=>$cnt) {
+						$cnt = floor(max(0, $cnt - $i['minus']) / $i['amount']);
+						if (isset($typcnt[$typ])) {
+							$typcnt[$typ][] = $cnt;
+						} else {
+							$typcnt[$typ] = [$cnt];
+						}
 					}
 				}
 

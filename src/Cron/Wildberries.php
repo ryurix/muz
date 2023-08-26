@@ -21,161 +21,8 @@ class Wildberries extends Task {
 
 		$exclude = explode(' ', kv($args, 'exclude', ''));
 
-		if ($form == 1 || $form == 10) { // Обновление (обнуление) количества
-
-			$select = 'SELECT wb.*,store.price s_price,0 s_count FROM wb LEFT JOIN store ON wb.store=store.i WHERE wb.client='.$client;
-			if (kv($args, 'price', 0)) { $select.= ' AND store.price >= '.$args['price']; }
-			//$store = db_fetch_all($select, 'store');
-
-			if (strlen(kv($args, 'test', ''))) {
-				$select.= ' AND (wb.barcode="'.addcslashes($args['test'], '"\\').'" OR store.i="'.clean_09($args['test']).'")';
-			}
-
-			$store = [];
-			$q = db_query($select);
-			while ($row = db_fetch($q)) {
-				if (!in_array($row['barcode'], $exclude)) {
-					$key = $row['store'];
-					unset($row['store']);
-					$store[$key] = $row;
-				}
-			}
-
-			if (is_array($args['vendor']) && count($args['vendor'])) {
-				$vendor = ' AND vendor IN ('.implode(',', $args['vendor']).')';
-			} else {
-				$vendor = '';
-			}
-			$dt = now() - 30*24*60*60; // актуальность синхронизации
-
-			if (count($store)) {
-				$select = 'SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' AND store IN ('.implode(',', array_keys($store)).') GROUP BY store';
-				$q = db_query($select);
-				while ($i = db_fetch($q)) {
-
-					$count = max(0, $i['count'] - kv($args, 'minus', 0));
-
-					if ($count < kv($args, 'min', 0)) {
-						$count = 0;
-					}
-
-					$store[$i['store']]['s_count'] = $count;
-				}
-				db_close($q);
-			}
-
-			$force = kv($args, 'force', 0);
-
-			$rows = [];
-			$updates = [];
-
-			$reserve = \Tool\Reserve::get(array_keys($store));
-
-			foreach ($store as $k=>$i) {
-				if (empty($i['barcode'])) {
-					continue;
-				}
-
-				$upd = $force == 100;
-
-				if ($force == 1 && !isset($i['s_count'])) {
-					continue;
-				}
-
-				if (is_null($i['s_price'])) {
-					$i['s_count'] = 0;
-				}
-
-				if (isset($reserve[$k])) {
-					$i['s_count'] = max(0, $i['s_count'] - $reserve[$k]);
-				}
-
-				if ($form == 10) {
-					$i['s_count'] = 0;
-				}
-
-				if ($i['quantity'] != $i['s_count']) {
-					$upd = true;
-
-					$updates[$i['i']] = [
-						'quantity'=>is_null($i['s_count']) ? 0 : $i['s_count'],
-					];
-				}
-
-				if ($upd) {
-
-					//$rows[] = [
-					//	'sku'=>$i['barcode'],
-					//	'amount'=>is_null($i['s_count']) ? 0 : (int) $i['s_count'],
-					//];
-
-					//$obj = new stdClass();
-					//$obj->sku = $i['barcode'];
-					//$obj->amount = is_null($i['s_count']) ? 0 : $i['s_count'];
-
-					$rows[] = [
-						'sku'=>$i['barcode'],
-						'amount'=>is_null($i['s_count']) ? 0 : $i['s_count'],
-					];
-
-					//	'nmId'=>(int) $i['i'],
-					//	'chrtId'=>(int) $i['chrt'],
-					//	'warehouseId'=>(int) $con['storeId'],
-				}
-			}
-
-			if (count($rows)) {
-				$url = 'https://suppliers-api.wildberries.ru/api/v3/stocks/'.$con['storeId'];
-
-				$page = 0;
-				while ($page*$per < count($rows)) {
-					$post = array_slice($rows, $page*$per, $per);
-					$page++;
-
-					$payload = \Flydom\Cache::json_encode(['stocks'=>$post]);
-
-					$ch = curl_init();
-					curl_setopt($ch, CURLOPT_URL, $url);
-					curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-					curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-					curl_setopt($ch, CURLOPT_HTTPHEADER, [
-						'Authorization: '.$con['authorization'],
-						'Content-Type: application/json',
-						'Content-Length: '.strlen($payload)
-					]);
-					curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-					$result = curl_exec($ch);
-					$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-					curl_close($ch);
-
-					if (strlen(kv($args, 'test', ''))) {
-						w('log');
-						logs(401, $code, $result.' | '.$payload);
-					}
-
-					if (($code != 200 && $code != 204) && strlen($result)) {
-						break;
-					}
-				}
-			} else {
-				$code = 200;
-			}
-
-			if ($code == 200 || $code == 204) {
-				$back = ($form == 10 ? 'Обнулено' : 'Обновлено').'&nbsp;'.count($rows);
-
-				foreach ($updates as $k=>$v) {
-					db_update('wb', $v, ['i'=>$k]);
-				}
-			} else {
-				$back = 'Ошибка: '.$result;
-
-				w('log');
-				logs(401, $code, $result.' | '.$payload);
-			}
-
+		if ($form == 1 || $form == 10 || $form == 2) { // Обновление (обнуление) количества
+			$back = self::stock($form, $args, $con, $exclude, $per);
 		}
 
 		if ($form == 3) { // Обновление цен
@@ -188,6 +35,194 @@ class Wildberries extends Task {
 
 		if ($form == 25) { // Получение отмен заказов
 			$back = self::order_cancel($args);
+		}
+
+		return $back;
+	}
+
+	static function stock($form, $args, $con, $exclude, $per = 500) {
+
+		$where = ['wb.client='.$con['user']];
+
+		if (kv($args, 'price', 0)) {
+			$where[]= 'store.price >= '.$args['price'];
+		}
+
+		if (strlen(kv($args, 'test', ''))) {
+			$where[]= '(wb.barcode="'.addcslashes($args['test'], '"\\').'" OR store.i="'.clean_09($args['test']).'")';
+		}
+
+		if ($form == 2) {
+			$where[]= 'wb.store=store.i';
+			$where[]= 'store.complex=1';
+			$select = 'SELECT wb.*,store.price s_price,0 s_count FROM wb,store WHERE '.implode(' AND ', $where);
+		} else {
+			$select = 'SELECT wb.*,store.price s_price,0 s_count, store.complex FROM wb LEFT JOIN store ON wb.store=store.i WHERE '.implode(' AND ', $where);
+		}
+
+		$store = [];
+		$q = db_query($select);
+		while ($row = db_fetch($q)) {
+			if (!in_array($row['barcode'], $exclude)) {
+				$key = $row['store'];
+				unset($row['store']);
+				$store[$key] = $row;
+			}
+		}
+
+		if (count($store)) {
+
+			if ($form == 2) {
+				$select = 'SELECT i,count FROM store WHERE i IN ('.implode(',', array_keys($store)).')';
+			} else {
+				$where = [
+					'dt>='.(now() - 30*24*60*60), // актуальность синхронизации
+					'store IN ('.implode(',', array_keys($store)).')',
+				];
+
+				if (is_array($args['vendor']) && count($args['vendor'])) {
+					$where[] = 'vendor IN ('.implode(',', $args['vendor']).')';
+				}
+
+				$select = 'SELECT store, SUM(count) count FROM sync WHERE '.implode(' AND ', $where).' GROUP BY store';
+			}
+
+			$q = db_query($select);
+			while ($i = db_fetch($q)) {
+
+				$count = max(0, $i['count'] - kv($args, 'minus', 0));
+
+				if ($count < kv($args, 'min', 0)) {
+					$count = 0;
+				}
+
+				$store[$i['store']]['s_count'] = $count;
+			}
+			db_close($q);
+
+			if ($form != 2) { // Удаляем из выгрузки составные товары если выгрузка для обычных товаров
+				$unset = [];
+				foreach ($store as $k=>$v) {
+					if ($v['complex']) {
+						$unset[] = $k;
+					}
+				}
+				foreach ($unset as $i) {
+					unset($store[$i]);
+				}
+			}
+		}
+
+		$force = kv($args, 'force', 0);
+
+		$rows = [];
+		$updates = [];
+
+		$reserve = \Tool\Reserve::get(array_keys($store));
+
+		foreach ($store as $k=>$i) {
+			if (empty($i['barcode'])) {
+				continue;
+			}
+
+			$upd = $force == 100;
+
+			if ($force == 1 && !isset($i['s_count'])) {
+				continue;
+			}
+
+			if (is_null($i['s_price'])) {
+				$i['s_count'] = 0;
+			}
+
+			if (isset($reserve[$k])) {
+				$i['s_count'] = max(0, $i['s_count'] - $reserve[$k]);
+			}
+
+			if ($form == 10) {
+				$i['s_count'] = 0;
+			}
+
+			if ($i['quantity'] != $i['s_count']) {
+				$upd = true;
+
+				$updates[$i['i']] = [
+					'quantity'=>is_null($i['s_count']) ? 0 : $i['s_count'],
+				];
+			}
+
+			if ($upd) {
+
+				//$rows[] = [
+				//	'sku'=>$i['barcode'],
+				//	'amount'=>is_null($i['s_count']) ? 0 : (int) $i['s_count'],
+				//];
+
+				//$obj = new stdClass();
+				//$obj->sku = $i['barcode'];
+				//$obj->amount = is_null($i['s_count']) ? 0 : $i['s_count'];
+
+				$rows[] = [
+					'sku'=>$i['barcode'],
+					'amount'=>is_null($i['s_count']) ? 0 : $i['s_count'],
+				];
+
+				//	'nmId'=>(int) $i['i'],
+				//	'chrtId'=>(int) $i['chrt'],
+				//	'warehouseId'=>(int) $con['storeId'],
+			}
+		}
+
+		if (count($rows)) {
+			$url = 'https://suppliers-api.wildberries.ru/api/v3/stocks/'.$con['storeId'];
+
+			$page = 0;
+			while ($page*$per < count($rows)) {
+				$post = array_slice($rows, $page*$per, $per);
+				$page++;
+
+				$payload = \Flydom\Cache::json_encode(['stocks'=>$post]);
+
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $url);
+				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, [
+					'Authorization: '.$con['authorization'],
+					'Content-Type: application/json',
+					'Content-Length: '.strlen($payload)
+				]);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+				$result = curl_exec($ch);
+				$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				curl_close($ch);
+
+				if (strlen(kv($args, 'test', ''))) {
+					w('log');
+					logs(401, $code, $result.' | '.$payload);
+				}
+
+				if (($code != 200 && $code != 204) && strlen($result)) {
+					break;
+				}
+			}
+		} else {
+			$code = 200;
+		}
+
+		if ($code == 200 || $code == 204) {
+			$back = ($form == 10 ? 'Обнулено' : 'Обновлено').'&nbsp;'.count($rows);
+
+			foreach ($updates as $k=>$v) {
+				db_update('wb', $v, ['i'=>$k]);
+			}
+		} else {
+			$back = 'Ошибка: '.$result;
+
+			w('log');
+			logs(401, $code, $result.' | '.$payload);
 		}
 
 		return $back;

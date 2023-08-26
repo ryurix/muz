@@ -31,7 +31,9 @@ $data['every'] = $row['every'];
 
 $forms = array(
 	1=>'Выгрузка количества',
+	2=>'Выгрузка количества составных товаров',
 	3=>'Выгрузка цен',
+	// 4=>'Выгрузка цен составных товаров',
 	10=>'Обнуление количества',
 	20=>'Получение заказов',
     25=>'Отмена заказов',
@@ -101,13 +103,17 @@ $plan+= [
 w('request', $plan);
 w('invalid', $plan);
 
-if ($plan['form']['value'] == 3) { // Для выгрузки цен отключаем лишние поля
+if ($plan['form']['value'] == 3 || $plan['form']['value'] == 4) { // Для выгрузки цен отключаем лишние поля
 	w('input-hidden');
 	$plan['min']['type'] = 'hidden';
 	$plan['minus']['type'] = 'hidden';
 	$plan['vendor']['type'] = 'hidden';
 	$plan['vendor']['value'] = array_encode($plan['vendor']['value']);
 	unset($plan['force']['values'][1]);
+}
+
+if ($plan['form']['value'] == 2 || $plan['form']['value'] == 4) { // Для составных товаров отключаем лишние поля
+	$plan['vendor']['type'] = 'hidden';
 }
 
 $config['plan'] = $plan;
