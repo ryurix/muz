@@ -122,6 +122,54 @@ static function insert_id() {
 	return mysqli_insert_id(self::$db);
 }
 
+static function replace($table, $data) {
+	$keys = [];
+	$types = '';
+	$values = [];
+	$fields = implode(',', array_keys($data));
+
+	$query = "INSERT INTO $table ($fields) VALUES (";
+
+	$a = [];
+	foreach ($data as $key => $value) {
+		if (is_int($key)) {
+			$a[] = $value;
+		} else {
+			$a[] = '?';
+			self::append_bind($value, $types, $keys, $values);
+		}
+	}
+	$query.= implode(',', $a);
+
+	$query.= ") ON DUPLICATE KEY UPDATE ";
+
+	$a = [];
+	foreach ($data as $key => $value) {
+		if (is_int($key)) {
+			$a[] = $value;
+		} else {
+			$a[] = $key.'=?';
+			self::append_bind($value, $types, $keys, $values);
+		}
+	}
+	$query.= implode(',', $a);
+
+
+	try {
+		$stmt = mysqli_stmt_init(self::$db);
+		mysqli_stmt_prepare($stmt, $query);
+		mysqli_stmt_bind_param($stmt, $types, ...$values);
+		mysqli_stmt_execute($stmt);
+		if (isset($stmt->errno) && $stmt->errno) {
+			echo '<p class="error-db">'.$stmt->error.'<br />'.$query.'</p>';
+		}
+		return mysqli_affected_rows(self::$db);
+	} catch (\Exception $ex) {
+		echo '<p class="error-db">'.$ex->getMessage().'<br />'.$query.'</p>';
+		return FALSE;
+	}
+}
+
 static function update($table, $data, $where) {
 	$keys = [];
 	$types = '';

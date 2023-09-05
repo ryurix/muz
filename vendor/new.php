@@ -25,11 +25,12 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 		'info'=>$plan['info']['value'],
 	);
 	db_insert('vendor', $data);
-	alert('Поставщик добавлен');
-	w('cache-vendor');
-	redirect('/vendor/');
-} else {
-	$config['plan'] = $plan;
+	$id = db_insert_id();
+	if ($id) {
+		alert('Поставщик добавлен');
+		w('cache-vendor');
+		redirect('/vendor/');
+	} else {
+		alert('Ошибка добавления поставщика');
+	}
 }
-
-?>

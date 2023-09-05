@@ -74,6 +74,13 @@ $user['0'] = array(
 	'config'=>NULL,
 );
 
+$config['complex-vendors'] = [
+	1=>53, // склад Москва
+	2=>53, // магазин Москва
+	11=>54, // склад Тюмень
+	12=>54, // магазин Тюмень
+];
+
 $yandex = [
 	5048=>['campaignId'=>21927869, 'token'=>'80000001EE76460A', 'cron'=>49, 'oauth_token'=>'AgAAAABIUtW1AAbVgJN4iEP5WURDp4R1aIzHqVA', 'oauth_client_id'=>'1b902bf296114e5f9959440e91ba6069'],
 	13060=>['campaignId'=>21622579, 'token'=>'5B0000015A710316', 'cron'=>24, 'oauth_token'=>'AgAAAAAHpXmLAAbXrBXOxSDNYkn6jGkuMOhxlY8', 'oauth_client_id'=>'2c79cbe25ab1417abbc5acd4ef000af5'],

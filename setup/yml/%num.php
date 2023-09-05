@@ -59,14 +59,20 @@ $plan = array(
 	'minus'=>array('name'=>'Вычет', 'type'=>'int', 'default'=>0),
 	'type'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
 	'price'=>array('name'=>'Мин. цена', 'type'=>'int', 'default'=>500),
+	'price2'=>array('name'=>'Макс. цена', 'type'=>'int', 'default'=>1000000),
 	'site'=>array('name'=>'Сайт', 'type'=>'line', 'default'=>'muzmart.com'),
 	'city'=>array('name'=>'Город', 'type'=>'combo', 'values'=>array(0=>'') + cache_load('city'), 'default'=>0),
+	'complex'=>['label'=>'Составные товары', 'type'=>'checkbox', 'default'=>0],
 	'vendor'=>array('name'=>'Поставщики', 'type'=>'multich', 'values'=>cache_load('vendor'), 'placeholder'=>'Выберите поставщиков...'),
 	'send'=>array('type'=>'button', 'count'=>2, 1=>'Сохранить', 2=>'Выгрузить'),
 );
 
 w('request', $plan);
 w('invalid', $plan);
+
+if ($plan['complex']['value']) {
+	$plan['vendor']['type'] = 'hidden';
+}
 
 $config['plan'] = $plan;
 
@@ -81,8 +87,10 @@ if ($plan['']['valid']) {
 		'minus'=>$plan['minus']['value'],
 		'type'=>$plan['type']['value'],
 		'price'=>$plan['price']['value'],
+		'price2'=>$plan['price2']['value'],
 		'site'=>$plan['site']['value'],
 		'city'=>$plan['city']['value'],
+		'complex'=>$plan['complex']['value'],
 		'vendor'=>$plan['vendor']['value'],
 	];
 

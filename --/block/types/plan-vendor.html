@@ -46,7 +46,7 @@ $back = array(
 	'typ'=>array('name'=>'Тип', 'type'=>'combo', 'values'=>w('list-vendor-type')),
 	'w'=>array('name'=>'Вес', 'type'=>'int'),
 	'price'=>array('name'=>'Поправка цены, %', 'type'=>'number'),
-	'prmin'=>array('name'=>'Минимальная цена', 'type'=>'number'),
+	'prmin'=>array('name'=>'Минимальная цена', 'type'=>'number', 'default'=>0),
 	'city'=>array('name'=>'Город', 'type'=>'city'),
 //	'speed'=>array('name'=>'Доставка', 'type'=>'combo', 'values'=>$speed),
 	'ccode'=>array('name'=>'Колонка артикула', 'type'=>'int', 'values'=>$cols),
@@ -61,5 +61,3 @@ $back = array(
 	'info'=>array('name'=>'Информация', 'type'=>'rich', 'rows'=>12),
 	'send'=>array('name'=>'', 'type'=>'button', 'count'=>1, 1=>'Сохранить', 'class'=>'btn-success'),
 );
-
-?>

@@ -5,6 +5,8 @@ namespace Cron;
 //13*60*60
 class Complex extends Task {
 	static function run($args) {
+		global $config;
+
 		$data = [];
 		$store = [];
 
@@ -35,6 +37,8 @@ class Complex extends Task {
 		unset($sync);
 
 		$updated = 0;
+		$updt = now();
+		$typven = $config['complex-vendors'];
 
 		foreach ($data as $key=>$children) {
 
@@ -76,11 +80,11 @@ class Complex extends Task {
 					}
 				}
 
-				$price+= round($child['price'] * (100 + $i['sale']) / 100);
+				$price+= round($child['price'] * (100 + $i['sale']) / 100) * $i['amount'];
 
 				$p = Prices::decode($child['prices']);
 				foreach ($prices as $k=>$v) {
-					$prices[$k]+= round($p[$k] * (100 + $i['sale']) / 100);
+					$prices[$k]+= round($p[$k] * (100 + $i['sale']) / 100) * $i['amount'];
 				}
 
 				//$count = max($count, $child['count'] - $i['minus']);
@@ -92,6 +96,7 @@ class Complex extends Task {
 					$count+= min($cnt);
 				}
 			}
+
 
 			if ($valid) {
 				$prices = implode(',', $prices);
@@ -107,6 +112,32 @@ class Complex extends Task {
 					$updated++;
 				}
 
+				foreach ($typcnt as $typ=>$cnt) {
+					if (isset($typven[$typ])) {
+						$vendor = $typven[$typ];
+						$exists = \Flydom\Db::result('SELECT i FROM sync WHERE store='.$key.' AND vendor='.$vendor);
+						if ($exists) {
+							\Flydom\Db::update('sync', [
+								'dt'=>$updt,
+								'price'=>$price,
+								'opt'=>$price,
+								'count'=>min($cnt)
+							], ['i'=>$exists]);
+						} else {
+							\Flydom\Db::insert('sync', [
+								'code'=>'',
+								'name'=>'',
+								'dt'=>$updt,
+								'store'=>$key,
+								'vendor'=>$vendor,
+								'price'=>$price,
+								'opt'=>$price,
+								'count'=>min($cnt)
+							]);
+						}
+					}
+				}
+
 			} else {
 				if ($up['price'] > 0 || $up['count'] > 0) {
 					\Flydom\Db::update('store', [
@@ -120,6 +151,11 @@ class Complex extends Task {
 				}
 			}
 		}
+
+		\Flydom\Db::delete('sync', [
+			'vendor IN ('.implode(',', $typven).')',
+			'dt<'.$updt,
+		]);
 
 		return $updated.'/'.count($data);
 	}

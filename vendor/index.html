@@ -8,7 +8,7 @@
 	<tbody>
 <?
 
-$select = 'SELECT * FROM vendor WHERE up=0 OR up IS NULL ORDER BY w, name';
+$select = 'SELECT * FROM vendor WHERE up=0 OR up IS NULL ORDER BY w,name';
 $q = db_query($select);
 
 while ($i = db_fetch($q)) {
@@ -16,7 +16,7 @@ while ($i = db_fetch($q)) {
 	echo '<tr>';
 	echo '<td><a href="'.$href.'/edit">'.$i['i'].'</a></td>';
 	echo '<td><a href="'.$href.'">'.$i['name'].' <i class="icon-edit"></i></a></td>';
-	echo '</tr>';		
+	echo '</tr>';
 }
 
 ?>

@@ -74,22 +74,22 @@ $plan = [
 ];
 
 if (isset($data['form']) && $data['form'] < 20) {
-$plan+= [
-	'price'=>array('name'=>'Мин. цена', 'type'=>'int', 'default'=>0),
-	'min'=>array('name'=>'Мин. количество', 'type'=>'int', 'default'=>0),
-	'minus'=>array('name'=>'Вычет', 'type'=>'int', 'default'=>0),
-	'force'=>array('name'=>'Выгрузить', 'type'=>'combo', 'default'=>0, 'values'=>[
-		0=>'Обновления',
-		100=>'Всё',
-		1=>'Только найденные у поставщиков',
-	]),
+	$plan+= [
+		'price'=>array('name'=>'Мин. цена', 'type'=>'int', 'default'=>0),
+		'min'=>array('name'=>'Мин. количество', 'type'=>'int', 'default'=>0),
+		'minus'=>array('name'=>'Вычет', 'type'=>'int', 'default'=>0),
+		'force'=>array('name'=>'Выгрузить', 'type'=>'combo', 'default'=>0, 'values'=>[
+			0=>'Обновления',
+			100=>'Всё',
+			1=>'Только найденные у поставщиков',
+		]),
 
-//	'site'=>array('name'=>'Сайт', 'type'=>'line', 'default'=>'muzmart.com'),
-//	'city'=>array('name'=>'Город', 'type'=>'combo', 'values'=>array(0=>'') + cache_load('city'), 'default'=>0),
-//	'zero'=>array('label'=>'Передавать нули', 'type'=>'checkbox', 'default'=>1),
+	//	'site'=>array('name'=>'Сайт', 'type'=>'line', 'default'=>'muzmart.com'),
+	//	'city'=>array('name'=>'Город', 'type'=>'combo', 'values'=>array(0=>'') + cache_load('city'), 'default'=>0),
+	//	'zero'=>array('label'=>'Передавать нули', 'type'=>'checkbox', 'default'=>1),
 
-	'vendor'=>array('name'=>'Поставщики', 'type'=>'multich', 'values'=>cache_load('vendor'), 'placeholder'=>'Выберите поставщиков...'),
-];
+		'vendor'=>['name'=>'Поставщики', 'type'=>'multich', 'values'=>cache_load('vendor'), 'placeholder'=>'Выберите поставщиков...', 'default'=>[]],
+	];
 }
 
 $plan+= [
@@ -100,10 +100,10 @@ $plan+= [
 	'test'=>['name'=>'Тест', 'type'=>'line'],
 ];
 
-w('request', $plan);
-w('invalid', $plan);
+$plan = w('request', $plan);
+$plan = w('invalid', $plan);
 
-if ($plan['form']['value'] == 3 || $plan['form']['value'] == 4) { // Для выгрузки цен отключаем лишние поля
+if ($plan['form']['value'] == 3) { // Для выгрузки цен отключаем лишние поля
 	w('input-hidden');
 	$plan['min']['type'] = 'hidden';
 	$plan['minus']['type'] = 'hidden';
@@ -112,11 +112,9 @@ if ($plan['form']['value'] == 3 || $plan['form']['value'] == 4) { // Для вы
 	unset($plan['force']['values'][1]);
 }
 
-if ($plan['form']['value'] == 2 || $plan['form']['value'] == 4) { // Для составных товаров отключаем лишние поля
-	$plan['vendor']['type'] = 'hidden';
+if ($plan['form']['value'] == 2) { // Для составных товаров отключаем лишние поля
+	unset($plan['vendor']);
 }
-
-$config['plan'] = $plan;
 
 if ($plan['']['valid']) {
 	$data = array(
@@ -148,9 +146,8 @@ if ($plan['']['valid']) {
 	$new['dt'] = \Cron\Task::next($new, $data);
 
 	if ($plan['send']['value'] == 1) {
-
 		if ($row['i']) {
-			db_update('cron', $new, array('i'=>$row['i']));
+			db_update('cron', $new, ['i'=>$row['i']]);
 			alert('Выгрузка сохранена');
 			redirect('/setup/wildberries');
 		} else {

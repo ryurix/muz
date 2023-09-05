@@ -91,14 +91,24 @@ class Yml extends Task {
 			$vendor = '';
 		}
 
-		$dt = now() - 30*24*60*60;
-		if ($data['form'] == 'dynatone') {
-			$select = 'SELECT store.*,ven.count,dyna.pic dpic,dyna.pics dpics,dyna.info dinfo,dyna.size FROM dyna,store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE store.i=dyna.store AND hide<=0';
+		if (kv($data, 'complex', 0)) {
+			if ($data['form'] == 'dynatone') {
+				$select = 'SELECT store.*,dyna.pic dpic,dyna.pics dpics,dyna.info dinfo,dyna.size FROM dyna,store WHERE store.i=dyna.store AND store.complex=1 AND hide<=0';
+			} else {
+				$select = 'SELECT store.* FROM store WHERE store.complex=1 AND hide<=0';
+			}
 		} else {
-			$select = 'SELECT store.*,ven.count FROM store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE hide<=0';
+			$dt = now() - 30*24*60*60;
+			if ($data['form'] == 'dynatone') {
+				$select = 'SELECT store.*,ven.count,dyna.pic dpic,dyna.pics dpics,dyna.info dinfo,dyna.size FROM dyna,store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE store.complex<1 AND store.i=dyna.store AND hide<=0';
+			} else {
+				$select = 'SELECT store.*,ven.count FROM store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE store.complex<1 AND hide<=0';
+			}
 		}
 		if (kv($data, 'min', 0)) { $select.= ' AND '.$data['min'].'<=ven.count'; }
 		if (kv($data, 'price', 0)) { $select.= ' AND '.$data['price'].'<=price'; }
+		$price2 = kv($data, 'price2', 1000000);
+		if ($price2) { $select.= ' AND '.$price2.'>=price'; }
 
 		$q = db_query($select);
 
