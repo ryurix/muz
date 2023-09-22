@@ -21,7 +21,7 @@ class Wildberries extends Task {
 
 		$exclude = explode(' ', kv($args, 'exclude', ''));
 
-		if ($form == 1 || $form == 10 || $form == 2) { // Обновление (обнуление) количества
+		if ($form == 1 || $form == 10) { // Обновление (обнуление) количества
 			$back = self::stock($form, $args, $con, $exclude, $per);
 		}
 
@@ -52,13 +52,8 @@ class Wildberries extends Task {
 			$where[]= '(wb.barcode="'.addcslashes($args['test'], '"\\').'" OR store.i="'.clean_09($args['test']).'")';
 		}
 
-		if ($form == 2) {
-			$where[]= 'wb.store=store.i';
-			$where[]= 'store.complex=1';
-			$select = 'SELECT wb.*,store.price s_price,0 s_count FROM wb,store WHERE '.implode(' AND ', $where);
-		} else {
-			$select = 'SELECT wb.*,store.price s_price,0 s_count, store.complex FROM wb LEFT JOIN store ON wb.store=store.i WHERE '.implode(' AND ', $where);
-		}
+
+		$select = 'SELECT wb.*,store.price s_price FROM wb LEFT JOIN store ON wb.store=store.i WHERE '.implode(' AND ', $where);
 
 		$store = [];
 		$q = db_query($select);
@@ -72,20 +67,17 @@ class Wildberries extends Task {
 
 		if (count($store)) {
 
-			if ($form == 2) {
-				$select = 'SELECT i,count FROM store WHERE i IN ('.implode(',', array_keys($store)).')';
-			} else {
-				$where = [
-					'dt>='.(now() - 30*24*60*60), // актуальность синхронизации
-					'store IN ('.implode(',', array_keys($store)).')',
-				];
 
-				if (is_array($args['vendor']) && count($args['vendor'])) {
-					$where[] = 'vendor IN ('.implode(',', $args['vendor']).')';
-				}
+			$where = [
+				'dt>='.(now() - 30*24*60*60), // актуальность синхронизации
+				'store IN ('.implode(',', array_keys($store)).')',
+			];
 
-				$select = 'SELECT store, SUM(count) count FROM sync WHERE '.implode(' AND ', $where).' GROUP BY store';
+			if (is_array($args['vendor']) && count($args['vendor'])) {
+				$where[] = 'vendor IN ('.implode(',', $args['vendor']).')';
 			}
+
+			$select = 'SELECT store, SUM(count) count FROM sync WHERE '.implode(' AND ', $where).' GROUP BY store';
 
 			$q = db_query($select);
 			while ($i = db_fetch($q)) {
@@ -100,17 +92,6 @@ class Wildberries extends Task {
 			}
 			db_close($q);
 
-			if ($form != 2) { // Удаляем из выгрузки составные товары если выгрузка для обычных товаров
-				$unset = [];
-				foreach ($store as $k=>$v) {
-					if ($v['complex']) {
-						$unset[] = $k;
-					}
-				}
-				foreach ($unset as $i) {
-					unset($store[$i]);
-				}
-			}
 		}
 
 		$force = kv($args, 'force', 0);
@@ -127,8 +108,12 @@ class Wildberries extends Task {
 
 			$upd = $force == 100;
 
-			if ($force == 1 && !isset($i['s_count'])) {
-				continue;
+			if (!isset($i['s_count'])) {
+				if ($force == 1) {
+					continue;
+				} else {
+					$i['s_count'] = 0;
+				}
 			}
 
 			if (is_null($i['s_price'])) {

@@ -1,27 +1,189 @@
 <?
 
-/*
-\Flydom\Db::insert('bases', [
-	'i'=>1,
-	'num'=>2,
-	'numi'=>3,
-	'str'=>'test',
-	'stri'=>'insert',
-]);
-//*/
+$complex = 176942;
 
-/*
-\Flydom\Db::replace('bases', [
-	'i'=>1,
-	'numi'=>3,
-	'stri'=>'replace',
-]);
-//*/
 
-//*
-\Flydom\Db::replace('bases', [
-	'i'=>2,
-	'numi'=>3,
-	'stri'=>'replace',
+// * * *
+
+
+$exists = \Flydom\Db::fetchRow('SELECT i,dt FROM sync WHERE store=5073 AND vendor=123');
+
+echo '<p>Exists:</p>';
+\Flydom\Debug::print($exists);
+echo '<p>End Exists</p>';
+
+
+
+// * * *
+
+
+global $config;
+
+$data = [];
+$store = [];
+
+$q = \Flydom\Db::query('SELECT * FROM complex WHERE up='.$complex); // WHERE up=176418
+while ($i = \Flydom\Db::fetch($q)) {
+	if (isset($data[$i['up']])) {
+		$data[$i['up']][] = $i;
+	} else {
+		$data[$i['up']] = [$i];
+	}
+	$store[$i['up']] = 1;
+	$store[$i['store']] = 1;
+}
+\Flydom\Db::free($q);
+
+$store = \Flydom\Db::fetchAll('SELECT i,price,prices,count,complex FROM store WHERE i IN ('.implode(',', array_keys($store)).')', 'i', true);
+
+// Получаем количество по группам складов, без удалённых складов
+$sync = \Flydom\Db::fetchAll('SELECT sync.store,vendor.typ, SUM(sync.count) cnt FROM sync INNER JOIN vendor ON vendor.i=sync.vendor'
+.' WHERE vendor.typ<>21 AND sync.store IN ('.implode(',', array_keys($store)).') GROUP BY sync.store,vendor.typ');
+foreach ($sync as $i) {
+	if (isset($store[$i['store']]['sync'])) {
+		$store[$i['store']]['sync'][$i['typ']] = $i['cnt'];
+	} else {
+		$store[$i['store']]['sync'] = [$i['typ'] => $i['cnt']];
+	}
+}
+unset($sync);
+
+\Flydom\Debug::print($data);
+\Flydom\Debug::print($store);
+
+$updated = 0;
+$updt = now();
+$typven = $config['complex-vendors'];
+
+foreach ($data as $key=>$children) {
+
+	if (!isset($store[$key]) || !$store[$key]['complex']) {
+		\Flydom\Db::query('DELETE FROM complex WHERE up='.$key);
+		continue;
+	}
+
+	$up = $store[$key];
+
+	$valid = true;
+	$price = 0;
+	$prices = \Cron\Prices::decode('');
+	$typcnt = [];
+
+	foreach ($children as $i) {
+
+		if (!isset($store[$i['store']])) {
+			\Flydom\Db::query('DELETE FROM complex WHERE up='.$key.' AND store='.$i['store']);
+			$valid = false;
+			break;
+		}
+
+		$child = $store[$i['store']];
+
+		if ($child['price'] == 0) {
+			$valid = false;
+			break;
+		}
+
+		if (isset($store[$i['store']]['sync'])) {
+			foreach ($store[$i['store']]['sync'] as $typ=>$cnt) {
+				$cnt = floor(max(0, $cnt - $i['minus']) / $i['amount']);
+				if (isset($typcnt[$typ])) {
+					$typcnt[$typ][] = $cnt;
+				} else {
+					$typcnt[$typ] = [$cnt];
+				}
+			}
+		}
+
+		$price+= round($child['price'] * (100 + $i['sale']) / 100) * $i['amount'];
+
+		$p = \Cron\Prices::decode($child['prices']);
+		foreach ($prices as $k=>$v) {
+			$prices[$k]+= round($p[$k] * (100 + $i['sale']) / 100) * $i['amount'];
+		}
+
+		//$count = max($count, $child['count'] - $i['minus']);
+	}
+
+	echo '<p>$typcnt</p>';
+	\Flydom\Debug::print($typcnt);
+	echo '<p>$typven</p>';
+	\Flydom\Debug::print($typven);
+	\Flydom\Debug::print($children);
+
+	$count = 0;
+	foreach ($typcnt as $typ=>$cnt) {
+		if (count($cnt) == count($children)) {
+			$count+= min($cnt);
+		}
+	}
+
+	\Flydom\Debug::print($count);
+	\Flydom\Debug::print($up);
+
+	if ($valid && $count) {
+		$prices = implode(',', $prices);
+		if ($up['price'] != $price || $up['prices'] != $prices || $up['count'] != $count) {
+			\Flydom\Db::update('store', [
+				'price'=>$price,
+				'prices'=>$prices,
+				'count'=>$count,
+			], [
+				'i'=>$key
+			]);
+
+			$updated++;
+		}
+
+		foreach ($typcnt as $typ=>$cnt) {
+			if (isset($typven[$typ]) && count($cnt) == count($children)) {
+				$vendor = $typven[$typ];
+				$exists = \Flydom\Db::fetchRow('SELECT i,dt,count FROM sync WHERE store='.$key.' AND vendor='.$vendor);
+				if ($exists) {
+					\Flydom\Db::update('sync', [
+						'dt'=>$updt,
+						'price'=>$price,
+						'opt'=>$price,
+						'count'=>($exists['dt'] == $updt ? $exists['count'] : 0) + min($cnt)
+					], ['i'=>$exists['i']]);
+				} else {
+					\Flydom\Db::insert('sync', [
+						'code'=>'',
+						'name'=>'',
+						'dt'=>$updt,
+						'store'=>$key,
+						'vendor'=>$vendor,
+						'price'=>$price,
+						'opt'=>$price,
+						'count'=>min($cnt)
+					]);
+				}
+			}
+		}
+
+	} else {
+		if ($up['price'] > 0 || $up['count'] > 0) {
+			\Flydom\Db::update('store', [
+				'price'=>0,
+				'count'=>0,
+			], [
+				'i'=>$key
+			]);
+
+			$updated++;
+		}
+	}
+}
+
+echo '<p>Ending...</p>';
+
+\Flydom\Debug::print($typven);
+\Flydom\Debug::print($updt);
+
+\Flydom\Db::delete('sync', [
+	'vendor IN ('.implode(',', $typven).')',
+	'dt<'.$updt,
+	'store'=>$complex
 ]);
-//*/
+
+echo $updated.'/'.count($data);

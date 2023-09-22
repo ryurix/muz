@@ -31,9 +31,9 @@ $data['every'] = $row['every'];
 
 $forms = array(
 	1=>'Выгрузка цены',
-	3=>'Выгрузка цен составных товаров',
+	//3=>'Выгрузка цен составных товаров',
 	11=>'Выгрузка количества',
-	13=>'Выгрузка количества составных товаров',
+	//13=>'Выгрузка количества составных товаров',
 	19=>'Обнуление количества',
 //	10=>'Обнуление всех',
 );
@@ -67,17 +67,16 @@ $plan = array(
 
 	'test'=>['name'=>'Артикул для теста', 'type'=>'number'],
 
-	'send'=>array('type'=>'button', 'count'=>2, 1=>'Сохранить', 2=>'Выгрузить'),
+	'send'=>array('type'=>'button', 'count'=>3, 1=>'Сохранить', 2=>'Выгрузить', 3=>'Удалить', 'confirm'=>[3=>'Удалить выгрузку?']),
 );
 
 w('request', $plan);
 w('invalid', $plan);
 
-if ($plan['form']['value'] == 3 || $plan['form']['value'] == 13) {
-	$plan['vendor']['type'] = 'hidden';
+if ($plan['send']['value'] == 3) {
+	\Flydom\Db::delete('cron', ['i'=>$row['i']]);
+	redirect('.');
 }
-
-$config['plan'] = $plan;
 
 if ($plan['']['valid']) {
 	$data = array(

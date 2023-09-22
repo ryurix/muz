@@ -43,6 +43,7 @@ class Order {
 			'mpi'=>null, // Код заказа marketplace
 			'mpdt'=>null, // День доставки marketplace
 			'sku'=>null,
+			'complex'=>0,
 		];
 	}
 
@@ -132,6 +133,7 @@ class Order {
 	function setMpdt($mpdt) { $this->row['mpdt'] = $mpdt; return $this; }
 	function getSku() { return $this->row['sku']; }
 	function setSku($sku) { $this->row['sku'] = $sku; return $this; }
+	function getComplex() { return $this->row['complex']; }
 
 	function save() {
 		if (!$this->row['i']) {
@@ -266,7 +268,7 @@ class Order {
 			.' WHERE vendor='.$this->row['vendor'].' AND store='.$this->row['store']);
 		db_query('UPDATE store SET count=count+'.$this->row['count']
 			.' WHERE vendor='.$this->row['vendor'].' AND i='.$this->row['store']);
-		alert('Количество '.$this->row['name'].' на складе '.$this->row['text']);
+		alert('Количество '.$this->row['name'].' на складе '.$text);
 
 		w('log');
 		logs(37, $this->row['i'], $text);

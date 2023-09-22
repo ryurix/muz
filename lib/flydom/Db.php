@@ -106,7 +106,9 @@ static function insert($table, $data) {
 	try {
 		$stmt = mysqli_stmt_init(self::$db);
 		mysqli_stmt_prepare($stmt, $query);
-		mysqli_stmt_bind_param($stmt, $types, ...$values);
+		if (count($values)) {
+			mysqli_stmt_bind_param($stmt, $types, ...$values);
+		}
 		mysqli_stmt_execute($stmt);
 		if (isset($stmt->errno) && $stmt->errno) {
 			echo '<p class="error-db">'.$stmt->error.'<br />'.$query.'</p>';
@@ -158,7 +160,9 @@ static function replace($table, $data) {
 	try {
 		$stmt = mysqli_stmt_init(self::$db);
 		mysqli_stmt_prepare($stmt, $query);
-		mysqli_stmt_bind_param($stmt, $types, ...$values);
+		if (count($values)) {
+			mysqli_stmt_bind_param($stmt, $types, ...$values);
+		}
 		mysqli_stmt_execute($stmt);
 		if (isset($stmt->errno) && $stmt->errno) {
 			echo '<p class="error-db">'.$stmt->error.'<br />'.$query.'</p>';
@@ -214,7 +218,9 @@ static function update($table, $data, $where) {
 	try {
 		$stmt = mysqli_stmt_init(self::$db);
 		mysqli_stmt_prepare($stmt, $query);
-		mysqli_stmt_bind_param($stmt, $types, ...$values);
+		if (count($values)) {
+			mysqli_stmt_bind_param($stmt, $types, ...$values);
+		}
 		mysqli_stmt_execute($stmt);
 		if (isset($stmt->errno) && $stmt->errno) {
 			echo '<p class="error-db">'.$stmt->error.'<br />'.$query.'</p>';
@@ -284,7 +290,9 @@ static function select($table, $data, $where = '', $more = '') {
 	try {
 		$stmt = mysqli_stmt_init(self::$db);
 		mysqli_stmt_prepare($stmt, $query);
-		mysqli_stmt_bind_param($stmt, $types, ...$values);
+		if (count($values)) {
+			mysqli_stmt_bind_param($stmt, $types, ...$values);
+		}
 		mysqli_stmt_execute($stmt);
 		if (isset($stmt->errno) && $stmt->errno) {
 			echo '<p class="error-db">'.$stmt->error.'<br />'.$query.'</p>';
@@ -323,7 +331,9 @@ static function delete($table, $where = '') {
 	}
 
 	$stmt = mysqli_prepare(self::$db, $query);
-	mysqli_stmt_bind_param($stmt, $types, ...$values);
+	if (count($values)) {
+		mysqli_stmt_bind_param($stmt, $types, ...$values);
+	}
 
 	try {
 		mysqli_stmt_execute($stmt);

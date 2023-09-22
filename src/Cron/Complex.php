@@ -71,7 +71,8 @@ class Complex extends Task {
 
 				if (isset($store[$i['store']]['sync'])) {
 					foreach ($store[$i['store']]['sync'] as $typ=>$cnt) {
-						$cnt = floor(max(0, $cnt - $i['minus']) / $i['amount']);
+						$reserve = \Tool\Reserve::get($i['store']);
+						$cnt = floor(max(0, $cnt - $i['minus'] - $reserve) / $i['amount']);
 						if (isset($typcnt[$typ])) {
 							$typcnt[$typ][] = $cnt;
 						} else {
@@ -98,7 +99,7 @@ class Complex extends Task {
 			}
 
 
-			if ($valid) {
+			if ($valid && $count) {
 				$prices = implode(',', $prices);
 				if ($up['price'] != $price || $up['prices'] != $prices || $up['count'] != $count) {
 					\Flydom\Db::update('store', [
@@ -113,16 +114,16 @@ class Complex extends Task {
 				}
 
 				foreach ($typcnt as $typ=>$cnt) {
-					if (isset($typven[$typ])) {
+					if (isset($typven[$typ]) && count($cnt) == count($children)) {
 						$vendor = $typven[$typ];
-						$exists = \Flydom\Db::result('SELECT i FROM sync WHERE store='.$key.' AND vendor='.$vendor);
+						$exists = \Flydom\Db::fetchRow('SELECT i,dt,count FROM sync WHERE store='.$key.' AND vendor='.$vendor);
 						if ($exists) {
 							\Flydom\Db::update('sync', [
 								'dt'=>$updt,
 								'price'=>$price,
 								'opt'=>$price,
-								'count'=>min($cnt)
-							], ['i'=>$exists]);
+								'count'=>($exists['dt'] == $updt ? $exists['count'] : 0) + min($cnt)
+							], ['i'=>$exists['i']]);
 						} else {
 							\Flydom\Db::insert('sync', [
 								'code'=>'',

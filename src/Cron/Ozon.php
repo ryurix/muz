@@ -47,9 +47,7 @@ class Ozon extends Task {
 					'mpi="'.addslashes($order['posting_number']).'"',
 					'user='.$order['user'],
 				];
-				if ($store) {
-					$where[] = 'store='.$store;
-				}
+				// if ($store) { $where[] = 'store='.$store; }
 
 				$exists = db_result('SELECT COUNT(*) FROM orst WHERE '.implode(' AND ', $where));
 				if ($exists) { continue; }
@@ -181,9 +179,8 @@ class Ozon extends Task {
 		$ozon = $config['ozon'][$order->getUser()];
 
 		// Ищем другие заказы того же номера в другом статусе
-		$all = db_fetch_all(db_select('i,mpi,count,sku,state', 'orst', [
-			'mpi'=>$order->getMpi(),
-		]), 'i');
+		//$all = db_fetch_all(db_select('i,count,sku,state,complex', 'orst', ['mpi'=>$order->getMpi()]), 'i');
+		$all = db_fetch_all("SELECT MIN(count) count,sku,state FROM orst WHERE mpi='".$order->getMpi()."' GROUP BY sku,state");
 
 		// Если нашлись -- ждём когда все заказы будут в одинаковом статусе
 		foreach ($all as $i) {
@@ -194,6 +191,7 @@ class Ozon extends Task {
 
 		$items = [];
 		foreach ($all as $i) {
+
 			$items[]= [
 	//			'exemplar_info'=>[
 	//				'is_gtd_absent'=>true,

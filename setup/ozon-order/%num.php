@@ -62,13 +62,16 @@ $plan = array(
 	'follow'=>array('name'=>'Следующая', 'type'=>'multich', 'values'=>$others, 'default'=>array(), 'placeholder'=>'Выберите выгрузку...'),
 	'test'=>['name'=>'Артикул для теста', 'type'=>'int'],
 
-	'send'=>array('type'=>'button', 'count'=>2, 1=>'Сохранить', 2=>'Выгрузить'),
+	'send'=>array('type'=>'button', 'count'=>3, 1=>'Сохранить', 2=>'Выгрузить', 3=>'Удалить', 'confirm'=>[3=>'Удалить выгрузку?']),
 );
 
 w('request', $plan);
 w('invalid', $plan);
 
-$config['plan'] = $plan;
+if ($plan['send']['value'] == 3) {
+	\Flydom\Db::delete('cron', ['i'=>$row['i']]);
+	redirect('.');
+}
 
 if ($plan['']['valid']) {
 	$data = array(
