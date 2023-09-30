@@ -223,6 +223,7 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'ozon'=>['name'=>'Выгрузка Ozon', 'role'=>'ozon', '/'=>[
 		'%num'=>[],
 		'cron'=>['name'=>'Запуск планировщика'],
+		'test'=>['name'=>'Тест получения заказов Ozon'],
 	]],
 	'wildberries'=>['name'=>'Выгрузка Wildberries', 'role'=>'wildberries', '/'=>[
 		'%num'=>[],

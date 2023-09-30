@@ -40,17 +40,17 @@ class Ozon extends Task {
 
 		foreach ($data as $order) {
 
+			$where = [
+				'mpi="'.addslashes($order['posting_number']).'"',
+				'user='.$order['user'],
+			];
+			// if ($store) { $where[] = 'store='.$store; }
+
+			$exists = db_result('SELECT COUNT(*) FROM orst WHERE '.implode(' AND ', $where));
+			if ($exists) { continue; }
+
 			foreach ($order['products'] as $item) {
 				$store = clean_09($item['offer_id']);
-
-				$where = [
-					'mpi="'.addslashes($order['posting_number']).'"',
-					'user='.$order['user'],
-				];
-				// if ($store) { $where[] = 'store='.$store; }
-
-				$exists = db_result('SELECT COUNT(*) FROM orst WHERE '.implode(' AND ', $where));
-				if ($exists) { continue; }
 
 				$mark = db_get_row('SELECT mark,mark2 FROM user WHERE i='.$order['user']);
 				$mark = $mark ? ','.trim($mark['mark'].','.$mark['mark2'], ',').',' : '';
