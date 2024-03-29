@@ -13,6 +13,13 @@ require_once '--/config.inc';
 require_once '--/first.inc';
 require_once '--/cache.inc';
 
+// ban by ip
+
+$ip = client_ip();
+if (substr($ip, 0, 6) == '47.128') { // compute.amazonaws.com
+	exit;
+}
+
 // 2. Connect to database
 
 require_once 'src/autoload.php';

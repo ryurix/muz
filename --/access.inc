@@ -157,7 +157,14 @@ function access_write($key, $data) {
 
 			if (!$uid) {
 				$ban = cache_load('ip-ban', []);
-				if (substr($ip, 0, 8) === '54.36.14' || substr($ip, 0, 12) === '185.191.171.' || in_array($ip, $ban)) {
+
+				$parts = explode('.', $ip);
+				$parts[3] = '*';
+				$one = implode('.', $parts);
+				$parts[2] = '*';
+				$two = implode('.', $parts);
+
+				if (in_array($ip, $ban) || in_array($one, $ban) || in_array($two, $ban)) {
 					// header('HTTP/1.0 403 Forbidden', true, 403);
 					exit;
 				}

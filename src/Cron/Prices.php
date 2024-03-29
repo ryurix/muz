@@ -14,7 +14,7 @@ class Prices extends Task {
 		foreach ($rules as $rule) {
 			$count[]= self::calc($rule);
 		}
-		return max($count);
+		return count($count) ? max($count) : 0;
 	}
 
 	static function calc($rule) {

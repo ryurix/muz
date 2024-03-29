@@ -1,6 +1,7 @@
 <table class="table">
 	<thead>
 		<tr>
+			<th>#</th>
 			<th>Название</th>
 			<th>Дата следующего запуска</th>
 			<th>Файл</th>
@@ -15,6 +16,7 @@ $q = db_query('SELECT * FROM cron WHERE typ=1 ORDER BY dt');
 while ($i = db_fetch($q)) {
 	echo '
 <tr>
+	<td>'.$i['i'].'</td>
 	<td><a href="/setup/yml/'.$i['i'].'">'.$i['name'].'</a></td>
 	<td><a href="/setup/yml/'.$i['i'].'">'.($i['every'] > 0 ? ft($i['dt'], 1) : '').'</a></td>
 	<td>'.$i['info'].'</td>

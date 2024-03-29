@@ -1,0 +1,11 @@
+<?
+
+w('form', $plan);
+
+if (count($ban)) {
+	echo '<p>';
+	foreach ($ban as $i) {
+		echo '<button class="btn btn-outline-secondary mt-1" onclick="$(\'#ip\').val($(this).html());">'.$i.'</button> ';
+	}
+	echo '</p>';
+}

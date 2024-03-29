@@ -158,15 +158,17 @@ set_user_config($setup, $values);
 
 if ($plan['send']['value'] == 2) {
 	$values = get_user_config($setup.'2', []);
+	$values['dt1']+= now();
+	$values['dt2']+= now();
 	set_user_config($setup, $values);
-	$values['dt1'] = now() - 183*24*60*60;
-	$values['dt2'] = ft_parse(ft(now())) + 24*60*60 - 1;
 	set_array($plan, 'value', $values);
 }
 
 if ($plan['send']['value'] == 3) {
 //	unset($values['dt1']);
 //	unset($values['dt2']);
+	$values['dt1']-= now();
+	$values['dt2']-= now();
 	set_user_config($setup.'2', $values);
 }
 
@@ -364,7 +366,6 @@ case 17:$select.= 'code'; break;
 case 117:$select.= 'code DESC'; break;
 }
 $select.= ',orst.user';
-
 
 
 if ((is_user('link') || $filter_user)

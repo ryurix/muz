@@ -1,6 +1,6 @@
 <?
 
-$cron = $exts['cron'];
+$cron = kv($exts, 'cron', 0);
 
 $q = db_query('SELECT * FROM cron WHERE i='.$cron);
 if (!$cron = db_fetch($q)) {

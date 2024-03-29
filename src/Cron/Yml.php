@@ -55,7 +55,7 @@ class Yml extends Task {
 
 		fwrite($f, '<?xml version="1.0" encoding="UTF-8"?>
 		<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
-		<yml_catalog date="'.date('Y-m-d H:i', now()-2*60*60).'">
+		<yml_catalog date="'.date('Y-m-d\TH:i+03:00', now()-2*60*60).'">
 			<shop>
 				<name>'.$config['title'].'</name>
 				<company>ООО "КАЙРОС"</company>
@@ -131,9 +131,15 @@ class Yml extends Task {
 			$brand = htmlspecialchars($brands[$i['brand']]);
 			$i['count'] = max(0, $i['count'] - kv($data, 'minus', 0) - kv($reserve, $i['i'], 0));
 			$available = $i['count'] ? 'true' : 'false';
+			$offer_id = $data['form'] == 'goods' ? $i['i'] : 'М'.$i['i'];
 			if (strlen($i['model']) && strlen($brand)) {
 				$name = $brand.' '.$i['model'].' '.$i['name'];
-				fwrite($f, '<offer id="'.$i['i'].'" type="vendor.model" available="'.$available.'">'."\n");
+
+				if ($data['form'] != 'yandex+count') {
+					fwrite($f, '<offer id="'.$offer_id.'" type="vendor.model" available="'.$available.'">'."\n");
+				} else {
+					fwrite($f, '<offer id="'.$offer_id.'" available="'.$available.'">'."\n");
+				}
 		//		fwrite($f, '<vendorCode>'.htmlspecialchars($i['model']).'</vendorCode>'."\n";
 				fwrite($f, '<vendor>'.$brand.'</vendor>'."\n");
 
@@ -147,10 +153,9 @@ class Yml extends Task {
 					fwrite($f, '<name>'.htmlspecialchars($name).'</name>'."\n");
 				}
 
-
 			} else {
 				$name = trim($brand.' '.(strlen($i['model']) ? $i['model'].' ' : '').$i['name']);
-				fwrite($f, '<offer id="'.$i['i'].'" available="'.$available.'">'."\n");
+				fwrite($f, '<offer id="'.$offer_id.'" available="'.$available.'">'."\n");
 				if ($data['form'] != 'cdek') {
 					fwrite($f, '<name>'.htmlspecialchars($name).'</name>'."\n");
 				}
@@ -162,6 +167,7 @@ class Yml extends Task {
 
 			fwrite($f, '<url>https://'.$site.'/store/'.$i['url'].'</url>'."\n");
 			fwrite($f, '<price>'.$price.'</price>'."\n");
+			fwrite($f, '<oldprice>'.round($price*1.18).'</oldprice>'."\n");
 			fwrite($f, '<currencyId>RUR</currencyId>'."\n");
 			fwrite($f, '<categoryId>'.$i['up'].'</categoryId>'."\n");
 			if (strlen($i['pic'])) {
@@ -193,7 +199,9 @@ class Yml extends Task {
 			fwrite($f, '<delivery>true</delivery>'."\n");
 
 			fwrite($f, '<vat>NO_VAT</vat>'."\n");
-			fwrite($f, '<shop-sku>М'.$i['i'].'</shop-sku>'."\n");
+			if ($data['form'] == 'goods') {
+				fwrite($f, '<shop-sku>М'.$i['i'].'</shop-sku>'."\n"); // shop-sku устарел для яндекса
+			}
 			fwrite($f, '<barcode>'.self::calc_barcode($i['i']).'</barcode>'."\n");
 			if ($data['form'] == 'goods') { // Гудс
 				fwrite($f, '<outlets><outlet id="1" instock="'.$i['count'].'" /></outlets>'."\n");
@@ -202,6 +210,9 @@ class Yml extends Task {
 				fwrite($f, '<count>'.$i['count'].'</count>'."\n");
 				fwrite($f, '<manufacturer>'.$brand.'</manufacturer>'."\n");
 				fwrite($f, '<country_of_origin>Китай</country_of_origin>'."\n");
+			}
+			if ($data['form'] == 'goods') {
+				fwrite($f, '<count>'.$i['count'].'</count>'."\n");
 			}
 
 			$speed = get_speed_i($i['vendor'], $city, $i['count']);

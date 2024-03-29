@@ -50,5 +50,3 @@ function set_array(&$plan, $field, $values) {
 		}
 	}
 }
-
-?>

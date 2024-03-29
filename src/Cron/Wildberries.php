@@ -485,8 +485,10 @@ class Wildberries extends Task {
 			$result = kv(json_decode($result, 1), 'orders', []);
 			foreach ($result as $order) {
 
+
 				if ($order['wbStatus'] != 'canceled'
-				&& $order['wbStatus'] != 'canceled_by_client') {
+				&& $order['wbStatus'] != 'canceled_by_client'
+				&& $order['wbStatus'] != 'declined_by_client') {
 					continue;
 				}
 

@@ -1,0 +1,22 @@
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>IP</th>
+			<th>Домен</th>
+			<th>Количество</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+	foreach ($rows as $k=>$v) {
+		echo '
+<tr>
+	<td>'.$k.'</td>
+	<td>'.(strlen($k) ? gethostbyaddr($k) : '').'</td>
+	<td>'.$v.'</td>
+</tr>
+';
+	}
+?>
+	</tbody>
+</table>
