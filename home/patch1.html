@@ -1,0 +1,46 @@
+<?
+
+$table = db_fetch_all('DESCRIBE prices', 'Field');
+if (!array_key_exists('typ', $table)) {
+	db_query('ALTER TABLE `prices` ADD `typ` tinyint DEFAULT 0;');
+	db_query('ALTER TABLE `prices` ADD `pmax` int DEFAULT 0 AFTER price;');
+	db_query('ALTER TABLE `prices` ADD `pmin` int DEFAULT 0 AFTER price;');
+}
+
+$table = db_fetch_all('DESCRIBE store', 'Field');
+if (!array_key_exists('prices', $table)) {
+	db_query('ALTER TABLE `store` ADD `prices` tinytext AFTER price;');
+}
+
+$exist = count(\Flydom\Db::fetchAll('SHOW TABLES LIKE "log2"'));
+if (!$exist) {
+	\Flydom\Db::query('
+CREATE TABLE `log2` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`dt` datetime NOT NULL DEFAULT current_timestamp(),
+`typ` int(11) NOT NULL,
+`code` int(11) DEFAULT NULL,
+`info` text COLLATE utf8_unicode_ci DEFAULT NULL,
+`usr` int(11) DEFAULT NULL,
+KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+}
+
+$table = db_fetch_all('DESCRIBE store', 'Field');
+if (!array_key_exists('complex', $table)) {
+	db_query('ALTER TABLE `store` ADD `complex` tinyint DEFAULT 0;');
+	db_query('ALTER TABLE `store` DROP COLUMN `rule2`');
+}
+
+$exist = count(\Flydom\Db::fetchAll('SHOW TABLES LIKE "complex"'));
+if (!$exist) {
+	\Flydom\Db::query('
+CREATE TABLE `complex` (
+`up` int(11) DEFAULT NULL,
+`store` int(11) DEFAULT NULL,
+`amount` int(11) DEFAULT NULL,
+`minus` int(11) DEFAULT NULL,
+`sale` int(11) DEFAULT NULL,
+INDEX `up` (`up`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+}

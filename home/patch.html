@@ -1,46 +1,82 @@
-<?
+<?php
 
-$table = db_fetch_all('DESCRIBE prices', 'Field');
-if (!array_key_exists('typ', $table)) {
-	db_query('ALTER TABLE `prices` ADD `typ` tinyint DEFAULT 0;');
-	db_query('ALTER TABLE `prices` ADD `pmax` int DEFAULT 0 AFTER price;');
-	db_query('ALTER TABLE `prices` ADD `pmin` int DEFAULT 0 AFTER price;');
+function scan_class($root, $path, &$class) {
+	$scan = scandir($root.'/'.$path);
+	foreach ($scan as $k=>$v) {
+		if ($v != '.' && $v != '..') {
+			$fullname = $path.'/'.$v;
+
+			if (is_dir($root.'/'.$fullname)) {
+				scan_class($root, $fullname, $class);
+				continue;
+			}
+
+			if (!is_file($root.'/'.$fullname) || substr($v, -3) !== 'php') {
+				continue;
+			}
+
+			$php = file_get_contents($root.'/'.$fullname);
+
+			if (preg_match('#class\\s+([A-Za-z0-9\\\\]+?)[\\s;]*#sUm', $php, $m)) {
+				$classname = $m[1];
+			} else {
+				$classname = null;
+			}
+
+			if (preg_match('#(namespace)(\\s+)([A-Za-z0-9\\\\]+?)(\\s*);#sm', $php, $m)) {
+				$namespace = str_replace('/', '\\', $m[3]);
+			} else {
+				$namespace = null;
+			}
+
+			if (is_null($classname)) {
+				continue;
+			}
+
+			if (mb_substr($v, 0, mb_strlen($classname)) == $classname) {
+				if (is_null($namespace)) {
+					$class[$classname] = $fullname;
+				} else {
+					$class[$namespace.'\\'.$classname] = $fullname;
+				}
+			}
+		}
+	}
+
+	return $class;
 }
 
-$table = db_fetch_all('DESCRIBE store', 'Field');
-if (!array_key_exists('prices', $table)) {
-	db_query('ALTER TABLE `store` ADD `prices` tinytext AFTER price;');
+$root = __DIR__.'/..';
+
+$class = [];
+scan_class($root, 'src', $class);
+scan_class($root, 'lib', $class);
+
+$before = filesize($root.'/src/autoload.php');
+
+file_put_contents($root.'/src/autoload.php', '<?php
+
+$autoload = '.\Flydom\Cache::php_encode($class).';
+
+spl_autoload_register(function ($name) use ($autoload) {
+	if (isset($autoload[$name])) {
+		include_once __DIR__."/../".$autoload[$name];
+	}
+});
+
+unset($autoload);');
+
+clearstatcache(true, $root.'/src/autoload.php');
+$diff = filesize($root.'/src/autoload.php') - $before;
+
+if ($diff != 0) {
+	\Flydom\Alert::warning('Autoload update: '.$diff);
 }
 
-$exist = count(\Flydom\Db::fetchAll('SHOW TABLES LIKE "log2"'));
-if (!$exist) {
-	\Flydom\Db::query('
-CREATE TABLE `log2` (
-`id` int(11) NOT NULL AUTO_INCREMENT,
-`dt` datetime NOT NULL DEFAULT current_timestamp(),
-`typ` int(11) NOT NULL,
-`code` int(11) DEFAULT NULL,
-`info` text COLLATE utf8_unicode_ci DEFAULT NULL,
-`usr` int(11) DEFAULT NULL,
-KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
-}
+\Flydom\Alert::echo();
 
-$table = db_fetch_all('DESCRIBE store', 'Field');
-if (!array_key_exists('complex', $table)) {
-	db_query('ALTER TABLE `store` ADD `complex` tinyint DEFAULT 0;');
-	db_query('ALTER TABLE `store` DROP COLUMN `rule2`');
-}
-
-$exist = count(\Flydom\Db::fetchAll('SHOW TABLES LIKE "complex"'));
-if (!$exist) {
-	\Flydom\Db::query('
-CREATE TABLE `complex` (
-`up` int(11) DEFAULT NULL,
-`store` int(11) DEFAULT NULL,
-`amount` int(11) DEFAULT NULL,
-`minus` int(11) DEFAULT NULL,
-`sale` int(11) DEFAULT NULL,
-INDEX `up` (`up`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
+$i = 1;
+while (file_exists(__DIR__.'/patch'.$i.'.html')) {
+	include_once __DIR__.'/patch'.$i.'.html';
+	$i++;
 }

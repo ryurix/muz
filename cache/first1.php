@@ -1,1 +1,0 @@
-<a href="/reshenia"> <img src="/design/solutions.jpg" class="img-circle"> <h2>Решения</h2> </a>

@@ -1,1 +1,0 @@
-<?$v=array('type'=>'InPaymentReceived','code'=>'75785154','bill'=>'unknown')?>

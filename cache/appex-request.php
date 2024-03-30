@@ -1,1 +1,0 @@
-<?$v=array('issueDate'=>'2018-11-29T16:58:00','workingShift'=>'37','fiscalNumber'=>'8710000101562633','amount'=>'1650.00','position'=>'1271','eventType'=>'FiscalReceiptIssued')?>

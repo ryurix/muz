@@ -1,1 +1,0 @@
-<a href="/proekti"> <img src="/design/design.jpg" class="img-circle"> <h2>Проекты</h2> </a>

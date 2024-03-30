@@ -1,1 +1,0 @@
-<a href="/prodaja"> <img src="/design/sale.jpg" class="img-circle"> <h2>Продажа</h2> </a>

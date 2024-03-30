@@ -16,6 +16,7 @@ config.php
 *].php
 *.xml
 files/sync/*.*
+lib/flydom
 
 
 

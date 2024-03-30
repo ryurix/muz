@@ -1,1 +1,0 @@
-<?$v=array('yandex'=>array('dt'=>1560422855,'count'=>'28171/19638/10964'),'google-merchant'=>array('dt'=>1562853271,'count'=>19745))?>
