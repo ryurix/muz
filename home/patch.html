@@ -49,8 +49,9 @@ function scan_class($root, $path, &$class) {
 $root = __DIR__.'/..';
 
 $class = [];
-scan_class($root, 'src', $class);
 scan_class($root, 'lib', $class);
+scan_class($root, 'src', $class);
+
 
 $before = filesize($root.'/src/autoload.php');
 
