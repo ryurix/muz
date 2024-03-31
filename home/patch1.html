@@ -12,9 +12,9 @@ if (!array_key_exists('prices', $table)) {
 	db_query('ALTER TABLE `store` ADD `prices` tinytext AFTER price;');
 }
 
-$exist = count(\Flydom\Db::fetchAll('SHOW TABLES LIKE "log2"'));
+$exist = count(\Db::fetchAll('SHOW TABLES LIKE "log2"'));
 if (!$exist) {
-	\Flydom\Db::query('
+	\Db::query('
 CREATE TABLE `log2` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
 `dt` datetime NOT NULL DEFAULT current_timestamp(),
@@ -32,9 +32,9 @@ if (!array_key_exists('complex', $table)) {
 	db_query('ALTER TABLE `store` DROP COLUMN `rule2`');
 }
 
-$exist = count(\Flydom\Db::fetchAll('SHOW TABLES LIKE "complex"'));
+$exist = count(\Db::fetchAll('SHOW TABLES LIKE "complex"'));
 if (!$exist) {
-	\Flydom\Db::query('
+	\Db::query('
 CREATE TABLE `complex` (
 `up` int(11) DEFAULT NULL,
 `store` int(11) DEFAULT NULL,

@@ -10,8 +10,8 @@ class Complex extends Task {
 		$data = [];
 		$store = [];
 
-		$q = \Flydom\Db::query('SELECT * FROM complex'); // WHERE up=176418
-		while ($i = \Flydom\Db::fetch($q)) {
+		$q = \Db::query('SELECT * FROM complex'); // WHERE up=176418
+		while ($i = \Db::fetch($q)) {
 			if (isset($data[$i['up']])) {
 				$data[$i['up']][] = $i;
 			} else {
@@ -20,12 +20,12 @@ class Complex extends Task {
 			$store[$i['up']] = 1;
 			$store[$i['store']] = 1;
 		}
-		\Flydom\Db::free($q);
+		\Db::free($q);
 
-		$store = \Flydom\Db::fetchAll('SELECT i,price,prices,count,complex FROM store WHERE i IN ('.implode(',', array_keys($store)).')', 'i', true);
+		$store = \Db::fetchAll('SELECT i,price,prices,count,complex FROM store WHERE i IN ('.implode(',', array_keys($store)).')', 'i', true);
 
 		// Получаем количество по группам складов, без удалённых складов
-		$sync = \Flydom\Db::fetchAll('SELECT sync.store,vendor.typ, SUM(sync.count) cnt FROM sync INNER JOIN vendor ON vendor.i=sync.vendor'
+		$sync = \Db::fetchAll('SELECT sync.store,vendor.typ, SUM(sync.count) cnt FROM sync INNER JOIN vendor ON vendor.i=sync.vendor'
 		.' WHERE vendor.typ<>21 AND sync.store IN ('.implode(',', array_keys($store)).') GROUP BY sync.store,vendor.typ');
 		foreach ($sync as $i) {
 			if (isset($store[$i['store']]['sync'])) {
@@ -43,7 +43,7 @@ class Complex extends Task {
 		foreach ($data as $key=>$children) {
 
 			if (!isset($store[$key]) || !$store[$key]['complex']) {
-				\Flydom\Db::query('DELETE FROM complex WHERE up='.$key);
+				\Db::query('DELETE FROM complex WHERE up='.$key);
 				continue;
 			}
 
@@ -57,7 +57,7 @@ class Complex extends Task {
 			foreach ($children as $i) {
 
 				if (!isset($store[$i['store']])) {
-					\Flydom\Db::query('DELETE FROM complex WHERE up='.$key.' AND store='.$i['store']);
+					\Db::query('DELETE FROM complex WHERE up='.$key.' AND store='.$i['store']);
 					$valid = false;
 					break;
 				}
@@ -102,7 +102,7 @@ class Complex extends Task {
 			if ($valid && $count) {
 				$prices = implode(',', $prices);
 				if ($up['price'] != $price || $up['prices'] != $prices || $up['count'] != $count) {
-					\Flydom\Db::update('store', [
+					\Db::update('store', [
 						'price'=>$price,
 						'prices'=>$prices,
 						'count'=>$count,
@@ -116,16 +116,16 @@ class Complex extends Task {
 				foreach ($typcnt as $typ=>$cnt) {
 					if (isset($typven[$typ]) && count($cnt) == count($children)) {
 						$vendor = $typven[$typ];
-						$exists = \Flydom\Db::fetchRow('SELECT i,dt,count FROM sync WHERE store='.$key.' AND vendor='.$vendor);
+						$exists = \Db::fetchRow('SELECT i,dt,count FROM sync WHERE store='.$key.' AND vendor='.$vendor);
 						if ($exists) {
-							\Flydom\Db::update('sync', [
+							\Db::update('sync', [
 								'dt'=>$updt,
 								'price'=>$price,
 								'opt'=>$price,
 								'count'=>($exists['dt'] == $updt ? $exists['count'] : 0) + min($cnt)
 							], ['i'=>$exists['i']]);
 						} else {
-							\Flydom\Db::insert('sync', [
+							\Db::insert('sync', [
 								'code'=>'',
 								'name'=>'',
 								'dt'=>$updt,
@@ -141,7 +141,7 @@ class Complex extends Task {
 
 			} else {
 				if ($up['price'] > 0 || $up['count'] > 0) {
-					\Flydom\Db::update('store', [
+					\Db::update('store', [
 						'price'=>0,
 						'count'=>0,
 					], [
@@ -153,7 +153,7 @@ class Complex extends Task {
 			}
 		}
 
-		\Flydom\Db::delete('sync', [
+		\Db::delete('sync', [
 			'vendor IN ('.implode(',', $typven).')',
 			'dt<'.$updt,
 		]);

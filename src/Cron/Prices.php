@@ -10,7 +10,7 @@ class Prices extends Task {
 
 	static function calc_all($type) {
 		$count = [];
-		$rules = \Flydom\Db::fetchAll('SELECT * FROM prices WHERE typ='.$type.' ORDER BY i');
+		$rules = \Db::fetchAll('SELECT * FROM prices WHERE typ='.$type.' ORDER BY i');
 		foreach ($rules as $rule) {
 			$count[]= self::calc($rule);
 		}

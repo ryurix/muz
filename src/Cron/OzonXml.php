@@ -123,7 +123,7 @@ class OzonXml extends Task {
 
 		$min = max(0, kv($args, 'min', 0));
 
-		$rows = \Flydom\Db::fetchAll($select, 'i');
+		$rows = \Db::fetchAll($select, 'i');
 
 		$reserve = \Tool\Reserve::get(array_keys($rows));
 

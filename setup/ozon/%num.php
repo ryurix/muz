@@ -74,7 +74,7 @@ w('request', $plan);
 w('invalid', $plan);
 
 if ($plan['send']['value'] == 3) {
-	\Flydom\Db::delete('cron', ['i'=>$row['i']]);
+	\Db::delete('cron', ['i'=>$row['i']]);
 	redirect('.');
 }
 

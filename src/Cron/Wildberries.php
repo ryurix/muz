@@ -397,11 +397,11 @@ class Wildberries extends Task {
 				//$q = db_query('SELECT wb.chrt,store.name,store.model,store.brand,store.i store FROM store,wb WHERE wb.store=store.i AND wb.chrt="'.$order['chrtId'].'"');
 				//$i = db_fetch($q);
 				//db_close($q);
-				$store = \Flydom\Db::fetchRow('SELECT wb.chrt,store.name,store.model,store.brand,store.i FROM store,wb WHERE wb.store=store.i AND wb.chrt="'.$order['chrtId'].'"');
+				$store = \Db::fetchRow('SELECT wb.chrt,store.name,store.model,store.brand,store.i FROM store,wb WHERE wb.store=store.i AND wb.chrt="'.$order['chrtId'].'"');
 				if (!$store) {
 					$i = self::parse_article($order['article']);
 					if ($i) {
-						$store = \Flydom\Db::fetchRow('SELECT wb.chrt,store.name,store.model,store.brand,store.i FROM store,wb WHERE wb.store=store.i AND store.i='.$i);
+						$store = \Db::fetchRow('SELECT wb.chrt,store.name,store.model,store.brand,store.i FROM store,wb WHERE wb.store=store.i AND store.i='.$i);
 					}
 				}
 
@@ -457,7 +457,7 @@ class Wildberries extends Task {
 
 		$count = 0;
 
-		$orders = \Flydom\Db::fetchArray('SELECT mpi FROM orst WHERE state<30 AND user="'.$user.'"');
+		$orders = \Db::fetchArray('SELECT mpi FROM orst WHERE state<30 AND user="'.$user.'"');
 
 		if (count($orders)) {
 

@@ -5,7 +5,7 @@ $exclude = ['/^custom$/', 'files', 'cache', 'design/logo.png', 'config.php'
 	, 'design/img', 'doc/template', 'design/brands', 'design/catalog', 'design/images'
 	,'/^config.inc$/', '/^cgi-bin$/'
 	, '/[^\\/]+\\[/', '/^_.*$/', '/^\\.htaccess$/' , '/^https.*$/'
-	, '/^https.inc$/', '/\\.cw\\.dat$/', '/\\.cw127\\.php$/', '/\\.mtx\\.php$/', '.svn', '.git', '.vscode', '/\\.sql\\.gz/'
+	, '/^https.inc$/', '/\\.cw\\.dat$/', '/\\.cw127\\.php$/', '/\\.mtx\\.php$/', '/\\.sql\\.gz/'
 ];
 
 /* not get */
@@ -13,7 +13,7 @@ $not_get = ['/^custom$/', 'files', 'cache', 'design/logo.png', 'config.php'
 	, 'design/img', 'doc/template', 'design/brands', 'design/catalog', 'design/images'
 	,'/^config.inc$/', '/^cgi-bin$/'
 	, '/[^\\/]+\\[/', '/^_.*$/', '/^\\.htaccess$/' , '/^https.*$/'
-	, '/^https.inc$/', '/\\.cw\\.dat$/', '/\\.cw127\\.php$/', '/\\.mtx\\.php$/', '.svn', '.git', '.vscode', '/\\.sql\\.gz/'
+	, '/^https.inc$/', '/\\.cw\\.dat$/', '/\\.cw127\\.php$/', '/\\.mtx\\.php$/', '/\\.sql\\.gz/'
 ];
 
 $upd_pass = 'MusicMart01';
@@ -24,8 +24,8 @@ if (!function_exists('scan_dir')) {
 
 function scan_dir($root, $path, $exclude, &$a) {
 	$scan = scandir($root.$path);
-	foreach ($scan as $k=>$v) {
-		if ($v != '.' && $v != '..') {
+	foreach ($scan as $v) {
+		if (mb_substr($v, 0, 1) != '.') {
 			$fullname = $path.'/'.$v;
 
 			$skip = FALSE;

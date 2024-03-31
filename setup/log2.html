@@ -1,13 +1,15 @@
 <?
 
+use \Flydom\Form\Form;
+
 w('flydom');
-if (!\Flydom\Db::connected()) {
-	\Flydom\Db::connect($config['database']);
+if (!\Db::connected()) {
+	\Db::connect($config['database']);
 }
 
 w('ft');
 
-$type = [-1=>''] + \Flydom\LogType::list();
+$type = [-1=>''] + \Flydom\Type\Log::name();
 
 $plan = [
 	'type'=>['name'=>'Тип', 'type'=>'select', 'values'=>$type, 'default'=>-1],
@@ -16,37 +18,37 @@ $plan = [
 	'user'=>['name'=>'Пользователь', 'type'=>'line'],
 	'code'=>['name'=>'Код', 'type'=>'integer'],
 	'sum' =>['label'=>'Суммировать одинаковые', 'type'=>'checkbox', 'default'=>true],
-	'send'=>['type'=>'button', 'count'=>2, 1=>'Фильтровать', 2=>'Удалить', 'class'=>[2=>'btn-danger'], 'confirm'=>[2=>'Удалить записи лога? Восстановление невозможно!']],
+	'send'=>['type'=>'button', 'codes'=>2, 1=>'Фильтровать', 2=>'Удалить', 'class'=>[2=>'btn-danger'], 'confirm'=>[2=>'Удалить записи лога? Восстановление невозможно!']],
 ];
 
-$form = new \Flydom\Form($plan);
-$form->parse();
-echo $form->build();
+Form::load($plan);
+Form::parse();
+echo Form::build();
 
-$where = ' WHERE l.dt BETWEEN "'.date('Y-m-d H:i', $form->dt1).'" AND "'.date('Y-m-d H:i', $form->dt2).'"';
+$where = ' WHERE l.dt BETWEEN "'.date('Y-m-d H:i', Form::get('dt1')).'" AND "'.date('Y-m-d H:i', Form::get('dt2')).'"';
 
-if ($form->type >= 0) {
-	$where.= ' AND l.typ='.$form->type;
+if (Form::get('type') >= 0) {
+	$where.= ' AND l.typ='.Form::get('type');
 }
 
-if (strlen($form->user)) {
-	if ($form->user == '0') {
+if (strlen(Form::get('user'))) {
+	if (Form::get('user') == '0') {
 		$where.= ' AND l.user=0';
 	} else {
-		$where.= ' AND u.quick LIKE "%'.addslashes($form->user).'%"';
+		$where.= ' AND u.quick LIKE "%'.addslashes(Form::get('user')).'%"';
 	}
 }
 
-if (strlen($form->code) && $form->code) {
-	$where.= ' AND l.code='.$form->code;
+if (strlen(Form::get('code')) && Form::get('code')) {
+	$where.= ' AND l.code='.Form::get('code');
 }
 
-if ($form->send == 2) {
-	$ids = \Flydom\Db::fetchArray("SELECT l.id FROM log2 l $where");
-	\Flydom\Db::query('DELETE FROM log2 WHERE id IN ('.implode(',', $ids).')');
+if (Form::get('send') == 2) {
+	$ids = \Db::fetchList("SELECT l.id FROM log2 l $where");
+	\Db::query('DELETE FROM log2 WHERE id IN ('.implode(',', $ids).')');
 }
 
-$sum = $form->sum;
+$sum = Form::get('sum');
 
 ?>
 <table class="table table-bordered table-striped">
@@ -74,8 +76,8 @@ $select = "SELECT l.id,l.dt, l.typ type, l.usr, l.code, l.info, 1 cnt FROM log2 
 
 $data = [];
 
-$q = \Flydom\Db::query($select);
-while ($i = \Flydom\Db::fetch($q)) {
+$q = \Db::query($select);
+while ($i = \Db::fetch($q)) {
 	$key = $sum ? str_replace([0,1,2,3,4,5,6,7,8,9], '', $i['info']) : $i['id'];
 	if (isset($data[$key])) {
 		$i['cnt']+= $data[$key]['cnt'];
@@ -83,7 +85,7 @@ while ($i = \Flydom\Db::fetch($q)) {
 	}
 	$data[$key] = $i;
 }
-\Flydom\Db::free($q);
+\Db::free($q);
 
 foreach ($data as $i) {
 	$count++;

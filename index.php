@@ -23,7 +23,7 @@ if (substr($ip, 0, 6) == '47.128') { // compute.amazonaws.com
 // 2. Connect to database
 
 require_once 'src/autoload.php';
-\Flydom\Db::connect(\Config::DATABASE);
+//\Db::connect(\Config::DATABASE);
 require_once 'lib/flydom/log2.php';
 
 if (isset($config['database'])) {

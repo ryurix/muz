@@ -210,7 +210,7 @@ $url = '/catalog/'.$row['url'];
 if (count($param)) {
 	$url.= '/'.params($param, $params);
 }
-if (rtrim($url, '/') != str_replace(' ', '+', $config['q'])) {
+if (rtrim($url, '/') != rtrim(str_replace(' ', '+', $config['q']), '/')) {
 	redirect($url, 301);
 }
 

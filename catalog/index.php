@@ -1,6 +1,4 @@
 <?
 
-$config['args'] = array(0);
+$config['args'] = [0];
 rebody('%abc');
-
-?>

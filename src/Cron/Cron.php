@@ -2,7 +2,7 @@
 
 namespace Type;
 
-class Cron extends \Flydom\Type\Base
+class Cron extends \Flydom\Type\Cron
 {
 	const YML = 1;
 	const OZON_XML = 10;
@@ -23,7 +23,7 @@ class Cron extends \Flydom\Type\Base
 	const OZON = 111;
 
 
-	const DATA = [
+	const DATA = parent::DATA + [
 		self::YML => [ 'name'=>'Выгрузка YML', 'class'=>'\Cron\Yml::run', ],
 		self::OZON_XML => [ 'name'=>'Выгрузка Ozon', 'class'=>'\Cron\OzonXml::run', ],
 		self::WILDBERRIES => [ 'name'=>'Выгрузка Wildberries', 'class'=>'\Cron\Wildberries::run', ],
@@ -41,23 +41,5 @@ class Cron extends \Flydom\Type\Base
 		self::SESSION => [ 'name'=>'Очистка сессий', 'class'=>'\Cron\Session::run', ],
 		self::OZON => [ 'name'=>'Озон обработка заказов', 'class'=>'\Cron\Ozon::run', ],
 	];
-
-	static function names($min = 0) {
-		$names = [];
-		foreach (self::DATA as $k=>$v) {
-			if ($k >= $min) {
-				$names[$k] = $v['name'];
-			}
-		}
-		return $names;
-	}
-
-	static function name($code = null, $default = null) {
-		return parent::data(self::DATA, 'name', $code, $default);
-	}
-
-	static function class($code = null, $default = null) {
-		return parent::data(self::DATA, 'class', $code, $default);
-	}
 
 } // CronType

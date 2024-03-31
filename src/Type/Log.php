@@ -2,21 +2,15 @@
 
 namespace Type;
 
-class Log extends \Flydom\LogType
+class Log extends \Flydom\Type\Log
 {
 
-static function list() {
-	return parent::list() + [
-
-		// 10-29 tovar events
-		10=>'Создание товара в кабинете',
-		11=>'Создание дочернего товара в кабинете',
-		12=>'Создание товара через excel',
-		13=>'Создание дочернего товара через excel',
-		20=>'Импорт товара из Bitrix',
-	//	22=>'Создание товара из Global',
-
-	];
-}
+const DATA = parent::DATA + [
+	10=>['name'=>'Создание товара в кабинете', 'days'=>365],
+	11=>['name'=>'Создание дочернего товара в кабинете', 'days'=>365],
+	12=>['name'=>'Создание товара через excel', 'days'=>365],
+	13=>['name'=>'Создание дочернего товара через excel', 'days'=>365],
+	20=>['name'=>'Импорт товара из Bitrix', 'days'=>365],
+];
 
 } // Log

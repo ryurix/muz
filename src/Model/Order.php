@@ -53,7 +53,7 @@ class Order {
 		if (is_array($id)) {
 			$row = array_intersect_key($id, $this->default());
 		} else {
-			$row = $id ? \Flydom\Db::fetchRow('SELECT * FROM orst WHERE i='.$id) : null;
+			$row = $id ? \Db::fetchRow('SELECT * FROM orst WHERE i='.$id) : null;
 		}
 
 		if (is_null($row)) {
@@ -155,7 +155,7 @@ class Order {
 
 		$ids = [];
 
-		$complex = \Flydom\Db::fetchAll('SELECT c.*, s.price, s.brand, s.model, s.name FROM complex c LEFT JOIN store s ON c.store=s.i WHERE c.up='.$data['store']);
+		$complex = \Db::fetchAll('SELECT c.*, s.price, s.brand, s.model, s.name FROM complex c LEFT JOIN store s ON c.store=s.i WHERE c.up='.$data['store']);
 
 		if (count($complex)) {
 			$first = null;
@@ -170,8 +170,8 @@ class Order {
 				$child['note'] = trim($data['note'].' составной: '.$data['name']);
 				//$child['info'] = trim($data['info'].' составной: '.$data['name']);
 
-				\Flydom\Db::insert('orst', $child);
-				$id = \Flydom\Db::insert_id();
+				\Db::insert('orst', $child);
+				$id = \Db::insert_id();
 				$ids[] = $id;
 
 				\Tool\Reserve::create($id, $child['store'], $child['count']);
@@ -185,8 +185,8 @@ class Order {
 			$data = $first;
 
 		} else {
-			\Flydom\Db::insert('orst', $data);
-			$data['i'] = \Flydom\Db::insert_id();
+			\Db::insert('orst', $data);
+			$data['i'] = \Db::insert_id();
 			$ids[] = $data['i'];
 
 			\Tool\Reserve::create($data['i'], $this->getStore(), $this->getCount());
@@ -206,7 +206,7 @@ class Order {
 
 		$data = $this->row;
 		unset($data['i']);
-		\Flydom\Db::update('orst', $data, ['i'=>$this->getId()]);
+		\Db::update('orst', $data, ['i'=>$this->getId()]);
 
 		$new = $this->row['state'];
 		$old = $this->orig['state'];
@@ -238,7 +238,7 @@ class Order {
 		if ($this->getState() > 1 && $this->getState() < 30) {
 			$this->cancel();
 		}
-		\Flydom\Db::delete('orst', ['i'=>$this->getId()]);
+		\Db::delete('orst', ['i'=>$this->getId()]);
 		$this->row['i'] = 0;
 	}
 
@@ -288,11 +288,11 @@ class Order {
 		w('log');
 		logs(38, $this->getId(), $text);
 
-		$bills = \Flydom\Db::fetchAll('SELECT * FROM bill WHERE orst LIKE "%'.$this->getId().'%" AND state<=1');
+		$bills = \Db::fetchAll('SELECT * FROM bill WHERE orst LIKE "%'.$this->getId().'%" AND state<=1');
 		foreach ($bills as $i) {
 			$bill_orders = explode('|', $i['orst']);
 			if (in_array($this->getId(), $bill_orders)) {
-				\Flydom\Db::update('bill', array('state'=>5), array('i'=>$i['i']));
+				\Db::update('bill', array('state'=>5), array('i'=>$i['i']));
 			}
 		}
 	}
@@ -303,6 +303,6 @@ class Order {
 	}
 
 	function getUserName() {
-		return $this->row['user'] ? \Flydom\Db::result('SELECT name FROM user WHERE i='.$this->row['user']) : '';
+		return $this->row['user'] ? \Db::result('SELECT name FROM user WHERE i='.$this->row['user']) : '';
 	}
 }

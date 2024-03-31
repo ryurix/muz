@@ -98,7 +98,7 @@ class Ozon extends Task {
 					'state<35',
 				];
 				if ($store) {
-					$complex = \Flydom\Db::fetchArray('SELECT store FROM complex WHERE up='.$store);
+					$complex = \Db::fetchArray('SELECT store FROM complex WHERE up='.$store);
 					if (count($complex)) {
 						$where[] = 'store IN ('.implode(',', $complex).')';
 					} else {
@@ -106,11 +106,11 @@ class Ozon extends Task {
 					}
 				}
 
-				$ids = \Flydom\Db::fetchArray('SELECT i FROM orst WHERE '.implode(' AND ', $where));
+				$ids = \Db::fetchArray('SELECT i FROM orst WHERE '.implode(' AND ', $where));
 
 				if (count($ids)) {
 					$count+= count($ids);
-					\Flydom\Db::update('orst', ['state'=>35], ['i'=>$ids]);
+					\Db::update('orst', ['state'=>35], ['i'=>$ids]);
 				}
 			}
 		}

@@ -13,7 +13,7 @@
 
 w('ft');
 
-$rows = \Flydom\Db::fetchAll('SELECT * FROM reserve ORDER BY dt DESC');
+$rows = \Db::fetchAll('SELECT * FROM reserve ORDER BY dt DESC');
 foreach ($rows as $i) {
 	echo '
 <tr>

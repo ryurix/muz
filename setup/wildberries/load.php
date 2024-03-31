@@ -45,7 +45,7 @@ if ($plan['send']['value'] == 1) {
 			|| $wb[$chrt]['price'] != $i[7]
 			|| strcmp($wb[$chrt]['barcode'], $i[6]) != 0
 			|| $wb[$chrt]['store'] != $store) {
-				\Flydom\Db::update('wb', [
+				\Db::update('wb', [
 					'i'=>$i[4],
 					'price'=>$i[7],
 					'barcode'=>$i[6],
@@ -57,7 +57,7 @@ if ($plan['send']['value'] == 1) {
 			}
 			unset($wb[$chrt]);
 		} else {
-			\Flydom\Db::insert('wb', [
+			\Db::insert('wb', [
 				'i'=>$i[4],
 				'dt'=>now(),
 				'chrt'=>$chrt,
