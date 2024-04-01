@@ -2,8 +2,8 @@
 
 function scan_class($root, $path, &$class) {
 	$scan = scandir($root.'/'.$path);
-	foreach ($scan as $k=>$v) {
-		if ($v != '.' && $v != '..') {
+	foreach ($scan as $v) {
+		if (substr($v, 0, 1) != '.') {
 			$fullname = $path.'/'.$v;
 
 			if (is_dir($root.'/'.$fullname)) {
@@ -17,14 +17,14 @@ function scan_class($root, $path, &$class) {
 
 			$php = file_get_contents($root.'/'.$fullname);
 
-			if (preg_match('#class\\s+([A-Za-z0-9\\\\]+?)[\\s;]*#sUm', $php, $m)) {
+			if (preg_match('#class\\s+([A-Z]+[A-Za-z0-9\\\\]+?)[\\s;]*#sUm', $php, $m)) {
 				$classname = $m[1];
 			} else {
 				$classname = null;
 			}
 
-			if (preg_match('#(namespace)(\\s+)([A-Za-z0-9\\\\]+?)(\\s*);#sm', $php, $m)) {
-				$namespace = str_replace('/', '\\', $m[3]);
+			if (preg_match('#namespace\\s+([A-Z]+[A-Za-z0-9\\\\]+?)(\\s*);#sm', $php, $m)) {
+				$namespace = str_replace('/', '\\', $m[1]);
 			} else {
 				$namespace = null;
 			}
@@ -51,7 +51,6 @@ $root = __DIR__.'/..';
 $class = [];
 scan_class($root, 'lib', $class);
 scan_class($root, 'src', $class);
-
 
 $before = filesize($root.'/src/autoload.php');
 
