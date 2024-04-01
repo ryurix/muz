@@ -1,3 +1,5 @@
+.text-end {text-align:right}
+
 .body li {margin-left:20px}
 ul.dropdown-menu li {margin-left:0; white-space:nowrap}
 .dropdown-menu.static {z-index:50; display:block; position:relative; margin:3px}

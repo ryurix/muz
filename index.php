@@ -7,6 +7,7 @@
 
 // 1. Read config
 ini_set('include_path', '.');
+require_once 'src/autoload.php';
 require_once 'config.php';
 
 require_once '--/config.inc';
@@ -22,7 +23,6 @@ if (substr($ip, 0, 6) == '47.128') { // compute.amazonaws.com
 
 // 2. Connect to database
 
-require_once 'src/autoload.php';
 //\Db::connect(\Config::DATABASE);
 require_once 'lib/flydom/log2.php';
 

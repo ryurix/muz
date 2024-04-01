@@ -110,7 +110,7 @@ class Ozon extends Task {
 
 				if (count($ids)) {
 					$count+= count($ids);
-					\Db::update('orst', ['state'=>35], ['i'=>$ids]);
+					\Db::update('orst', ['state'=>35], ['i IN ('.implode(',', $ids).')']);
 				}
 			}
 		}

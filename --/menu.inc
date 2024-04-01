@@ -217,7 +217,6 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'reset'=>['name'=>'RESET', 'role'=>'admin'],
 
 	'log'=>['name'=>'Логи', 'role'=>'log'],
-	'log2'=>['name'=>'Ошибки', 'role'=>'log'],
 
 	'yml'=>['name'=>'Выгрузка YML', 'role'=>'yandex', '/'=>[
 		'%num'=>[],

@@ -1,47 +1,52 @@
 <?
 
-w('ft');
+use \Flydom\Form\Form;
 
-$type = array(0=>'') + w('list-log');
-
-$plan = array(
-	''=>array('method'=>'POST'),
-	'type'=>array('name'=>'Тип', 'type'=>'combo', 'values'=>$type, 'default'=>0),
-	'dt1'=>array('name'=>'Дата от', 'type'=>'date', 'default'=>ft_parse(ft(now()))-24*60*60),
-	'dt2'=>array('name'=>'Дата до', 'type'=>'date', 'default'=>now()),
-	'user'=>array('name'=>'Пользователь', 'type'=>'line'),
-	'code'=>array('name'=>'Код', 'type'=>'int'),
-    'max'=>['name'=>'Максимум записей', 'type'=>'int', 'default'=>100],
-	'sum'=>array('name'=>'Суммировать одинаковые', 'type'=>'checkbox', 'default'=>true),
-	'send'=>array('type'=>'button', 'count'=>2, 1=>'Фильтровать', 2=>'Удалить', 'class'=>[2=>'btn-danger'], 'confirm'=>[2=>'Удалить записи лога? Восстановление невозможно!']),
-);
-
-w('request', $plan);
-w('form', $plan);
-
-$where = ' WHERE l.dt BETWEEN '.$plan['dt1']['value'].' AND '.($plan['dt2']['value']+24*60*60-1);
-
-if ($plan['type']['value']) {
-	$where.= ' AND l.type='.$plan['type']['value'];
+w('flydom');
+if (!\Db::connected()) {
+	\Db::connect($config['database']);
 }
 
-if (strlen($plan['user']['value'])) {
-	if ($plan['user']['value'] == '0') {
+$type = [-1=>''] + \Type\Log::name();
+
+$plan = [
+	'type'=>['name'=>'Тип', 'type'=>'select', 'values'=>$type, 'default'=>-1],
+	'dt1' =>['name'=>'Дата от', 'type'=>'datetime', 'default'=>\Config::now() - 48*60*60],
+	'dt2' =>['name'=>'Дата до', 'type'=>'datetime', 'default'=>\Config::now() + 24*60*60],
+	'user'=>['name'=>'Пользователь', 'type'=>'line'],
+	'code'=>['name'=>'Код', 'type'=>'integer'],
+	'sum' =>['label'=>'Суммировать одинаковые', 'type'=>'checkbox', 'default'=>true],
+	'send'=>['type'=>'button', 'codes'=>2, 1=>'Фильтровать', 2=>'Удалить', 'class'=>[2=>'btn-danger'], 'confirm'=>[2=>'Удалить записи лога? Восстановление невозможно!']],
+];
+
+Form::load($plan);
+Form::parse();
+echo Form::build();
+
+$where = ' WHERE l.dt BETWEEN "'.date('Y-m-d H:i', Form::get('dt1')).'" AND "'.date('Y-m-d H:i', Form::get('dt2')).'"';
+
+if (Form::get('type') >= 0) {
+	$where.= ' AND l.typ='.Form::get('type');
+}
+
+if (strlen(Form::get('user'))) {
+	if (Form::get('user') == '0') {
 		$where.= ' AND l.user=0';
 	} else {
-		$where.= ' AND u.quick LIKE "%'.addslashes($plan['user']['value']).'%"';
+		$where.= ' AND u.quick LIKE "%'.addslashes(Form::get('user')).'%"';
 	}
 }
 
-if (strlen($plan['code']['value']) && $plan['code']['value']) {
-	$where.= ' AND l.code='.$plan['code']['value'];
+if (strlen(Form::get('code')) && Form::get('code')) {
+	$where.= ' AND l.code='.Form::get('code');
 }
 
-if ($plan['send']['value'] == 2) {
-	$q = db_query('SELECT l.i FROM log l LEFT JOIN user u ON l.user=u.i'.$where);
-	$ids = db_fetch_array($q);
-	db_query('DELETE FROM log WHERE i IN ('.implode(',', $ids).')');
+if (Form::get('send') == 2) {
+	$ids = \Db::fetchList("SELECT l.id FROM log2 l $where");
+	\Db::query('DELETE FROM log2 WHERE id IN ('.implode(',', $ids).')');
 }
+
+$sum = Form::get('sum');
 
 ?>
 <table class="table table-bordered table-striped">
@@ -50,8 +55,13 @@ if ($plan['send']['value'] == 2) {
 		<th>#</th>
 		<th>Дата</th>
 		<th>Тип</th>
-		<th>Пользователь</th>
+		<th>User</th>
 		<th>Код</th>
+		<?
+		if ($sum) {
+			echo '<th>Кол.</th>';
+		}
+		?>
 		<th>Информация</th>
 	</tr>
 </thead>
@@ -60,22 +70,36 @@ if ($plan['send']['value'] == 2) {
 
 $count = 0;
 
-$rows = db_fetch_all("SELECT l.dt dt, l.type type, l.user ui, l.code code, l.info info, u.name name FROM log l LEFT JOIN user u ON l.user=u.i".$where.' ORDER BY l.dt LIMIT '.$plan['max']['value']);
+$select = "SELECT l.id,l.dt, l.typ type, l.usr, l.code, l.info, 1 cnt FROM log2 l $where ORDER BY l.id";
 
-foreach ($rows as $i) {
+$data = [];
+
+$q = \Db::query($select);
+while ($i = \Db::fetch($q)) {
+	$key = $sum ? str_replace([0,1,2,3,4,5,6,7,8,9], '', $i['info']) : $i['id'];
+	if (isset($data[$key])) {
+		$i['cnt']+= $data[$key]['cnt'];
+		unset($data[$key]);
+	}
+	$data[$key] = $i;
+}
+\Db::free($q);
+
+foreach ($data as $i) {
 	$count++;
 	echo '
 <tr>
-	<td>'.$count.'</td>
-	<td>'.ft($i['dt'], 1).'</td>
-	<td>'.kv($type, $i['type']).'</td>
-	<td>'.$i['name'].'</td>
-	<td>'.$i['code'].'</td>
-	<td>'.$i['info'].'</td>
+	<td>'.$i['id'].'</td>
+	<td>'.$i['dt'].'</td>
+	<td>'.(isset($type[$i['type']]) ? $type[$i['type']] : '').'</td>
+	<td>'.$i['usr'].'</td>
+	<td>'.$i['code'].'</td>';
+	if ($sum) {
+		echo '<td>'.$i['cnt'].'</td>';
+	}
+	echo '<td>'.$i['info'].'</td>
 </tr>';
 }
-
 ?>
 </tbody>
 </table>
-<? w('calendar') ?>
