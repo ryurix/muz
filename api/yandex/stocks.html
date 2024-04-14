@@ -25,63 +25,67 @@ if (isset($data['skus'])) {
 
 // Получаем данные из базы
 
-if (is_array($cron['vendor']) && count($cron['vendor'])) {
-	$vendor = ' AND vendor IN ('.implode(',', $cron['vendor']).')';
+if (count($ids) == 0) {
+	$data = ['skus'=>[]];
+	echo json_encode($data);
 } else {
-	$vendor = '';
+
+	if (is_array($cron['vendor']) && count($cron['vendor'])) {
+		$vendor = ' AND vendor IN ('.implode(',', $cron['vendor']).')';
+	} else {
+		$vendor = '';
+	}
+
+	$dt = now() - 30*24*60*60;
+	$select = 'SELECT store.i,store.name,ven.count-'.$cron['minus'].' count,store.dt FROM store LEFT JOIN (SELECT store, SUM(count) count, MAX(dt) dt FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE hide<=0';
+	if (kv($cron, 'min', 0)) { $select.= ' AND '.$cron['min'].'<=ven.count'; }
+	if (kv($cron, 'price', 0)) { $select.= ' AND '.$cron['price'].'<=price'; }
+	$select.= ' AND store.i IN ('.implode(',', $ids).')';
+
+	$q = db_query($select);
+	$rows = db_fetch_all($q, 'i');
+
+	/////////////////////////////////////////////////
+
+	w('ft');
+
+	class Item {
+		public $type;
+		public $count;
+		public $updatedAt;
+		function __construct($row) {
+			$this->type = 'FIT';
+			if (is_null($row)) {
+				$this->count = 0;
+				$this->updatedAt = date('c', ft_parse(ft()));
+			} else {
+				$this->count = $row['count'];
+				$this->updatedAt = date('c', $row['dt']);
+			}
+		}
+	}
+
+	class Sku {
+		public $sku;
+		public $warehouseId;
+		public $items = [];
+		function __construct($sku, $warehouseId, $row = null) {
+			$this->sku = 'М'.$sku;
+			$this->warehouseId = $warehouseId;
+			$this->items[] = new Item($row);
+		}
+	}
+
+
+	$data = ['skus'=>[]];
+
+	foreach ($ids as $i) {
+		if (isset($rows[$i])) {
+			$data['skus'][] = new Sku($i, $warehouseId, $rows[$i]);
+		} else {
+			$data['skus'][] = new Sku($i, $warehouseId);
+		}
+	}
+
+	echo json_encode($data);
 }
-
-$dt = now() - 30*24*60*60;
-$select = 'SELECT store.i,store.name,ven.count-'.$cron['minus'].' count,store.dt FROM store LEFT JOIN (SELECT store, SUM(count) count, MAX(dt) dt FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE hide<=0';
-if (kv($cron, 'min', 0)) { $select.= ' AND '.$cron['min'].'<=ven.count'; }
-if (kv($cron, 'price', 0)) { $select.= ' AND '.$cron['price'].'<=price'; }
-if (count($ids)) {
-    $select.= ' AND store.i IN ('.implode(',', $ids).')';
-}
-
-$q = db_query($select);
-$rows = db_fetch_all($q, 'i');
-
-/////////////////////////////////////////////////
-
-w('ft');
-
-class Item {
-    public $type;
-    public $count;
-    public $updatedAt;
-    function __construct($row) {
-        $this->type = 'FIT';
-        if (is_null($row)) {
-            $this->count = 0;
-            $this->updatedAt = date('c', ft_parse(ft()));
-        } else {
-            $this->count = $row['count'];
-            $this->updatedAt = date('c', $row['dt']);
-        }
-    }
-}
-
-class Sku {
-    public $sku;
-    public $warehouseId;
-    public $items = [];
-    function __construct($sku, $warehouseId, $row = null) {
-        $this->sku = 'М'.$sku;
-        $this->warehouseId = $warehouseId;
-        $this->items[] = new Item($row);
-    }
-}
-
-
-$data = ['skus'=>[]];
-
-foreach ($ids as $i) {
-    if (isset($rows[$i])) {
-        $data['skus'][] = new Sku($i, $warehouseId, $rows[$i]);
-    } else {
-        $data['skus'][] = new Sku($i, $warehouseId);
-    }
-}
-
-echo json_encode($data);

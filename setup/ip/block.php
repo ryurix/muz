@@ -1,10 +1,5 @@
 <?
 
-$config['action'] = [
-	['href'=>'/setup/ip', 'action'=>'IP'],
-	['href'=>'/setup/ip/block', 'action'=>'Блокировка', 'here'=>1],
-];
-
 $ban = cache_load('ip-ban', []);
 
 $plan = [

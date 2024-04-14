@@ -98,7 +98,7 @@ class Ozon extends Task {
 					'state<35',
 				];
 				if ($store) {
-					$complex = \Db::fetchArray('SELECT store FROM complex WHERE up='.$store);
+					$complex = \Db::fetchList('SELECT store FROM complex WHERE up='.$store);
 					if (count($complex)) {
 						$where[] = 'store IN ('.implode(',', $complex).')';
 					} else {
@@ -106,7 +106,8 @@ class Ozon extends Task {
 					}
 				}
 
-				$ids = \Db::fetchArray('SELECT i FROM orst WHERE '.implode(' AND ', $where));
+				$ids = \Db::fetchList('SELECT i FROM orst WHERE '.implode(' AND ', $where));
+
 
 				if (count($ids)) {
 					$count+= count($ids);

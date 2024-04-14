@@ -50,7 +50,7 @@ function access_exit() {
 	}
 }
 
-function access_create($user, $keep = 1) {
+function access_create($user) {
 	if ($user['i']) {
 		db_insert('log', array(
 			'type'=>9,

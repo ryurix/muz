@@ -92,10 +92,10 @@ foreach ($data as $i) {
 	$count++;
 	echo '
 <tr>
-	<td>'.$i['id'].'</td>
+	<td>'.$i['i'].'</td>
 	<td>'.\Flydom\Util\Time::dateTime($i['dt']).'</td>
 	<td>'.(isset($type[$i['type']]) ? $type[$i['type']] : '').'</td>
-	<td>'.$i['usr'].'</td>
+	<td>'.$i['user'].'</td>
 	<td>'.$i['code'].'</td>';
 	if ($sum) {
 		echo '<td>'.$i['cnt'].'</td>';
@@ -103,6 +103,7 @@ foreach ($data as $i) {
 	echo '<td>'.$i['info'].'</td>
 </tr>';
 }
+
 ?>
 </tbody>
 </table>

@@ -211,8 +211,9 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'img-fluid'=>['name'=>'Обновление картинок', 'role'=>'admin'],
 	'import-dyna'=>['name'=>'Импорт товаров динатона', 'role'=>'admin'],
 	'import-dyna-2'=>['name'=>'Обработка товаров динатона', 'role'=>'admin'],
-	'ip'=>['name'=>'IP', 'role'=>'admin', '/'=>[
-		'block'=>['name'=>'Блокировка'],
+	'ip'=>['name'=>'IP', 'role'=>'admin', 'action'=>'IP', '/'=>[
+		'block'=>['name'=>'Блокировка', 'action'=>'Блокировка'],
+		'domain'=>['name'=>'Блокировка по домену', 'action'=>'Блок по имени'],
 	]],
 	'reset'=>['name'=>'RESET', 'role'=>'admin'],
 

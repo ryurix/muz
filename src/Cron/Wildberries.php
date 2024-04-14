@@ -276,6 +276,7 @@ class Wildberries extends Task {
 				$rows[$i['chrt']] = [
 					'nmId'=>$i['i'],
 					'price'=>$price,
+					'discount'=>0
 				];
 			}
 		}
@@ -284,7 +285,8 @@ class Wildberries extends Task {
 		$updated = 0;
 
 		if (count($rows)) {
-			$url = 'https://suppliers-api.wildberries.ru/public/api/v1/prices';
+			//$url = 'https://suppliers-api.wildberries.ru/public/api/v1/prices';
+			$url = 'https://discounts-prices-api.wb.ru/api/v2/upload/task';
 
 			$page = 0;
 
@@ -292,7 +294,7 @@ class Wildberries extends Task {
 				$post = array_slice($rows, $page*$per, $per, true);
 				$page++;
 
-				$payload = \Flydom\Cache::json_encode(array_values($post));
+				$payload = \Flydom\Cache::json_encode(['data'=>array_values($post)]);
 
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, $url);
@@ -457,7 +459,7 @@ class Wildberries extends Task {
 
 		$count = 0;
 
-		$orders = \Db::fetchArray('SELECT mpi FROM orst WHERE state<30 AND user="'.$user.'"');
+		$orders = \Db::fetchList('SELECT mpi FROM orst WHERE state<30 AND user="'.$user.'"');
 
 		if (count($orders)) {
 
