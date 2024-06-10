@@ -178,14 +178,14 @@ function store_import($store, $plan, $up) {
 			$data['pic'] = $pic['icon']['pic'];
 		}
 	}
-	
+
 	if (isset($store['pics'])) {
 		w('pic');
 		w('clean');
 		$files = array();
 		foreach ($store['pics'] as $v) {
 			$name = basename($v);
-			
+
 			$dir = $config['root'].substr($path, 1);
 
 			$pic = pic_load($v);
@@ -226,7 +226,7 @@ function store_import($store, $plan, $up) {
 	db_insert('store', $data);
 
 	db_insert('log', array(
-		'type'=>5,
+		'type'=>15,
 		'dt'=>now(),
 		'user'=>$_SESSION['i'],
 		'info'=>'store: '.$key,

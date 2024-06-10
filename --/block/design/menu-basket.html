@@ -16,7 +16,7 @@ if (isset($_SESSION['basket']) && is_array($_SESSION['basket'])) {
 $basket2 = array();
 if ($count) {
 	$count = 0;
-	$q = db_query('SELECT s.i i'
+	$select = 'SELECT s.i i'
 .',s.url url'
 .',s.name name'
 .',s.up up'
@@ -24,16 +24,21 @@ if ($count) {
 .',s.model model'
 .',s.price price'
 .',b.name brand'
-.' FROM store s,brand b WHERE s.i in ('.implode(',', array_keys($basket)).') AND s.brand=b.i');
+.' FROM store s,brand b WHERE s.i in ('.implode(',', array_keys($basket)).') AND s.brand=b.i';
+	$q = db_query($select);
 
-	while ($i = db_fetch($q)) {
-		$i['c'] = $basket[$i['i']];
-		$count+= $i['c'];
+	if (is_bool($q)) {
+		cache_set('basket-select-error', $select);
+	} else {
+		while ($i = db_fetch($q)) {
+			$i['c'] = $basket[$i['i']];
+			$count+= $i['c'];
 
-		$name = strlen($i['model']) > 0 ? $i['brand'].' '.$i['model'].' '.$i['name'] : $i['brand'].' '.$i['name'];
-		$i['fullname'] = $name;
+			$name = strlen($i['model']) > 0 ? $i['brand'].' '.$i['model'].' '.$i['name'] : $i['brand'].' '.$i['name'];
+			$i['fullname'] = $name;
 
-		$basket2[$i['i']] = $i;
+			$basket2[$i['i']] = $i;
+		}
 	}
 }
 

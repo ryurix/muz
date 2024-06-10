@@ -13,11 +13,17 @@ class Reserve {
 		]);
 	}
 
-	static function delete($orst, $store) {
-		\Db::delete('reserve', [
-			'orst'=>$orst,
-			'store'=>$store
-		]);
+	static function delete($orderId, $store = null) {
+		if (is_null($store)) {
+			\Db::delete('reserve', [
+				'orst'=>$orderId
+			]);
+		} else {
+			\Db::delete('reserve', [
+				'orst'=>$orderId,
+				'store'=>$store
+			]);
+		}
 	}
 
 	static function update($orst, $store, $count) {

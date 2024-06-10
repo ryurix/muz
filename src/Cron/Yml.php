@@ -67,6 +67,7 @@ class Yml extends Task {
 		');
 
 		$pathway = cache_load('pathway'); // $config['pathway'];
+		$andNotHidden = ' AND up IN ('.implode(',', array_keys($pathway)).')';
 		$list = array();
 		$catalog = cache_load('catalog');
 		foreach ($catalog['/'] as $i) {
@@ -93,9 +94,9 @@ class Yml extends Task {
 
 		$dt = now() - 30*24*60*60;
 		if ($data['form'] == 'dynatone') {
-			$select = 'SELECT store.*,ven.count,dyna.pic dpic,dyna.pics dpics,dyna.info dinfo,dyna.size FROM dyna,store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE store.i=dyna.store AND hide<=0';
+			$select = 'SELECT store.*,ven.count,dyna.pic dpic,dyna.pics dpics,dyna.info dinfo,dyna.size FROM dyna,store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE store.i=dyna.store AND hide<=0'.$andNotHidden;
 		} else {
-			$select = 'SELECT store.*,ven.count FROM store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE hide<=0';
+			$select = 'SELECT store.*,ven.count FROM store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE hide<=0'.$andNotHidden;
 		}
 
 		if (kv($data, 'min', 0)) { $select.= ' AND '.$data['min'].'<=ven.count'; }

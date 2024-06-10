@@ -92,9 +92,11 @@ class OzonXml extends Task {
 
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+		$ups = array_keys(cache_load('pathway', [0]));
 		$where = [
 			'hide<=0',
 			'i IN ('.implode(',', $ids).')',
+			'up IN ('.implode(',', $ups).')',
 		];
 
 

@@ -53,7 +53,7 @@ function access_exit() {
 function access_create($user) {
 	if ($user['i']) {
 		db_insert('log', array(
-			'type'=>9,
+			'type'=>3,
 			'dt'=>now(),
 			'user'=>$user['i'],
 			'info'=>$user['login'].' '.client_ip(),

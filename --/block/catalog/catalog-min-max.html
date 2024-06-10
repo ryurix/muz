@@ -12,8 +12,9 @@ foreach ($args as $k=>$v) {
 }
 
 $price2 = kv($config, 'price2', 100000);
-$min = $args['min']['value'] ? $args['min']['value'] : 0;
-$max = $args['max']['value'] ? $args['max']['value'] : $price2;
+w('clean');
+$min = $args['min']['value'] ? clean_09($args['min']['value']) : 0;
+$max = $args['max']['value'] ? clean_09($args['max']['value']) : $price2;
 
 ?>
 <button type="button" class="filter_subtitle" data-list="0">Цена:</button>
@@ -46,7 +47,7 @@ $("#price_range").freshslider({
 	min: 0,
 	max: <? echo max($price2, $max) ?>,
 	enabled: true,
-	value: [<? echo $min ?>,<? echo $max ?>], 
+	value: [<? echo $min ?>,<? echo $max ?>],
 	onchange:function(low, high){
 		$("#price_low").val(low);
 		$("#price_high").val(high);

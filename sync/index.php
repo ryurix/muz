@@ -56,7 +56,7 @@ if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && is_user('sync'
 		}
 
 		db_insert('log', array(
-			'type'=>7,
+			'type'=>17,
 			'dt'=>now(),
 			'user'=>$_SESSION['i'],
 			'info'=>'store: '.$plan['store']['value'],

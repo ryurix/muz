@@ -7,6 +7,8 @@ if (kv($config, 'DEBUG', 0)) {
 set_time_limit(55);
 w('ft');
 
+cache_set('cron', ft(now(), 1));
+
 $rows = db_fetch_all('SELECT * FROM cron WHERE every>0 AND dt<'.now().' ORDER BY dt LIMIT 5');
 
 foreach ($rows as $cron) {

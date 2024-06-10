@@ -107,7 +107,7 @@ if ($plan['']['valid']) {
 db_insert('log', array(
 'dt'=>now(),
 'user'=>$_SESSION['i'],
-'type'=>3,
+'type'=>13,
 'info'=>'store: '.$row['i'].', ip: '.client_ip(),
 ));
 //*/

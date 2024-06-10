@@ -182,7 +182,7 @@ if ($plan['']['valid'] && $send > 0) {
 		}
 
 		db_insert('log', array(
-			'type'=>6,
+			'type'=>16,
 			'dt'=>now(),
 			'user'=>$_SESSION['i'],
 			'info'=>$vendors[$plan['vendor']['value']],
@@ -198,4 +198,4 @@ if ($plan['']['valid'] && $send > 0) {
 
 w('alert');
 
-?>	
+?>

@@ -40,7 +40,8 @@ $config['GMT'] = 0;
 $config['kkmserver'] = 'http://admin:@muzmart.com:5894';
 
 //$config['update-url'] = 'http://ruvix.ru';
-$config['update-url'] = 'https://muzmart.com';
+//$config['update-url'] = 'https://muzmart.com';
+$config['update-url'] = 'https://tmn.muzmart.com';
 //$config['update-url'] = 'http://muz2';
 
 // test
@@ -109,8 +110,10 @@ $config['wildberries'] = [
 //		'storeId'=>61062,
 		'user'=>16838,
 //		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImMyMDAyMDkyLTA3M2MtNDhjYS1hZGM5LWYzYmZmMGNhYzk1MiJ9.2su8COXydP6JyEN4O1X5KDH4YjsLpxsFQAX9AlyBch0',
+//		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjYwMTZhYzZlLTAxMjUtNGM1Ny04Mzc5LTc4NzNjYmQ1MzlkOCJ9.sPhZEtkthtHykKnEJD3CSsa7Icqi_eJIII1u1cVvDcU',
+		'authorization'=>'eyJhbGciOiJFUzI1NiIsImtpZCI6IjIwMjQwNTA2djEiLCJ0eXAiOiJKV1QifQ.eyJlbnQiOjEsImV4cCI6MTczMjA1MzgwMSwiaWQiOiJhM2RiM2YyYy0wZWRjLTQ0N2YtOGI5NS03Mjg3NTkzNDgwMjIiLCJpaWQiOjUwMzQxODU1LCJvaWQiOjE2MzcyMCwicyI6MTAyMiwic2lkIjoiNDI2MGE2Y2YtNjBiYS00MDM1LTgyOGUtMDE2ZjFjNDdjZTg2IiwidCI6ZmFsc2UsInVpZCI6NTAzNDE4NTV9.HkYwUKXNkjoix7d1n6H37UTjnoPzRWp-lfaBaUxEX1i3KTPpanrRCxA8p-j4B3BHSBh064ipezd6qPFqnkY-IA',
 
-		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjYwMTZhYzZlLTAxMjUtNGM1Ny04Mzc5LTc4NzNjYmQ1MzlkOCJ9.sPhZEtkthtHykKnEJD3CSsa7Icqi_eJIII1u1cVvDcU',
+
 	],
 
 	19801=>[
@@ -118,7 +121,8 @@ $config['wildberries'] = [
 		'token'=>'96e3a4a04e3d80791a421e4b45264d93a96a20df0f9417ab04c80caaeb0f8b6c',
 		'storeId'=>167133,
 		'user'=>19801,
-		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjYwMTZhYzZlLTAxMjUtNGM1Ny04Mzc5LTc4NzNjYmQ1MzlkOCJ9.sPhZEtkthtHykKnEJD3CSsa7Icqi_eJIII1u1cVvDcU',
+//		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjYwMTZhYzZlLTAxMjUtNGM1Ny04Mzc5LTc4NzNjYmQ1MzlkOCJ9.sPhZEtkthtHykKnEJD3CSsa7Icqi_eJIII1u1cVvDcU',
+		'authorization'=>'eyJhbGciOiJFUzI1NiIsImtpZCI6IjIwMjQwNTA2djEiLCJ0eXAiOiJKV1QifQ.eyJlbnQiOjEsImV4cCI6MTczMjA1MzgwMSwiaWQiOiJhM2RiM2YyYy0wZWRjLTQ0N2YtOGI5NS03Mjg3NTkzNDgwMjIiLCJpaWQiOjUwMzQxODU1LCJvaWQiOjE2MzcyMCwicyI6MTAyMiwic2lkIjoiNDI2MGE2Y2YtNjBiYS00MDM1LTgyOGUtMDE2ZjFjNDdjZTg2IiwidCI6ZmFsc2UsInVpZCI6NTAzNDE4NTV9.HkYwUKXNkjoix7d1n6H37UTjnoPzRWp-lfaBaUxEX1i3KTPpanrRCxA8p-j4B3BHSBh064ipezd6qPFqnkY-IA',
 	],
 
 	19773=>[

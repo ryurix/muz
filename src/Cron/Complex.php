@@ -85,7 +85,7 @@ class Complex extends Task {
 
 				$p = Prices::decode($child['prices']);
 				foreach ($prices as $k=>$v) {
-					$prices[$k]+= round($p[$k] * (100 + $i['sale']) / 100) * $i['amount'];
+					$prices[$k] = (empty($prices[$k]) ? 0 : $prices[$k]) + round($p[$k] * (100 + $i['sale']) / 100) * $i['amount'];
 				}
 
 				//$count = max($count, $child['count'] - $i['minus']);

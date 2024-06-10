@@ -216,7 +216,7 @@ class Wildberries extends Task {
 	static function price($args, $con, $exclude, $per = 500) {
 
 		$select = 'SELECT wb.*,store.price s_price,store.prices s_prices FROM wb LEFT JOIN store ON wb.store=store.i WHERE wb.client='.$con['user'];
-		if (kv($args, 'price', 0)) { $select.= ' AND store.price >= '.$args['price']; }
+		//if (kv($args, 'price', 0)) { $select.= ' AND store.price >= '.$args['price']; }
 		//$store = db_fetch_all($select, 'store');
 
 		if (strlen(kv($args, 'test', ''))) {
@@ -262,6 +262,10 @@ class Wildberries extends Task {
 
 			if (is_null($price)) {
 				$price = $i['price'];
+			}
+
+			if (($args['price'] ?? 0) && ($price < $args['price'])) {
+				continue;
 			}
 
 			if ($i['price'] != $price) {
@@ -429,7 +433,7 @@ class Wildberries extends Task {
 					'dost'=>'self',
 					'store'=>$order['store'],
 					'name'=>$order['name'],
-					'price'=>$order['price'] / 100,
+					'price'=>$order['convertedPrice'] / 100,
 					'count'=>1,
 					'info'=>'', // Примечание?
 					'note'=>'',
@@ -502,6 +506,8 @@ class Wildberries extends Task {
 					$order->setState(35);
 					$order->update();
 
+					\Tool\Reserve::delete($order->getId());
+
 					$count++;
 				}
 			}
@@ -517,6 +523,12 @@ class Wildberries extends Task {
         if (!$store || !ctype_digit($store)) {
         	return false;
         }
-		return $store;
+
+		$pathway = cache_load('pathway');
+		if (db_result('SELECT COUNT(*) FROM store WHERE id='.$store.' AND up IN ('.implode(',', array_keys($pathway)).')')) {
+			return $store;
+		} else {
+			return false;
+		}
 	}
 }

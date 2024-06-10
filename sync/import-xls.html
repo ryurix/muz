@@ -45,7 +45,6 @@ w('form', $plan);
 $send = $plan['send']['value'];
 if ($plan['']['valid'] && $send > 0) {
 	$file = $plan['file']['value'];
-
 	if (strlen($file) > 0) {
 		set_time_limit(0);
 
@@ -81,7 +80,7 @@ if ($plan['']['valid'] && $send > 0) {
 		foreach ($cells as $i) {
 			array_unshift($i, 0);
 			foreach ($ven as $v) {
-				$valid = isset($i[$v['cname']]);
+				$valid = isset($i[$v['cname']]) && !empty($i[$v['cname']]);
 
 				if (!isset($i[$v['ccs'][0]])) { $i[$v['ccs'][0]] = 0; }
 				if ($v['copt']) {
@@ -95,7 +94,7 @@ if ($plan['']['valid'] && $send > 0) {
 					$ccode = u8sub($ccode, 0, 15);
 
 					$cname = trim($i[$v['cname']]);
-					$cprice = str_replace([' ', ','], ['', '.'], isset($i[$v['cprice']]) ? $i[$v['cprice']] : 0);
+					$cprice = clean_money(str_replace([' ', ','], ['', '.'], isset($i[$v['cprice']]) ? $i[$v['cprice']] : 0));
 					if ($v['cname'] != $v['ctype'] && isset($i[$v['ctype']])) {
 						$cname = trim($i[$v['ctype']]).' '.$cname;
 					}
@@ -107,7 +106,7 @@ if ($plan['']['valid'] && $send > 0) {
 					if (is_number($cprice)) {
 						$cprice = ceil($cprice);
 					} else {
-						if ($cprice == '') {
+						if (empty($cprice)) {
 							$cprice = 0;
 						} else {
 							$valid = FALSE;
@@ -119,10 +118,12 @@ if ($plan['']['valid'] && $send > 0) {
 
 						$valid = $copt*1.1 <= $cprice;	// Проверка на маржинальность
 					} else {
-						$copt = '';
+						$copt = 0;
 					}
 
-					$ccount = round($cprice*$v['curr']) < $v['prmin'] ? 0 : clean_count($i, $v['ccs']);
+					if ($valid) {
+						$ccount = round($cprice*$v['curr']) < $v['prmin'] ? 0 : clean_count($i, $v['ccs']);
+					}
 				}
 
 				if ($valid && $v['price']) {
@@ -187,7 +188,7 @@ if ($plan['']['valid'] && $send > 0) {
 		}
 
 		db_insert('log', array(
-			'type'=>6,
+			'type'=>16,
 			'dt'=>now(),
 			'user'=>$_SESSION['i'],
 			'info'=>$vendors[$plan['vendor']['value']],

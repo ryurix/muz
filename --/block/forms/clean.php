@@ -76,7 +76,7 @@ function clean_money($s) {
 	if ($point !== FALSE && $point < strlen($s)) {
 		$s = substr($s, 0, $point).'.'.substr($s, $point, 2);
 	}
-	return $s;
+	return strlen($s) ? $s : 0;
 }
 
 function is_number($s) {

@@ -2090,10 +2090,10 @@ footer .footer_social li a i:hover {
 }
 .modal#modal-city .city_item p {
 	display:block;
-	font:1em/1.125em ProximaNova-SemiBold,
-	sans-serif;
+	font:1em/1.125em ProximaNova-SemiBold,sans-serif;
 	text-align:left;
-	color:#000
+	color:#000;
+	margin:0;
 }
 .modal#modal-city .city_item span {
 	display:block;

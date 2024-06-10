@@ -103,7 +103,7 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	db_insert('store', $data);
 
 	db_insert('log', array(
-		'type'=>4,
+		'type'=>14,
 		'dt'=>now(),
 		'user'=>$_SESSION['i'],
 		'info'=>'store: '.$key,
