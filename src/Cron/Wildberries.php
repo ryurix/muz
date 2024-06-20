@@ -525,7 +525,7 @@ class Wildberries extends Task {
         }
 
 		$pathway = cache_load('pathway');
-		if (db_result('SELECT COUNT(*) FROM store WHERE id='.$store.' AND up IN ('.implode(',', array_keys($pathway)).')')) {
+		if (db_result('SELECT COUNT(*) FROM store WHERE i='.$store.' AND up IN ('.implode(',', array_keys($pathway)).')')) {
 			return $store;
 		} else {
 			return false;

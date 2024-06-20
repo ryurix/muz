@@ -466,7 +466,7 @@ $config['pager'][0] = array(
 
 if (count($store) > $limit) {
 	$config['pages'] = count($store);
-	$store = array_slice($store, $limit*($page - 1), $limit, true);
+	$store = array_slice($store, floor($limit*($page - 1)), $limit, true);
 }
 
 // Проверяем страницу на предмет каноничности

@@ -41,7 +41,7 @@ $config['kkmserver'] = 'http://admin:@muzmart.com:5894';
 
 //$config['update-url'] = 'http://ruvix.ru';
 //$config['update-url'] = 'https://muzmart.com';
-$config['update-url'] = 'https://tmn.muzmart.com';
+$config['update-url'] = 'https://muzmart.com';
 //$config['update-url'] = 'http://muz2';
 
 // test

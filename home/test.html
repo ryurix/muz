@@ -1,1 +1,43 @@
 <?
+
+/*
+$count = 0;
+
+$data = \Cron\Ozon::list('cancelled');
+
+print_pre($data);
+
+foreach ($data as $order) {
+
+	foreach ($order['products'] as $item) {
+		$store = clean_09($item['offer_id']);
+
+		$where = [
+			'mpi="'.addslashes($order['posting_number']).'"',
+			'user='.$order['user'],
+			'state<35',
+		];
+		if ($store) {
+			$complex = \Db::fetchList('SELECT store FROM complex WHERE up='.$store);
+			if (count($complex)) {
+				$where[] = 'store IN ('.implode(',', $complex).')';
+			} else {
+				$where[] = 'store='.$store;
+			}
+		}
+
+		$ids = \Db::fetchList('SELECT i FROM orst WHERE '.implode(' AND ', $where));
+
+
+		if (count($ids)) {
+			$count+= count($ids);
+			\Db::update('orst', ['state'=>35], ['i IN ('.implode(',', $ids).')']);
+
+			foreach ($ids as $id) {
+				\Tool\Reserve::delete($id);
+			}
+		}
+	}
+}
+
+//*/

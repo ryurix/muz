@@ -23,11 +23,13 @@ if ($row = db_fetch($q)) {
 			'metrics'=>$plan['metrics']['value'],
 			'metrico'=>$plan['metrico']['value'],
 			'head'=>$plan['head']['value'],
-		), array('i'=>$row['i']));
-		w('comment-log', $dummy = array(
+		), ['i'=>$row['i']]);
+
+		$dummy = [
 			'theme'=>'city-'.$row['i'],
 			'body'=>'Правка',
-		));
+		];
+		w('comment-log', $dummy);
 		w('cache-city');
 		redirect('.', 302);
 	}

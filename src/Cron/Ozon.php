@@ -111,11 +111,17 @@ class Ozon extends Task {
 
 				if (count($ids)) {
 					$count+= count($ids);
-					\Db::update('orst', ['state'=>35], ['i IN ('.implode(',', $ids).')']);
 
 					foreach ($ids as $id) {
-						\Tool\Reserve::delete($id);
+						$o = new \Model\Order($id);
+						$o->setState(35);
+						$o->update();
 					}
+
+					//\Db::update('orst', ['state'=>35], ['i IN ('.implode(',', $ids).')']);
+					//foreach ($ids as $id) {
+					//	\Tool\Reserve::delete($id);
+					//}
 				}
 			}
 		}
@@ -144,7 +150,7 @@ class Ozon extends Task {
 				$new = self::ozon_query($ozon, '/v3/posting/fbs/list', [
 					'dir'=>'asc',
 					'filter'=>[
-						'since'=>date('c', now() - $days*24*60*60),
+						'since'=>date('c', now() - $days*2*24*60*60),
 						'to'=>date('c', now()),
 						'status'=>$status
 					],
@@ -189,7 +195,7 @@ class Ozon extends Task {
 
 		// Если нашлись -- ждём когда все заказы будут в одинаковом статусе
 		foreach ($all as $i) {
-			if ($i['state'] !== $order->getState()) {
+			if ($i['state'] != $order->getState()) {
 				return;
 			}
 		}
