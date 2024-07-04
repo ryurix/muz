@@ -3,9 +3,6 @@
 use \Flydom\Form\Form;
 
 w('flydom');
-if (!\Db::connected()) {
-	\Db::connect($config['database']);
-}
 
 $type = [-1=>''] + \Type\Log::name();
 
@@ -20,7 +17,8 @@ $plan = [
 	'send'=>['type'=>'button', 'codes'=>2, 1=>'Фильтровать', 2=>'Удалить', 'class'=>[2=>'btn-danger'], 'confirm'=>[2=>'Удалить записи лога? Восстановление невозможно!']],
 ];
 
-Form::load($plan);
+
+Form::plan($plan);
 Form::parse();
 echo Form::build();
 
@@ -77,7 +75,7 @@ $select = "SELECT l.i,l.dt, l.type, l.user, l.code, l.info, 1 cnt FROM log l $wh
 
 $data = [];
 
-$q = \Db::query($select);
+$q = \Db::select($select);
 while ($i = \Db::fetch($q)) {
 	$key = $sum ? str_replace([0,1,2,3,4,5,6,7,8,9], '', $i['info']) : $i['i'];
 	if (isset($data[$key])) {

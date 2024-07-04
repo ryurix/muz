@@ -170,8 +170,7 @@ class Order {
 				$child['note'] = trim($data['note'].' составной: '.$data['name']);
 				//$child['info'] = trim($data['info'].' составной: '.$data['name']);
 
-				\Db::insert('orst', $child);
-				$id = \Db::insert_id();
+				$id = \Db::insert('orst', $child);
 				$ids[] = $id;
 
 				\Tool\Reserve::create($id, $child['store'], $child['count']);
@@ -185,8 +184,7 @@ class Order {
 			$data = $first;
 
 		} else {
-			\Db::insert('orst', $data);
-			$data['i'] = \Db::insert_id();
+			$data['i'] = \Db::insert('orst', $data);
 			$ids[] = $data['i'];
 
 			\Tool\Reserve::create($data['i'], $this->getStore(), $this->getCount());

@@ -13,7 +13,7 @@ $shop = $row['i'];
 $pw = cache_load('pathway'.(is_user('catalog') ? '-hide' : ''));
 
 // Тексты на поддоменах должны показываться только нижние
-if (strlen($row['short']) && (kv($config, 'DEBUG', 0) || $_SESSION['cire'] == 34)) {
+if (strlen($row['short'] ?? '') && (kv($config, 'DEBUG', 0) || $_SESSION['cire'] == 34)) {
 	echo '<div class="catalog_catdescribe">'.dict($row['short']).'</div>';
 } else {
 	echo '<div>&nbsp;</div>';
@@ -245,7 +245,7 @@ echo $pager;
 	<div class="container d-none d-lg-block">
 <?
 
-	if (strlen($row['info'])) {
+	if (strlen($row['info'] ?? '')) {
 	echo '
 		<div class="row">
 			<div class="col">

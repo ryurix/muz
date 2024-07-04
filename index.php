@@ -14,10 +14,25 @@ require_once '--/config.inc';
 require_once '--/first.inc';
 require_once '--/cache.inc';
 
+// IP Ban
+$ip = client_ip();
+$ban = cache_load('ip-ban', []);
+
+$parts = explode('.', $ip);
+$parts[3] = '*';
+$one = implode('.', $parts);
+$parts[2] = '*';
+$two = implode('.', $parts);
+
+if (in_array($ip, $ban) || in_array($one, $ban) || in_array($two, $ban)) {
+	// header('HTTP/1.0 403 Forbidden', true, 403);
+	exit;
+}
+
 // 2. Connect to database
 
 //\Db::connect(\Config::DATABASE);
-require_once 'lib/flydom/log2.php';
+require_once 'lib/flydom/Util/log2.php';
 
 if (isset($config['database'])) {
 	require_once '--/database.inc';

@@ -44,6 +44,7 @@ if ($row = db_fetch($q)) {
 //	$config['meta'] = $row['tags'];
 
 	$action = count($config['args']) > 1 ? $config['args'][1] : 'view';
+	$row['code'] = trim($row['code'], ',');
 
 	$config['row'] = $row;
 	if ($action == 'view') {

@@ -1,6 +1,17 @@
 <?
 
 /*
+$fields = ['store.i', 'store.code', 'store.url', 'store.pic', 'store.brand', 'store.name', 'store.model'];
+$scan = '12345';
+$store = \Db::fetchRow(\Db::select($fields, 'store', ['i'=>\Flydom\Util\Clean::int(38)]));
+$code = \Flydom\Cache::csvc_decode($store['code']);
+$code[] = $scan;
+\Db::update('store', [
+	'code'=>\Flydom\Cache::csvc_encode($code)
+], ['i'=>$store['i']]);
+*/
+
+/*
 $count = 0;
 
 $data = \Cron\Ozon::list('cancelled');

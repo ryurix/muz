@@ -18,7 +18,7 @@ function show_files($files, $style = array()) {
 	);
 
 	if (!is_array($files)) {
-		if (strlen($files) == 0) { return; }
+		if (strlen($files ?? '') == 0) { return; }
 		$files = php_decode($files);
 	}
 

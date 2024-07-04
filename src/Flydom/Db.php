@@ -1,14 +1,11 @@
 <?php
 
-class Db extends \Flydom\DbMySql
+class Db extends \Flydom\Db\MySql
 {
-	protected static $db;
-	protected static $res;
+	protected static $db = [];
 
 	protected static function init() {
-		if (is_null(self::$db)) {
-			self::connect(\Config::DATABASE);
-		}
+		return self::connect(\Config::DATABASE);
 	}
 
 } // class Db

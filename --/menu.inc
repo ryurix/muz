@@ -326,7 +326,7 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 'oauth'=>['name'=>'OAuth'],
 'portal'=>[],
 'robots.txt'=>[],
-'scan'=>[],
+'scan'=>['name'=>'Штрихкод', 'role'=>'scan'],
 'serviceworker.js'=>['design'=>'none'],
 'serviceworker-update.js'=>['design'=>'none'],
 'test'=>['name'=>'TEST', 'lib'=>'phpexcel'],

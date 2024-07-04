@@ -20,6 +20,10 @@ static function add($type, $code = 0, $info = null, $user = null) {
 	}
 }
 
+static function enabled() {
+	return self::$enabled;
+}
+
 static function enable() {
 	self::$enabled = true;
 }

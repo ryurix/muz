@@ -49,6 +49,10 @@ if (is_user('order')) {
 	$sub[] = array('action'=>'Резервы', 'href'=>'/reserve');
 }
 
+if (is_user('scan')) {
+	$sub[] = ['action'=>'Штрихкоды', 'href'=>'/scan'];
+}
+
 if (count($sub)) {
 	$back[] = array('action'=>$sub[0]['action'], 'href'=>$sub[0]['href'], '/'=>$sub);
 }

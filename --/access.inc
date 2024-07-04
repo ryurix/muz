@@ -150,25 +150,11 @@ function access_read($key) {
 
 function access_write($key, $data) {
 	global $config;
+
 	if (kv($config, 'new-session', 0)) {
 		if ($config['new-session'] < 100) {
 			$ip = client_ip();
 			$uid = $_SESSION['i'];
-
-			if (!$uid) {
-				$ban = cache_load('ip-ban', []);
-
-				$parts = explode('.', $ip);
-				$parts[3] = '*';
-				$one = implode('.', $parts);
-				$parts[2] = '*';
-				$two = implode('.', $parts);
-
-				if (in_array($ip, $ban) || in_array($one, $ban) || in_array($two, $ban)) {
-					// header('HTTP/1.0 403 Forbidden', true, 403);
-					exit;
-				}
-			}
 
 			db_insert('session', array(
 				'i'=>crc32($key),
@@ -189,6 +175,7 @@ function access_write($key, $data) {
 			'usr'=>$_SESSION['i'],
 		));
 	}
+
 	return true;
 }
 

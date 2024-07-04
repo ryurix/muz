@@ -29,7 +29,7 @@ function naklad_commit($naklad, $vendor, $type) {
 
 			db_insert('sync', [
 				'code'=>$i['store'],
-				'name'=>$name,
+				'name'=>mb_substr($name, 0, 64),
 				'dt'=>now()+60*60*24*365*5,
 				'store'=>$i['store'],
 				'vendor'=>$vendor,

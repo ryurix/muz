@@ -1,0 +1,38 @@
+<?
+
+echo '<form class="form-inline auto my-2" method="POST">';
+w('form-inline', $plan);
+echo '</form>';
+
+if (is_array($store)) {
+//	echo '<h3>'.($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'].'</h3>';
+	echo '<div class="row"><div class="col"><img src="'.$store['pic'].'"></div><div class="col">';
+	echo $alert ?? '';
+	if (isset($store['orst_i'])) {
+		$state = w('order-state');
+		$vendor = cache_load('vendor');
+		$count_class = $store['count'] > 1 ? ' class="text-danger"' : '';
+		echo '
+<table class="table table-bordered"><tbody>
+<tr><td>Заказ #</td><td><a href="/order/'.$store['orst_i'].'">'.$store['orst_i'].'</a></td></tr>
+<tr><td>Статус</td><td>'.$state[$store['state']].'</td></tr>
+<tr><td>Поставщик</td><td>'.$vendor[$store['vendor']].'</td></tr>
+<tr><td'.$count_class.'>Количество</td><td'.$count_class.'>'.$store['count'].'</td></tr>
+<tr><td>Комментарий</td><td>'.$store['info'].'</td></tr>
+<tr><td>Замечания</td><td>'.$store['note'].'</td></tr>
+</tbody></table>';
+	}
+	echo '</div></div>';
+
+} else {
+	if (strlen($scan)) {
+		echo '<div class="alert alert-warning">Товар не найден: '.$scan.'</div>';
+	}
+}
+
+?>
+<script>
+$(function(){
+	$('#scan').focus();
+});
+</script>

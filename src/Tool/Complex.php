@@ -50,12 +50,11 @@ class Complex {
 				$child['note'] = trim($data['note'].' составной: '.$data['name']);
 				//$child['info'] = trim($data['info'].' составной: '.$data['name']);
 
-				\Db::insert('orst', $child);
-				$ids[] = \Db::insert_id();
+				$ids[] = \Db::insert('orst', $child);
 			}
 		} else {
-			\Db::insert('orst', $data);
-			$ids[] = \Db::insert_id();
+
+			$ids[] = \Db::insert('orst', $data);
 		}
 
 		return $ids;

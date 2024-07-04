@@ -53,7 +53,7 @@ if (isset($config['canonical'])) {
 ';
 }
 
-$meta = htmlspecialchars(cache_get('meta')); // trim(.' '.$config['meta'])
+$meta = htmlspecialchars(cache_get('meta') ?? ''); // trim(.' '.$config['meta'])
 w('u8');
 
 switch ($_SERVER['HTTP_HOST'] ?? '') {
@@ -221,9 +221,9 @@ if (is_user()) {
 
 <?
 
-$alert = cache_get('alert');
-if (strlen($alert)) {
-	alert($alert, 'info');
+$a = cache_get('alert');
+if (strlen($a ?? '')) {
+	alert($a, 'info');
 }
 
 ?>

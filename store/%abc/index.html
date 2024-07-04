@@ -24,7 +24,7 @@ if (preg_match_all($reg, $info, $a)) {
 }
 
 // Документация
-if (strlen($row['files']) > 7) {
+if (strlen($row['files'] ?? '') > 7) {
 	$files = php_decode($row['files']);
 	$count = 0;
 	foreach ($files as $k=>$i) {
