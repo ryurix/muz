@@ -10,8 +10,8 @@ class Complex extends Task {
 		$data = [];
 		$store = [];
 
-		$q = \Db::query('SELECT * FROM complex'); // WHERE up=176418
-		while ($i = \Db::fetch($q)) {
+		$q = db_query('SELECT * FROM complex'); // WHERE up=176418
+		while ($i = db_fetch($q)) {
 			if (isset($data[$i['up']])) {
 				$data[$i['up']][] = $i;
 			} else {
@@ -20,13 +20,17 @@ class Complex extends Task {
 			$store[$i['up']] = 1;
 			$store[$i['store']] = 1;
 		}
-		\Db::free($q);
 
-		$store = \Db::fetchAll('SELECT i,price,prices,count,complex FROM store WHERE i IN ('.implode(',', array_keys($store)).')', 'i', true);
+		if (count(array_keys($store))) {
+			$store = \Db::fetchAll('SELECT i,price,prices,count,complex FROM store WHERE i IN ('.implode(',', array_keys($store)).')', 'i', true);
+			// Получаем количество по группам складов, без удалённых складов
+			$sync = \Db::fetchAll('SELECT sync.store,vendor.typ, SUM(sync.count) cnt FROM sync INNER JOIN vendor ON vendor.i=sync.vendor'
+			.' WHERE vendor.typ<>21 AND sync.store IN ('.implode(',', array_keys($store)).') GROUP BY sync.store,vendor.typ');
+		} else {
+			$store = [];
+			$sync = [];
+		}
 
-		// Получаем количество по группам складов, без удалённых складов
-		$sync = \Db::fetchAll('SELECT sync.store,vendor.typ, SUM(sync.count) cnt FROM sync INNER JOIN vendor ON vendor.i=sync.vendor'
-		.' WHERE vendor.typ<>21 AND sync.store IN ('.implode(',', array_keys($store)).') GROUP BY sync.store,vendor.typ');
 		foreach ($sync as $i) {
 			if (isset($store[$i['store']]['sync'])) {
 				$store[$i['store']]['sync'][$i['typ']] = $i['cnt'];
