@@ -18,8 +18,14 @@ if (is_array($store)) {
 <tr><td>Статус</td><td>'.$state[$store['state']].'</td></tr>
 <tr><td>Поставщик</td><td>'.$vendor[$store['vendor']].'</td></tr>
 <tr><td'.$count_class.'>Количество</td><td'.$count_class.'>'.$store['count'].'</td></tr>
+<tr><td>Штрихкод</td><td>'.trim($store['code'], ',').'</td></tr>
 <tr><td>Комментарий</td><td>'.$store['info'].'</td></tr>
 <tr><td>Замечания</td><td>'.$store['note'].'</td></tr>
+</tbody></table>';
+	} else {
+		echo '
+<table class="table table-bordered"><tbody>
+<tr><td>Штрихкод</td><td>'.implode(', ', \Flydom\Cache::csvc_decode($store['code'])).'</td></tr>
 </tbody></table>';
 	}
 	echo '</div></div>';
@@ -28,6 +34,16 @@ if (is_array($store)) {
 	if (strlen($scan)) {
 		echo '<div class="alert alert-warning">Товар не найден: '.$scan.'</div>';
 	}
+}
+
+if (isset($sound)) {
+	echo '
+<script type="text/javascript">
+	function playSound() {
+		var audio = new Audio(/design/sound/'.$sound.');
+		audio.play();
+	}
+</script>';
 }
 
 ?>

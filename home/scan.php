@@ -42,17 +42,28 @@ if (strlen($scan)) {
 			if (is_array($store)) {
 				if ($store['i'] == $plan['store']['value']) {
 					$alert = '<div class="alert alert-success">Товар соответствует заказу.</div>';
+					$sound = 'success.mp3';
 				} else {
 					$alert = '<div class="alert alert-danger">Товар не соответствует заказу!</div>';
+					$sound = 'wrong.wav';
 				}
 			} else {
-				$store = \Db::fetchRow(\Db::select($fields, 'store', ['i'=>\Flydom\Util\Clean::int($plan['store']['value'])]));
-				$code = \Flydom\Cache::csvc_decode($store['code']);
-				$code[] = $scan;
-				\Db::update('store', [
-					'code'=>\Flydom\Cache::csvc_encode($code)
-				], ['i'=>$store['i']]);
-				$alert = '<div class="alert alert-warning">Штрихкод '.$scan.' привязан к товару <a href="/store/'.$store['url'].'">'.$store['i'].'</a></div>';
+				if (\Tool\Barcode::check($scan)) {
+					$store = \Db::fetchRow(\Db::select($fields, 'store', ['i'=>\Flydom\Util\Clean::int($plan['store']['value'])]));
+					$code = \Flydom\Cache::csvc_decode($store['code']);
+					if (count($code)) {
+						$alert = '<div class="alert alert-danger">У товара <a href="/store/'.$store['url'].'">'.$store['i'].'</a> уже есть штрихкод!</div>';
+					} else {
+						$code[] = $scan;
+						$store['code'] = \Flydom\Cache::csvc_encode($code);
+						\Db::update('store', [
+							'code'=>$store['code']
+						], ['i'=>$store['i']]);
+						$alert = '<div class="alert alert-warning">Штрихкод '.$scan.' привязан к товару <a href="/store/'.$store['url'].'">'.$store['i'].'</a></div>';
+					}
+				} else {
+					$alert = '<div class="alert alert-warning">Неправильный штрихкод: '.$scan.'</div>';
+				}
 			}
 		}
 

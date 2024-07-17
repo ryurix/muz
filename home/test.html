@@ -1,6 +1,91 @@
 <?
 
 /*
+$a = [
+	'7622201673550',
+	'810012110099',
+	'1234567890128',
+	'123123123148',
+	'123123123149',
+	'1231231231454',
+];
+
+foreach ($a as $i) {
+	print_pre($i);
+	print_pre(\Tool\Barcode::check($i) ? 'valid' : 'not valid');
+}
+
+$sound = 'success.mp3';
+
+//echo '<iframe src="/design/sound/'.$sound.'" allow="autoplay" style="display:none" id="iframeAudio"></iframe>';
+//echo '<audio autoplay><source src="/design/sound/'.$sound.'" type="audio/mpeg"></audio>';
+//echo '<audio id="sound" src="/design/sound/'.$sound.'" autoplay="autoplay"></audio>';
+echo '<button>Play</button>';
+
+echo '
+<script>
+const audio = new Audio("/design/sound/'.$sound.'");
+const buttons = document.querySelectorAll("button");
+
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    audio.play();
+  });
+});
+</script>';
+//echo '<script>$(function() { $("#sound").get(0).play(); })</script>';
+
+
+
+/*
+echo '
+<script type="text/javascript">
+var audio = new Audio("/design/sound/'.$sound.'");
+audio.play();
+</script>';
+*/
+
+/*
+$s = '7622201673550';
+//$s = '810012110099';
+$s = '1234567890128';
+
+$valid = preg_match('/^[0-9]+$/', $s);
+
+$type = strlen($s);
+
+if ($valid) {
+	$valid = false;
+	if ($type == 12) { // UPC-A
+		$a = str_split($s);
+		$sum = 3 * ($a[0] + $a[2] + $a[4] + $a[6] + $a[8] + $a[10]);
+		$sum+= $a[1] + $a[3] + $a[5] + $a[7] + $a[9];
+		$sum = $sum % 10;
+		if ($sum > 0) { $sum = 10 - $sum; }
+
+		if ($sum == $a[11]) {
+			$valid = true;
+		}
+	}
+
+	if ($type == 13) { // EAN-13
+		$a = str_split($s);
+		$sum = 3 * ($a[1] + $a[3] + $a[5] + $a[7] + $a[9] + $a[11]);
+		$sum+= $a[0] + $a[2] + $a[4] + $a[6] + $a[8] + $a[10];
+		$sum = $sum % 10;
+		if ($sum > 0) { $sum = 10 - $sum; }
+
+		if ($sum == $a[12]) {
+			$valid = true;
+		}
+	}
+}
+
+print_pre($s);
+print_pre($type);
+print_pre($valid ? 'valid' : 'not valid');
+
+/*
 $fields = ['store.i', 'store.code', 'store.url', 'store.pic', 'store.brand', 'store.name', 'store.model'];
 $scan = '12345';
 $store = \Db::fetchRow(\Db::select($fields, 'store', ['i'=>\Flydom\Util\Clean::int(38)]));
