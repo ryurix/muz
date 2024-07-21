@@ -1,6 +1,29 @@
 <?
 
+$upd = [];
+$q = \Db::select('i,code', 'store', ['code IS NOT NULL', "code<>''"]);
+while ($i = \Db::fetch($q)) {
+	$code = \Flydom\Cache::csvc_decode($i['code']);
+	$new = [];
+	foreach ($code as $j) {
+		if (\Tool\Barcode::check($j)) {
+			$new[] = $j;
+		}
+	}
+	if (count($code) > count($new)) {
+		$upd[$i['i']] = \Flydom\Cache::csvc_encode($new);
+	}
+}
+\Db::free($q);
+
+foreach ($upd as $k=>$v) {
+	\Db::update('store', ['code'=>$v], ['i'=>$k]);
+}
+\Flydom\Debug::print($upd);
+
 /*
+
+237304379
 $a = [
 	'7622201673550',
 	'810012110099',

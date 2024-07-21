@@ -151,6 +151,7 @@ $(function() {
 
 	$('input.auto').bind('input', oil_timed);
 	$('input.auto').bind('change', oil_submit);
+	$('input.auto1').bind('input', oil_timed);
 	$('input.auto2').bind('change', oil_timed);
 	$('select.auto').bind('change', oil_submit);
 	$('select.auto2').bind('change', oil_timed);

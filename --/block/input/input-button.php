@@ -55,6 +55,9 @@ function input_button($v) {
 			$class[] = 'btn-default';
 		}
 		$b.= ' class="'.implode(' ', $class).'"';
+		if (isset($v['id'][$i])) {
+			$b.= ' id="'.$v['id'][$i].'"';
+		}
 		if (isset($v['onclick'][$i])) {
 			$b.= ' onclick="'.addcslashes($v['onclick'][$i], '"').'"';
 		}
