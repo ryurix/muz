@@ -84,10 +84,10 @@ $result = '<!--'.$sound.'-->';
 
 if (is_array($store)) {
 	$brands = cache_load('brand');
-	$config['name'] = ($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'];
+	$name = ($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'];
 
 //	echo '<h3>'.($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'].'</h3>';
-	$result.= '<div class="row"><div class="col"><img src="'.$store['pic'].'"></div><div class="col">';
+	$result.= '<div class="row"><div class="col"><img src="'.$store['pic'].'" class="img-fluid"></div><div class="col">';
 	$result.= $alert ?? '';
 	if (isset($store['orst_i'])) {
 		$state = w('order-state');
@@ -95,6 +95,7 @@ if (is_array($store)) {
 		$count_class = $store['count'] > 1 ? ' class="text-danger"' : '';
 		$result.= '
 <table class="table table-bordered"><tbody>
+<tr><td>Название</td><td>'.$name.'</td></tr>
 <tr><td>Заказ #</td><td><a href="/order/'.$store['orst_i'].'">'.$store['orst_i'].'</a></td></tr>
 <tr><td>Статус</td><td>'.$state[$store['state']].'</td></tr>
 <tr><td>Поставщик</td><td>'.$vendor[$store['vendor']].'</td></tr>
@@ -106,6 +107,7 @@ if (is_array($store)) {
 	} else {
 		$result.= '
 <table class="table table-bordered"><tbody>
+<tr><td>Название</td><td>'.$name.'</td></tr>
 <tr><td>Штрихкод</td><td>'.implode(', ', \Flydom\Cache::csvc_decode($store['code'])).'</td></tr>
 </tbody></table>';
 	}

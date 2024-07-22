@@ -52,10 +52,7 @@ if ($plan['']['valid']) {
 		$url = $plan['brand']['values'][$plan['brand']['value']].' '.$plan['model']['value'].' '.$plan['name']['value'];
 		$url = $row['i'].'-'.str2url(trim($url));
 
-		$code = explode(',', $plan['code']['value']);
-		foreach ($code as $k=>$v) {
-			$code[$k] = trim($v);
-		}
+		$code = array_map('trim', explode(',', $plan['code']['value']));
 
 		$data = array(
 			'url'=>$url,
