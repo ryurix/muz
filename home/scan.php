@@ -59,7 +59,7 @@ if (strlen($scan)) {
 						$sound = 'success';
 					}
 				} else {
-					$alert = '<div class="alert alert-warning">Неправильный штрихкод: '.$scan.'</div>';
+					$alert = '<div class="alert alert-danger">Неправильный штрихкод: '.$scan.'</div>';
 					$sound = 'wrong';
 				}
 			}
@@ -113,6 +113,9 @@ if (is_array($store)) {
 } else {
 	if (strlen($scan)) {
 		$result.= '<div class="alert alert-warning">Товар не найден: '.$scan.'</div>';
+		if (!\Tool\Barcode::check($scan)) {
+			$result.= '<div class="alert alert-danger">Неправильный штрихкод: '.$scan.'</div>';
+		}
 	}
 }
 
