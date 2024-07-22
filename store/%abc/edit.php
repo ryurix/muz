@@ -52,6 +52,11 @@ if ($plan['']['valid']) {
 		$url = $plan['brand']['values'][$plan['brand']['value']].' '.$plan['model']['value'].' '.$plan['name']['value'];
 		$url = $row['i'].'-'.str2url(trim($url));
 
+		$code = explode(',', $plan['code']['value']);
+		foreach ($code as $k=>$v) {
+			$code[$k] = trim($v);
+		}
+
 		$data = array(
 			'url'=>$url,
 			'up'=>$plan['up']['value'],
@@ -87,7 +92,7 @@ if ($plan['']['valid']) {
 			'pics'=>$plan['pics']['value'],
 			'yandex'=>$plan['yandex']['value'],
 			'complex'=>$plan['complex']['value'],
-			'code'=>\Flydom\Cache::csvc_encode(explode(',', $plan['code']['value'])),
+			'code'=>\Flydom\Cache::csvc_encode($code),
 		);
 
 		if (w('store-pic', $plan)) {

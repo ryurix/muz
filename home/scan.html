@@ -12,12 +12,11 @@ $(function(){
 });
 
 function onSuccess(data) {
-	let sound = 'wrong.wav';
-	if (data.indexOf('-success-') >= 0) {
-		sound = 'success.mp3';
-	}
-	playSound(sound);
-	console.log(data);
+
+	if (data.indexOf('-success-') >= 0) { playSound('success.mp3'); }
+	if (data.indexOf('-wrong-') >= 0) { playSound('wrong.wav'); }
+	if (data.indexOf('-info-') >= 0) { playSound('info.mp3'); }
+
 	$('#result').html(data);
 	$('#scan').val('').focus();
 
@@ -30,15 +29,17 @@ function playSound(sound) {
 
 $(function(){
 	$('#form').submit(function(){
-		$.ajax({
-			url: '/scan?design=none',
-			type: "POST",
-			data: $("#form").serialize(),
-			success: onSuccess,
-			error: function(xhr, resp, text) {
-				console.log(xhr, rest, text)
-			}
-		});
+		if ($('#scan').val().length > 0) {
+			$.ajax({
+				url: '/scan?design=none',
+				type: "POST",
+				data: $("#form").serialize(),
+				success: onSuccess,
+				error: function(xhr, resp, text) {
+					console.log(xhr, rest, text)
+				}
+			});
+		}
 		return false;
 	});
 });

@@ -29,7 +29,7 @@ if (strlen($scan)) {
 			'store' => $store['i'],
 			'dt' => now()
 		];
-		$sound = 'success';
+		$sound = 'info';
 	} else {
 		$store = \Db::fetchRow(\Db::select($fields, 'store', ['code LIKE "%,'.addslashes($scan).',%"']));
 
@@ -65,7 +65,7 @@ if (strlen($scan)) {
 			}
 		} else {
 			if (is_array($store)) {
-				$sound = 'success';
+				$sound = 'info';
 			} else {
 				$sound = 'wrong';
 			}
