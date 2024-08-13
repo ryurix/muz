@@ -1,5 +1,7 @@
 <?
 
+\Form\Barcode::start();
+
 $plan = [
 	''=>['method'=>'POST'],
 	'scan'=>['type'=>'line', 'id'=>'scan', 'class'=>'auto1'],
@@ -16,7 +18,7 @@ if (strlen($scan)) {
 
 	$fields = ['store.i', 'store.code', 'store.url', 'store.pic', 'store.brand', 'store.name', 'store.model'];
 
-	$fields2 = array_merge($fields, ['orst.i orst_i', 'orst.vendor', 'orst.state', 'orst.count', 'orst.info', 'orst.note']);
+	$fields2 = array_merge($fields, ['orst.i orst_i', 'orst.vendor', 'orst.state', 'orst.count', 'orst.info', 'orst.note', 'orst.last']);
 
 	$store = \Db::fetchRow(\Db::select($fields2, ['store', 'orst'], [
 		'orst.mpi'=>$scan,
@@ -72,7 +74,7 @@ if (strlen($scan)) {
 		}
 
 		$_SESSION['scan'] = [
-			'store' => 0,
+			'store' => $store['i'] ?? 0,
 			'dt' => 0
 		];
 	}
@@ -86,6 +88,9 @@ if (is_array($store)) {
 	$brands = cache_load('brand');
 	$name = ($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'];
 
+	$code = implode(', ', \Flydom\Cache::csvc_decode($store['code']));
+	$barcode = \Form\Barcode::button('Штрихкод', 'scan', 'btn btn-default btn-sm');
+
 //	echo '<h3>'.($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'].'</h3>';
 	$result.= '<div class="row"><div class="col"><img src="'.$store['pic'].'" class="img-fluid"></div><div class="col">';
 	$result.= $alert ?? '';
@@ -97,10 +102,11 @@ if (is_array($store)) {
 <table class="table table-bordered"><tbody>
 <tr><td>Название</td><td>'.$name.'</td></tr>
 <tr><td>Заказ #</td><td><a href="/order/'.$store['orst_i'].'">'.$store['orst_i'].'</a></td></tr>
+<tr><td>Обновлён</td><td>'.\Flydom\Util\Time::dateTime($store['last']).'</td></tr>
 <tr><td>Статус</td><td>'.$state[$store['state']].'</td></tr>
 <tr><td>Поставщик</td><td>'.$vendor[$store['vendor']].'</td></tr>
 <tr><td'.$count_class.'>Количество</td><td'.$count_class.'>'.$store['count'].'</td></tr>
-<tr><td>Штрихкод</td><td>'.trim($store['code'], ',').'</td></tr>
+<tr><td>'.$barcode.'</td><td>'.$code.'</td></tr>
 <tr><td>Комментарий</td><td>'.$store['info'].'</td></tr>
 <tr><td>Замечания</td><td>'.$store['note'].'</td></tr>
 </tbody></table>';
@@ -108,7 +114,7 @@ if (is_array($store)) {
 		$result.= '
 <table class="table table-bordered"><tbody>
 <tr><td>Название</td><td>'.$name.'</td></tr>
-<tr><td>Штрихкод</td><td>'.implode(', ', \Flydom\Cache::csvc_decode($store['code'])).'</td></tr>
+<tr><td>'.$barcode.'</td><td>'.$code.'</td></tr>
 </tbody></table>';
 	}
 	$result.= '</div></div>';

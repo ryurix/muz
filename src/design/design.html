@@ -7,7 +7,7 @@
 <head>
 <?
 
-$version = '?123';
+$version = '?12';
 
 echo $config['city']['head'];
 
@@ -172,7 +172,7 @@ if (is_user()) {
 } else {
 
 ?>
-						<li><a href="javascript:void(0);" class="header_account" data-toggle="modal" data-target="#modal-help" data-load="login"><i class="fa fa-user-alt"></i> Вход</a></li>
+						<li><a href="javascript:void(0);" class="header_account" data-toggle="modal" data-target="#modal-help" data-load="help/login"><i class="fa fa-user-alt"></i> Вход</a></li>
 <?
 
 }
@@ -428,7 +428,7 @@ echo '</div>';
 
 <?
 
-if(isset($_SESSION["ecommerce"]) && is_array($_SESSION['ecommerce']))
+if(isset($_SESSION['ecommerce']) && is_array($_SESSION['ecommerce']))
 {
 	echo "<script type=\"text/javascript\">";
 	if(! strcasecmp($_SESSION['ecommerce']['gtm-ee-event-action'], "purchase"))

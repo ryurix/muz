@@ -98,7 +98,7 @@ foreach ($pics as $k=>$v) {
 				<div class="product_cont">
 
 					<div class="product_pricecont">
-						<p class="product_article articul">Артикул: <span>М</span><span itemprop="sku"><? echo $row['i'] ?></span> <button class="qa d-none d-md-block" type="button" data-toggle="modal" data-target="#modal-help" data-load="store-price">?</button></p>
+						<p class="product_article articul">Артикул: <span>М</span><span itemprop="sku"><? echo $row['i'] ?></span> <button class="qa d-none d-md-block" type="button" data-toggle="modal" data-target="#modal-help" data-load="help/store-price">?</button></p>
 						<div class="product_pricecontin">
 <?
 
@@ -179,7 +179,7 @@ if (isset($row['cheap'])) {
 
 	$total = array_sum($sklad);
 ?>
-						<p class="product_article<? echo $total>0 ? '">Есть в наличии' : ' preorder">На заказ'; ?><button class="qa d-none d-md-block" type="button" data-toggle="modal" data-target="#modal-help" data-load="store-sklad">?</button></p>
+						<p class="product_article<? echo $total>0 ? '">Есть в наличии' : ' preorder">На заказ'; ?><button class="qa d-none d-md-block" type="button" data-toggle="modal" data-target="#modal-help" data-load="help/store-sklad">?</button></p>
 						<div class="product_pricecontin">
 							<p class="product_text1 mb20">Наличие:</p>
 							<ul class="product_list">

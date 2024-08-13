@@ -48,10 +48,10 @@ $(document).ready(function() {
 	//scroll add .scroll to buttons for slowly move to anchor
 	$('.scroll').bind('click.smoothscroll',function (e) {
 		e.preventDefault();
-		
+
 		var target = this.hash,
 		$target = $(target);
-		
+
 		$('html, body').stop().animate({
 			'scrollTop': $target.offset().top
 		}, 900, 'swing', function () {
@@ -64,7 +64,7 @@ $(document).ready(function() {
 		if( window.innerWidth < 992 && window.pageYOffset > 380){
 			$(".header_manu").addClass("fixed");
 		}else{
-			$(".header_manu").removeClass("fixed");		
+			$(".header_manu").removeClass("fixed");
 		}
 	}
 */
@@ -73,7 +73,7 @@ $(document).ready(function() {
 			if(  window.pageYOffset > 250){
 				$(".header_fixed").addClass("slick");
 			}else if(  window.pageYOffset < 250 ){
-				$(".header_fixed").removeClass("slick");		
+				$(".header_fixed").removeClass("slick");
 			}
 		};
 	}
@@ -116,7 +116,7 @@ $(document).ready(function() {
 	var basket 		= $("#menu-basket");
 
 	basket.on("click", "button#basket", function(e){
-		$("#basket_list").slideToggle(300, function(){ 
+		$("#basket_list").slideToggle(300, function(){
 			// console.log("click on btn basket");
 		});
 	});
@@ -206,7 +206,7 @@ $(document).ready(function() {
 
 
 // Главная
-	if( document.getElementById("bootstrap_slider") ){ 
+	if( document.getElementById("bootstrap_slider") ){
 
 		$(".about_toggle").on("click", function(){
 			$(this).hide();
@@ -221,20 +221,20 @@ $(document).ready(function() {
 	var catalog = $(".catalog_submenu");
 	if( window.innerWidth < 990 ){
 		// $(".catalog_btnsubmenu").addClass("opened");
-	} 
+	}
 	if( $(".catalog_btnsubmenu").hasClass("opened") ){
 		catalog.slideUp(0);
 	}else{
-		catalog.slideDown(0);	
+		catalog.slideDown(0);
 	}
 
 	$(".catalog_btnsubmenu").on("click", function(){
 		if( $(this).hasClass("opened") ){
-			$(this).removeClass("opened");		
-			catalog.slideDown();		
+			$(this).removeClass("opened");
+			catalog.slideDown();
 		}else{
-			$(this).addClass("opened");		
-			catalog.slideUp();		
+			$(this).addClass("opened");
+			catalog.slideUp();
 		}
 	});
 
@@ -244,12 +244,12 @@ $(document).ready(function() {
 
 	if( window.innerWidth < 990 ){
 		$(".filter_subtitle").toggleClass("opened");
-	} 
+	}
 
 	if( $(".filter_subtitle").hasClass("opened") ){
 		filter_list.slideUp(0);
 	}else{
-		filter_list.slideDown(0);	
+		filter_list.slideDown(0);
 	}
 
 
@@ -275,28 +275,29 @@ $(document).ready(function() {
 					selectPlaceholder: "Выберите город"
 				});
 			}, 100);
-		});	
+		});
 	});
 
 	$('#modal-help').on('show.bs.modal', function (event) {
-		var button = $(event.relatedTarget);
-		$('#modal-help .modal-body').load('/help/' + button.data('load') + '?modal');
+		var data = $(event.relatedTarget).data('load');
+		data+= data.indexOf('?') > 0 ? '&' : '?';
+		$('#modal-help .modal-body').load('/' + data + '_win');
 	});
 
-	if( document.getElementsByClassName('basket2_select').length ){ 
+	if( document.getElementsByClassName('basket2_select').length ){
 		$('.basket2_select').styler({
 			selectSearch: true,
 			selectPlaceholder: "Выберите город"
 		});
 	}
 
-	if( document.getElementsByClassName('catalog_dd').length ){ 
+	if( document.getElementsByClassName('catalog_dd').length ){
 		$('.catalog_dd').styler();
 	}
 
 
 // Product
-	if( document.getElementById("product_owl") ){ 
+	if( document.getElementById("product_owl") ){
 	  $("#product_owl").owlCarousel({
 			loop: true,
 			margin: 10,
@@ -349,7 +350,7 @@ $(document).ready(function() {
 
 	// иконки скидки
 	var curIcon;
-	$(".product_icon").on("mouseover", function(){ 
+	$(".product_icon").on("mouseover", function(){
 		var current = $(this).data("icon");
 		$(".product_discountcode").find(".product_icondescr").removeClass("active");
 		$(".product_discountcode").find(".product_icondescr[data-icon="+ current +"]").addClass("active");
@@ -359,9 +360,9 @@ $(document).ready(function() {
 // end product
 
 
-//basket 
+//basket
 	if( document.getElementById('contact_phone') ){
-		$("#contact_phone").mask("+9(999) 999 99 99");		
+		$("#contact_phone").mask("+9(999) 999 99 99");
 	}
 	if( document.getElementById('ur_checkbox') ){
 		 $("#ur_checkbox").change(function(){
@@ -496,8 +497,6 @@ $(document).ready(function() {
 
 
 
-	
+
 //end ready
 });
-
-

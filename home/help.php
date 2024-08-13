@@ -1,7 +1,7 @@
 <?
 
-if (isset($_REQUEST['modal'])) {
-	$config['design'] = 'modal';
+if (isset($_REQUEST['_win'])) {
+	$config['design'] = 'help';
 }
 
 if ($config['args'][0] == 'login') {
@@ -14,5 +14,3 @@ if ($config['args'][0] == 'login') {
 if (is_user('block')) {
 	$block['modal-edit'] = '<a href="/block/'.$config['args'][0].'" type="button" class="btn btn-secondary">Правка</a>';
 }
-
-?>

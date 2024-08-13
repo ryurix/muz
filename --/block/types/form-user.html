@@ -1,8 +1,8 @@
 <div class="col-12 col-sm-12 col-md-12 col-lg">
 	<div class="basket_cont3">
-		<h3 class="basket_title">Контактные данные <button class="qa d-none d-md-block" type="button" data-toggle="modal" data-target="#modal-help" data-load="basket-user">?</button></h3>
+		<h3 class="basket_title">Контактные данные <button class="qa d-none d-md-block" type="button" data-toggle="modal" data-target="#modal-help" data-load="help/basket-user">?</button></h3>
 <? if (!is_user()) { ?>
-		<p class="basket_text4">Есть аккаунт? <a href="javascript:void(0);" data-toggle="modal" data-target="#modal-help" data-load="login">Авторизоваться</a></p>
+		<p class="basket_text4">Есть аккаунт? <a href="javascript:void(0);" data-toggle="modal" data-target="#modal-help" data-load="help/login">Авторизоваться</a></p>
 <? } ?>
 		<div id="basket_contact">
 			<label class="basket2_label">
@@ -41,7 +41,7 @@ function echo_invalid_one($input, $value) {
 ?>
 <div class="col-12 col-sm-12 col-md-12 col-lg">
 	<div class="basket_cont3">
-		<h3 class="basket_title delivery">Доставка <button class="qa d-none d-md-block" type="button" data-toggle="modal" data-target="#modal-help" data-load="basket-adres">?</button></h3>
+		<h3 class="basket_title delivery">Доставка <button class="qa d-none d-md-block" type="button" data-toggle="modal" data-target="#modal-help" data-load="help/basket-adres">?</button></h3>
 		<div id="basket_delivery">
 			<label class="basket2_label2<? echo_invalid_one($args['dost'], 'self') ?>">
 				<? echo input_radio_one($args['dost'], 'self'); ?>
