@@ -39,7 +39,7 @@ function input_multich($r) {
 
 	foreach($r['values'] as $k=>$v) {
 		$s.= '<option value="'.$k.'"';
-		if (in_array($k, $r['value'])) {
+		if (is_array($r['value']) && in_array($k, $r['value'])) {
 			$s.= ' SELECTED';
 		}
 		$s.= '>'.$v.'</option>';
