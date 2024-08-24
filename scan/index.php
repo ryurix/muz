@@ -58,7 +58,7 @@ if (strlen($scan)) {
 							'code'=>$store['code']
 						], ['i'=>$store['i']]);
 						$alert = '<div class="alert alert-warning">Штрихкод '.$scan.' привязан к товару <a href="/store/'.$store['url'].'">'.$store['i'].'</a></div>';
-						$sound = 'success';
+						$sound = 'bell';
 					}
 				} else {
 					$alert = '<div class="alert alert-danger">Неправильный штрихкод: '.$scan.'</div>';

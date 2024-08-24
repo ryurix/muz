@@ -265,6 +265,23 @@ $(document).ready(function() {
 		$(this).hide();
 	});
 
+	jQuery.fn.putCursorAtEnd = function() {
+		return this.each(function() {
+		  var $el = $(this), el = this;
+		  if (!$el.is(":focus")) { $el.focus(); }
+		  if (el.setSelectionRange) {
+			var len = $el.val().length * 2;
+			setTimeout(function() {
+			  el.setSelectionRange(len, len);
+			}, 1);
+		  } else {
+			$el.val($el.val());
+		  }
+		  // Scroll to the bottom, in case we're in a tall textarea
+		  // (Necessary for Firefox and Chrome)
+		  //this.scrollTop = 999999;
+		});
+	};
 
 	// кастомизация select
 	$('#modal-city').on('show.bs.modal', function() {
@@ -281,7 +298,9 @@ $(document).ready(function() {
 	$('#modal-help').on('show.bs.modal', function (event) {
 		var data = $(event.relatedTarget).data('load');
 		data+= data.indexOf('?') > 0 ? '&' : '?';
-		$('#modal-help .modal-body').load('/' + data + '_win');
+		$('#modal-help .modal-body').load('/' + data + '_win', function() {
+			$('#autofocus').focus().putCursorAtEnd();
+		});
 	});
 
 	if( document.getElementsByClassName('basket2_select').length ){

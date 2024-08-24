@@ -4,13 +4,13 @@ namespace Tool;
 
 class Barcode {
 
-static function check($s) {
-	if (!preg_match('/^[0-9]+$/', $s)) {
+static function check($barcode) {
+	if (!preg_match('/^[0-9]+$/', $barcode)) {
 		return false;
 	}
 
-	$type = strlen($s);
-	$a = str_split($s);
+	$type = strlen($barcode);
+	$a = str_split($barcode);
 
 	if ($type == 8) { // EAN-8
 
@@ -46,6 +46,10 @@ static function check($s) {
 	}
 
 	return false;
+}
+
+static function clean($barcode) {
+	return preg_replace('@[^0-9]+@', '', $barcode);
 }
 
 } // Barcode

@@ -9,11 +9,12 @@ static function start($default = [])
 {
 	$store = $_SESSION['scan']['store'] ?? 0;
 	$code = \Db::result('SELECT code FROM store WHERE i='.$store);
-	self::code(implode(', ', \Flydom\Cache::csvc_decode($code)));
+	$code = \Flydom\Cache::csvc_decode($code);
+	self::code(implode(', ', $code).(count($code) ? ', ' : ''));
 
 	\Flydom\Form\Modal::setTitle('Штрихкод');
 	\Flydom\Form\Modal::plan([
-		'code'=>new \Flydom\Input\Line(),
+		'code'=>new \Flydom\Input\Line(['id'=>'autofocus']),
 		'send'=>new \Flydom\Input\Button([
 			'codes'=>1,
 			1=>'Сохранить'
