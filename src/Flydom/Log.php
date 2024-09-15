@@ -15,7 +15,7 @@ static function add($type, $code = 0, $info = null, $user = null) {
 			'type'=>$type,
 			'code'=>$code,
 			'info'=>trim($info),
-			'user'=>$user,
+			'user'=>$user ?? \User::id(),
 		]);
 	}
 }

@@ -29,9 +29,15 @@ if (strlen($scan)) {
 	{
 		$_SESSION['scan'] = [
 			'store' => $store['i'],
+			'orst'=>$store['orst_i'],
 			'dt' => now()
 		];
-		$sound = 'info';
+		$sklad = array_keys(w('list-sklad'));
+		if (in_array($store['vendor'], $sklad)) {
+			$sound = 'sklad';
+		} else {
+			$sound = 'info';
+		}
 	} else {
 		$store = \Db::fetchRow(\Db::select($fields, 'store', ['code LIKE "%,'.addslashes($scan).',%"']));
 
@@ -40,6 +46,11 @@ if (strlen($scan)) {
 				if ($store['i'] == ($_SESSION['scan']['store'] ?? 0)) {
 					$alert = '<div class="alert alert-success">Товар соответствует заказу.</div>';
 					$sound = 'success';
+					$orst = $_SESSION['scan']['orst'] ?? 0;
+					if ($orst) {
+						\Db::update('orst', ['state'=>27], ['i'=>$orst]);
+						\Flydom\Log::add(27, $_SESSION['scan']['orst']);
+					}
 				} else {
 					$alert = '<div class="alert alert-danger">Товар не соответствует заказу!</div>';
 					$sound = 'wrong';
@@ -58,7 +69,7 @@ if (strlen($scan)) {
 							'code'=>$store['code']
 						], ['i'=>$store['i']]);
 						$alert = '<div class="alert alert-warning">Штрихкод '.$scan.' привязан к товару <a href="/store/'.$store['url'].'">'.$store['i'].'</a></div>';
-						$sound = 'bell';
+						$sound = 'new';
 					}
 				} else {
 					$alert = '<div class="alert alert-danger">Неправильный штрихкод: '.$scan.'</div>';

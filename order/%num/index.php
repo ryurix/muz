@@ -30,7 +30,7 @@ if ($order->getId()) {
 		$plan['vendor']['values'] = $vendors;
 //		$row['sale'] = '<a href="/sale/'.$row['sale'].'">'.$row['sale'].'</a>';
 		if (!$order->getStaff()) { $order->setStaff($_SESSION['i']); }
-		$order->setMark(explode(',', trim($order->getMark(), ',')));
+		$order->setMark(\Flydom\Cache::csvc_decode($order->getMark()));
 
 		$data = $order->getData();
 		$plan['']['default'] = $data;
@@ -127,7 +127,7 @@ if ($order->getId()) {
 					->setMoney2($plan['money2']['value'])
 					->setDocs($plan['docs']['value'])
 					->setFiles($plan['files']['value'])
-					->setMark(count($plan['mark']['value']) ? ','.implode(',', $plan['mark']['value']).',' : '')
+					->setMark(\Flydom\Cache::csvc_encode($plan['mark']['value']))
 					->setMpi($plan['mpi']['value'])
 					->setMpdt($plan['mpdt']['value']);
 

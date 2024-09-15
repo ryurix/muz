@@ -214,7 +214,7 @@ class Order {
 		} else if ($old > 1 && $old < 35 && $new <= 1) {
 			$this->revert();
 			\Tool\Reserve::create($this->getId(), $this->getStore(), $this->getCount());
-		} else if ($old > 1 && $old != 35 && $old != 30 && $new == 35) {
+		} else if ($old > 1 && $old != 27 && $old != 35 && $old != 30 && $new == 35) {
 			$this->cancel();
 		}
 

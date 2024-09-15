@@ -32,7 +32,7 @@ $q = db_query('SELECT * FROM catalog WHERE i="'.$shop.'"'.$hide);
 $root = '/catalog';
 
 if ($row = db_fetch($q)) {
-	db_close($q);
+	//db_close($q);
 
 	if (strlen($row['icon'])) {
 		$config['og:image'] = $row['icon'];
@@ -333,7 +333,11 @@ if ($get['group']['value'] && $get['group']['valid']) {
 
 $ch = cache_load('children'.(is_user('catalog') ? '-hide' : ''));
 
-$where[] = 'store.up IN ('.implode(',', $ch[$shop]).')';
+if (is_array($ch[$shop]) && count($ch[$shop])) {
+	$where[] = 'store.up IN ('.$shop.','.implode(',', $ch[$shop]).')';
+} else {
+	$where[] = 'store.up='.$shop;
+}
 
 if ($get['search']['value']) {
 	w('search');
