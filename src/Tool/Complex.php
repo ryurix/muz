@@ -8,7 +8,7 @@ class Complex {
 		$components = \Db::result('SELECT COUNT(*) FROM complex WHERE up='.$complex_id);
 
 		// Получаем количество по группам складов, без удалённых складов
-		$q = \Db::query('SELECT sync.store,vendor.typ, SUM(sync.count) cnt, complex.amount, complex.minus FROM sync, vendor, complex'
+		$q = \Db::select('SELECT sync.store,vendor.typ, SUM(sync.count) cnt, complex.amount, complex.minus FROM sync, vendor, complex'
 		.' WHERE vendor.typ<>21 AND vendor.i=sync.vendor AND sync.store=complex.store AND complex.up='.$complex_id
 		.' GROUP BY sync.store,vendor.typ');
 
