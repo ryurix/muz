@@ -15,7 +15,7 @@ static function echo($order) {
 		if ($type == 27) {
 			$info.= ' на '.$states[$i['info']] ?? '';
 		}
-		echo '<p>'.\Flydom\Util\Time::dateTime($i['dt']).' '.$i['name'].': '.$info.'</p>';
+		echo '<p>'.\Flydom\Time::dateTime($i['dt']).' '.$i['name'].': '.$info.'</p>';
 	}
 }
 

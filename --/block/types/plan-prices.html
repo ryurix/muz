@@ -41,6 +41,7 @@ $back = [
 	'pmax'=>['name'=>'Макс. цена', 'type'=>'int', 'width'=>100],
 	'price'=>array('name'=>'Взять цену', 'type'=>'combo', 'values'=>$prices),
 	'sale'=>array('name'=>'Коррекция цены', 'type'=>'int', 'suffix'=>'%', 'width'=>100),
-	'days'=>array('name'=>'Дата синхронизации<br> не старше', 'type'=>'int', 'default'=>0, 'suffix'=>'дней', 'width'=>100),
+	'days'=>array('name'=>'Дата синхронизации<br> не старше *', 'type'=>'int', 'default'=>0, 'suffix'=>'дней', 'width'=>100),
+	'info'=>['name'=>'Комментарий', 'type'=>'line'],
 	'send'=>array('type'=>'button', 'count'=>1, 1=>'Сохранить', 2=>'Проверить', 3=>'Выполнить', 4=>'Удалить',  'class'=>array(1=>'btn-success', 2=>'btn-default', 3=>'btn-warning', 4=>'btn-danger')),
 ];

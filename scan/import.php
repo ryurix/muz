@@ -27,7 +27,7 @@ if (Form::isValid() && Form::get('send') == 1) {
 
 	$file = Form::get('file');
 	$filename = Form::field('file')->filename();
-	$ext = \Flydom\Util\File::extension($filename);
+	$ext = \Flydom\File::extension($filename);
 
 	if ($ext == 'xls') {
 		if ($xls = \Shuchkin\SimpleXLS::parse($file)) {

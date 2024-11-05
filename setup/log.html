@@ -91,7 +91,7 @@ foreach ($data as $i) {
 	echo '
 <tr>
 	<td>'.$i['i'].'</td>
-	<td>'.\Flydom\Util\Time::dateTime($i['dt']).'</td>
+	<td>'.\Flydom\Time::dateTime($i['dt']).'</td>
 	<td>'.(isset($type[$i['type']]) ? $type[$i['type']] : '').'</td>
 	<td>'.$i['user'].'</td>
 	<td>'.$i['code'].'</td>';

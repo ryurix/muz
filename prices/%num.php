@@ -37,6 +37,7 @@ if (!$row) {
 		'price'=>0,
 		'sale'=>0,
 		'days'=>0,
+		'info'=>'',
 	];
 	$config['name'] = 'Новое правило';
 }
@@ -61,6 +62,7 @@ if ($plan['']['valid'] && $plan['send']['value'] && $plan['code']['value']) {
 			'price'=>$plan['price']['value'],
 			'sale'=>$plan['sale']['value'],
 			'days'=>$plan['days']['value'],
+			'info'=>$plan['info']['value'],
 			'pmin'=>$plan['pmin']['value'],
 			'pmax'=>$plan['pmax']['value'],
 		];

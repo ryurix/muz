@@ -1,4 +1,4 @@
 <?php
 
-class Page extends \Flydom\Page {
+class Page extends \Flydom\Core\Page {
 } // class Page

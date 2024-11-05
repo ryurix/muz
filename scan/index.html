@@ -16,8 +16,10 @@ function onSuccess(data) {
 	if (data.indexOf('-success-') >= 0) { playSound('success.mp3'); }
 	if (data.indexOf('-wrong-') >= 0) { playSound('wrong.mp3'); }
 	if (data.indexOf('-info-') >= 0) { playSound('info.mp3'); }
+	if (data.indexOf('-info2-') >= 0) { playSound('info2.mp3'); }
 	if (data.indexOf('-new-') >= 0) { playSound('bell.mp3'); }
 	if (data.indexOf('-sklad-') >= 0) { playSound('sklad.mp3'); }
+	if (data.indexOf('-sklad2-') >= 0) { playSound('sklad2.mp3'); }
 
 	$('#result').html(data);
 	$('#scan').val('').focus();

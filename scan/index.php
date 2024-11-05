@@ -25,7 +25,7 @@ if (strlen($scan)) {
 		'orst.store=store.i'
 	]));
 
-	if (is_array($store))
+	if (is_array($store)) // это заказ
 	{
 		$_SESSION['scan'] = [
 			'store' => $store['i'],
@@ -34,22 +34,23 @@ if (strlen($scan)) {
 		];
 		$sklad = array_keys(w('list-sklad'));
 		if (in_array($store['vendor'], $sklad)) {
-			$sound = 'sklad';
+			$sound = $store['count'] > 1 ? 'sklad2' : 'sklad';
 		} else {
-			$sound = 'info';
+			$sound = $store['count'] > 1 ? 'info2' : 'info';
 		}
-	} else {
+	} else { // это товар
 		$store = \Db::fetchRow(\Db::select($fields, 'store', ['code LIKE "%,'.addslashes($scan).',%"']));
 
 		if ((now() - ($_SESSION['scan']['dt'] ?? 0)) < 60) {
-			if (is_array($store)) {
+			if (is_array($store)) { // это товар в заказе
 				if ($store['i'] == ($_SESSION['scan']['store'] ?? 0)) {
 					$alert = '<div class="alert alert-success">Товар соответствует заказу.</div>';
 					$sound = 'success';
 					$orst = $_SESSION['scan']['orst'] ?? 0;
 					if ($orst) {
-						\Db::update('orst', ['state'=>27], ['i'=>$orst]);
-						\Flydom\Log::add(27, $_SESSION['scan']['orst']);
+						$order = new \Model\Order($orst);
+						$order->setState(27);
+						$order->save();
 					}
 				} else {
 					$alert = '<div class="alert alert-danger">Товар не соответствует заказу!</div>';
@@ -57,7 +58,7 @@ if (strlen($scan)) {
 				}
 			} else {
 				if (\Tool\Barcode::check($scan)) {
-					$store = \Db::fetchRow(\Db::select($fields, 'store', ['i'=>\Flydom\Util\Clean::int($_SESSION['scan']['store'])]));
+					$store = \Db::fetchRow(\Db::select($fields, 'store', ['i'=>\Flydom\Clean::int($_SESSION['scan']['store'])]));
 					$code = \Flydom\Cache::csvc_decode($store['code']);
 					if (count($code)) {
 						$alert = '<div class="alert alert-danger">У товара <a href="/store/'.$store['url'].'">'.$store['i'].'</a> уже есть штрихкод!</div>';
@@ -93,7 +94,7 @@ if (strlen($scan)) {
 	$store = null;
 }
 
-$result = '<!--'.$sound.'-->';
+$result = '<!--'.($sound ?? '').'-->';
 
 if (is_array($store)) {
 	$brands = cache_load('brand');
@@ -113,7 +114,7 @@ if (is_array($store)) {
 <table class="table table-bordered"><tbody>
 <tr><td>Название</td><td>'.$name.'</td></tr>
 <tr><td>Заказ #</td><td><a href="/order/'.$store['orst_i'].'">'.$store['orst_i'].'</a></td></tr>
-<tr><td>Обновлён</td><td>'.\Flydom\Util\Time::dateTime($store['last']).'</td></tr>
+<tr><td>Обновлён</td><td>'.\Flydom\Time::dateTime($store['last']).'</td></tr>
 <tr><td>Статус</td><td>'.$state[$store['state']].'</td></tr>
 <tr><td>Поставщик</td><td>'.$vendor[$store['vendor']].'</td></tr>
 <tr><td'.$count_class.'>Количество</td><td'.$count_class.'>'.$store['count'].'</td></tr>

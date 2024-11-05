@@ -103,7 +103,7 @@ class Complex extends Task {
 			}
 
 
-			if ($valid && $count) {
+			if ($valid) {
 				$prices = implode(',', $prices);
 				if ($up['price'] != $price || $up['prices'] != $prices || $up['count'] != $count) {
 					\Db::update('store', [

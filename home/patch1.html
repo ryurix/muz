@@ -44,3 +44,10 @@ CREATE TABLE `complex` (
 INDEX `up` (`up`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;');
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+$table = \Db::fetchAll('DESCRIBE prices', 'Field');
+if (!array_key_exists('info', $table)) {
+	db_query("ALTER TABLE `prices` ADD `info` text DEFAULT '';");
+}

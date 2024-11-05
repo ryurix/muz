@@ -218,6 +218,10 @@ class Order {
 			$this->cancel();
 		}
 
+		if ($old != 27 && $new == 27) {
+			\Flydom\Log::add(27, $this->getId());
+		}
+
 		if ($old <= 1 && $new > 1) {
 			\Tool\Reserve::delete($this->getId(), $this->getStore());
 		}
@@ -254,6 +258,8 @@ class Order {
 
 		w('log');
 		logs(36, $this->row['i'], $text);
+
+		\Tool\Reserve::delete($this->getId(), $this->getStore());
 	}
 
 	// Возвращение заказа в начальный статус
@@ -270,6 +276,8 @@ class Order {
 
 		w('log');
 		logs(37, $this->row['i'], $text);
+
+		\Tool\Reserve::delete($this->getId(), $this->getStore());
 	}
 
 	// Отмена заказа
@@ -293,6 +301,8 @@ class Order {
 				\Db::update('bill', array('state'=>5), array('i'=>$i['i']));
 			}
 		}
+
+		\Tool\Reserve::delete($this->getId(), $this->getStore());
 	}
 
 	function getVendorName() {

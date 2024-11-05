@@ -7,22 +7,16 @@ $shipments = $data['shipments'];
 
 foreach ($shipments as $shipment) {
 	$q = db_query('SELECT i,state,vendor,store,count,name FROM orst WHERE mpi="'.addslashes($shipment['shipmentId']).'"');
-    $orst = db_fetch_all($q, 'i');
+    $orst = db_fetch_all($q);
 
     w('log');
-    foreach ($orst as $k=>$v) {
-        logs(235, $k);
-        db_update('orst', ['state'=>35], ['i'=>$k]);
-        $data = array(
-            'orst'=>$k,
-            'old'=>$v['state'],
-            'new'=>35,
-            'vendor'=>$v['vendor'],
-            'store'=>$v['store'],
-            'count'=>$v['count'],
-            'name'=>'товара ('.$v['name'].')',
-        );
-        w('order-update-state', $data);
+    foreach ($orst as $row)
+	{
+		$order = new \Model\Order($row);
+		$order->setState(35);
+		$order->update();
+
+        logs(235, $order->getId());
     }
 }
 

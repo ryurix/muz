@@ -6,7 +6,7 @@ function logs($type, $code = 0, $info = null, $user = null) {
 		'type'=>$type,
 		'dt'=>now(),
 		'user'=>is_null($user) ? $_SESSION['i'] : $user,
-		'info'=>$info,
+		'info'=>mb_substr($info, 0, 65535),
 		'code'=>$code,
 	));
 }

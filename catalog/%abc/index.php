@@ -322,7 +322,7 @@ if ($get['sklad']['value'] && $get['sklad']['valid']) {
 	$where[] = 'sync.vendor='.$get['sklad']['value'];
 	$worth = ',IF(sync.price > 0, 0, IF(sync.count > 0, 1, 2)) worth';
 	$avail = ',IF(sync.count > 0, IF(sync.price > 0, 0, 1), IF(sync.price > 0, 2, 3)) avail';
-	//$where[] = 'EXISTS (SELECT * FROM sync WHERE sync.store=store.i AND sync.vendor='.$get['sklad']['value'].')'; //  AND sync.count>0
+	$where[] = 'EXISTS (SELECT * FROM sync WHERE sync.store=store.i AND sync.vendor='.$get['sklad']['value'].' AND sync.count>0)'; //  AND sync.count>0
 }
 
 if ($get['group']['value'] && $get['group']['valid']) {

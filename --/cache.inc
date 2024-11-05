@@ -26,7 +26,7 @@ function cache_clear($key, $percent = 100) {
 	}
 }
 
-function cache_set($key, $value) {
+function  cache_set($key, $value) {
 	global $config;
 
 	$f = fopen($config['root'].'cache/'.$key.'.php', 'w+');
@@ -87,7 +87,7 @@ function cache_save($key, $var, $type = 'php') {
 		case 'export': cache_set($key, '<?$v='.var_export($var, true).'?>'); break;
 		case 'json': cache_set($key, json_encode($var)); break;
 		case 'serialize': cache_set($key, serialize($var)); break;
-		case 'wddx': cache_set($key, wddx_serialize_value($var)); break;
+//		case 'wddx': cache_set($key, wddx_serialize_value($var)); break;
 	}
 
 }
@@ -132,10 +132,10 @@ function cache_load($key, $default = NULL, $type = 'php') {
 				$s = file_get_contents($f);
 				$v = unserialize($s);
 				break;
-			case 'wddx':
-				$s = file_get_contents($f);
-				$v = wddx_deserialize($s);
-				break;
+//			case 'wddx':
+//				$s = file_get_contents($f);
+//				$v = wddx_deserialize($s);
+//				break;
 		}
 	}
 	if (isset($v)) {

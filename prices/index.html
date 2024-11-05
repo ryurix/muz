@@ -21,6 +21,7 @@ $q = db_query('SELECT * FROM prices WHERE typ='.$typ.' ORDER BY i');
 			<th>Взять цену</th>
 			<th>Коррекция цены</th>
 			<th>Дней</th>
+			<th>Комментарий</th>
 <?
 	if ($run) {
 		echo '<th>Обновлено</th>';
@@ -65,7 +66,8 @@ while ($i = db_fetch($q)) {
 .'<td nowrap>'.$count.'</td>'
 .'<td>'.$price.'</td>'
 .'<td>'.$i['sale'].' %</td>'
-.'<td>'.$i['days'].'</td>';
+.'<td>'.$i['days'].'</td>'
+.'<td>'.$i['info'].'</td>';
 	if ($run) {
 		echo '<td>'.\Cron\Prices::calc($i).'</td>';
 	}

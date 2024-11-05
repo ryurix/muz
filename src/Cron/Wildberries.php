@@ -455,7 +455,7 @@ class Wildberries extends Task {
 		return 'Загружено '.$count.' заказов'.$error;
 	}
 
-	static function order_cancel($args) {
+	static function order_cancel($args, $per = 500) {
 
 		global $config;
 		$con = $config['wildberries'][$args['client']];
@@ -463,13 +463,16 @@ class Wildberries extends Task {
 
 		$count = 0;
 
-		$orders = \Db::fetchList('SELECT mpi FROM orst WHERE state<30 AND user="'.$user.'"');
+		$orders = \Db::fetchList("SELECT mpi FROM orst WHERE state<30 AND user=$user");
 
-		if (count($orders)) {
+		$page = 0;
+		while ($page*$per < count($orders)) {
+			$post = array_slice($orders, $page*$per, $per);
+			$page++;
 
 			$url = 'https://suppliers-api.wildberries.ru/api/v3/orders/status';
 
-			$payload = \Flydom\Cache::json_encode(['orders'=>$orders]);
+			$payload = \Flydom\Cache::json_encode(['orders'=>$post]);
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
