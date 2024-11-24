@@ -16,8 +16,8 @@ static function start($default = [])
 	\Flydom\Form\Modal::plan([
 		'code'=>new \Flydom\Input\Line(['id'=>'autofocus']),
 		'send'=>new \Flydom\Input\Button([
-			'codes'=>1,
-			1=>'Сохранить'
+			'codes'=>[5],
+			5=>'Сохранить'
 		])
 	], $default);
 
@@ -28,7 +28,7 @@ static function start($default = [])
 		exit;
 	}
 
-	if (self::send() == 1) {
+	if (self::send() == 5) {
 		$code = explode(',', self::code());
 		$code = array_map('trim', $code);
 		\Db::update('store', ['code'=>\Flydom\Cache::csvc_encode($code)], ['i'=>$store]);

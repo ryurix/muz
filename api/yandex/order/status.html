@@ -55,13 +55,10 @@ if ($order['status'] == 'CANCELLED') {
     $q = db_query("SELECT * FROM orst WHERE mpi=$order_id");
     $orst = db_fetch_all($q);
 
-    w('log');
-    foreach ($orst as $row) {
-
+    foreach ($orst as $row)
+	{
 		$order = new \Model\Order($row);
 		$order->setState(35);
 		$order->update();
-
-        logs(235, $order->getId());
     }
 }

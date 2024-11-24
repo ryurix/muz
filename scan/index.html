@@ -1,9 +1,10 @@
 <?
 
-echo '<form class="form-inline auto my-2" id="form" method="POST">';
+echo '<form class="auto" id="form" method="POST">';
+echo '<div class="form-inline my-2">';
 w('form-inline', $plan);
+echo '</div><div id="result">'.$result.'</div>';
 echo '</form>';
-echo '<div id="result">'.$result.'</div>';
 
 ?>
 <script>
@@ -33,7 +34,7 @@ function playSound(sound) {
 
 $(function(){
 	$('#form').submit(function(){
-		if ($('#scan').val().length > 0) {
+//		if ($('#scan').val().length > 0) {
 			$.ajax({
 				url: '/scan?design=none',
 				type: "POST",
@@ -43,8 +44,8 @@ $(function(){
 					console.log(xhr, rest, text)
 				}
 			});
-		}
-		return false;
+//		}
+//		return false;
 	});
 });
 

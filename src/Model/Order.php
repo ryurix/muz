@@ -218,10 +218,6 @@ class Order {
 			$this->cancel();
 		}
 
-		if ($old != 27 && $new == 27) {
-			\Flydom\Log::add(27, $this->getId());
-		}
-
 		if ($old <= 1 && $new > 1) {
 			\Tool\Reserve::delete($this->getId(), $this->getStore());
 		}
@@ -229,6 +225,8 @@ class Order {
 		if ($old <= 1 && $old < $new && $new < 35) { // обработка заказа маркетплейсами
 			\Cron\Ozon::pack($this);
 		}
+
+		if ($old != $new) { \Flydom\Log::add(100 + $new, $this->getId()); }
 
 		$this->orig = $this->row;
 	}

@@ -9,14 +9,11 @@ foreach ($shipments as $shipment) {
 	$q = db_query('SELECT i,state,vendor,store,count,name FROM orst WHERE mpi="'.addslashes($shipment['shipmentId']).'"');
     $orst = db_fetch_all($q);
 
-    w('log');
     foreach ($orst as $row)
 	{
 		$order = new \Model\Order($row);
 		$order->setState(35);
 		$order->update();
-
-        logs(235, $order->getId());
     }
 }
 

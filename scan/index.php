@@ -2,6 +2,8 @@
 
 \Form\Barcode::start();
 
+define('NO_BARCODE', 'NO-BARCODE');
+
 $plan = [
 	''=>['method'=>'POST'],
 	'scan'=>['type'=>'line', 'id'=>'scan', 'class'=>'auto1'],
@@ -13,6 +15,10 @@ w('request', $plan);
 
 $scan = trim($plan['scan']['value']);
 $plan['scan']['value'] = '';
+
+if (isset($_REQUEST['pack'])) {
+	$scan = NO_BARCODE;
+}
 
 if (strlen($scan)) {
 
@@ -39,18 +45,25 @@ if (strlen($scan)) {
 			$sound = $store['count'] > 1 ? 'info2' : 'info';
 		}
 	} else { // это товар
-		$store = \Db::fetchRow(\Db::select($fields, 'store', ['code LIKE "%,'.addslashes($scan).',%"']));
+		if ($scan == NO_BARCODE) {
+			$store = \Db::fetchRow(\Db::select($fields, 'store', ['i'=>$_SESSION['scan']['store'] ?? 0]));
+		} else {
+			$store = \Db::fetchRow(\Db::select($fields, 'store', ['code LIKE "%,'.addslashes($scan).',%"']));
+		}
 
 		if ((now() - ($_SESSION['scan']['dt'] ?? 0)) < 60) {
 			if (is_array($store)) { // это товар в заказе
-				if ($store['i'] == ($_SESSION['scan']['store'] ?? 0)) {
-					$alert = '<div class="alert alert-success">Товар соответствует заказу.</div>';
+				if ($store['i'] == ($_SESSION['scan']['store'] ?? 0))
+				{
 					$sound = 'success';
 					$orst = $_SESSION['scan']['orst'] ?? 0;
 					if ($orst) {
 						$order = new \Model\Order($orst);
 						$order->setState(27);
 						$order->save();
+						$alert = '<div class="alert alert-success">Заказ собран!</div>';
+					} else {
+						$alert = '<div class="alert alert-success">Товар соответствует заказу.</div>';
 					}
 				} else {
 					$alert = '<div class="alert alert-danger">Товар не соответствует заказу!</div>';
@@ -106,7 +119,10 @@ if (is_array($store)) {
 //	echo '<h3>'.($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'].'</h3>';
 	$result.= '<div class="row"><div class="col"><img src="'.$store['pic'].'" class="img-fluid"></div><div class="col">';
 	$result.= $alert ?? '';
-	if (isset($store['orst_i'])) {
+	if (isset($store['orst_i']))
+	{
+		$pack = $store['state'] < 27 ? '<button name="pack" class="btn btn-default btn-sm" id="pack">Собрать</button>' : '';
+
 		$state = w('order-state');
 		$vendor = cache_load('vendor');
 		$count_class = $store['count'] > 1 ? ' class="text-danger"' : '';
@@ -115,14 +131,16 @@ if (is_array($store)) {
 <tr><td>Название</td><td>'.$name.'</td></tr>
 <tr><td>Заказ #</td><td><a href="/order/'.$store['orst_i'].'">'.$store['orst_i'].'</a></td></tr>
 <tr><td>Обновлён</td><td>'.\Flydom\Time::dateTime($store['last']).'</td></tr>
-<tr><td>Статус</td><td>'.$state[$store['state']].'</td></tr>
+<tr><td>Статус</td><td>'.$state[$store['state']].' '.$pack.'</td></tr>
 <tr><td>Поставщик</td><td>'.$vendor[$store['vendor']].'</td></tr>
 <tr><td'.$count_class.'>Количество</td><td'.$count_class.'>'.$store['count'].'</td></tr>
 <tr><td>'.$barcode.'</td><td>'.$code.'</td></tr>
 <tr><td>Комментарий</td><td>'.$store['info'].'</td></tr>
 <tr><td>Замечания</td><td>'.$store['note'].'</td></tr>
 </tbody></table>';
-	} else {
+	}
+	else
+	{
 		$result.= '
 <table class="table table-bordered"><tbody>
 <tr><td>Название</td><td>'.$name.'</td></tr>
@@ -136,6 +154,8 @@ if (is_array($store)) {
 		if (!\Tool\Barcode::check($scan)) {
 			$result.= '<div class="alert alert-danger">Неправильный штрихкод: '.$scan.'</div>';
 		}
+	} else {
+		$result.= $alert ?? '';
 	}
 }
 
