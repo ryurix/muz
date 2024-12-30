@@ -1,7 +1,7 @@
 <?
 
 $config['CashierName'] = 'Кокшаров А.С.';
-$config['CashierVATIN'] = "7203265990"; // ИНН продавца тег ОФД 1203
+$config['CashierVATIN'] = "720319339047"; // ИНН продавца тег ОФД 1203
 
 function kkm($data, $debug = false) {
 	global $config;
@@ -120,7 +120,7 @@ function kkm_fix($id = 0) {
 				'Amount'=>$money,
 
 			//	'Department'=>1,
-				'Tax'=>-1,
+				'Tax'=>20,
 
 				'SignMethodCalculation'=>4,
 				'SignCalculationObject'=>1,
@@ -129,6 +129,7 @@ function kkm_fix($id = 0) {
 
 		$orst[] = $i['i'];
 	}
+
 
 	if (!count($orst)) {
 		db_update('kkm', array('state'=>15, 'dt2'=>now()), array('i'=>$kkm['i']));

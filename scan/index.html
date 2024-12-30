@@ -24,6 +24,7 @@ function onSuccess(data) {
 
 	$('#result').html(data);
 	$('#scan').val('').focus();
+	oil_clear();
 
 }
 
@@ -45,7 +46,7 @@ $(function(){
 				}
 			});
 //		}
-//		return false;
+		return false;
 	});
 });
 

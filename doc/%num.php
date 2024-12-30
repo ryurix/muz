@@ -49,7 +49,7 @@ w('rub2str');
 $q = db_query('SELECT * FROM docs WHERE i='.$key.(is_user('doc') || is_user('auto') ? '' : ' AND user='.$_SESSION['i']));
 if ($i = db_fetch($q)) {
 
-	w('list-doc', $templates);
+	$templates = \Type\Doc::FILES;
 	$template = $templates[$i['type']];
 	$file = $config['root'].'files/docs/'.str2url($i['name']).'.xlsx';
 

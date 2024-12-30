@@ -122,6 +122,6 @@ $config['dict-word'] = isset($word[$config['dict-site']]) ? $word[$config['dict-
 if (!function_exists('dict')) {
 	function dict($text) {
 		global $config;
-		return str_replace(array_keys($config['dict-word']), array_values($config['dict-word']), $text);
+		return empty($text) ? '' : str_replace(array_keys($config['dict-word']), array_values($config['dict-word']), $text);
 	}
 }

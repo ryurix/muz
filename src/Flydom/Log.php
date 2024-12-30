@@ -8,7 +8,7 @@ class Log
 protected static $enabled = true;
 
 // Сохраняет лог в базу
-static function add($type, $code = 0, $info = null, $user = null) {
+static function add($type, $code = 0, $info = '', $user = null) {
 	if (self::$enabled) {
 		\Db::insert('log', [
 			'dt'=>\Config::now(),

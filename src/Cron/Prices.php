@@ -98,7 +98,7 @@ class Prices extends Task {
 		}
 
 		$array = explode(',', $prices);
-		while (count($array) < \Type\Price::COUNT) {
+		while (count($array) < \Type\Price::count()) {
 			$array[]= 0;
 		}
 

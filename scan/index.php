@@ -59,9 +59,13 @@ if (strlen($scan)) {
 					$orst = $_SESSION['scan']['orst'] ?? 0;
 					if ($orst) {
 						$order = new \Model\Order($orst);
-						$order->setState(27);
-						$order->save();
-						$alert = '<div class="alert alert-success">Заказ собран!</div>';
+						if ($order->getState() < 27) {
+							$order->setState(27);
+							$order->save();
+							$alert = '<div class="alert alert-success">Заказ собран!</div>';
+						} else {
+							$alert = '<div class="alert alert-success">Заказ уже собран.</div>';
+						}
 					} else {
 						$alert = '<div class="alert alert-success">Товар соответствует заказу.</div>';
 					}

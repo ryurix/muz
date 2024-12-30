@@ -4,7 +4,7 @@ if (!is_user('doc')) {
 	redirect('/');
 }
 
-$docs = w('list-doc');
+$docs = \Type\Doc::NAMES;
 $plan = array(
 	''=>array('method'=>'GET', 'type'=>'inline', 'class'=>'auto'),
 	'doc'=>array('name'=>'Тип документа', 'type'=>'combo', 'values'=>array(0=>'Все') + $docs, 'class'=>'auto', 'default'=>0),

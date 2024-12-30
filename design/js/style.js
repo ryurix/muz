@@ -20,10 +20,14 @@ function oil_alert(text, type) {
 }
 
 var oil_timer = 0;
-function oil_timed() {
+function oil_clear() {
 	if (oil_timer != 0) {
 		clearTimeout(oil_timer);
+		oil_timer = 0;
 	}
+}
+function oil_timed() {
+	oil_clear();
 	oil_timer = setTimeout(oil_submit, 2000);
 }
 function oil_submit() {

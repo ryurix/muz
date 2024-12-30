@@ -6,19 +6,20 @@ class Price
 {
 
 	const MAIN = 0;
-
 	const WB = 1;
 	const OZON = 2;
 	const WB2 = 3;
 	const OZON2 = 4;
 	const YANDEX = 5;
 
-	const COUNT = 6;
-
 	static function list() {
-        $oClass = new \ReflectionClass(__CLASS__);
-        return array_flip($oClass->getConstants());
-    }
+		$oClass = new \ReflectionClass(__CLASS__);
+		return array_flip($oClass->getConstants());
+	}
+
+	static function count() {
+		return count(self::list());
+	}
 
 	static function names() {
 		return [

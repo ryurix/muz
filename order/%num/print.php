@@ -46,7 +46,7 @@ if ($row = db_fetch($q)) {
 	$config['name'] = 'Заказ №'.$row['i'].' от '.ft($row['dt'], 1).' &mdash; '.ft($row['last'], 1);
 	$config['row'] = $row;
 
-	$docs = w('list-doc');
+	$docs = \Type\Doc::NAMES;
 	$docs[90] = 'фискализация';
 	$docs[95] = 'печать с фиск.';
 	$docs[101] = 'Uniteller аванс';
@@ -68,7 +68,7 @@ if ($row = db_fetch($q)) {
 		return;
 	}
 
-	// Создание документа	
+	// Создание документа
 	if ($type < 80) {
 		$select = 'SELECT * FROM orst WHERE i in ('.implode(',', $ids).')';
 		$q = db_query($select);
