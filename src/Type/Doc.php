@@ -51,4 +51,28 @@ class Doc
 		33=>'Мобильный чек ИП',
 		34=>'Мобильный чек (К)',
 	];
+
+	const PAGES = [
+		1=>'tov_k',
+		2=>'tov_s',
+		3=>'nak_k',
+		13=>'nak_ku',
+		4=>'nak_s',
+		14=>'nak_su',
+		5=>'sno_k',
+		15=>'sno_ku',
+		6=>'sno_t',
+		16=>'sno_tu',
+		7=>'upd_t',
+		17=>'upd_tu',
+		8=>'s-f_s',
+		18=>'s-f_su',
+		9=>'top_k',
+		21=>'top_ip',
+		22=>'tov_ip',
+		31=>'mtop_ip',
+		32=>'mtop_k',
+		33=>'mtov_ip',
+		34=>'mtov_k',
+	];
 }

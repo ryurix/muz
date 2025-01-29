@@ -159,9 +159,10 @@ class Order {
 
 		if (count($complex)) {
 			$first = null;
+			$data['complex'] = $data['store'];
 
 			foreach ($complex as $i) {
-				$brand = \Flydom\Cache::load('brand');
+				$brand = \Flydom\Cache::get('brand');
 				$child = $data;
 				$child['store'] = $i['store'];
 				$child['name'] = (isset($brand[$i['brand']]) ? $brand[$i['brand']].' ' : '').(strlen($i['model']) ? $i['model'].' ' : '').$i['name'];
@@ -287,10 +288,11 @@ class Order {
 			.' WHERE vendor='.$this->row['vendor'].' AND store='.$this->row['store']);
 		db_query('UPDATE store SET count=count+'.$this->row['count']
 			.' WHERE vendor='.$this->row['vendor'].' AND i='.$this->row['store']);
-		alert('Количество '.$this->row['name'].' на складе '.$text);
+		\Flydom\Alert::info('Количество '.$this->row['name'].' на складе '.$text);
 
-		w('log');
-		logs(38, $this->getId(), $text);
+//		w('log');
+//		logs(38, $this->getId(), $text);
+		\Flydom\Log::add(38, $this->getId(), $text);
 
 		$bills = \Db::fetchAll('SELECT * FROM bill WHERE orst LIKE "%'.$this->getId().'%" AND state<=1');
 		foreach ($bills as $i) {
@@ -304,7 +306,7 @@ class Order {
 	}
 
 	function getVendorName() {
-		$vendors = \Flydom\Cache::load('vendor');
+		$vendors = \Flydom\Cache::get('vendor');
 		return kv($vendors, $this->row['vendor']);
 	}
 

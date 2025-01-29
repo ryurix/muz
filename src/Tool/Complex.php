@@ -5,8 +5,6 @@ namespace Tool;
 class Complex {
 	static function typeCount($complex_id) {
 
-		$components = \Db::result('SELECT COUNT(*) FROM complex WHERE up='.$complex_id);
-
 		// Получаем количество по группам складов, без удалённых складов
 		$q = \Db::select('SELECT sync.store,vendor.typ, SUM(sync.count) cnt, complex.amount, complex.minus FROM sync, vendor, complex'
 		.' WHERE vendor.typ<>21 AND vendor.i=sync.vendor AND sync.store=complex.store AND complex.up='.$complex_id
@@ -25,6 +23,7 @@ class Complex {
 		\Db::free($q);
 
 		$count = [];
+		$components = self::components($complex_id);
 		foreach ($typcnt as $typ=>$i) {
 			if (count($i) == $components) {
 				$count[$typ] = min($i);
@@ -58,5 +57,9 @@ class Complex {
 		}
 
 		return $ids;
+	}
+
+	static function components($complex_id) {
+		return \Db::result('SELECT COUNT(*) FROM complex WHERE up='.$complex_id);
 	}
 }

@@ -111,6 +111,7 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 
 'doc'=>['name'=>'Документы', 'role'=>'doc', '/'=>[
 	'%num'=>[],
+	'files'=>['name'=>'Шаблоны', 'action'=>'шаблоны'],
 ]],
 
 'export'=>['design'=>'none', '/'=>[

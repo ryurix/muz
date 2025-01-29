@@ -22,7 +22,7 @@ $rows = db_fetch_all('SELECT c.*,s.brand,s.name,s.model,s.url FROM complex c LEF
 
 w('input-int');
 
-$brand = \Flydom\Cache::load('brand');
+$brand = ('brand');
 
 w('ft');
 foreach ($rows as $i) {

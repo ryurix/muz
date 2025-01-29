@@ -21,6 +21,9 @@ function onSuccess(data) {
 	if (data.indexOf('-new-') >= 0) { playSound('bell.mp3'); }
 	if (data.indexOf('-sklad-') >= 0) { playSound('sklad.mp3'); }
 	if (data.indexOf('-sklad2-') >= 0) { playSound('sklad2.mp3'); }
+	if (data.indexOf('-state7-') >= 0) { playSound('state7.mp3'); }
+	if (data.indexOf('-state27-') >= 0) { playSound('state27.mp3'); }
+	if (data.indexOf('-complex2-') >= 0) { playSound('complex2.mp3'); }
 
 	$('#result').html(data);
 	$('#scan').val('').focus();

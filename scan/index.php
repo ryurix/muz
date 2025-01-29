@@ -4,6 +4,7 @@
 
 define('NO_BARCODE', 'NO-BARCODE');
 
+
 $plan = [
 	''=>['method'=>'POST'],
 	'scan'=>['type'=>'line', 'id'=>'scan', 'class'=>'auto1'],
@@ -24,7 +25,7 @@ if (strlen($scan)) {
 
 	$fields = ['store.i', 'store.code', 'store.url', 'store.pic', 'store.brand', 'store.name', 'store.model'];
 
-	$fields2 = array_merge($fields, ['orst.i orst_i', 'orst.vendor', 'orst.state', 'orst.count', 'orst.info', 'orst.note', 'orst.last']);
+	$fields2 = array_merge($fields, ['orst.i orst_i', 'orst.vendor', 'orst.state', 'orst.count', 'orst.info', 'orst.note', 'orst.last', 'orst.complex']);
 
 	$store = \Db::fetchRow(\Db::select($fields2, ['store', 'orst'], [
 		'orst.mpi'=>$scan,
@@ -38,11 +39,24 @@ if (strlen($scan)) {
 			'orst'=>$store['orst_i'],
 			'dt' => now()
 		];
-		$sklad = array_keys(w('list-sklad'));
-		if (in_array($store['vendor'], $sklad)) {
-			$sound = $store['count'] > 1 ? 'sklad2' : 'sklad';
+
+		if ($store['state'] == 27) {
+			$sound = 'state27';
 		} else {
-			$sound = $store['count'] > 1 ? 'info2' : 'info';
+			$sklad = array_keys(w('list-sklad'));
+			if (in_array($store['vendor'], $sklad)) {
+				$sound = $store['count'] > 1 ? 'sklad2' : 'sklad';
+			} else {
+				if ($store['state'] == 7) {
+					$sound = 'state7';
+				} else {
+					if ($store['complex']) {
+						$sound = 'complex2';
+					} else {
+						$sound = $store['count'] > 1 ? 'info2' : 'info';
+					}
+				}
+			}
 		}
 	} else { // это товар
 		if ($scan == NO_BARCODE) {
