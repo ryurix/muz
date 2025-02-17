@@ -30,13 +30,14 @@ if (strlen($scan)) {
 	$store = \Db::fetchRow(\Db::select($fields2, ['store', 'orst'], [
 		'orst.mpi'=>$scan,
 		'orst.store=store.i'
-	]));
+	], 'ORDER BY orst.state'));
 
 	if (is_array($store)) // это заказ
 	{
 		$_SESSION['scan'] = [
 			'store' => $store['i'],
 			'orst'=>$store['orst_i'],
+			'mpi'=>$scan,
 			'dt' => now()
 		];
 
@@ -60,28 +61,30 @@ if (strlen($scan)) {
 		}
 	} else { // это товар
 		if ($scan == NO_BARCODE) {
-			$store = \Db::fetchRow(\Db::select($fields, 'store', ['i'=>$_SESSION['scan']['store'] ?? 0]));
+			$where = ['store.i'=>$_SESSION['scan']['store'] ?? 0];
 		} else {
-			$store = \Db::fetchRow(\Db::select($fields, 'store', ['code LIKE "%,'.addslashes($scan).',%"']));
+			$where = ['store.code LIKE "%,'.addslashes($scan).',%"'];
+		}
+
+		$mpi = $_SESSION['scan']['mpi'] ?? '';
+		if (!empty($mpi)) {
+			$where['orst.mpi'] = $mpi;
+			$store = \Db::fetchRow(\Db::select($fields2, 'store LEFT JOIN orst ON store.i=orst.store', $where, 'ORDER BY orst.state'));
+		} else {
+			$store = \Db::fetchRow(\Db::select($fields, 'store', $where));
 		}
 
 		if ((now() - ($_SESSION['scan']['dt'] ?? 0)) < 60) {
 			if (is_array($store)) { // это товар в заказе
-				if ($store['i'] == ($_SESSION['scan']['store'] ?? 0))
-				{
+				if (!empty($store['orst_i'])) {
 					$sound = 'success';
-					$orst = $_SESSION['scan']['orst'] ?? 0;
-					if ($orst) {
-						$order = new \Model\Order($orst);
-						if ($order->getState() < 27) {
-							$order->setState(27);
-							$order->save();
-							$alert = '<div class="alert alert-success">Заказ собран!</div>';
-						} else {
-							$alert = '<div class="alert alert-success">Заказ уже собран.</div>';
-						}
+					$order = new \Model\Order($store['orst_i']);
+					if ($order->getState() < 27) {
+						$order->setState(27);
+						$order->save();
+						$alert = '<div class="alert alert-success">Заказ собран!</div>';
 					} else {
-						$alert = '<div class="alert alert-success">Товар соответствует заказу.</div>';
+						$alert = '<div class="alert alert-success">Заказ уже собран.</div>';
 					}
 				} else {
 					$alert = '<div class="alert alert-danger">Товар не соответствует заказу!</div>';

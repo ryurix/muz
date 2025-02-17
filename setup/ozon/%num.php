@@ -54,6 +54,7 @@ $plan = array(
 
 	'client'=>array('name'=>'Код клиента', 'type'=>'line', 'default'=>'', 'min'=>1),
 	'api'=>array('name'=>'Ключ API', 'type'=>'line', 'default'=>'', 'min'=>1),
+	'warehouse'=>['name'=>'ID Склада', 'type'=>'line', 'default'=>'', 'min'=>1],
 
 	'price'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
 	'min'=>array('name'=>'Мин. количество', 'type'=>'int', 'default'=>0),
@@ -85,6 +86,7 @@ if ($plan['']['valid']) {
 		'form'=>$plan['form']['value'],
 		'client'=>$plan['client']['value'],
 		'api'=>$plan['api']['value'],
+		'warehouse'=>$plan['warehouse']['value'],
 		'price'=>$plan['price']['value'],
 		'min'=>$plan['min']['value'],
 		'minus'=>$plan['minus']['value'],

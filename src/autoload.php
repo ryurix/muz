@@ -55,7 +55,6 @@ $autoload = ['Flydom\\Action'=>'lib/flydom/Action.php',
 'Flydom\\Type\\Cron'=>'lib/flydom/Type/Cron.php',
 'Flydom\\Type\\Log'=>'lib/flydom/Type/Log.php',
 'Flydom\\U8'=>'lib/flydom/U8.php',
-'Flydom\\Util\\Clean'=>'lib/flydom/Util/Clean.php',
 'Flydom\\Util\\Config'=>'lib/flydom/Util/Config.php',
 'Flydom\\Util\\File'=>'lib/flydom/Util/File.php',
 'Flydom\\Util\\Mime'=>'lib/flydom/Util/Mime.php',
@@ -92,13 +91,13 @@ $autoload = ['Flydom\\Action'=>'lib/flydom/Action.php',
 'Form\\Barcode'=>'src/Form/Barcode.php',
 'Marketplace\\Sber'=>'src/Marketplace/Sber.php',
 'Model\\Order'=>'src/Model/Order.php',
-'Table\\Docs'=>'src/Table/Docs.php',
 'Tool\\Barcode'=>'src/Tool/Barcode.php',
 'Tool\\Comment'=>'src/Tool/Comment.php',
 'Tool\\Complex'=>'src/Tool/Complex.php',
 'Tool\\Reserve'=>'src/Tool/Reserve.php',
 'Type\\Doc'=>'src/Type/Doc.php',
 'Type\\Price'=>'src/Type/Price.php',
+'View\\MySqlTable'=>'src/View/MySqlTable.php',
 'View\\OrderLog'=>'src/View/OrderLog.php'];
 
 spl_autoload_register(function ($name) use ($autoload) {
@@ -106,6 +105,5 @@ spl_autoload_register(function ($name) use ($autoload) {
 		include_once __DIR__."/../".$autoload[$name];
 	}
 });
-
 
 unset($autoload);

@@ -203,6 +203,9 @@ class Ozon extends Task {
 		$items = [];
 		foreach ($all as $i) {
 
+			// 06.02.2025 АК: пожелание сделать так чтобы заказы где больше 1 шт не собирались на озоне
+			if ($i['count'] > 1) { continue; }
+
 			$items[]= [
 	//			'exemplar_info'=>[
 	//				'is_gtd_absent'=>true,
@@ -212,7 +215,8 @@ class Ozon extends Task {
 				'quantity'=>$i['count'],
 			];
 		}
-		$post = self::ozon_query($ozon, '/v4/posting/fbs/ship', [
+
+		$data = [
 			'packages'=>[[
 				'products'=>$items,
 			]],
@@ -220,12 +224,28 @@ class Ozon extends Task {
 			'with'=>[
 				'additional_data'=>false,
 			]
-		]);
+		];
+
+		$post = self::ozon_query($ozon, '/v4/posting/fbs/ship', $data);
+
+		$success = true;
 
 		if (!isset($post['result'])) {
-			w('log');
-			logs(375, $order->getUser(), json_encode($post));
+			\Flydom\Log::add(375, $order->getUser(), json_encode($post).' :: '.json_encode($data));
+			$success = false;
+
+			if (is_null($post) || $post == 'null') {
+				for ($i = 1; $i<=5; $i++) {
+
+					sleep(1);
+					$post = self::ozon_query($ozon, '/v4/posting/fbs/ship', $data);
+					\Flydom\Log::add(375, $order->getUser(), 'Repeat '.$i.' :: '.json_encode($post));
+
+					if (!(is_null($post) || $post == 'null')) { $success = true; break; }
+				}
+			}
 		}
 
+		return $success;
 	}
 }

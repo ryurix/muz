@@ -1,0 +1,6 @@
+<?
+
+//$query = "SELECT db, time, state, info FROM information_schema.processlist WHERE command='Query' ORDER BY time";
+
+\View\MySqlTable::parse();
+echo \View\MySqlTable::build();

@@ -48,7 +48,7 @@ static function startup() {
 		static::exit();
 	}
 	if (!isset($_SESSION['i'])) {
-		\Flydom\Session::new();
+		\Flydom\Core\Session::new();
 		static::create();
 	}
 	if (isset($alert) && is_array($alert)) {
@@ -92,7 +92,7 @@ static function try($login, $password) {
 static function exit($guest = true) {
 	static::startup();
 
-	\Flydom\Session::new();
+	\Flydom\Core\Session::new();
 	if ($_SESSION['i'] ?? 0) {
 		\Db::delete('session', ['usr'=>$_SESSION['i']]);
 	} else {

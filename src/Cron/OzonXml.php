@@ -7,14 +7,15 @@ class OzonXml extends Task {
 	public static function run($args) {
 		w('clean');
 		$test = clean_09(kv($args, 'test', 0));
+		$warehouse = \Flydom\Clean::uint($args['warehouse'] ?? 0);
 
 		if ($args['form'] < 10) {
 			$url = 'https://api-seller.ozon.ru/v4/product/info/prices';
 			$url2 = 'https://api-seller.ozon.ru/v1/product/import/prices';
 		} else {
 			//$url = 'https://api-seller.ozon.ru/v3/product/info/stocks';
-			$url = 'https://api-seller.ozon.ru/v2/product/list';
-			$url2 = 'https://api-seller.ozon.ru/v1/product/import/stocks';
+			$url = 'https://api-seller.ozon.ru/v3/product/list';
+			$url2 = 'https://api-seller.ozon.ru/v2/products/stocks';
 		}
 
 		$post = array(
@@ -28,6 +29,7 @@ class OzonXml extends Task {
 		$items = [];
 
 		$ids = [];
+		$pids = [];
 		$prices = [];
 
 		if ($test && false) {
@@ -81,6 +83,7 @@ class OzonXml extends Task {
 					$prices[$id] = $i['price']['price'];
 				}
 				$ids[] = $id;
+				$pids[$id] = $i['product_id'];
 			}
 		}
 
@@ -126,6 +129,10 @@ class OzonXml extends Task {
 		$min = max(0, kv($args, 'min', 0));
 
 		$rows = \Db::fetchAll($select, 'i');
+
+		if ($test) {
+			return \Flydom\Cache::json_encode($rows, 0);
+		}
 
 		$reserve = \Tool\Reserve::get(array_keys($rows));
 
@@ -204,8 +211,10 @@ class OzonXml extends Task {
 				$a = [];
 				foreach ($upd2 as $k=>$v) {
 					$a[] = [
+						'product_id'=>$pids[$k] ?? '',
 						'offer_id'=>'М'.$k,
 						'stock'=>max(0, $v * 1),
+						'warehouse_id'=>$warehouse,
 					]; // new OzonStock($k, $v);
 				}
 				$post = [
@@ -232,8 +241,7 @@ class OzonXml extends Task {
 			curl_close($ch);
 
 			if ($test) {
-				alert($url2.'<br>'.\Flydom\Cache::json_encode($post, 0), 'info');
-				alert($result, 'success');
+				return $url2.'<BR>'.\Flydom\Cache::json_encode($post, 0).'<BR>'.$result;
 			}
 
 			$a = json_decode($result, true);
