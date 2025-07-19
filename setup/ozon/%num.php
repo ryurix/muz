@@ -25,10 +25,6 @@ if (!$row) {
 
 $config['name'] = $row['name'];
 
-$data = array_decode($row['data']);
-$data['name'] = $row['name'];
-$data['every'] = $row['every'];
-
 $forms = array(
 	1=>'Выгрузка цены',
 	//3=>'Выгрузка цен составных товаров',
@@ -38,16 +34,19 @@ $forms = array(
 //	10=>'Обнуление всех',
 );
 
+$form = isset($_REQUEST['form']) && isset($forms[$_REQUEST['form']]) ? $_REQUEST['form'] : $row['form'];
+$data = $row + array_decode($row['data']);
+
 $others = array(0=>'');
 $q = db_query('SELECT * FROM cron WHERE typ=10 AND i<>'.$row['i'].' ORDER BY name');
 while ($i = db_fetch($q)) {
 	$others[$i['i']] = $i['name'];
 }
 
-$plan = array(
-	''=>array('default'=>$data),
+$plan = [
+	''=>['default'=>$data],
 	'name'=>array('name'=>'Название', 'type'=>'line', 'min'=>3),
-	'every'=>array('name'=>'Период', 'type'=>'combo', 'values'=>array(0=>'Не запускать автоматически', 1=>'Ежедневно по расписанию', 3600=>'1 час', 28800=>'8 часов', 64800=>'18 часов', 86400=>'1 день', 259200=>'3 дня'), 'default'=>0),
+	'every'=>['name'=>'Период', 'type'=>'combo', 'values'=>\Form\Cron::EVERY, 'default'=>0],
 	'time'=>array('name'=>'Время запуска', 'type'=>'time', 'default'=>0),
 	'week'=>array('name'=>'Дни недели', 'type'=>'multich', 'values'=>array(1=>'пн', 2=>'вт', 3=>'ср', 4=>'чт', 5=>'пт', 6=>'сб', 7=>'вс'), 'placeholder'=>'ежедневно'),
 	'form'=>array('name'=>'Формат', 'type'=>'combo', 'values'=>$forms),
@@ -69,7 +68,7 @@ $plan = array(
 	'test'=>['name'=>'Артикул для теста', 'type'=>'number'],
 
 	'send'=>array('type'=>'button', 'count'=>3, 1=>'Сохранить', 2=>'Выгрузить', 3=>'Удалить', 'confirm'=>[3=>'Удалить выгрузку?']),
-);
+];
 
 w('request', $plan);
 w('invalid', $plan);
@@ -80,32 +79,26 @@ if ($plan['send']['value'] == 3) {
 }
 
 if ($plan['']['valid']) {
-	$data = array(
-		'time'=>$plan['time']['value'],
-		'week'=>$plan['week']['value'],
+	$new = [
+		'typ'=>\Type\Cron::OZON_XML,
 		'form'=>$plan['form']['value'],
-		'client'=>$plan['client']['value'],
-		'api'=>$plan['api']['value'],
-		'warehouse'=>$plan['warehouse']['value'],
-		'price'=>$plan['price']['value'],
-		'min'=>$plan['min']['value'],
-		'minus'=>$plan['minus']['value'],
-		'zero'=>$plan['zero']['value'],
-		'vendor'=>$plan['vendor']['value'],
-		'follow'=>$plan['follow']['value'],
-		'test'=>$plan['test']['value'],
-	);
-
-	$new = array(
-		'typ'=>10,
 		'name'=>$plan['name']['value'],
 		'info'=>'',
 		'dt'=>now() + $plan['every']['value'],
 		'every'=>$plan['every']['value'],
-		'data'=>array_encode($data),
-	);
+		'time'=>$plan['time']['value'],
+		'week'=>\Flydom\Arrau::encode($plan['week']['value']),
+		'follow'=>\Flydom\Arrau::encode($plan['follow']['value']),
+	];
 
-	$new['dt'] = \Cron\Task::next($new, $data);
+	$data = [];
+	foreach ($plan as $k=>$v) {
+		if (empty($k) || isset($new[$k]) || $k === 'send') { continue; }
+		$data[$k] = $v['value'];
+	}
+
+	$new['data'] = array_encode($data);
+	$new['dt'] = \Cron\Task::next($new);
 
 	if ($plan['send']['value'] == 1) {
 

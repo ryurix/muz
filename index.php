@@ -14,6 +14,7 @@ require_once '--/config.inc';
 require_once '--/first.inc';
 require_once '--/cache.inc';
 
+
 // IP Ban
 $ip = client_ip();
 $ban = cache_load('ip-ban', []);
@@ -32,7 +33,7 @@ if (in_array($ip, $ban) || in_array($one, $ban) || in_array($two, $ban)) {
 // 2. Connect to database
 
 //\Db::connect(\Config::DATABASE);
-require_once 'lib/flydom/Util/log2.php';
+require_once 'lib/flydom/Core/log2.php';
 
 if (isset($config['database'])) {
 	require_once '--/database.inc';

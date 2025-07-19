@@ -9,11 +9,11 @@ class Ozon extends Task {
 		curl_setopt($ch, CURLOPT_URL, 'https://api-seller.ozon.ru'.$url);
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($args));
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
 			'Client-Id: '.$ozon['client'],
 			'Api-Key: '.$ozon['api'],
 			'Content-Type: application/json',
-		));
+		]);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -33,6 +33,8 @@ class Ozon extends Task {
 	}
 
 	public static function create() {
+
+		\Flydom\Parallel::lock('ozon-create');
 
 		$count = 0;
 
@@ -74,9 +76,13 @@ class Ozon extends Task {
 					'sku'=>clean_int($item['sku']),
 				]))->create();
 
+				sleep(1); // TODO: make check for concurrent run
+
 				$count++;
 			}
 		}
+
+		\Flydom\Parallel::unlock('ozon-create');
 
 		return $count;
 	}

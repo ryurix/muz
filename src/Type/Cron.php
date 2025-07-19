@@ -8,6 +8,7 @@ class Cron extends \Flydom\Type\Cron
 	const OZON_XML = 10;
 	const OZON_ORDER = 12;
 	const WILDBERRIES = 20;
+	const YANDEX = 30;
 	const PRICES = 50;
 
 	const SBER = 101;
@@ -27,6 +28,7 @@ class Cron extends \Flydom\Type\Cron
 		self::YML => [ 'name'=>'Выгрузка YML', 'class'=>'\Cron\Yml::run', ],
 		self::OZON_XML => [ 'name'=>'Выгрузка Ozon', 'class'=>'\Cron\OzonXml::run', ],
 		self::WILDBERRIES => [ 'name'=>'Выгрузка Wildberries', 'class'=>'\Cron\Wildberries::run', ],
+		self::YANDEX => [ 'name'=>'Выгрузка Яндекс', 'class'=>'\Cron\Yandex::run', ],
 		self::PRICES => [ 'name'=>'Ценообразование', 'class'=>'\Cron\Prices::run', ],
 		self::COMPLEX => [ 'name'=>'Составные товары', 'class'=>'\Cron\Complex::run', ],
 

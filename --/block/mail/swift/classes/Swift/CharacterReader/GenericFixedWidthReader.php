@@ -11,8 +11,6 @@
 /**
  * Provides fixed-width byte sizes for reading fixed-width character sets.
  *
- * @package    Swift
- * @subpackage Encoder
  * @author     Chris Corbyn
  * @author     Xavier De Cock <xdecock@gmail.com>
  */
@@ -21,45 +19,45 @@ class Swift_CharacterReader_GenericFixedWidthReader implements Swift_CharacterRe
     /**
      * The number of bytes in a single character.
      *
-     * @var integer
+     * @var int
      */
-    private $_width;
+    private $width;
 
     /**
      * Creates a new GenericFixedWidthReader using $width bytes per character.
      *
-     * @param integer $width
+     * @param int $width
      */
     public function __construct($width)
     {
-        $this->_width = $width;
+        $this->width = $width;
     }
 
     /**
      * Returns the complete character map.
      *
-     * @param string  $string
-     * @param integer $startOffset
-     * @param array   $currentMap
-     * @param mixed   $ignoredChars
+     * @param string $string
+     * @param int    $startOffset
+     * @param array  $currentMap
+     * @param mixed  $ignoredChars
      *
-     * @return integer
+     * @return int
      */
     public function getCharPositions($string, $startOffset, &$currentMap, &$ignoredChars)
     {
-        $strlen = strlen($string);
+        $strlen = \strlen($string);
         // % and / are CPU intensive, so, maybe find a better way
-        $ignored = $strlen % $this->_width;
-        $ignoredChars = substr($string, - $ignored);
-        $currentMap = $this->_width;
+        $ignored = $strlen % $this->width;
+        $ignoredChars = $ignored ? substr($string, -$ignored) : '';
+        $currentMap = $this->width;
 
-        return ($strlen - $ignored) / $this->_width;
+        return ($strlen - $ignored) / $this->width;
     }
 
     /**
      * Returns the mapType.
      *
-     * @return integer
+     * @return int
      */
     public function getMapType()
     {
@@ -75,25 +73,25 @@ class Swift_CharacterReader_GenericFixedWidthReader implements Swift_CharacterRe
      * A value of zero means this is already a valid character.
      * A value of -1 means this cannot possibly be a valid character.
      *
-     * @param string  $bytes
-     * @param integer $size
+     * @param string $bytes
+     * @param int    $size
      *
-     * @return integer
+     * @return int
      */
     public function validateByteSequence($bytes, $size)
     {
-        $needed = $this->_width - $size;
+        $needed = $this->width - $size;
 
-        return ($needed > -1) ? $needed : -1;
+        return $needed > -1 ? $needed : -1;
     }
 
     /**
      * Returns the number of bytes which should be read to start each character.
      *
-     * @return integer
+     * @return int
      */
     public function getInitialByteSize()
     {
-        return $this->_width;
+        return $this->width;
     }
 }

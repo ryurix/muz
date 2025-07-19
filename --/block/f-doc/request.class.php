@@ -52,7 +52,7 @@ class Request {
 
 	private function clean_request($value) {
 		if ($this->request_method == "GET")
-			$value = urldecode($value);
+			$value = urldecode($value ?? '');
 
 		if ($this->request_encoding == "windows-1251")
 			$value=iconv("windows-1251", "utf-8",$value);

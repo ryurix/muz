@@ -140,6 +140,14 @@ $config['wildberries'] = [
 		'user'=>22024,
 		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImVmOGI1M2Y4LTljMTktNDkwZC04MThmLWExNDk4NmIzNDQ1NSJ9.keIIWmz7ibj-0t8dN4u1lqaOmMJaQIeIkTIYD41_rfA',
 	],
+
+	24860=>[
+		'name'=>'Technoscena TMN',
+		'token'=>'',
+		'storeId'=>1404335,
+		'user'=>24860,
+		'authorization'=>'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImVmOGI1M2Y4LTljMTktNDkwZC04MThmLWExNDk4NmIzNDQ1NSJ9.keIIWmz7ibj-0t8dN4u1lqaOmMJaQIeIkTIYD41_rfA'
+	],
 ];
 
 /*

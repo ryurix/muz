@@ -11,70 +11,53 @@
 /**
  * An abstract base MIME Header.
  *
- * @package    Swift
- * @subpackage Mime
  * @author     Chris Corbyn
  */
 abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
 {
+    const PHRASE_PATTERN = '(?:(?:(?:(?:(?:(?:(?:[ \t]*(?:\r\n))?[ \t])?(\((?:(?:(?:[ \t]*(?:\r\n))?[ \t])|(?:(?:[\x01-\x08\x0B\x0C\x0E-\x19\x7F]|[\x21-\x27\x2A-\x5B\x5D-\x7E])|(?:\\[\x00-\x08\x0B\x0C\x0E-\x7F])|(?1)))*(?:(?:[ \t]*(?:\r\n))?[ \t])?\)))*(?:(?:(?:(?:[ \t]*(?:\r\n))?[ \t])?(\((?:(?:(?:[ \t]*(?:\r\n))?[ \t])|(?:(?:[\x01-\x08\x0B\x0C\x0E-\x19\x7F]|[\x21-\x27\x2A-\x5B\x5D-\x7E])|(?:\\[\x00-\x08\x0B\x0C\x0E-\x7F])|(?1)))*(?:(?:[ \t]*(?:\r\n))?[ \t])?\)))|(?:(?:[ \t]*(?:\r\n))?[ \t])))?[a-zA-Z0-9!#\$%&\'\*\+\-\/=\?\^_`\{\}\|~]+(?:(?:(?:(?:[ \t]*(?:\r\n))?[ \t])?(\((?:(?:(?:[ \t]*(?:\r\n))?[ \t])|(?:(?:[\x01-\x08\x0B\x0C\x0E-\x19\x7F]|[\x21-\x27\x2A-\x5B\x5D-\x7E])|(?:\\[\x00-\x08\x0B\x0C\x0E-\x7F])|(?1)))*(?:(?:[ \t]*(?:\r\n))?[ \t])?\)))*(?:(?:(?:(?:[ \t]*(?:\r\n))?[ \t])?(\((?:(?:(?:[ \t]*(?:\r\n))?[ \t])|(?:(?:[\x01-\x08\x0B\x0C\x0E-\x19\x7F]|[\x21-\x27\x2A-\x5B\x5D-\x7E])|(?:\\[\x00-\x08\x0B\x0C\x0E-\x7F])|(?1)))*(?:(?:[ \t]*(?:\r\n))?[ \t])?\)))|(?:(?:[ \t]*(?:\r\n))?[ \t])))?)|(?:(?:(?:(?:(?:[ \t]*(?:\r\n))?[ \t])?(\((?:(?:(?:[ \t]*(?:\r\n))?[ \t])|(?:(?:[\x01-\x08\x0B\x0C\x0E-\x19\x7F]|[\x21-\x27\x2A-\x5B\x5D-\x7E])|(?:\\[\x00-\x08\x0B\x0C\x0E-\x7F])|(?1)))*(?:(?:[ \t]*(?:\r\n))?[ \t])?\)))*(?:(?:(?:(?:[ \t]*(?:\r\n))?[ \t])?(\((?:(?:(?:[ \t]*(?:\r\n))?[ \t])|(?:(?:[\x01-\x08\x0B\x0C\x0E-\x19\x7F]|[\x21-\x27\x2A-\x5B\x5D-\x7E])|(?:\\[\x00-\x08\x0B\x0C\x0E-\x7F])|(?1)))*(?:(?:[ \t]*(?:\r\n))?[ \t])?\)))|(?:(?:[ \t]*(?:\r\n))?[ \t])))?"((?:(?:[ \t]*(?:\r\n))?[ \t])?(?:(?:[\x01-\x08\x0B\x0C\x0E-\x19\x7F]|[\x21\x23-\x5B\x5D-\x7E])|(?:\\[\x00-\x08\x0B\x0C\x0E-\x7F])))*(?:(?:[ \t]*(?:\r\n))?[ \t])?"(?:(?:(?:(?:[ \t]*(?:\r\n))?[ \t])?(\((?:(?:(?:[ \t]*(?:\r\n))?[ \t])|(?:(?:[\x01-\x08\x0B\x0C\x0E-\x19\x7F]|[\x21-\x27\x2A-\x5B\x5D-\x7E])|(?:\\[\x00-\x08\x0B\x0C\x0E-\x7F])|(?1)))*(?:(?:[ \t]*(?:\r\n))?[ \t])?\)))*(?:(?:(?:(?:[ \t]*(?:\r\n))?[ \t])?(\((?:(?:(?:[ \t]*(?:\r\n))?[ \t])|(?:(?:[\x01-\x08\x0B\x0C\x0E-\x19\x7F]|[\x21-\x27\x2A-\x5B\x5D-\x7E])|(?:\\[\x00-\x08\x0B\x0C\x0E-\x7F])|(?1)))*(?:(?:[ \t]*(?:\r\n))?[ \t])?\)))|(?:(?:[ \t]*(?:\r\n))?[ \t])))?))+?)';
+
     /**
      * The name of this Header.
      *
      * @var string
      */
-    private $_name;
-
-    /**
-     * The Grammar used for this Header.
-     *
-     * @var Swift_Mime_Grammar
-     */
-    private $_grammar;
+    private $name;
 
     /**
      * The Encoder used to encode this Header.
      *
      * @var Swift_Encoder
      */
-    private $_encoder;
+    private $encoder;
 
     /**
      * The maximum length of a line in the header.
      *
      * @var int
      */
-    private $_lineLength = 78;
+    private $lineLength = 78;
 
     /**
      * The language used in this Header.
      *
      * @var string
      */
-    private $_lang;
+    private $lang;
 
     /**
      * The character set of the text in this Header.
      *
      * @var string
      */
-    private $_charset = 'utf-8';
+    private $charset = 'utf-8';
 
     /**
      * The value of this Header, cached.
      *
      * @var string
      */
-    private $_cachedValue = null;
-
-    /**
-     * Creates a new Header.
-     *
-     * @param Swift_Mime_Grammar $grammar
-     */
-    public function __construct(Swift_Mime_Grammar $grammar)
-    {
-        $this->setGrammar($grammar);
-    }
+    private $cachedValue = null;
 
     /**
      * Set the character set used in this Header.
@@ -83,10 +66,10 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     public function setCharset($charset)
     {
-        $this->clearCachedValueIf($charset != $this->_charset);
-        $this->_charset = $charset;
-        if (isset($this->_encoder)) {
-            $this->_encoder->charsetChanged($charset);
+        $this->clearCachedValueIf($charset != $this->charset);
+        $this->charset = $charset;
+        if (isset($this->encoder)) {
+            $this->encoder->charsetChanged($charset);
         }
     }
 
@@ -97,7 +80,7 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     public function getCharset()
     {
-        return $this->_charset;
+        return $this->charset;
     }
 
     /**
@@ -110,8 +93,8 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     public function setLanguage($lang)
     {
-        $this->clearCachedValueIf($this->_lang != $lang);
-        $this->_lang = $lang;
+        $this->clearCachedValueIf($this->lang != $lang);
+        $this->lang = $lang;
     }
 
     /**
@@ -121,17 +104,15 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     public function getLanguage()
     {
-        return $this->_lang;
+        return $this->lang;
     }
 
     /**
      * Set the encoder used for encoding the header.
-     *
-     * @param Swift_Mime_HeaderEncoder $encoder
      */
     public function setEncoder(Swift_Mime_HeaderEncoder $encoder)
     {
-        $this->_encoder = $encoder;
+        $this->encoder = $encoder;
         $this->setCachedValue(null);
     }
 
@@ -142,28 +123,7 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     public function getEncoder()
     {
-        return $this->_encoder;
-    }
-
-    /**
-     * Set the grammar used for the header.
-     *
-     * @param Swift_Mime_Grammar $grammar
-     */
-    public function setGrammar(Swift_Mime_Grammar $grammar)
-    {
-        $this->_grammar = $grammar;
-        $this->setCachedValue(null);
-    }
-
-    /**
-     * Get the grammar used for this Header.
-     *
-     * @return Swift_Mime_Grammar
-     */
-    public function getGrammar()
-    {
-        return $this->_grammar;
+        return $this->encoder;
     }
 
     /**
@@ -173,18 +133,18 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     public function getFieldName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
      * Set the maximum length of lines in the header (excluding EOL).
      *
-     * @param integer $lineLength
+     * @param int $lineLength
      */
     public function setMaxLineLength($lineLength)
     {
-        $this->clearCachedValueIf($this->_lineLength != $lineLength);
-        $this->_lineLength = $lineLength;
+        $this->clearCachedValueIf($this->lineLength != $lineLength);
+        $this->lineLength = $lineLength;
     }
 
     /**
@@ -194,7 +154,7 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     public function getMaxLineLength()
     {
-        return $this->_lineLength;
+        return $this->lineLength;
     }
 
     /**
@@ -206,7 +166,7 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     public function toString()
     {
-        return $this->_tokensToString($this->toTokens());
+        return $this->tokensToString($this->toTokens());
     }
 
     /**
@@ -221,8 +181,6 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
         return $this->toString();
     }
 
-    // -- Points of extension
-
     /**
      * Set the name of this Header field.
      *
@@ -230,37 +188,35 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     protected function setFieldName($name)
     {
-        $this->_name = $name;
+        $this->name = $name;
     }
 
     /**
      * Produces a compliant, formatted RFC 2822 'phrase' based on the string given.
      *
-     * @param Swift_Mime_Header        $header
-     * @param string                   $string  as displayed
-     * @param string                   $charset of the text
-     * @param Swift_Mime_HeaderEncoder $encoder
-     * @param boolean                  $shorten the first line to make remove for header name
+     * @param string $string  as displayed
+     * @param string $charset of the text
+     * @param bool   $shorten the first line to make remove for header name
      *
      * @return string
      */
     protected function createPhrase(Swift_Mime_Header $header, $string, $charset, Swift_Mime_HeaderEncoder $encoder = null, $shorten = false)
     {
-        //Treat token as exactly what was given
+        // Treat token as exactly what was given
         $phraseStr = $string;
-        //If it's not valid
-        if (!preg_match('/^' . $this->getGrammar()->getDefinition('phrase') . '$/D', $phraseStr)) {
+        // If it's not valid
+
+        if (!preg_match('/^'.self::PHRASE_PATTERN.'$/D', $phraseStr)) {
             // .. but it is just ascii text, try escaping some characters
             // and make it a quoted-string
-            if (preg_match('/^' . $this->getGrammar()->getDefinition('text') . '*$/D', $phraseStr)) {
-                $phraseStr = $this->getGrammar()->escapeSpecials(
-                    $phraseStr, array('"'), $this->getGrammar()->getSpecials()
-                    );
-                $phraseStr = '"' . $phraseStr . '"';
-            } else { // ... otherwise it needs encoding
-                //Determine space remaining on line if first line
+            if (preg_match('/^[\x00-\x08\x0B\x0C\x0E-\x7F]*$/D', $phraseStr)) {
+                $phraseStr = $this->escapeSpecials($phraseStr, ['"']);
+                $phraseStr = '"'.$phraseStr.'"';
+            } else {
+                // ... otherwise it needs encoding
+                // Determine space remaining on line if first line
                 if ($shorten) {
-                    $usedLength = strlen($header->getFieldName() . ': ');
+                    $usedLength = \strlen($header->getFieldName().': ');
                 } else {
                     $usedLength = 0;
                 }
@@ -272,11 +228,27 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
     }
 
     /**
+     * Escape special characters in a string (convert to quoted-pairs).
+     *
+     * @param string   $token
+     * @param string[] $include additional chars to escape
+     *
+     * @return string
+     */
+    private function escapeSpecials($token, $include = [])
+    {
+        foreach (array_merge(['\\'], $include) as $char) {
+            $token = str_replace($char, '\\'.$char, $token);
+        }
+
+        return $token;
+    }
+
+    /**
      * Encode needed word tokens within a string of input.
      *
-     * @param Swift_Mime_Header $header
-     * @param string            $input
-     * @param string            $usedLength optional
+     * @param string $input
+     * @param string $usedLength optional
      *
      * @return string
      */
@@ -287,9 +259,9 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
         $tokens = $this->getEncodableWordTokens($input);
 
         foreach ($tokens as $token) {
-            //See RFC 2822, Sect 2.2 (really 2.2 ??)
+            // See RFC 2822, Sect 2.2 (really 2.2 ??)
             if ($this->tokenNeedsEncoding($token)) {
-                //Don't encode starting WSP
+                // Don't encode starting WSP
                 $firstChar = substr($token, 0, 1);
                 switch ($firstChar) {
                     case ' ':
@@ -299,11 +271,11 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
                 }
 
                 if (-1 == $usedLength) {
-                    $usedLength = strlen($header->getFieldName() . ': ') + strlen($value);
+                    $usedLength = \strlen($header->getFieldName().': ') + \strlen($value);
                 }
                 $value .= $this->getTokenAsEncodedWord($token, $usedLength);
 
-                $header->setMaxLineLength(76); //Forcefully override
+                $header->setMaxLineLength(76); // Forcefully override
             } else {
                 $value .= $token;
             }
@@ -317,7 +289,7 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      *
      * @param string $token
      *
-     * @return boolean
+     * @return bool
      */
     protected function tokenNeedsEncoding($token)
     {
@@ -333,22 +305,22 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     protected function getEncodableWordTokens($string)
     {
-        $tokens = array();
+        $tokens = [];
 
         $encodedToken = '';
-        //Split at all whitespace boundaries
-        foreach (preg_split('~(?=[\t ])~', $string) as $token) {
+        // Split at all whitespace boundaries
+        foreach (preg_split('~(?=[\t ])~', $string ?? '') as $token) {
             if ($this->tokenNeedsEncoding($token)) {
                 $encodedToken .= $token;
             } else {
-                if (strlen($encodedToken) > 0) {
+                if (\strlen($encodedToken) > 0) {
                     $tokens[] = $encodedToken;
                     $encodedToken = '';
                 }
                 $tokens[] = $token;
             }
         }
-        if (strlen($encodedToken)) {
+        if (\strlen($encodedToken)) {
             $tokens[] = $encodedToken;
         }
 
@@ -358,37 +330,39 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
     /**
      * Get a token as an encoded word for safe insertion into headers.
      *
-     * @param string  $token           token to encode
-     * @param integer $firstLineOffset optional
+     * @param string $token           token to encode
+     * @param int    $firstLineOffset optional
      *
      * @return string
      */
     protected function getTokenAsEncodedWord($token, $firstLineOffset = 0)
     {
-        //Adjust $firstLineOffset to account for space needed for syntax
-        $charsetDecl = $this->_charset;
-        if (isset($this->_lang)) {
-            $charsetDecl .= '*' . $this->_lang;
+        // Adjust $firstLineOffset to account for space needed for syntax
+        $charsetDecl = $this->charset;
+        if (isset($this->lang)) {
+            $charsetDecl .= '*'.$this->lang;
         }
-        $encodingWrapperLength = strlen(
-            '=?' . $charsetDecl . '?' . $this->_encoder->getName() . '??='
+        $encodingWrapperLength = \strlen(
+            '=?'.$charsetDecl.'?'.$this->encoder->getName().'??='
             );
 
-        if ($firstLineOffset >= 75) { //Does this logic need to be here?
+        if ($firstLineOffset >= 75) {
+            //Does this logic need to be here?
             $firstLineOffset = 0;
         }
 
         $encodedTextLines = explode("\r\n",
-            $this->_encoder->encodeString(
-                $token, $firstLineOffset, 75 - $encodingWrapperLength, $this->_charset
-                )
+            $this->encoder->encodeString(
+                $token, $firstLineOffset, 75 - $encodingWrapperLength, $this->charset
+            ) ?? ''
         );
 
-        if (strtolower($this->_charset) !== 'iso-2022-jp') { // special encoding for iso-2022-jp using mb_encode_mimeheader
+        if ('iso-2022-jp' !== strtolower($this->charset ?? '')) {
+            // special encoding for iso-2022-jp using mb_encode_mimeheader
             foreach ($encodedTextLines as $lineNum => $line) {
-                $encodedTextLines[$lineNum] = '=?' . $charsetDecl .
-                    '?' . $this->_encoder->getName() .
-                    '?' . $line . '?=';
+                $encodedTextLines[$lineNum] = '=?'.$charsetDecl.
+                    '?'.$this->encoder->getName().
+                    '?'.$line.'?=';
             }
         }
 
@@ -404,7 +378,7 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     protected function generateTokenLines($token)
     {
-        return preg_split('~(\r\n)~', $token, -1, PREG_SPLIT_DELIM_CAPTURE);
+        return preg_split('~(\r\n)~', $token ?? '', -1, PREG_SPLIT_DELIM_CAPTURE);
     }
 
     /**
@@ -414,7 +388,7 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     protected function setCachedValue($value)
     {
-        $this->_cachedValue = $value;
+        $this->cachedValue = $value;
     }
 
     /**
@@ -424,13 +398,13 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     protected function getCachedValue()
     {
-        return $this->_cachedValue;
+        return $this->cachedValue;
     }
 
     /**
      * Clear the cached value if $condition is met.
      *
-     * @param boolean $condition
+     * @param bool $condition
      */
     protected function clearCachedValueIf($condition)
     {
@@ -438,8 +412,6 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
             $this->setCachedValue(null);
         }
     }
-
-    // -- Private methods
 
     /**
      * Generate a list of all tokens in the final header.
@@ -450,19 +422,20 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      */
     protected function toTokens($string = null)
     {
-        if (is_null($string)) {
+        if (null === $string) {
             $string = $this->getFieldBody();
         }
 
-        $tokens = array();
+        $tokens = [];
 
-        //Generate atoms; split at all invisible boundaries followed by WSP
-        foreach (preg_split('~(?=[ \t])~', $string) as $token) {
+        // Generate atoms; split at all invisible boundaries followed by WSP
+        foreach (preg_split('~(?=[ \t])~', $string ?? '') as $token) {
             $newTokens = $this->generateTokenLines($token);
             foreach ($newTokens as $newToken) {
                 $tokens[] = $newToken;
             }
         }
+
         return $tokens;
     }
 
@@ -474,31 +447,40 @@ abstract class Swift_Mime_Headers_AbstractHeader implements Swift_Mime_Header
      *
      * @return string
      */
-    private function _tokensToString(array $tokens)
+    private function tokensToString(array $tokens)
     {
         $lineCount = 0;
-        $headerLines = array();
-        $headerLines[] = $this->_name . ': ';
-        $currentLine =& $headerLines[$lineCount++];
+        $headerLines = [];
+        $headerLines[] = $this->name.': ';
+        $currentLine = &$headerLines[$lineCount++];
 
-        //Build all tokens back into compliant header
+        // Build all tokens back into compliant header
         foreach ($tokens as $i => $token) {
-            //Line longer than specified maximum or token was just a new line
+            // Line longer than specified maximum or token was just a new line
             if (("\r\n" == $token) ||
-                ($i > 0 && strlen($currentLine . $token) > $this->_lineLength)
-                && 0 < strlen($currentLine))
-            {
+                ($i > 0 && \strlen($currentLine.$token) > $this->lineLength)
+                && 0 < \strlen($currentLine)) {
                 $headerLines[] = '';
-                $currentLine =& $headerLines[$lineCount++];
+                $currentLine = &$headerLines[$lineCount++];
             }
 
-            //Append token to the line
+            // Append token to the line
             if ("\r\n" != $token) {
                 $currentLine .= $token;
             }
         }
 
-        //Implode with FWS (RFC 2822, 2.2.3)
-        return implode("\r\n", $headerLines) . "\r\n";
+        // Implode with FWS (RFC 2822, 2.2.3)
+        return implode("\r\n", $headerLines)."\r\n";
+    }
+
+    /**
+     * Make a deep copy of object.
+     */
+    public function __clone()
+    {
+        if ($this->encoder) {
+            $this->encoder = clone $this->encoder;
+        }
     }
 }

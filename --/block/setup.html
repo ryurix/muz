@@ -131,16 +131,25 @@ if (count($sub)) {
 
 $sub = [];
 
+if (is_user('cabinet')) {
+	$sub[] = ['action'=>'Кабинеты', 'href'=>'/setup/cabinet'];
+}
+
 if (is_user('yandex')) {
 	$sub[] = ['action'=>'Выгрузка YML', 'href'=>'/setup/yml'];
+	$sub[] = ['action'=>'Яндекс', 'href'=>'/setup/yandex'];
 }
 
 if (is_user('ozon')) {
-	$sub[] = ['action'=>'Выгрузка Ozon', 'href'=>'/setup/ozon'];
+	$sub[] = ['action'=>'Ozon', 'href'=>'/setup/ozon'];
 }
 
 if (is_user('wildberries')) {
-	$sub[] = ['action'=>'Выгрузка Wildberries', 'href'=>'/setup/wildberries'];
+	$sub[] = ['action'=>'Wildberries', 'href'=>'/setup/wildberries'];
+}
+
+if (is_user('api')) {
+	$sub[] = ['action'=>'API', 'href'=>'/api'];
 }
 
 if (count($sub)) {

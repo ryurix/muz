@@ -11,23 +11,21 @@
 /**
  * Prints all log messages in real time.
  *
- * @package    Swift
- * @subpackage Transport
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Plugins_Loggers_EchoLogger implements Swift_Plugins_Logger
 {
     /** Whether or not HTML should be output */
-    private $_isHtml;
+    private $isHtml;
 
     /**
      * Create a new EchoLogger.
      *
-     * @param boolean $isHtml
+     * @param bool $isHtml
      */
     public function __construct($isHtml = true)
     {
-        $this->_isHtml = $isHtml;
+        $this->isHtml = $isHtml;
     }
 
     /**
@@ -37,7 +35,7 @@ class Swift_Plugins_Loggers_EchoLogger implements Swift_Plugins_Logger
      */
     public function add($entry)
     {
-        if ($this->_isHtml) {
+        if ($this->isHtml) {
             printf('%s%s%s', htmlspecialchars($entry, ENT_QUOTES), '<br />', PHP_EOL);
         } else {
             printf('%s%s', $entry, PHP_EOL);

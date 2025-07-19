@@ -11,13 +11,12 @@
 /**
  * Changes some global preference settings in Swift Mailer.
  *
- * @package Swift
- * @author  Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Preferences
 {
     /** Singleton instance */
-    private static $_instance = null;
+    private static $instance = null;
 
     /** Constructor not to be used */
     private function __construct()
@@ -27,15 +26,15 @@ class Swift_Preferences
     /**
      * Gets the instance of Preferences.
      *
-     * @return Swift_Preferences
+     * @return self
      */
     public static function getInstance()
     {
-        if (!isset(self::$_instance)) {
-            self::$_instance = new self();
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
         }
 
-        return self::$_instance;
+        return self::$instance;
     }
 
     /**
@@ -43,12 +42,11 @@ class Swift_Preferences
      *
      * @param string $charset
      *
-     * @return Swift_Preferences
+     * @return $this
      */
     public function setCharset($charset)
     {
-        Swift_DependencyContainer::getInstance()
-            ->register('properties.charset')->asValue($charset);
+        Swift_DependencyContainer::getInstance()->register('properties.charset')->asValue($charset);
 
         return $this;
     }
@@ -58,12 +56,11 @@ class Swift_Preferences
      *
      * @param string $dir
      *
-     * @return Swift_Preferences
+     * @return $this
      */
     public function setTempDir($dir)
     {
-        Swift_DependencyContainer::getInstance()
-            ->register('tempdir')->asValue($dir);
+        Swift_DependencyContainer::getInstance()->register('tempdir')->asValue($dir);
 
         return $this;
     }
@@ -73,12 +70,11 @@ class Swift_Preferences
      *
      * @param string $type
      *
-     * @return Swift_Preferences
+     * @return $this
      */
     public function setCacheType($type)
     {
-        Swift_DependencyContainer::getInstance()
-            ->register('cache')->asAliasOf(sprintf('cache.%s', $type));
+        Swift_DependencyContainer::getInstance()->register('cache')->asAliasOf(sprintf('cache.%s', $type));
 
         return $this;
     }
@@ -86,9 +82,9 @@ class Swift_Preferences
     /**
      * Set the QuotedPrintable dot escaper preference.
      *
-     * @param boolean $dotEscape
+     * @param bool $dotEscape
      *
-     * @return Swift_Preferences
+     * @return $this
      */
     public function setQPDotEscape($dotEscape)
     {
@@ -96,7 +92,7 @@ class Swift_Preferences
         Swift_DependencyContainer::getInstance()
             ->register('mime.qpcontentencoder')
             ->asNewInstanceOf('Swift_Mime_ContentEncoder_QpContentEncoder')
-            ->withDependencies(array('mime.charstream', 'mime.bytecanonicalizer'))
+            ->withDependencies(['mime.charstream', 'mime.bytecanonicalizer'])
             ->addConstructorValue($dotEscape);
 
         return $this;

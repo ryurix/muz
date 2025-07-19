@@ -11,9 +11,7 @@
 /**
  * Reduces network flooding when sending large amounts of mail.
  *
- * @package    Swift
- * @subpackage Plugins
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Plugins_AntiFloodPlugin implements Swift_Events_SendListener, Swift_Plugins_Sleeper
 {
@@ -22,51 +20,51 @@ class Swift_Plugins_AntiFloodPlugin implements Swift_Events_SendListener, Swift_
      *
      * @var int
      */
-    private $_threshold;
+    private $threshold;
 
     /**
      * The number of seconds to sleep for during a restart.
      *
      * @var int
      */
-    private $_sleep;
+    private $sleep;
 
     /**
      * The internal counter.
      *
      * @var int
      */
-    private $_counter = 0;
+    private $counter = 0;
 
     /**
      * The Sleeper instance for sleeping.
      *
      * @var Swift_Plugins_Sleeper
      */
-    private $_sleeper;
+    private $sleeper;
 
     /**
      * Create a new AntiFloodPlugin with $threshold and $sleep time.
      *
-     * @param integer               $threshold
-     * @param integer               $sleep     time
+     * @param int                   $threshold
+     * @param int                   $sleep     time
      * @param Swift_Plugins_Sleeper $sleeper   (not needed really)
      */
     public function __construct($threshold = 99, $sleep = 0, Swift_Plugins_Sleeper $sleeper = null)
     {
         $this->setThreshold($threshold);
         $this->setSleepTime($sleep);
-        $this->_sleeper = $sleeper;
+        $this->sleeper = $sleeper;
     }
 
     /**
      * Set the number of emails to send before restarting.
      *
-     * @param integer $threshold
+     * @param int $threshold
      */
     public function setThreshold($threshold)
     {
-        $this->_threshold = $threshold;
+        $this->threshold = $threshold;
     }
 
     /**
@@ -76,17 +74,17 @@ class Swift_Plugins_AntiFloodPlugin implements Swift_Events_SendListener, Swift_
      */
     public function getThreshold()
     {
-        return $this->_threshold;
+        return $this->threshold;
     }
 
     /**
      * Set the number of seconds to sleep for during a restart.
      *
-     * @param integer $sleep time
+     * @param int $sleep time
      */
     public function setSleepTime($sleep)
     {
-        $this->_sleep = $sleep;
+        $this->sleep = $sleep;
     }
 
     /**
@@ -96,13 +94,11 @@ class Swift_Plugins_AntiFloodPlugin implements Swift_Events_SendListener, Swift_
      */
     public function getSleepTime()
     {
-        return $this->_sleep;
+        return $this->sleep;
     }
 
     /**
      * Invoked immediately before the Message is sent.
-     *
-     * @param Swift_Events_SendEvent $evt
      */
     public function beforeSendPerformed(Swift_Events_SendEvent $evt)
     {
@@ -110,32 +106,30 @@ class Swift_Plugins_AntiFloodPlugin implements Swift_Events_SendListener, Swift_
 
     /**
      * Invoked immediately after the Message is sent.
-     *
-     * @param Swift_Events_SendEvent $evt
      */
     public function sendPerformed(Swift_Events_SendEvent $evt)
     {
-        ++$this->_counter;
-        if ($this->_counter >= $this->_threshold) {
+        ++$this->counter;
+        if ($this->counter >= $this->threshold) {
             $transport = $evt->getTransport();
             $transport->stop();
-            if ($this->_sleep) {
-                $this->sleep($this->_sleep);
+            if ($this->sleep) {
+                $this->sleep($this->sleep);
             }
             $transport->start();
-            $this->_counter = 0;
+            $this->counter = 0;
         }
     }
 
     /**
      * Sleep for $seconds.
      *
-     * @param integer $seconds
+     * @param int $seconds
      */
     public function sleep($seconds)
     {
-        if (isset($this->_sleeper)) {
-            $this->_sleeper->sleep($seconds);
+        if (isset($this->sleeper)) {
+            $this->sleeper->sleep($seconds);
         } else {
             sleep($seconds);
         }

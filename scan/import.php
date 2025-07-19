@@ -57,11 +57,11 @@ if (Form::isValid() && Form::get('send') == 1) {
 
 		$store = \Db::fetchRow(\Db::select('store.i,store.code', 'sync LEFT JOIN store ON sync.store=store.i', ['sync.vendor'=>$vendor, 'sync.code'=>$row[$artCol]]));
 		if (is_array($store)) {
-			$codes = \Flydom\Cache::csvc_decode($store['code']);
+			$codes = \Flydom\Arrau::decodec($store['code']);
 
 			if (array_search($code, $codes) === false) {
 				$codes[] = $code;
-				\Db::update('store', ['code'=>\Flydom\Cache::csvc_encode($codes)], ['i'=>$store['i']]);
+				\Db::update('store', ['code'=>\Flydom\Arrau::encodec($codes)], ['i'=>$store['i']]);
 				$updated++;
 			}
 		}

@@ -34,7 +34,7 @@ static function disable() {
 
 static function debug($message) {
 	if (is_array($message)) {
-		$message = \Flydom\Cache::array_encode($message);
+		$message = \Flydom\Arrau::encode($message);
 	}
 
 	self::add(\Type\Log::DEBUG, 0, $message);

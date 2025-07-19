@@ -11,26 +11,25 @@
 /**
  * Pretends messages have been sent, but just ignores them.
  *
- * @package Swift
- * @author  Fabien Potencier
+ * @author Fabien Potencier
  */
 class Swift_Transport_NullTransport implements Swift_Transport
 {
     /** The event dispatcher from the plugin API */
-    private $_eventDispatcher;
+    private $eventDispatcher;
 
     /**
      * Constructor.
      */
     public function __construct(Swift_Events_EventDispatcher $eventDispatcher)
     {
-        $this->_eventDispatcher = $eventDispatcher;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
      * Tests if this Transport mechanism has started.
      *
-     * @return boolean
+     * @return bool
      */
     public function isStarted()
     {
@@ -52,17 +51,24 @@ class Swift_Transport_NullTransport implements Swift_Transport
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function ping()
+    {
+        return true;
+    }
+
+    /**
      * Sends the given message.
      *
-     * @param Swift_Mime_Message $message
-     * @param string[]           $failedRecipients An array of failures by-reference
+     * @param string[] $failedRecipients An array of failures by-reference
      *
-     * @return integer The number of sent emails
+     * @return int The number of sent emails
      */
-    public function send(Swift_Mime_Message $message, &$failedRecipients = null)
+    public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
-        if ($evt = $this->_eventDispatcher->createSendEvent($this, $message)) {
-            $this->_eventDispatcher->dispatchEvent($evt, 'beforeSendPerformed');
+        if ($evt = $this->eventDispatcher->createSendEvent($this, $message)) {
+            $this->eventDispatcher->dispatchEvent($evt, 'beforeSendPerformed');
             if ($evt->bubbleCancelled()) {
                 return 0;
             }
@@ -70,19 +76,23 @@ class Swift_Transport_NullTransport implements Swift_Transport
 
         if ($evt) {
             $evt->setResult(Swift_Events_SendEvent::RESULT_SUCCESS);
-            $this->_eventDispatcher->dispatchEvent($evt, 'sendPerformed');
+            $this->eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         }
 
-        return 0;
+        $count = (
+            \count((array) $message->getTo())
+            + \count((array) $message->getCc())
+            + \count((array) $message->getBcc())
+            );
+
+        return $count;
     }
 
     /**
      * Register a plugin.
-     *
-     * @param Swift_Events_EventListener $plugin
      */
     public function registerPlugin(Swift_Events_EventListener $plugin)
     {
-        $this->_eventDispatcher->bindEventListener($plugin);
+        $this->eventDispatcher->bindEventListener($plugin);
     }
 }

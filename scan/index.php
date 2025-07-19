@@ -43,6 +43,10 @@ if (strlen($scan)) {
 
 		if ($store['state'] == 27) {
 			$sound = 'state27';
+		} elseif ($store['state'] == 1) {
+			$sound = 'first';
+		} elseif ($store['state'] == 2 || $store['state'] == 3) {
+			$sount = 'state2-3';
 		} else {
 			$sklad = array_keys(w('list-sklad'));
 			if (in_array($store['vendor'], $sklad)) {
@@ -52,6 +56,11 @@ if (strlen($scan)) {
 					$sound = 'state7';
 				} else {
 					if ($store['complex']) {
+						$complex = \Db::result(\Db::select('COUNT(*)', 'complex', ['up'=>$store['complex']], 'GROUP BY up'));
+					} else {
+						$complex = 0;
+					}
+					if ($complex > 1) {
 						$sound = 'complex2';
 					} else {
 						$sound = $store['count'] > 1 ? 'info2' : 'info';
@@ -93,13 +102,13 @@ if (strlen($scan)) {
 			} else {
 				if (\Tool\Barcode::check($scan)) {
 					$store = \Db::fetchRow(\Db::select($fields, 'store', ['i'=>\Flydom\Clean::int($_SESSION['scan']['store'])]));
-					$code = \Flydom\Cache::csvc_decode($store['code']);
+					$code = \Flydom\Arrau::decodec($store['code']);
 					if (count($code)) {
 						$alert = '<div class="alert alert-danger">У товара <a href="/store/'.$store['url'].'">'.$store['i'].'</a> уже есть штрихкод!</div>';
 						$sound = 'wrong';
 					} else {
 						$code[] = $scan;
-						$store['code'] = \Flydom\Cache::csvc_encode($code);
+						$store['code'] = \Flydom\Arrau::encodec($code);
 						\Db::update('store', [
 							'code'=>$store['code']
 						], ['i'=>$store['i']]);
@@ -134,7 +143,7 @@ if (is_array($store)) {
 	$brands = cache_load('brand');
 	$name = ($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'];
 
-	$code = implode(', ', \Flydom\Cache::csvc_decode($store['code']));
+	$code = implode(', ', \Flydom\Arrau::decodec($store['code']));
 	$barcode = \Form\Barcode::button('Штрихкод', 'scan', 'btn btn-default btn-sm');
 
 //	echo '<h3>'.($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'].'</h3>';

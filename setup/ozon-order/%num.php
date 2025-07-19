@@ -90,10 +90,14 @@ if ($plan['']['valid']) {
 	if ($plan['send']['value'] == 1) {
 		$new = array(
 			'typ'=>10,
+			'form'=>$plan['form']['value'],
 			'name'=>$plan['name']['value'],
 			'info'=>'',
 			'dt'=>now() + $plan['every']['value'],
 			'every'=>$plan['every']['value'],
+			'time'=>$plan['time']['value'],
+			'week'=>$plan['week']['value'],
+			'follow'=>$plan['follow']['value'],
 			'data'=>array_encode($data),
 		);
 

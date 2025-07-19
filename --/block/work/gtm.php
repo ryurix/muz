@@ -20,5 +20,3 @@ function gtm_catalog_fullname($catalog_id, $delimiter = '/') {
 
 	return $category;
 }
-
-?>

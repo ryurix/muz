@@ -105,6 +105,7 @@ if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']
 									'code'=>$ccode,
 									'name'=>$cname,
 								), array('i'=>$sync['i']));
+								\Flydom\Log::add(18, $plan['store']['value'], $ccode);
 							}
 //echo '<p>break!</p>';
 							break;
@@ -121,6 +122,7 @@ if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']
 							'dt'=>now(),
 							'price'=>ceil($cprice),
 						));
+						\Flydom\Log::add(17, $sync['store'], $ccode);
 					}
 				}
 			} else { // Пробуем найти в names

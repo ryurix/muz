@@ -92,7 +92,7 @@ foreach ($items as $k=>$item) {
 	]))->create());
 }
 
-echo \Flydom\Cache::json_encode(
+echo \Flydom\Json::encode(
 	['order'=>[
 		'accepted'=>true,
 		'id'=>reset($ids),

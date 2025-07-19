@@ -1,0 +1,31 @@
+<table class="table">
+	<thead>
+		<tr>
+			<th class="text-center">Код</th>
+			<th>Название</th>
+			<th>Дата следующего запуска</th>
+			<th>Последняя синхронизация</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+w('ft');
+
+$q = db_query('SELECT * FROM cron WHERE typ='.\Type\Cron::YANDEX.' ORDER BY name');
+while ($i = db_fetch($q)) {
+	echo '
+<tr>
+	<td class="text-center"><a href="/setup/yandex/'.$i['i'].'">'.$i['i'].'</a></td>
+	<td><a href="/setup/yandex/'.$i['i'].'">'.$i['name'].'</a></td>
+	<td><a href="/setup/yandex/'.$i['i'].'">'.($i['every'] > 0 ? ft($i['dt'], 1) : '').'</a></td>
+	<td>'.$i['info'].'</td>
+</tr>
+
+';
+}
+
+?>
+	</tbody>
+</table>
+<p>Время сервера: <? echo ft(now(), 1); ?></p>

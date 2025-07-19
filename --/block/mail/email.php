@@ -1,55 +1,61 @@
 <?
 
 /*
- * Version 16.05.2018
+ * Version 06.06.2025
  */
 
-function email($to, $toname, $subject, $html, $files = array(), $copy = 1) {
+function email($to, $toname, $subject, $html, $files = null, $copy = 1)
+{
 	global $config;
-	
+	$from = 'muzmart@muzmart.com';
+	$fromname = $config['title'];
+
+	$host = 'smtp.yandex.ru';
+	$port = '465';
+	$secure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+	$user = $from;
+	$password = 'wRi-FFS-sq3-uZK';
+
 	if (!is_array($files)) {
 		$files = array($files);
 	}
 
-	require_once(dirname(__FILE__).'/swift/swift_required.php');
+	$mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
-	$fromname = $config['title'];
-	$from = 'muzmart@muzmart.com';
-//	$pass = 'Gertydedtrip';
-//	$pass = 'pastila970494';
-	$pass = 'wRi-FFS-sq3-uZK';
+	//$mail->SMTPDebug = \PHPMailer\PHPMailer\SMTP::DEBUG_CONNECTION;
+	$mail->isSMTP();
+	$mail->Host = $host;
+	$mail->SMTPAuth = true;
+	$mail->Username = $user;
+	$mail->Password = $password;
+	$mail->SMTPSecure = $secure;
+	$mail->Port = $port;
+	$mail->CharSet = 'UTF-8';
 
-	$message = Swift_Message::newInstance()
-	->setSubject($subject)
-	->setFrom(array($from=>$fromname))
-//	->setReplyTo(array($from=>$fromname))
-	->setTo(array($to=>$toname))
-	->setBody('<html><head></head><body>'.$html.'</body></html>', 'text/html')
-//	->attach(Swift_Attachment::fromPath('my-document.pdf'))
-	;
+	$mail->From = $from;
+	$mail->FromName = $fromname;
 
+	$mail->addAddress($to, $toname);
 	if ($copy) {
-		$message->setBcc($from);
+		$mail->addBCC($from, $fromname);
 	}
 
-	foreach ($files as $f) {
-		$message->attach(Swift_Attachment::fromPath($f));
+	$mail->Subject = $subject;
+	$mail->isHTML();
+	$mail->Body = $html;
+
+	foreach ($files as $i) {
+		$mail->addAttachment(\Config::ROOT.$i);
 	}
 
-//	$type = $message->getHeaders()->get('Content-Type');
+	try {
+		$mail->send();
+	} catch (Exception $e) {
+		\Flydom\Log::add(49, 0, $mail->ErrorInfo);
+		return $mail->ErrorInfo;
+	}
 
-//*
-	$transport = Swift_SmtpTransport::newInstance('smtp.yandex.ru', 465, "ssl")
-	->setUsername($from)
-	->setPassword($pass)
-	;
-//*/
-
-//	$transport = Swift_MailTransport::newInstance();
-	$mailer = Swift_Mailer::newInstance($transport);
-	$result = $mailer->send($message);
-
-	return $result;	
+	return '';
 } // email
 
 ?>

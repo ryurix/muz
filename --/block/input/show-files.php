@@ -1,8 +1,6 @@
 <?
 
 function show_files($files, $style = array()) {
-	global $config;
-
 	static $icons = array(
 		'png'=>'png',
 		'pdf'=>'pdf',

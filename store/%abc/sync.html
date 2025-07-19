@@ -29,6 +29,7 @@ echo '<p>Наша цена: розничная <b>'.$price.'</b>'.$prices.'</p>'
 <?
 
 $vendor = cache_load('vendor');
+$sklad = w('list-sklad');
 
 $rows = db_fetch_all('SELECT * FROM sync WHERE store='.$row['i']);
 if (is_user('sync')) {
@@ -37,7 +38,11 @@ if (is_user('sync')) {
 		if (isset($_REQUEST['c'.$i['i']])) {
 			$c = clean_int($_REQUEST['c'.$i['i']]);
 			$rows[$k]['count'] = $c;
-			db_update('sync', ['count'=>$c, 'dt'=>now()], ['i'=>$i['i']]);
+
+			// TODO: refactor
+			$dt = now() + (isset($sklad[$i['vendor']]) ? 60*60*24*365*5 : 0);
+			$rows[$k]['dt'] = $dt;
+			db_update('sync', ['count'=>$c, 'dt'=>$dt], ['i'=>$i['i']]);
 		}
 	}
 }

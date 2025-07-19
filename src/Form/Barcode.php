@@ -9,7 +9,7 @@ static function start($default = [])
 {
 	$store = $_SESSION['scan']['store'] ?? 0;
 	$code = \Db::result('SELECT code FROM store WHERE i='.$store);
-	$code = \Flydom\Cache::csvc_decode($code);
+	$code = \Flydom\Arrau::decodec($code);
 	self::code(implode(', ', $code).(count($code) ? ', ' : ''));
 
 	\Flydom\Form\Modal::setTitle('Штрихкод');
@@ -31,7 +31,7 @@ static function start($default = [])
 	if (self::send() == 5) {
 		$code = explode(',', self::code());
 		$code = array_map('trim', $code);
-		\Db::update('store', ['code'=>\Flydom\Cache::csvc_encode($code)], ['i'=>$store]);
+		\Db::update('store', ['code'=>\Flydom\Arrau::encodec($code)], ['i'=>$store]);
 		alert('Штрихкод товара изменён!');
 	}
 }

@@ -94,7 +94,3 @@ if ($plan['send']['value'] == 3) {
 
 	exit();
 }
-
-$config['plan'] = $plan;
-
-?>

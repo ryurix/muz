@@ -8,10 +8,11 @@ abstract class Task {
 
 	static public function execute($cron, $data = null) {
 		if (is_null($data)) {
-			$data = is_array($cron['data']) ? $cron['data'] : \Flydom\Cache::array_decode($cron['data']);
+			$data = is_array($cron['data']) ? $cron['data'] : \Flydom\Arrau::decode($cron['data']);
 		}
 
 		$class = \Type\Cron::class($cron['typ']);
+		$data = ['form'=>$cron['form']] + $data;
 
 		if ($class) {
 			try {
@@ -29,7 +30,7 @@ abstract class Task {
 	static public function follow($list) {
 
 		if (!is_array($list)) {
-			$list = \Flydom\Cache::array_decode($list);
+			$list = \Flydom\Arrau::decode($list);
 		}
 
 		if (!count($list)) {
@@ -59,11 +60,11 @@ abstract class Task {
 
 	static public function next($cron, $data = null) {
 		if (is_null($data)) {
-			$data = is_array($cron['data']) ? $cron['data'] : \Flydom\Cache::array_decode($cron['data']);
+			$cron = $cron + (is_array($cron['data']) ? $cron['data'] : \Flydom\Arrau::decode($cron['data']));
 		}
 
 		if ($cron['every'] == 1) {
-			return self::every(now(), $data['time'], $data['week']);
+			return self::every(now(), $cron['time'], $cron['week']);
 		} else {
 			return now() + $cron['every'];
 		}
@@ -79,7 +80,7 @@ abstract class Task {
 			$next+= 24*60*60;
 		}
 
-		if (count($week)) {
+		if (is_array($week) && count($week)) {
 			$day = date('N', $next);
 			while (!in_array($day, $week)) {
 				$next+= 24*60*60;

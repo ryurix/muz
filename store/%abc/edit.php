@@ -89,7 +89,7 @@ if ($plan['']['valid']) {
 			'pics'=>$plan['pics']['value'],
 			'yandex'=>$plan['yandex']['value'],
 			'complex'=>$plan['complex']['value'],
-			'code'=>\Flydom\Cache::csvc_encode($code),
+			'code'=>\Flydom\Arrau::encodec($code),
 		);
 
 		if (w('store-pic', $plan)) {

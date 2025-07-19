@@ -13,7 +13,11 @@ static function is($role = null) {
 	}
 
 	if (is_null(static::$roles)) {
-		static::$roles = explode(' ', $_SESSION['roles'] ?? 'guest');
+		if (isset($_SESSION['roles']) && is_array($_SESSION['roles'])) {
+			static::$roles = $_SESSION['roles'];
+		} else {
+			static::$roles = explode(' ', $_SESSION['roles'] ?? 'guest');
+		}
 	}
 
 	if (!is_array($role)) {

@@ -8,16 +8,17 @@
 $menu = [];
 $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 
-'api'=>['name'=>'API', 'design'=>'none', '/'=>[
+'api'=>['name'=>'API', '/'=>[
 	'yandex'=>['design'=>'yandex', '/'=>[
-		'%num'=>['virtual'=>1, '/'=>[
-			'cart'=>['log'=>201],
-			'order'=>['/'=>[
-				'accept'=>['log'=>205],
-				'status'=>['log'=>209],
-			]],
-			'stocks'=>['log'=>211],
-		]],
+//		'%num'=>['virtual'=>1, '/'=>[
+//			'cart'=>['log'=>201],
+//			'order'=>['/'=>[
+//				'accept'=>['log'=>205],
+//				'status'=>['log'=>209],
+//			]],
+//			'stocks'=>['log'=>211],
+//		]],
+		'notification'=>['log'=>220],
 	]],
 	'goods'=>['design'=>'goods', '/'=>[
 		'%num'=>['virtual'=>1, '/'=>[
@@ -26,6 +27,9 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 				'cancel'=>['log'=>508],
 			]],
 		]],
+	]],
+	'order'=>['design'=>'json', '/'=>[
+//		'order'
 	]],
 ]],
 
@@ -213,7 +217,7 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'img-fluid'=>['name'=>'Обновление картинок', 'role'=>'admin'],
 	'import-dyna'=>['name'=>'Импорт товаров динатона', 'role'=>'admin'],
 	'import-dyna-2'=>['name'=>'Обработка товаров динатона', 'role'=>'admin'],
-	'ip'=>['name'=>'IP', 'role'=>'admin', 'action'=>'IP', '/'=>[
+	'ip'=>['name'=>'IP', 'role'=>'admin', '/'=>[
 		'block'=>['name'=>'Блокировка', 'action'=>'Блокировка'],
 		'domain'=>['name'=>'Блокировка по домену', 'action'=>'Блок по имени'],
 	]],
@@ -221,18 +225,25 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 
 	'log'=>['name'=>'Логи', 'role'=>'log'],
 
+	'cabinet'=>['name'=>'Кабинеты', 'role'=>'cabinet', '/'=>[
+		'%num'=>[],
+	]],
 	'yml'=>['name'=>'Выгрузка YML', 'role'=>'yandex', '/'=>[
 		'%num'=>[],
 	]],
-	'ozon'=>['name'=>'Выгрузка Ozon', 'role'=>'ozon', '/'=>[
+	'ozon'=>['name'=>'Ozon', 'role'=>'ozon', '/'=>[
 		'%num'=>[],
 		'cron'=>['name'=>'Запуск планировщика'],
 		'test'=>['name'=>'Тест получения заказов Ozon'],
 	]],
-	'wildberries'=>['name'=>'Выгрузка Wildberries', 'role'=>'wildberries', '/'=>[
+	'wildberries'=>['name'=>'Wildberries', 'role'=>'wildberries', '/'=>[
 		'%num'=>[],
 		'cron'=>['name'=>'Запуск планировщика'],
 		'load'=>['name'=>'Загрузка номенклатуры', 'lib'=>'phpexcel'],
+	]],
+	'yandex'=>['name'=>'Яндекс', 'role'=>'yandex', '/'=>[
+		'token'=>['name'=>'Токен', 'action'=>'токен'],
+		'%num'=>[],
 	]],
 
 	'sync-check'=>['name'=>'Проверка синхронизации', 'role'=>'catalog'],

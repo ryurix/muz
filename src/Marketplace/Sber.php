@@ -109,7 +109,7 @@ class Sber
 		if ($row['typ'] == self::CONFIRM) {
 			$result = self::confirm($data['token'], $data['shipmentId'], $data['orderCode'], $data['offers']);
 			db_update('send_sber', ['state'=>1], ['i'=>$row['i']]);
-			return 'Заказ собран ('.\Flydom\Cache::array_encode($result).')';
+			return 'Заказ собран ('.\Flydom\Arrau::encode($result).')';
 		}
 	}
 } // Sber

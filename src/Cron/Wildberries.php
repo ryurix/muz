@@ -4,7 +4,7 @@ namespace Cron;
 
 use stdClass;
 
-// https://openapi.wb.ru/
+// https://openapi.wildberries.ru/
 
 class Wildberries extends Task {
 
@@ -40,7 +40,7 @@ class Wildberries extends Task {
 		return $back;
 	}
 
-	static function stock($form, $args, $con, $exclude, $per = 500) {
+	static function stock($form, $args, $con, $exclude, $per = 1000) {
 
 		$where = ['wb.client='.$con['user']];
 
@@ -159,14 +159,15 @@ class Wildberries extends Task {
 		}
 
 		if (count($rows)) {
-			$url = 'https://suppliers-api.wildberries.ru/api/v3/stocks/'.$con['storeId'];
+			$url = 'https://marketplace-api.wildberries.ru/api/v3/stocks/'.$con['storeId'];
 
 			$page = 0;
 			while ($page*$per < count($rows)) {
 				$post = array_slice($rows, $page*$per, $per);
+				if ($page) { sleep(1); }
 				$page++;
 
-				$payload = \Flydom\Cache::json_encode(['stocks'=>$post]);
+				$payload = \Flydom\Json::encode(['stocks'=>$post]);
 
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, $url);
@@ -213,7 +214,7 @@ class Wildberries extends Task {
 		return $back;
 	}
 
-	static function price($args, $con, $exclude, $per = 500) {
+	static function price($args, $con, $exclude, $per = 1000) {
 
 		$select = 'SELECT wb.*,store.price s_price,store.prices s_prices FROM wb LEFT JOIN store ON wb.store=store.i WHERE wb.client='.$con['user'];
 		//if (kv($args, 'price', 0)) { $select.= ' AND store.price >= '.$args['price']; }
@@ -289,16 +290,17 @@ class Wildberries extends Task {
 		$updated = 0;
 
 		if (count($rows)) {
-			//$url = 'https://suppliers-api.wildberries.ru/public/api/v1/prices';
-			$url = 'https://discounts-prices-api.wb.ru/api/v2/upload/task';
+			//$url = 'https://marketplace-api.wildberries.ru/public/api/v1/prices';
+			$url = 'https://discounts-prices-api.wildberries.ru/api/v2/upload/task';
 
 			$page = 0;
 
 			while ($page*$per < count($rows)) {
 				$post = array_slice($rows, $page*$per, $per, true);
+				if ($page) { sleep(1); }
 				$page++;
 
-				$payload = \Flydom\Cache::json_encode(['data'=>array_values($post)]);
+				$payload = \Flydom\Json::encode(['data'=>array_values($post)]);
 
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, $url);
@@ -351,10 +353,12 @@ class Wildberries extends Task {
 		return trim($back);
 	}
 
-	static function order_new($args) {
-
+	static function order_new($args)
+	{
 		global $config;
 		$con = $config['wildberries'][$args['client']];
+
+		\Flydom\Parallel::lock('wildberries-create');
 
 		$not_found = [];
 
@@ -362,7 +366,7 @@ class Wildberries extends Task {
 		$page = 0;
 		do {
 
-			$url = 'https://suppliers-api.wildberries.ru/api/v3/orders/new';
+			$url = 'https://marketplace-api.wildberries.ru/api/v3/orders/new';
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
@@ -416,7 +420,7 @@ class Wildberries extends Task {
 					$order['store'] = $store['i'];
 				} else {
 					// TODO: Логировать ошибку поиска товара
-					$not_found[] = \Flydom\Cache::php_encode($order);
+					$not_found[] = \Flydom\Cache::encode($order);
 					continue;
 				}
 
@@ -452,6 +456,8 @@ class Wildberries extends Task {
 			$error = ', не найдены товары: '.implode(', ', $not_found);
 		}
 
+		\Flydom\Parallel::unlock('wildberries-create');
+
 		return 'Загружено '.$count.' заказов'.$error;
 	}
 
@@ -470,9 +476,9 @@ class Wildberries extends Task {
 			$post = array_slice($orders, $page*$per, $per);
 			$page++;
 
-			$url = 'https://suppliers-api.wildberries.ru/api/v3/orders/status';
+			$url = 'https://marketplace-api.wildberries.ru/api/v3/orders/status';
 
-			$payload = \Flydom\Cache::json_encode(['orders'=>$post]);
+			$payload = \Flydom\Json::encode(['orders'=>$post]);
 
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);

@@ -13,6 +13,9 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 	if (is_user('roles')) {
 		$action[] = ['href'=>'/user/'.$row['i'].'/roles', 'action'=>'Роли'];
 	}
+	if (is_user('cabinet')) {
+		$action[] = ['href'=>'/setup/cabinet/'.$row['i'], 'action'=>'Кабинет'];
+	}
 	if ($sales) {
 		$action[] = array('href'=>'/user/'.$row['i'].'/sales', 'action'=>'Продажи');
 	}
@@ -25,7 +28,7 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 	if ($action == 'edit') {
 		$plan = w('plan-user');
 
-		$row['config'] = strlen($row['config'])  > 2 ? array_decode($row['config']) : array();
+		$row['config'] = strlen($row['config'] ?? '')  > 2 ? array_decode($row['config']) : array();
 		$row['vendor'] = isset($row['config']['vendor']) ? $row['config']['vendor'] : 0;
 
 		if (strlen($row['pay']) > 5) {

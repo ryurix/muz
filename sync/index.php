@@ -40,6 +40,7 @@ if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && is_user('sync'
 				'i'=>$sync['i'],
 			));
 			$block['body'] = 'Изменение имеющейся синхронизации! ('.$sync['i'].')';
+			\Flydom\Log::add(18, $plan['store']['value'], $code);
 		} else {
 			db_insert('sync', array(
 				'dt'=>now(),
@@ -53,6 +54,7 @@ if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && is_user('sync'
 			} else {
 				$block['body'] = 'Не синхронизировать: '.$name;
 			}
+			\Flydom\Log::add(17, $plan['store']['value'], $code);
 		}
 
 		db_insert('log', array(

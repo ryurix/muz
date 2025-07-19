@@ -31,7 +31,7 @@ foreach (['catalog', 'sync', 'sync_count', 'vendor', 'filter', 'subcat', 'brand'
 			<h3 class="basket_title">Маркетплейсы</h3>
 <?
 
-foreach (['yandex', 'ozon', 'wildberries'] as $i) {
+foreach (['cabinet', 'yandex', 'ozon', 'wildberries'] as $i) {
 	echo input_checkbox($plan[$i]);
 }
 
@@ -46,7 +46,7 @@ echo '<div>&nbsp;</div><div>'.input_button($plan['send']).'</div>';
 			<h3 class="basket_title">Сервис</h3>
 <?
 
-foreach (['users', 'admin', 'roles', 'setup', 'adres', 'menu', 'block', 'dict', 'spam', 'plan', 'log'] as $i) {
+foreach (['users', 'admin', 'roles', 'setup', 'adres', 'menu', 'block', 'dict', 'spam', 'plan', 'log', 'api'] as $i) {
 	echo input_checkbox($plan[$i]);
 }
 

@@ -41,7 +41,7 @@ if (strlen(Form::get('code')) && Form::get('code')) {
 }
 
 if (Form::get('send') == 2) {
-	$ids = \Db::fetchList("SELECT l.i FROM log l LEFT JOIN user u ON l.user=u.i $where");
+	$ids = \Db::fetchList("SELECT l.i FROM log l LEFT JOIN user u ON l.user=u.i $where LIMIT ".Form::get('max'));
 	if (count($ids)) {
 		\Db::query('DELETE FROM log WHERE i IN ('.implode(',', $ids).')');
 	}
@@ -71,7 +71,7 @@ $sum = Form::get('sum');
 
 $count = 0;
 
-$select = "SELECT l.i,l.dt, l.type, l.user, l.code, l.info, 1 cnt FROM log l $where ORDER BY l.i";
+$select = "SELECT l.i,l.dt, l.type, l.user, l.code, l.info, 1 cnt FROM log l $where ORDER BY l.i LIMIT ".Form::get('max');
 
 $data = [];
 

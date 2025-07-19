@@ -11,9 +11,7 @@
 /**
  * Logs to an Array backend.
  *
- * @package    Swift
- * @subpackage Transport
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_Plugins_Loggers_ArrayLogger implements Swift_Plugins_Logger
 {
@@ -22,23 +20,23 @@ class Swift_Plugins_Loggers_ArrayLogger implements Swift_Plugins_Logger
      *
      * @var array
      */
-    private $_log = array();
+    private $log = [];
 
     /**
      * Max size of the log.
      *
      * @var int
      */
-    private $_size = 0;
+    private $size = 0;
 
     /**
      * Create a new ArrayLogger with a maximum of $size entries.
      *
-     * @var int $size
+     * @var int
      */
     public function __construct($size = 50)
     {
-        $this->_size = $size;
+        $this->size = $size;
     }
 
     /**
@@ -48,9 +46,9 @@ class Swift_Plugins_Loggers_ArrayLogger implements Swift_Plugins_Logger
      */
     public function add($entry)
     {
-        $this->_log[] = $entry;
-        while (count($this->_log) > $this->_size) {
-            array_shift($this->_log);
+        $this->log[] = $entry;
+        while (\count($this->log) > $this->size) {
+            array_shift($this->log);
         }
     }
 
@@ -59,7 +57,7 @@ class Swift_Plugins_Loggers_ArrayLogger implements Swift_Plugins_Logger
      */
     public function clear()
     {
-        $this->_log = array();
+        $this->log = [];
     }
 
     /**
@@ -69,6 +67,6 @@ class Swift_Plugins_Loggers_ArrayLogger implements Swift_Plugins_Logger
      */
     public function dump()
     {
-        return implode(PHP_EOL, $this->_log);
+        return implode(PHP_EOL, $this->log);
     }
 }

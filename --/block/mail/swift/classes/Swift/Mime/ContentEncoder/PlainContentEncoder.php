@@ -11,9 +11,11 @@
 /**
  * Handles binary/7/8-bit Transfer Encoding in Swift Mailer.
  *
- * @package    Swift
- * @subpackage Mime
- * @author     Chris Corbyn
+ * When sending 8-bit content over SMTP, you should use
+ * Swift_Transport_Esmtp_EightBitMimeHandler to enable the 8BITMIME SMTP
+ * extension.
+ *
+ * @author Chris Corbyn
  */
 class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_ContentEncoder
 {
@@ -22,69 +24,67 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
      *
      * @var string
      */
-    private $_name;
+    private $name;
 
     /**
      * True if canonical transformations should be done.
      *
-     * @var boolean
+     * @var bool
      */
-    private $_canonical;
+    private $canonical;
 
     /**
      * Creates a new PlainContentEncoder with $name (probably 7bit or 8bit).
      *
-     * @param string  $name
-     * @param boolean $canonical If canonicalization transformation should be done.
+     * @param string $name
+     * @param bool   $canonical if canonicalization transformation should be done
      */
     public function __construct($name, $canonical = false)
     {
-        $this->_name = $name;
-        $this->_canonical = $canonical;
+        $this->name = $name;
+        $this->canonical = $canonical;
     }
 
     /**
      * Encode a given string to produce an encoded string.
      *
-     * @param string  $string
-     * @param integer $firstLineOffset ignored
-     * @param integer $maxLineLength   - 0 means no wrapping will occur
+     * @param string $string
+     * @param int    $firstLineOffset ignored
+     * @param int    $maxLineLength   - 0 means no wrapping will occur
      *
      * @return string
      */
     public function encodeString($string, $firstLineOffset = 0, $maxLineLength = 0)
     {
-        if ($this->_canonical) {
-            $string = $this->_canonicalize($string);
+        if ($this->canonical) {
+            $string = $this->canonicalize($string);
         }
 
-        return $this->_safeWordWrap($string, $maxLineLength, "\r\n");
+        return $this->safeWordwrap($string, $maxLineLength, "\r\n");
     }
 
     /**
      * Encode stream $in to stream $out.
      *
-     * @param Swift_OutputByteStream $os
-     * @param Swift_InputByteStream  $is
-     * @param integer                $firstLineOffset ignored
-     * @param integer                $maxLineLength   optional, 0 means no wrapping will occur
+     * @param int $firstLineOffset ignored
+     * @param int $maxLineLength   optional, 0 means no wrapping will occur
      */
     public function encodeByteStream(Swift_OutputByteStream $os, Swift_InputByteStream $is, $firstLineOffset = 0, $maxLineLength = 0)
     {
         $leftOver = '';
         while (false !== $bytes = $os->read(8192)) {
-            $toencode = $leftOver . $bytes;
-            if ($this->_canonical) {
-                $toencode = $this->_canonicalize($toencode);
+            $toencode = $leftOver.$bytes;
+            if ($this->canonical) {
+                $toencode = $this->canonicalize($toencode);
             }
-            $wrapped = $this->_safeWordWrap($toencode, $maxLineLength, "\r\n");
+            $wrapped = $this->safeWordwrap($toencode, $maxLineLength, "\r\n");
             $lastLinePos = strrpos($wrapped, "\r\n");
             $leftOver = substr($wrapped, $lastLinePos);
             $wrapped = substr($wrapped, 0, $lastLinePos);
 
             $is->write($wrapped);
         }
-        if (strlen($leftOver)) {
+        if (\strlen($leftOver)) {
             $is->write($leftOver);
         }
     }
@@ -96,7 +96,7 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
      */
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
@@ -106,18 +106,16 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
     {
     }
 
-    // -- Private methods
-
     /**
      * A safer (but weaker) wordwrap for unicode.
      *
-     * @param string  $string
-     * @param integer $length
-     * @param string  $le
+     * @param string $string
+     * @param int    $length
+     * @param string $le
      *
      * @return string
      */
-    private function _safeWordwrap($string, $length = 75, $le = "\r\n")
+    private function safeWordwrap($string, $length = 75, $le = "\r\n")
     {
         if (0 >= $length) {
             return $string;
@@ -125,22 +123,21 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
 
         $originalLines = explode($le, $string);
 
-        $lines = array();
+        $lines = [];
         $lineCount = 0;
 
         foreach ($originalLines as $originalLine) {
             $lines[] = '';
-            $currentLine =& $lines[$lineCount++];
+            $currentLine = &$lines[$lineCount++];
 
             //$chunks = preg_split('/(?<=[\ \t,\.!\?\-&\+\/])/', $originalLine);
             $chunks = preg_split('/(?<=\s)/', $originalLine);
 
             foreach ($chunks as $chunk) {
-                if (0 != strlen($currentLine)
-                    && strlen($currentLine . $chunk) > $length)
-                {
+                if (0 != \strlen($currentLine)
+                    && \strlen($currentLine.$chunk) > $length) {
                     $lines[] = '';
-                    $currentLine =& $lines[$lineCount++];
+                    $currentLine = &$lines[$lineCount++];
                 }
                 $currentLine .= $chunk;
             }
@@ -156,11 +153,11 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder implements Swift_Mime_Conten
      *
      * @return string
      */
-    private function _canonicalize($string)
+    private function canonicalize($string)
     {
         return str_replace(
-            array("\r\n", "\r", "\n"),
-            array("\n", "\n", "\r\n"),
+            ["\r\n", "\r", "\n"],
+            ["\n", "\n", "\r\n"],
             $string
             );
     }

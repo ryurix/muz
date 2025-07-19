@@ -13,21 +13,18 @@ if ($code) {
 }
 
 if (!$row) {
-	$row = array(
+	$row = [
 		'i'=>0,
-		'typ'=>20,
+		'typ'=>\Type\Cron::WILDBERRIES,
+		'form'=>1,
 		'name'=>'Новая выгрузка',
 		'dt'=>now() + 24*60*60,
 		'every'=>86400,
 		'data'=>'',
-	);
+	];
 }
 
 $config['name'] = $row['name'];
-
-$data = array_decode($row['data']);
-$data['name'] = $row['name'];
-$data['every'] = $row['every'];
 
 $forms = array(
 	1=>'Выгрузка количества',
@@ -36,6 +33,9 @@ $forms = array(
 	20=>'Получение заказов',
     25=>'Отмена заказов',
 );
+
+$form = isset($_REQUEST['form']) && isset($forms[$_REQUEST['form']]) ? $_REQUEST['form'] : $row['form'];
+$data = $row + array_decode($row['data']);
 
 $others = array(0=>'');
 $q = db_query('SELECT * FROM cron WHERE typ=20 AND i<>'.$row['i'].' ORDER BY name');
@@ -116,44 +116,38 @@ if ($plan['form']['value'] == 3) { // Для выгрузки цен отклю�
 	unset($plan['force']['values'][1]);
 }
 
-if ($plan['']['valid']) {
-	$data = array(
-		'time'=>$plan['time']['value'],
-		'week'=>$plan['week']['value'],
+if ($plan['']['valid'])
+{
+	$new = [
+		'typ'=>\Type\Cron::WILDBERRIES,
 		'form'=>$plan['form']['value'],
-		'client'=>$plan['client']['value'],
-		'type'=>$plan['type']['value'],
-
-		'price'=>isset($plan['price']) ? $plan['price']['value'] : 0,
-		'min'=>isset($plan['min']) ? $plan['min']['value'] : 0,
-		'minus'=>isset($plan['minus']) ? $plan['minus']['value'] : 0,
-		'force'=>isset($plan['force']) ? $plan['force']['value'] : 0,
-		'vendor'=>isset($plan['vendor']) ? $plan['vendor']['value'] : 0,
-
-		'follow'=>$plan['follow']['value'],
-		'exclude'=>$plan['exclude']['value'],
-		'test'=>$plan['test']['value'],
-	);
-
-	$new = array(
-		'typ'=>20,
 		'name'=>$plan['name']['value'],
 		'info'=>'',
+		'dt'=>now() + $plan['every']['value'],
 		'every'=>$plan['every']['value'],
-		'data'=>array_encode($data),
-	);
+		'time'=>$plan['time']['value'],
+		'week'=>\Flydom\Arrau::encode($plan['week']['value']),
+		'follow'=>\Flydom\Arrau::encode($plan['follow']['value']),
+	];
 
-	$new['dt'] = \Cron\Task::next($new, $data);
+	$data = [];
+	foreach ($plan as $k=>$v) {
+		if (empty($k) || isset($new[$k]) || $k === 'send') { continue; }
+		$data[$k] = $v['value'];
+	}
+
+	$new['data'] = array_encode($data);
+	$new['dt'] = \Cron\Task::next($new);
 
 	if ($plan['send']['value'] == 1) {
 		if ($row['i']) {
 			db_update('cron', $new, ['i'=>$row['i']]);
 			alert('Выгрузка сохранена');
-			redirect('/setup/wildberries');
+//			redirect('/setup/wildberries');
 		} else {
 			db_insert('cron', $new);
 			alert('Выгрузка создана!');
-			redirect('/setup/wildberries');
+//			redirect('/setup/wildberries');
 		}
 	}
 

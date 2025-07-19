@@ -4,6 +4,13 @@ namespace Cron;
 
 class Yml extends Task {
 
+	const YANDEX = 0;
+	const YANDEX_COUNT = 1;
+	const YANDEX_COUNT_FULL = 2;
+	const GOODS = 10;
+	const CDEK = 20;
+	const DYNATONE = 30;
+
 	static function calc_barcode($code) {
 		$a = str_pad($code, 7, 0, STR_PAD_LEFT);
 		$sum1 = ($a[0]+$a[2]+$a[4]+$a[6])*3;
@@ -27,24 +34,12 @@ class Yml extends Task {
 		}
 	}
 
-	public static function run($data) {
-
-		global $config;
-
-		if (strlen($data['form']) <= 2) {
-			switch($data['form']) {
-				case 0: $data['form'] = 'yandex'; break;
-				case 1: $data['form'] = 'yandex+count'; break;
-				case 10: $data['form'] = 'goods'; break;
-				case 20: $data['form'] = 'cdek'; break;
-			}
-		}
-
+	public static function run($data)
+	{
 		$city = $data['city'];
 		w('load-speeds');
 		$speeds = w('speed-yandex');
-
-		$filename = $config['root'].'files/'.$data['filename'];
+		$filename = \Config::ROOT.'files/'.$data['filename'];
 		$f = fopen($filename, 'w+');
 
 		$site = $data['site'];
@@ -57,7 +52,7 @@ class Yml extends Task {
 		<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
 		<yml_catalog date="'.date('Y-m-d\TH:i+03:00', now()-2*60*60).'">
 			<shop>
-				<name>'.$config['title'].'</name>
+				<name>'.\Config::TITLE.'</name>
 				<company>ООО "КАЙРОС"</company>
 				<url>https://'.$site.'</url>
 				<currencies>
@@ -66,7 +61,7 @@ class Yml extends Task {
 				<categories>
 		');
 
-		$pathway = cache_load('pathway'); // $config['pathway'];
+		$pathway = cache_load('pathway');
 		$andNotHidden = ' AND up IN ('.implode(',', array_keys($pathway)).')';
 		$list = array();
 		$catalog = cache_load('catalog');
@@ -93,7 +88,7 @@ class Yml extends Task {
 		}
 
 		$dt = now() - 30*24*60*60;
-		if ($data['form'] == 'dynatone') {
+		if ($data['form'] == self::DYNATONE) {
 			$select = 'SELECT store.*,ven.count,dyna.pic dpic,dyna.pics dpics,dyna.info dinfo,dyna.size FROM dyna,store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE store.i=dyna.store AND hide<=0'.$andNotHidden;
 		} else {
 			$select = 'SELECT store.*,ven.count FROM store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE hide<=0'.$andNotHidden;
@@ -132,11 +127,11 @@ class Yml extends Task {
 			$brand = htmlspecialchars($brands[$i['brand']]);
 			$i['count'] = max(0, $i['count'] - kv($data, 'minus', 0) - kv($reserve, $i['i'], 0));
 			$available = $i['count'] ? 'true' : 'false';
-			$offer_id = $data['form'] == 'goods' ? $i['i'] : 'М'.$i['i'];
+			$offer_id = $data['form'] == self::GOODS ? $i['i'] : 'М'.$i['i'];
 			if (strlen($i['model']) && strlen($brand)) {
 				$name = $brand.' '.$i['model'].' '.$i['name'];
 
-				if ($data['form'] != 'yandex+count') {
+				if ($data['form'] != self::YANDEX_COUNT) {
 					fwrite($f, '<offer id="'.$offer_id.'" type="vendor.model" available="'.$available.'">'."\n");
 				} else {
 					fwrite($f, '<offer id="'.$offer_id.'" available="'.$available.'">'."\n");
@@ -144,25 +139,25 @@ class Yml extends Task {
 		//		fwrite($f, '<vendorCode>'.htmlspecialchars($i['model']).'</vendorCode>'."\n";
 				fwrite($f, '<vendor>'.$brand.'</vendor>'."\n");
 
-				if (strpos($data['form'], '+fullmodel') !== false) {
+				if ($data['form'] == self::YANDEX_COUNT_FULL) {
 					fwrite($f, '<model>'.htmlspecialchars($name).'</model>'."\n");
-				} elseif ($data['form'] != 'cdek') {
+				} elseif ($data['form'] != self::CDEK) {
 					fwrite($f, '<model>'.htmlspecialchars($i['model']).'</model>'."\n");
 				}
 
-				if ($data['form'] == 'goods') {
+				if ($data['form'] == self::GOODS) {
 					fwrite($f, '<name>'.htmlspecialchars($name).'</name>'."\n");
 				}
 
 			} else {
 				$name = trim($brand.' '.(strlen($i['model']) ? $i['model'].' ' : '').$i['name']);
 				fwrite($f, '<offer id="'.$offer_id.'" available="'.$available.'">'."\n");
-				if ($data['form'] != 'cdek') {
+				if ($data['form'] != self::CDEK) {
 					fwrite($f, '<name>'.htmlspecialchars($name).'</name>'."\n");
 				}
 			}
 
-			if ($data['form'] == 'cdek') {
+			if ($data['form'] == self::CDEK) {
 				fwrite($f, '<model>'.htmlspecialchars($name).'</model>'."\n");
 			}
 
@@ -174,10 +169,10 @@ class Yml extends Task {
 			if (strlen($i['pic'])) {
 				fwrite($f, '<picture>https://'.$site.$i['pic'].'</picture>'."\n");
 			}
-			if ($data['form'] != 'cdek') {
+			if ($data['form'] != self::CDEK) {
 				fwrite($f, '<typePrefix>'.htmlspecialchars($i['name']).'</typePrefix>'."\n");
 			}
-			if ($data['form'] == 'dynatone') {
+			if ($data['form'] == self::DYNATONE) {
 				fwrite($f, '<description>'.htmlspecialchars(html_entity_decode($i['dinfo'])).'</description>'."\n");
 				fwrite($f, '<pic>https://'.$site.$i['dpic'].'</pic>'."\n");
 				$pics = array_decode($i['dpics']);
@@ -200,19 +195,19 @@ class Yml extends Task {
 			fwrite($f, '<delivery>true</delivery>'."\n");
 
 			fwrite($f, '<vat>NO_VAT</vat>'."\n");
-			if ($data['form'] == 'goods') {
+			if ($data['form'] == self::GOODS) {
 				fwrite($f, '<shop-sku>М'.$i['i'].'</shop-sku>'."\n"); // shop-sku устарел для яндекса
 			}
 			fwrite($f, '<barcode>'.self::calc_barcode($i['i']).'</barcode>'."\n");
-			if ($data['form'] == 'goods') { // Гудс
+			if ($data['form'] == self::GOODS) { // Гудс
 				fwrite($f, '<outlets><outlet id="1" instock="'.$i['count'].'" /></outlets>'."\n");
 			}
-			if (strpos($data['form'], '+count') !== false) { // Яндекс + количество
+			if ($data['form'] == self::YANDEX_COUNT || $data['form'] == self::YANDEX_COUNT_FULL) { // Яндекс + количество
 				fwrite($f, '<count>'.$i['count'].'</count>'."\n");
 				fwrite($f, '<manufacturer>'.$brand.'</manufacturer>'."\n");
 				fwrite($f, '<country_of_origin>Китай</country_of_origin>'."\n");
 			}
-			if ($data['form'] == 'goods') {
+			if ($data['form'] == self::GOODS) {
 				fwrite($f, '<count>'.$i['count'].'</count>'."\n");
 			}
 

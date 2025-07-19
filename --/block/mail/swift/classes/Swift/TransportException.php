@@ -11,9 +11,7 @@
 /**
  * TransportException thrown when an error occurs in the Transport subsystem.
  *
- * @package    Swift
- * @subpackage Transport
- * @author     Chris Corbyn
+ * @author Chris Corbyn
  */
 class Swift_TransportException extends Swift_IoException
 {
@@ -21,9 +19,10 @@ class Swift_TransportException extends Swift_IoException
      * Create a new TransportException with $message.
      *
      * @param string $message
+     * @param int    $code
      */
-    public function __construct($message)
+    public function __construct($message, $code = 0, Exception $previous = null)
     {
-        parent::__construct($message);
+        parent::__construct($message, $code, $previous);
     }
 }

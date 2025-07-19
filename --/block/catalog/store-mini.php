@@ -4,7 +4,7 @@ w('gtm');
 
 function store_mini($i) {
 	$name = $i['brand'];
-	if (strlen($i['model'])) {
+	if (!empty($i['model'])) {
 		$name.= ' '.$i['model'];
 	}
 	$name.= ' '.$i['name'];
@@ -12,7 +12,7 @@ function store_mini($i) {
 	$alt = 'alt="'.htmlspecialchars($name).'" title="'.htmlspecialchars($name).'"';
 
 	$href = '/store/'.$i['url'];
-	$img = strlen($i['icon']) > 0 ? $i['icon'] : '/design/img/no-photo-s.png';
+	$img = !empty($i['icon'])? $i['icon'] : '/design/img/no-photo-s.png';
 	if ($i['price'] > 0) {
 		$buy = 'купить';
 		$price = '<p class="catalog_price">'.number_format($i['price'], 0, '.', ' ').'</p>';
@@ -67,5 +67,3 @@ function store_mini($i) {
 	return $s;
 
 }
-
-?>

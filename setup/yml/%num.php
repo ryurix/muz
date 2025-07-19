@@ -25,27 +25,17 @@ if (!$row) {
 
 $config['name'] = $row['name'];
 
-$data = array_decode($row['data']);
-$data['name'] = $row['name'];
-$data['every'] = $row['every'];
-
-if (strlen($data['form']) <= 2) {
-	switch($data['form']) {
-		case 0: $data['form'] = 'yandex'; break;
-		case 1: $data['form'] = 'yandex+count'; break;
-		case 10: $data['form'] = 'goods'; break;
-		case 20: $data['form'] = 'cdek'; break;
-	}
-}
-
 $forms = array(
-	'yandex'=>'Яндекс',
-	'yandex+count'=>'Яндекс+количество',
-	'yandex+count+fullmodel'=>'Яндекс+количество (полное наименование в model)',
-	'goods'=>'Гудс',
-	'cdek'=>'СДЕК',
-	'dynatone'=>'Яндекс+динатон',
+	\Cron\Yml::YANDEX => 'Яндекс',
+	\Cron\Yml::YANDEX_COUNT => 'Яндекс+количество',
+	\Cron\Yml::YANDEX_COUNT_FULL => 'Яндекс+количество (полное наименование в model)',
+	\Cron\Yml::GOODS => 'Гудс',
+	\Cron\Yml::CDEK => 'СДЕК',
+	\Cron\Yml::DYNATONE => 'Динатон',
 );
+
+$form = isset($_REQUEST['form']) && isset($forms[$_REQUEST['form']]) ? $_REQUEST['form'] : $row['form'];
+$data = $row + array_decode($row['data']);
 
 $plan = array(
 	''=>array('default'=>$data),
@@ -74,32 +64,28 @@ if ($plan['send']['value'] == 3) {
 	redirect('.');
 }
 
-if ($plan['']['valid']) {
-
-	$data = [
-		'time'=>$plan['time']['value'],
-		'week'=>$plan['week']['value'],
-		'form'=>$plan['form']['value'],
-		'filename'=>$plan['filename']['value'],
-		'min'=>$plan['min']['value'],
-		'minus'=>$plan['minus']['value'],
-		'type'=>$plan['type']['value'],
-		'price'=>$plan['price']['value'],
-		'price2'=>$plan['price2']['value'],
-		'site'=>$plan['site']['value'],
-		'city'=>$plan['city']['value'],
-		'vendor'=>$plan['vendor']['value'],
-	];
-
+if ($plan['']['valid'])
+{
 	$new = [
-		'typ'=>1,
+		'typ'=>\Type\Cron::YML,
+		'form'=>$plan['form']['value'],
 		'name'=>$plan['name']['value'],
-		'info'=>'<a href="/files/'.$data['filename'].'">'.$data['filename'].'</a>',
+		'info'=>'',
+		'dt'=>now() + $plan['every']['value'],
 		'every'=>$plan['every']['value'],
-		'data'=>array_encode($data),
+		'time'=>$plan['time']['value'],
+		'week'=>\Flydom\Arrau::encode($plan['week']['value']),
+		'follow'=>\Flydom\Arrau::encode($plan['follow']['value']),
 	];
 
-	$new['dt'] = \Cron\Task::next($new, $data);
+	$data = [];
+	foreach ($plan as $k=>$v) {
+		if (empty($k) || isset($new[$k]) || $k === 'send') { continue; }
+		$data[$k] = $v['value'];
+	}
+
+	$new['data'] = array_encode($data);
+	$new['dt'] = \Cron\Task::next($new);
 
 	if ($plan['send']['value'] == 1) {
 

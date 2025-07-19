@@ -24,7 +24,7 @@ if (!function_exists('geoloc')) {
 
 // Город по домену
 $sites = cache_load('site');
-$site = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'] ?? '';
+$site = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'] ?? '';
 $site = array_search($site, $sites);
 if (!$site) { $site = 34; } // По умолчанию Москва
 if ($site != 34 || isset($_REQUEST['msk'])) { $_SESSION['cire'] = $site; } // Перенаправление по домену
