@@ -22,6 +22,7 @@ class Table extends \Flydom\Table\Sql
 		return '';
 	}
 
+
 	protected static function cell($code, $pos, $row) {
 		switch ($code) {
 			case 'i':
@@ -30,7 +31,7 @@ class Table extends \Flydom\Table\Sql
 			case 'usr':
 				return '<td><a href="/user/'.$row[0].'">'.$row[$pos].'</a></td>';
 			case 'type':
-				return '<td><a href="/setup/'.\Cabinet\Type::setup($row[$pos]).'">'.\Cabinet\Type::name($row[$pos]).'</a></td>';
+				return '<td><a href="/setup/'.\Cabinet\Type::setup($row[$pos]).'?usr='.$row[0].'">'.\Cabinet\Type::name($row[$pos]).'</a></td>';
 			default:
 				return '<td>'.$row[$pos].'</td>';
 		}

@@ -1,0 +1,32 @@
+<h3>Подключение</h3>
+<p>Подключаться следует на адрес сайта, например: <?= \Config::DOMAIN ?>/api/order, можно использовать GET или POST запросы.</p>
+<h3>Авторизация</h3>
+<p>Для авторизации нужно передавать в заголовке запроса параметр Authorization со значением Bearer &lt;token&gt;</p>
+<p>Пример: Authorization: Bearer nokiosqgondsqb2021358s6u75de6ibs</p>
+<p>Текущие валидные токены:</p>
+<?
+
+$keys = \Db::fetchAll('SELECT * FROM session WHERE usr='.\User::id());
+foreach ($keys as $i) {
+	\Flydom\Alert::warning($i['id']);
+}
+
+w('alert');
+
+?>
+
+<h3>Получение токена через API</h3>
+<p><b>/api/token</b></p>
+<p>Для получения токена необходимо передать POST запрос с логином (_login) и паролем (_password) пользователя. Пример:</p>
+<pre>
+POST <?= \Config::DOMAIN ?>/api/token
+Content-Type: application/x-www-form-urlencoded
+
+_login=user@mail.ru&_password=1234567
+</pre>
+<p>Пользователь должен иметь право на доступ к API и разделам к которым будут делаться запросы.</p>
+<p>Время жизни токена не ограничено. Но если пользователь изменится &mdash; его токены будут сброшены.</p>
+
+<h3>Получение последнего необработанного заказа</h3>
+<p><b>/api/order</b></p>
+<p>В ответе будет json закаа.<p>

@@ -13,7 +13,7 @@ $rows = db_fetch_all('SELECT * FROM cron WHERE every>0 AND dt<'.now().' ORDER BY
 
 foreach ($rows as $cron) {
 
-	$data = \Flydom\Arrau::decode($cron['data']);
+	$data = $cron + \Flydom\Arrau::decode($cron['data']);
 
 	$info = \Cron\Task::execute($cron, $data);
 

@@ -2,15 +2,12 @@
 
 $plan = w('plan-user');
 $plan['color']['default'] = 0;
-if (!is_user('admin')) {
-	$plan['roles'] = array('type'=>'hidden', 'value'=>'');
-} else {
-//	$plan['roles']['value'] = array();
-}
+$plan['roles'] = array('type'=>'hidden', 'value'=>'');
+$plan['vendor']['values'] = [0=>''] + $plan['vendor']['values'];
+$plan['vendor']['default'] = 0;
 
 w('request', $plan);
 $plan['pay']['ul'] = $plan['ul']['value'];
-unset($plan['ul']);
 
 if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	w('search');

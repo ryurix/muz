@@ -51,18 +51,7 @@ foreach ($config['wildberries'] as $k=>$v) {
 $plan = [
 	''=>array('default'=>$data),
 	'name'=>array('name'=>'Название', 'type'=>'line', 'min'=>3),
-	'every'=>array('name'=>'Период', 'type'=>'combo', 'values'=>[
-		0=>'Не запускать автоматически',
-		1=>'Ежедневно по расписанию',
-		300=>'5 мин',
-		600=>'10 мин',
-		1800=>'30 мин',
-		3600=>'1 час',
-		28800=>'8 часов',
-		64800=>'18 часов',
-		86400=>'1 день',
-		259200=>'3 дня'
-	], 'default'=>0),
+	'every'=>array('name'=>'Период', 'type'=>'combo', 'values'=>\Form\Cron::EVERY, 'default'=>0),
 
 	'time'=>array('name'=>'Время запуска', 'type'=>'time', 'default'=>0),
 	'week'=>array('name'=>'Дни недели', 'type'=>'multich', 'values'=>array(1=>'пн', 2=>'вт', 3=>'ср', 4=>'чт', 5=>'пт', 6=>'сб', 7=>'вс'), 'placeholder'=>'ежедневно'),

@@ -15,15 +15,12 @@ Form::plan([
 	]),
 	'art'=>new \Flydom\Input\Integer('Колонка артикула поставщика', 1),
 	'code'=>new \Flydom\Input\Integer('Колонка штрихкода', 1),
-	'send'=>new \Flydom\Input\Button([
-		'codes'=>1,
-		1=>'Импорт'
-	])
+	'send'=>new \Flydom\Input\Button('', ['import'=>'Импорт'])
 ]);
 Form::method('POST');
 Form::parse();
 
-if (Form::isValid() && Form::get('send') == 1) {
+if (Form::isValid() && Form::get('send') == 'import') {
 
 	$file = Form::get('file');
 	$filename = Form::field('file')->filename();

@@ -13,8 +13,15 @@ $plan = [
 	'user'=>['name'=>'Пользователь', 'type'=>'line'],
 	'code'=>['name'=>'Код', 'type'=>'integer'],
 	'max'=>['name'=>'Максимум записей', 'type'=>'integer', 'default'=>100],
-	'sum' =>['label'=>'Суммировать одинаковые', 'type'=>'checkbox', 'default'=>true],
-	'send'=>['type'=>'button', 'codes'=>2, 1=>'Фильтровать', 2=>'Удалить', 'class'=>[2=>'btn-danger'], 'confirm'=>[2=>'Удалить записи лога? Восстановление невозможно!']],
+	'sum' =>new \Flydom\Input\Checkbox('Суммировать одинаковые', true),
+	'send'=>new \Flydom\Input\Button('', [
+		'refresh'=>'Обновить',
+		'delete'=>[
+			'name'=>'Удалить',
+			'class'=>'btn-danger',
+			'confirm'=>'Удалить записи лога? Восстановление невозможно!'
+		]
+	]),
 ];
 
 
@@ -40,7 +47,7 @@ if (strlen(Form::get('code')) && Form::get('code')) {
 	$where.= ' AND l.code='.Form::get('code');
 }
 
-if (Form::get('send') == 2) {
+if (Form::get('send') == 'delete') {
 	$ids = \Db::fetchList("SELECT l.i FROM log l LEFT JOIN user u ON l.user=u.i $where LIMIT ".Form::get('max'));
 	if (count($ids)) {
 		\Db::query('DELETE FROM log WHERE i IN ('.implode(',', $ids).')');

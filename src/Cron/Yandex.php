@@ -64,7 +64,10 @@ class Yandex extends Task {
 		return json_decode($result, true);
 	}
 
-	public static function run($args) {
+	public static function run($args)
+	{
+		$args+= $args + \Cabinet\Model::load($args['usr']);
+
 		if ($args['form'] == 3) {
 			return self::orders($args);
 		}
@@ -77,28 +80,51 @@ class Yandex extends Task {
 		return 'Неизвестный формат: '.($args['form'] ?? '');
 	}
 
-	static function orders($args) {
+	static function orders($args)
+	{
+		$result = '';
 		$data = ['status'=>['CANCELLED', 'PROCESSING', 'UNPAID']];
-		$resp = self::get('/campaigns/'.$args['campaignId'].'/orders', $args, $data);
-		static::ordersProcess($resp['orders'], $args['user']);
+		$resp = self::get('/campaigns/'.$args['campaign'].'/orders', $args, $data);
+		$result.= static::ordersProcess($resp['orders'], $args['usr']);
 
 		if (is_array($resp['orders'])) {
-			while (count($resp['orders']) >= 50) {
+			while (isset($resp['paging']['nextPageToken'])) {
 				$data['page_token'] = $resp['paging']['nextPageToken'];
-				$resp = self::get('/campaigns/'.$args['campaignId'].'/orders', $args, $data);
+				$resp = self::get('/campaigns/'.$args['campaign'].'/orders', $args, $data);
 
-				static::ordersProcess($resp['orders'], $args['user']);
+				$result.= static::ordersProcess($resp['orders'], $args['usr']);
 			}
 		}
+
+		return self::resultDecode($result);
+	}
+
+	protected static function resultDecode($result) {
+		$count = [];
+		foreach (str_split($result) as $i) {
+			$count[$i] = isset($count[$i]) ? $count[$i] + 1 : 1;
+		}
+
+		$info = [];
+		foreach ($count as $k=>$v) {
+			switch ($k) {
+				case '+': $info[] = 'создано '.$v; break;
+				case '-': $info[] = 'отменено '.$v; break;
+				case '=': $info[] = 'в работу '.$v; break;
+			}
+		}
+
+		return implode(', ', $info);
 	}
 
 	protected static function ordersProcess($orders, $user) {
+		$result = '';
 		foreach ($orders as $o) {
 			if ($o['status'] == 'CANCELLED') {
-				static::orderCancel($o, $user);
+				$result.= static::orderCancel($o, $user);
 			} elseif ($o['status'] == 'UNPAID') {
 				if (!\Db::result(\Db::select('*', 'orst', ['mpi'=>$o['id']]))) {
-					static::orderCreate($o, $user, 0);
+					$result.= static::orderCreate($o, $user, 0);
 				}
 			} elseif ($o['status'] == 'PROCESSING') {
 				$rows = \Db::fetchAll(\Db::select('*', 'orst', ['mpi'=>$o['id']]));
@@ -110,11 +136,13 @@ class Yandex extends Task {
 						if ($order->getState() == 0) {
 							$order->setState(1);
 							$order->save();
+							$result.= '=';
 						}
 					}
 				}
 			}
 		}
+		return $result;
 	}
 
 	protected static function orderCreate($order, $user, $state = 0) {
@@ -122,6 +150,7 @@ class Yandex extends Task {
 //		foreach ($order['items'] as $i) {
 //			$items[\Flydom\Clean::uint($i['offerId'])] = $i;
 //		}
+		$result = '';
 
 		$mark = \Db::fetchRow('SELECT mark,mark2 FROM user WHERE i='.$user);
 		$mark = ','.trim($mark['mark'].','.$mark['mark2'], ',').',';
@@ -147,20 +176,27 @@ class Yandex extends Task {
 				'mpdt'=>\Flydom\Time::parse($delivery['shipments'][0]['shipmentDate']),
 			]);
 			$order->create();
+			$result.= '+';
 		}
+
+		return $result;
 	}
 
 	protected static function orderCancel($order, $user) {
+		$result = '';
 		$ids = \Db::fetchList('SELECT i FROM orst WHERE state<30 AND user='.$user.' AND mpi='.$order['id']);
 		foreach ($ids as $i) {
 			$order = new \Model\Order($i);
 			$order->setState(35);
 			$order->save();
+			$result.= '-';
 		}
+
+		return $result;
 	}
 
 	static function zero($args) {
-		self::post('/campaigns/'.$args['campaignId'].'/hidden-offers', $args);
+		self::post('/campaigns/'.$args['campaign'].'/hidden-offers', $args);
 	}
 
 	static function urldata($data) {
@@ -253,7 +289,7 @@ class Yandex extends Task {
 				return 'Ошибка: в базе не найдены товары для выгрузки ('.count($chunk).')';
 			}
 
-			$result = self::put('/campaigns/'.$args['campaignId'].'/offers/stocks', $args, $data);
+			$result = self::put('/campaigns/'.$args['campaign'].'/offers/stocks', $args, $data);
 
 			if (($result['status'] ?? '') != 'OK') {
 				\Flydom\Log::add(213, 0, \Flydom\Arrau::encode($result));
@@ -277,7 +313,7 @@ class Yandex extends Task {
 		$params = ['limit'=>$limit];
 
 		do {
-			$url = '/campaigns/'.$args['campaignId'].'/offers/stocks?'.static::urldata($params);
+			$url = '/campaigns/'.$args['campaign'].'/offers/stocks?'.static::urldata($params);
 
 			if (isset($param['page_token'])) { usleep(100); }
 

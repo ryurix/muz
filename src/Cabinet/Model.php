@@ -14,11 +14,12 @@ class Model
 
 		if (is_null($row)) { return null; }
 
-		return $row + \Flydom\Arrau::decode($row['data']);
+		return \Flydom\Arrau::exclude($row, 'data') + \Flydom\Arrau::decode($row['data']);
 	}
 
 	static function load($user) {
 		self::$row = self::_load($user);
+		return self::$row;
 	}
 
 	static function defaults() {

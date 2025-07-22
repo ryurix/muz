@@ -45,14 +45,13 @@ while ($i = db_fetch($q)) {
 $plan = [
 	''=>['default'=>$data],
 	'name'=>['name'=>'Название', 'type'=>'line', 'min'=>3],
+	'usr'=>['name'=>'Кабинет', 'type'=>'combo', 'values'=>\Cabinet\Model::list(\Type\Cron::YANDEX)],
 	'form'=>['name'=>'Формат', 'type'=>'combo', 'values'=>$forms, 'default'=>$form],
-	'every'=>['name'=>'Период', 'type'=>'combo', 'values'=>[0=>'Не запускать автоматически', 1=>'Ежедневно по расписанию', 3600=>'1 час', 28800=>'8 часов', 64800=>'18 часов', 86400=>'1 день', 259200=>'3 дня'], 'default'=>0],
+	'every'=>['name'=>'Период', 'type'=>'combo', 'values'=>\Form\Cron::EVERY, 'default'=>0],
 	'time'=>['name'=>'Время запуска', 'type'=>'time', 'default'=>0],
 	'week'=>['name'=>'Дни недели', 'type'=>'multich', 'values'=>[1=>'пн', 2=>'вт', 3=>'ср', 4=>'чт', 5=>'пт', 6=>'сб', 7=>'вс'], 'placeholder'=>'ежедневно'],
 
-	'key'=>['name'=>'Ключ API', 'type'=>'line', 'default'=>'', 'min'=>1],
-	'token'=>['name'=>'Токен Авторизации', 'type'=>'line', 'default'=>'', 'min'=>1],
-	'campaignId'=>['name'=>'ID Магазина', 'type'=>'line', 'default'=>'', 'min'=>1],
+
 
 //	'price'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
 
@@ -63,10 +62,6 @@ $plan = [
 
 //	'follow'=>array('name'=>'Следующая', 'type'=>'multich', 'values'=>$others, 'default'=>array(), 'placeholder'=>'Выберите выгрузку...'),
 ];
-
-if ($form == 3) {
-	$plan['user'] = ['name'=>'Пользователь', 'type'=>'int', 'default'=>0, 'min'=>1];
-}
 
 if ($form == 11) {
 	$plan['min'] = ['name'=>'Мин. количество', 'type'=>'int', 'default'=>0];
@@ -89,6 +84,7 @@ if ($plan['send']['value'] == 3) {
 if ($plan['']['valid']) {
 	$new = [
 		'typ'=>\Type\Cron::YANDEX,
+		'usr'=>$plan['usr']['value'],
 		'form'=>$plan['form']['value'],
 		'name'=>$plan['name']['value'],
 		'info'=>'',

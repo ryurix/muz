@@ -55,7 +55,7 @@ class Form extends \Flydom\Form\Box
 				break;
 		}
 
-		$plan['send'] = new \Flydom\Input\Button('', ['save'=>'Сохранить']);
+		$plan['send'] = new \Flydom\Input\Button('', ['save'=>'Сохранить', 'delete'=>['name'=>'Удалить', 'confirm'=>'Удалить кабинет?']]);
 		return $plan;
 	}
 }

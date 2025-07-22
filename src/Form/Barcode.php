@@ -15,10 +15,7 @@ static function start($default = [])
 	\Flydom\Form\Modal::setTitle('Штрихкод');
 	\Flydom\Form\Modal::plan([
 		'code'=>new \Flydom\Input\Line(['id'=>'autofocus']),
-		'send'=>new \Flydom\Input\Button([
-			'codes'=>[5],
-			5=>'Сохранить'
-		])
+		'send'=>new \Flydom\Input\Button('', 'Сохранить')
 	], $default);
 
 	\Flydom\Form\Modal::parse();
@@ -28,7 +25,7 @@ static function start($default = [])
 		exit;
 	}
 
-	if (self::send() == 5) {
+	if (self::send() == 'send') {
 		$code = explode(',', self::code());
 		$code = array_map('trim', $code);
 		\Db::update('store', ['code'=>\Flydom\Arrau::encodec($code)], ['i'=>$store]);

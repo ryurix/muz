@@ -74,8 +74,8 @@ if ($plan['']['valid']) {
 
 	$new['dt'] = \Cron\Task::next($new, $data);
 
-	if ($plan['send']['value'] == 1) {
-
+	if ($plan['send']['value'] == 1)
+	{
 		if ($row['i']) {
 			db_update('cron', $new, array('i'=>$row['i']));
 			alert('Задача сохранена');
@@ -87,9 +87,9 @@ if ($plan['']['valid']) {
 		}
 	}
 
-	if ($plan['send']['value'] == 2) {
-
-		$info = \Cron\Task::execute($row, $data);
+	if ($plan['send']['value'] == 2)
+	{
+		$info = \Cron\Task::execute($new);
 
 		alert('Задача выполнена: '.$info);
 		if ($row['i']) {

@@ -1,0 +1,11 @@
+<?
+
+\Flydom\Log::add(220, $args);
+
+echo json_encode(
+	[
+		'version'=>'1.0.0',
+		'name'=>'muzmart',
+		'time'=>date('c', \Config::now())
+	]
+);

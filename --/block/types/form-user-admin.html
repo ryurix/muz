@@ -12,7 +12,7 @@
 				<p class="basket_titleinput">Пароль</p>
 				<? echo input_line($args['pass1']); ?>
 			</label>
-<? if (is_user('roles')) { ?>
+<? if ($args['roles']['type'] != 'hidden' && is_user('roles')) { ?>
 			<label>
 				<p class="basket_titleinput"><a href="/user/<?= $args['']['default']['i'] ?>/roles" class="btn btn-default">Роли</a></p>
 			</label>

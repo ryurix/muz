@@ -3,7 +3,7 @@
 /* not send */
 $exclude = ['/^custom$/', 'files', 'cache', 'design/logo.png', 'config.php'
 	, 'doc/template', 'design/brands', 'design/catalog', 'design/images'
-	,'/^config.inc$/', '/^cgi-bin$/', '/^user.anonymous.json$'
+	,'/^config.inc$/', '/^cgi-bin$/', '/^user.anonymous.json$/'
 	, '/[^\\/]+\\[/', '/^_.*$/', '/^\\.htaccess$/' , '/^https.*$/'
 	, '/^https.inc$/', '/\\.cw\\.dat$/', '/\\.cw127\\.php$/', '/\\.mtx\\.php$/', '/\\.sql\\.gz/'
 ];

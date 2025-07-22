@@ -70,13 +70,3 @@ if ($old < $new) { // обработка заказа маркетплейсам
 		w('ozon-update-state', $dummy);
 	}
 }
-
-/*
-if ($old < $new && ($new == 30 || $new == 35)) { // Заказ закрыт или отменён
-	if (isset($args['user']) && isset($args['mpi']) && strlen($args['mpi'])) {
-		// Посылаем сообщение в яндекс о закрытии или отмене заказа если все позиции закрыты
-		$dummy = $args;
-		w('yandex-update-state', $dummy);
-	}
-}
-*/
