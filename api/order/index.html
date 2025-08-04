@@ -1,34 +1,5 @@
 <?
 
-function array_keyvalue($array) {
-	$a = [];
-	foreach ($array as $k=>$v) {
-		$a[] = [
-			'key'=>$k,
-			'value'=>$v
-		];
-	}
-	return $a;
-}
-
 $order = \Db::fetchRow('SELECT * FROM orst WHERE state=1 ORDER BY i DESC');
-$order['dt'] = \Flydom\Time::date($order['dt']);
-$order['last'] = \Flydom\Time::date($order['last']);
-$order['mpdt'] = \Flydom\Time::date($order['mpdt']);
 
-$mark = array_flip(explode(',', trim($order['mark'], ',')));
-$mark = array_intersect_key(\Flydom\Cache::get('mark-name'), $mark);
-$order['mark'] = array_keyvalue($mark);
-
-$cire = array_intersect_key(\Flydom\Cache::get('city'), [$order['cire'] => 0]);
-$order['region'] = array_keyvalue($cire);
-
-$vendors = \Flydom\Cache::get('vendor');
-$sync = db_fetch_all('SELECT name,dt,vendor,price,opt,count FROM sync WHERE store='.$order['store'].' ORDER BY count DESC');
-foreach ($sync as $k=>$v) {
-	$sync[$k]['dt'] = \Flydom\Time::date($v['dt']);
-	$sync[$k]['vendor'] = $vendors[$v['vendor']] ?? $v['vendor'];
-}
-$order['sync'] = $sync;
-
-echo \Flydom\Json::encode($order);
+echo \Order\Api::json($order);

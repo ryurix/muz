@@ -41,7 +41,7 @@ while ($i = db_fetch($q)) {
 $plan = [
 	''=>array('default'=>$data),
 	'name'=>array('name'=>'Название', 'type'=>'line', 'min'=>3),
-	'every'=>array('name'=>'Период', 'type'=>'combo', 'values'=>array(0=>'Не запускать автоматически', 1=>'Ежедневно по расписанию', 60=>'1 минута', 120=>'2 минуты', 300=>'5 минут', 3600=>'1 час', 28800=>'8 часов', 64800=>'18 часов', 86400=>'1 день', 259200=>'3 дня'), 'default'=>0),
+	'every'=>array('name'=>'Период', 'type'=>'combo', 'values'=>\Form\Cron::EVERY, 'default'=>0),
 	'time'=>array('name'=>'Время запуска', 'type'=>'time', 'default'=>0),
 	'week'=>array('name'=>'Дни недели', 'type'=>'multich', 'values'=>array(1=>'пн', 2=>'вт', 3=>'ср', 4=>'чт', 5=>'пт', 6=>'сб', 7=>'вс'), 'placeholder'=>'ежедневно'),
 	'typ'=>['name'=>'Тип', 'type'=>'combo', 'values'=>$types],

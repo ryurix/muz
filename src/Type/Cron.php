@@ -42,7 +42,7 @@ class Cron extends \Flydom\Type\Cron
 		self::MAIL => [ 'name'=>'Рассылка', 'class'=>'\Cron\Mail::run', ],
 		self::SESSION => [ 'name'=>'Очистка сессий', 'class'=>'\Cron\Session::run', ],
 		self::OZON => [ 'name'=>'Озон обработка заказов', 'class'=>'\Cron\Ozon::run', ],
-		self::LOG => ['name'=>'Очистка логов', 'class'=>'\Flydom\Cron\Log::run'],
+		self::LOG => ['name'=>'Очистка логов', 'class'=>'\Cron\Log::run'],
 	];
 
 } // CronType

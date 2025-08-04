@@ -25,20 +25,17 @@ if ($count) {
 .',s.price price'
 .',b.name brand'
 .' FROM store s,brand b WHERE s.i in ('.implode(',', array_keys($basket)).') AND s.brand=b.i';
-	$q = db_query($select);
 
-	if (is_bool($q)) {
-		cache_set('basket-select-error', $select);
-	} else {
-		while ($i = db_fetch($q)) {
-			$i['c'] = $basket[$i['i']];
-			$count+= $i['c'];
+	$rows = \Db::fetchAll($select);
 
-			$name = strlen($i['model']) > 0 ? $i['brand'].' '.$i['model'].' '.$i['name'] : $i['brand'].' '.$i['name'];
-			$i['fullname'] = $name;
+	foreach ($rows as $i) {
+		$i['c'] = $basket[$i['i']];
+		$count+= $i['c'];
 
-			$basket2[$i['i']] = $i;
-		}
+		$name = strlen($i['model']) > 0 ? $i['brand'].' '.$i['model'].' '.$i['name'] : $i['brand'].' '.$i['name'];
+		$i['fullname'] = $name;
+
+		$basket2[$i['i']] = $i;
 	}
 }
 

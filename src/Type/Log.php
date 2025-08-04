@@ -68,6 +68,8 @@ const DATA = parent::DATA + [
 	425=>['name'=>'Wildberries отмена заказов', 'days'=>31],
 	501=>['name'=>'Goods API /new', 'days'=>31],
 	508=>['name'=>'Goods API /cancel', 'days'=>31],
+	601=>['name'=>'API: добавление в заказ', 'days'=>31],
+	602=>['name'=>'API: изменение заказа', 'days'=>31],
 ];
 
 } // Log

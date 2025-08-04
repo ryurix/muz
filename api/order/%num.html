@@ -1,0 +1,12 @@
+<?php
+
+$id = $config['args'][0];
+
+$row = \Db::fetchRow(\Db::select('*', 'orst', ['i'=>$id]));
+
+if (!is_array($row)) {
+	echo 'order not found: '.$id;
+	exit;
+}
+
+echo \Order\Api::json($row);

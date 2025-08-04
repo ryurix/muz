@@ -526,6 +526,7 @@ $orst = array();
 while ($i = db_fetch($q)) {
 	$orst[$i['i']] = $i;
 }
+db_close($q);
 
 function short_values(&$plan, $key, $data, $default, $multi = false) {
 	$values = $plan[$key]['values'];

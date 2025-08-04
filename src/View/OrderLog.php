@@ -5,7 +5,7 @@ namespace View;
 class OrderLog {
 
 static function echo($order) {
-	$rows = \Db::fetchAll(\Db::select('log.dt,log.type,log.info,user,user.name', 'log LEFT JOIN user ON log.user=user.i', ['log.type>=100', 'log.type<200', 'log.code'=>$order], 'ORDER BY log.dt'));
+	$rows = \Db::fetchAll(\Db::select('log.dt,log.type,log.info,user,user.name', 'log LEFT JOIN user ON log.user=user.i', ['log.type>=100', 'log.code'=>$order], 'ORDER BY log.dt'));
 
 	foreach ($rows as $i) {
 		$type = $i['type'];

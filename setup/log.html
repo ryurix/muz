@@ -47,10 +47,18 @@ if (strlen(Form::get('code')) && Form::get('code')) {
 	$where.= ' AND l.code='.Form::get('code');
 }
 
+$select = "SELECT l.dt, l.type, l.user, l.code, l.info, 1 cnt FROM log l $where ORDER BY l.dt LIMIT ".Form::get('max');
+
 if (Form::get('send') == 'delete') {
-	$ids = \Db::fetchList("SELECT l.i FROM log l LEFT JOIN user u ON l.user=u.i $where LIMIT ".Form::get('max'));
-	if (count($ids)) {
-		\Db::query('DELETE FROM log WHERE i IN ('.implode(',', $ids).')');
+
+	$rows = \Db::fetchAll($select);
+	foreach ($rows as $i) {
+		\Db::delete('log', [
+			'dt'=>$i['dt'],
+			'type'=>$i['type'],
+			'user'=>$i['user'],
+			'code'=>$i['code']
+		]);
 	}
 }
 
@@ -60,7 +68,6 @@ $sum = Form::get('sum');
 <table class="table table-bordered table-striped">
 <thead>
 	<tr>
-		<th>#</th>
 		<th>Дата</th>
 		<th>Тип</th>
 		<th>User</th>
@@ -77,8 +84,6 @@ $sum = Form::get('sum');
 <?
 
 $count = 0;
-
-$select = "SELECT l.i,l.dt, l.type, l.user, l.code, l.info, 1 cnt FROM log l $where ORDER BY l.i LIMIT ".Form::get('max');
 
 $data = [];
 
@@ -97,7 +102,6 @@ foreach ($data as $i) {
 	$count++;
 	echo '
 <tr>
-	<td>'.$i['i'].'</td>
 	<td>'.\Flydom\Time::dateTime($i['dt']).'</td>
 	<td>'.(isset($type[$i['type']]) ? $type[$i['type']] : '').'</td>
 	<td>'.$i['user'].'</td>

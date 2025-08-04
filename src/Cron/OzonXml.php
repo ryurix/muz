@@ -319,6 +319,7 @@ class OzonXml extends Task {
 			$items = array_merge($items, $chunk);
 		} while (count($chunk) == $post['limit']);
 
+		$pids = [];
 		foreach ($items as $i) {
 			$id = mb_substr($i['offer_id'], 1);
 			if (!is_09($id)) {

@@ -143,7 +143,7 @@ if ($plan['']['valid'])
 	if ($plan['send']['value'] == 2) {
 
 		$info = \Cron\Task::execute($new, $data);
-		$info.= \Cron\Task::follow($data['follow']);
+		$info.= \Cron\Task::follow($new['follow']);
 
 		alert('Выгрузка выполнена! '.$info);
 		if ($row['i']) {

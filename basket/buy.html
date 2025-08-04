@@ -4,12 +4,7 @@ if (isset($_REQUEST['i'])) {
 	$new = $_REQUEST['i'];
 	$count = isset($_REQUEST['c']) && is_numeric($_REQUEST['c']) ? $_REQUEST['c'] : 1;
 
-	db_insert('log', array(
-		'type'=>21,
-		'dt'=>now(),
-		'user'=>$_SESSION['i'],
-		'info'=>$new,
-	));
+	\Flydom\Log::add(21, 0, $new);
 
 	if (isset($_SESSION['basket'])) {
 		$basket = $_SESSION['basket'];

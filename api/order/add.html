@@ -1,0 +1,46 @@
+<?php
+
+header('Content-Type: application/json');
+
+$args = file_get_contents('php://input');
+
+$json = \Flydom\Json::decode(\Flydom\Json::fix($args));
+
+$id = $json['id'] ?? 0;
+
+$row = \Db::fetchRow(\Db::select('*', 'orst', ['i'=>$id]));
+
+if (!is_array($row)) {
+	echo '"order not found: '.$id.' ('.$args.' '.\Flydom\Cache::encode($_REQUEST).')"';
+	exit;
+}
+
+$update = [];
+
+if (isset($json['info'])) {
+	$info = $row['info'];
+	$update['info'] = empty($info) ? $json['info'] : $info.' '.$json['info'];
+}
+
+if (isset($json['note'])) {
+	$note = $row['note'];
+	$update['note'] = empty($note) ? $json['note'] : $note.' '.$json['note'];
+}
+
+if (isset($json['mark'])) {
+	$mark = \Flydom\Arrau::decodec($row['mark']);
+	$mark[] = \Flydom\Clean::int($row['mark']);
+	$update['mark'] = \Flydom\Arrau::encodec($mark);
+}
+
+if (count($update)) {
+	foreach ($update as $k=>$v) {
+		\Flydom\Log::add(601, $row['i'], $k.': '.$json[$k]);
+	}
+	$update['last'] = \Config::now();
+	\Db::update('orst', $update, ['i'=>$id]);
+	echo '"ok"';
+	exit;
+}
+
+echo '"no data"';

@@ -34,8 +34,6 @@ class Ozon extends Task {
 
 	public static function create() {
 
-		\Flydom\Parallel::lock('ozon-create');
-
 		$count = 0;
 
 		$data = self::list('awaiting_packaging');
@@ -81,8 +79,6 @@ class Ozon extends Task {
 				$count++;
 			}
 		}
-
-		\Flydom\Parallel::unlock('ozon-create');
 
 		return $count;
 	}
