@@ -10,7 +10,7 @@ static function echo($order) {
 	foreach ($rows as $i) {
 		$type = $i['type'];
 		$info = \Type\Log::name($type);
-		echo '<p>'.\Flydom\Time::dateTime($i['dt']).' '.$i['name'].': '.$info.'</p>';
+		echo '<p>'.\Flydom\Time::dateTime($i['dt']).' '.$i['name'].': '.$info.' '.$i['info'].'</p>';
 	}
 }
 

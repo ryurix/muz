@@ -1,5 +1,39 @@
 <?
 
-$order = \Db::fetchRow('SELECT * FROM orst WHERE state=1 ORDER BY i DESC');
+use \Flydom\Form\Form;
 
-echo \Order\Api::json($order);
+Form::plan([
+	'mark'=>new \Flydom\Input\Integer(),
+	'limit'=>new \Flydom\Input\Integer(null, 1),
+	'state'=>new \Flydom\Input\Integer(null, 1),
+	'staff'=>new \Flydom\Input\Integer(),
+	'vendor'=>new \Flydom\Input\Integer(),
+	'user'=>new \Flydom\Input\Integer(),
+]);
+
+Form::parse();
+
+$where = ['state'=>Form::get('state')];
+
+$mark = Form::get('mark');
+if ($mark !== '') { $where[] = 'mark LIKE "%,'.$mark.',%"'; }
+
+$staff = Form::get('staff');
+if ($staff !== '') { $where['staff'] = $staff; }
+
+$vendor = Form::get('vendor');
+if ($vendor !== '') { $where['vendor'] = $vendor; }
+
+$user = Form::get('user');
+if ($user !== '') { $where['user'] = $user; }
+
+$orders = \Db::fetchAll(\Db::select('*', 'orst', $where, 'ORDER BY i DESC LIMIT '.Form::get("limit")));
+
+$first = true;
+echo '[';
+foreach ($orders as $o) {
+	if (!$first) { echo "\n,\n"; }
+	echo \Order\Api::json($o);
+	$first = false;
+}
+echo ']';

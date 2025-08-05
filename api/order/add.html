@@ -29,7 +29,7 @@ if (isset($json['note'])) {
 
 if (isset($json['mark'])) {
 	$mark = \Flydom\Arrau::decodec($row['mark']);
-	$mark[] = \Flydom\Clean::int($row['mark']);
+	$mark[] = \Flydom\Clean::int($json['mark']);
 	$update['mark'] = \Flydom\Arrau::encodec($mark);
 }
 

@@ -6,7 +6,7 @@ $args = file_get_contents('php://input');
 
 $json = \Flydom\Json::decode(\Flydom\Json::fix($args));
 
-$id = $json['id'] ?? 0;
+$id = \Flydom\Clean::int($json['id'] ?? 0);
 
 $row = \Db::fetchRow(\Db::select('*', 'orst', ['i'=>$id]));
 
@@ -15,34 +15,40 @@ if (!is_array($row)) {
 	exit;
 }
 
+$order = new \Model\Order($id);
+
 $update = [];
 
 if (isset($json['staff'])) {
-	$update['staff'] = \Flydom\Clean::int($json['staff']);
+	$update['staff'] = 1;
+	$order->setStaff(\Flydom\Clean::int($json['staff']));
 }
 
 if (isset($json['state'])) {
-	$update['state'] = \Flydom\Clean::int($json['state']);
+	$update['state'] = 1;
+	$order->setState(\Flydom\Clean::int($json['state']));
 }
 
 if (isset($json['vendor'])) {
-	$update['vendor'] = \Flydom\Clean::int($json['vendor']);
+	$update['vendor'] = 1;
+	$order->setVendor(\Flydom\Clean::int($json['vendor']));
 }
 
 if (isset($json['info'])) {
-	$update['info'] = $json['info'];
+	$update['info'] = 1;
+	$order->setInfo($json['info']);
 }
 
 if (isset($json['note'])) {
-	$update['note'] = $json['note'];
+	$update['note'] = 1;
+	$order->setNote($json['note']);
 }
 
 if (count($update)) {
 	foreach ($update as $k=>$v) {
 		\Flydom\Log::add(602, $row['i'], $k.': '.$row[$k]);
 	}
-	$update['last'] = \Config::now();
-	\Db::update('orst', $update, ['i'=>$id]);
+	$order->save();
 	echo '"ok"';
 	exit;
 }
