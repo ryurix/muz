@@ -1,8 +1,8 @@
 <?
 
-namespace Model;
+namespace Order;
 
-class Order {
+class Model {
 
 	protected $row;
 	protected $orig;

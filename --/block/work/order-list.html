@@ -459,7 +459,7 @@ if ((is_user('link') || $filter_user)
 		if ($plan['cstate']['value'] && $plan['cstate']['value'] != $i['state']) {
 			// db_update('orst', array('state'=>$plan['cstate']['value'], 'last'=>$plan['cstate']['value'] < 30 || $i['state'] < 30 ? now() : $i['last']), array('i'=>$i['i'], 'state>0'));
 
-			$order = new \Model\Order($i);
+			$order = new \Order\Model($i);
 			$order->setState($plan['cstate']['value']);
 			$order->update();
 

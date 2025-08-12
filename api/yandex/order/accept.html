@@ -72,7 +72,7 @@ $ids = [];
 foreach ($items as $k=>$item) {
 	$row = kv($rows, $k, []);
 
-	$ids = array_merge($ids, (new \Model\Order([
+	$ids = array_merge($ids, (new \Order\Model([
 		'user'=>$user,
 		'staff'=>null,
 		'state'=>0,

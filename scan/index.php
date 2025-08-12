@@ -46,22 +46,21 @@ if (strlen($scan)) {
 		} elseif ($store['state'] == 1) {
 			$sound = 'first';
 		} elseif ($store['state'] == 2 || $store['state'] == 3) {
-			$sount = 'state2-3';
+			$sound = 'state2-3';
+		} elseif ($store['state'] == 35) {
+			$sound = 'cancel';
 		} else {
-			$sklad = array_keys(w('list-sklad'));
-			if (in_array($store['vendor'], $sklad)) {
-				$sound = $store['count'] > 1 ? 'sklad2' : 'sklad';
+			$complex = $store['complex'] ? \Db::result(\Db::select('COUNT(*)', 'complex', ['up'=>$store['complex']], 'GROUP BY up')) : 0;
+
+			if ($complex > 1) {
+				$sound = 'complex2';
 			} else {
-				if ($store['state'] == 7) {
-					$sound = 'state7';
+				$sklad = array_keys(w('list-sklad'));
+				if (in_array($store['vendor'], $sklad)) {
+					$sound = $store['count'] > 1 ? 'sklad2' : 'sklad';
 				} else {
-					if ($store['complex']) {
-						$complex = \Db::result(\Db::select('COUNT(*)', 'complex', ['up'=>$store['complex']], 'GROUP BY up'));
-					} else {
-						$complex = 0;
-					}
-					if ($complex > 1) {
-						$sound = 'complex2';
+					if ($store['state'] == 7) {
+						$sound = 'state7';
 					} else {
 						$sound = $store['count'] > 1 ? 'info2' : 'info';
 					}
@@ -87,7 +86,7 @@ if (strlen($scan)) {
 			if (is_array($store)) { // это товар в заказе
 				if (!empty($store['orst_i'])) {
 					$sound = 'success';
-					$order = new \Model\Order($store['orst_i']);
+					$order = new \Order\Model($store['orst_i']);
 					if ($order->getState() < 27) {
 						$order->setState(27);
 						$order->save();

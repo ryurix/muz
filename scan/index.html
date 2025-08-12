@@ -26,6 +26,7 @@ function onSuccess(data) {
 	if (data.indexOf('-complex2-') >= 0) { playSound('complex2.mp3'); }
 	if (data.indexOf('-first-') >= 0) { playSound('first.mp3'); }
 	if (data.indexOf('-state2-3-') >= 0) { playSound('state2-3.mp3'); }
+	if (data.indexOf('-cancel-') >= 0) { playSound('cancel.mp3'); }
 
 	$('#result').html(data);
 	$('#scan').val('').focus();

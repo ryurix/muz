@@ -22,7 +22,7 @@ if (isset($_REQUEST['append']) && isset($_SESSION['basket']) && is_array($_SESSI
 			if ($user['mark']) { $mark[] = $user['mark']; }
 			if ($user['mark2']) { $mark[] = $user['mark2']; }
 
-			$ids = (new \Model\Order([
+			$ids = (new \Order\Model([
 				'user'=>$args,
 				'staff'=>$_SESSION['i'],
 				'cire'=>$user['cire'],

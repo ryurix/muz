@@ -74,7 +74,7 @@ foreach ($config['ozon'] as $user=>$ozon) {
             $exists = db_result('SELECT COUNT(*) FROM orst WHERE '.implode(' AND ', $where));
             if ($exists) { continue; }
 
-			(new \Model\Order([
+			(new \Order\Model([
                 'user'=>$user,
                 'cire'=>34,
                 'city'=>'', // Адрес?

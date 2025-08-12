@@ -57,7 +57,7 @@ if ($order['status'] == 'CANCELLED') {
 
     foreach ($orst as $row)
 	{
-		$order = new \Model\Order($row);
+		$order = new \Order\Model($row);
 		$order->setState(35);
 		$order->update();
     }

@@ -55,7 +55,7 @@ class Ozon extends Task {
 				$mark = db_get_row('SELECT mark,mark2 FROM user WHERE i='.$order['user']);
 				$mark = $mark ? ','.trim($mark['mark'].','.$mark['mark2'], ',').',' : '';
 
-				(new \Model\Order([
+				(new \Order\Model([
 					'user'=>$order['user'],
 					'staff'=>null,
 					'cire'=>34,
@@ -115,7 +115,7 @@ class Ozon extends Task {
 					$count+= count($ids);
 
 					foreach ($ids as $id) {
-						$o = new \Model\Order($id);
+						$o = new \Order\Model($id);
 						$o->setState(35);
 						$o->update();
 					}

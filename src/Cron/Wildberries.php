@@ -425,7 +425,7 @@ class Wildberries extends Task {
 				}
 
 				$count++;
-				(new \Model\Order([
+				(new \Order\Model([
 					'dt'=>now(),
 					'last'=>now(),
 					'user'=>$user,
@@ -511,7 +511,7 @@ class Wildberries extends Task {
 
 				foreach ($found as $orst) {
 
-					$order = new \Model\Order($orst);
+					$order = new \Order\Model($orst);
 					$order->setState(35);
 					$order->update();
 

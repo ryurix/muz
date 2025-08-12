@@ -11,7 +11,7 @@ foreach ($shipments as $shipment) {
 
     foreach ($orst as $row)
 	{
-		$order = new \Model\Order($row);
+		$order = new \Order\Model($row);
 		$order->setState(35);
 		$order->update();
     }

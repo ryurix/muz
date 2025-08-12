@@ -132,7 +132,7 @@ class Yandex extends Task {
 					static::orderCreate($o, $user, 1);
 				} else {
 					foreach ($rows as $i) {
-						$order = new \Model\Order($i);
+						$order = new \Order\Model($i);
 						if ($order->getState() == 0) {
 							$order->setState(1);
 							$order->save();
@@ -157,7 +157,7 @@ class Yandex extends Task {
 
 		$delivery = $order['delivery'];
 		foreach ($order['items'] as $i) {
-			$order = new \Model\Order([
+			$order = new \Order\Model([
 				'user'=>$user,
 				'staff'=>null,
 				'state'=>$state,
@@ -186,7 +186,7 @@ class Yandex extends Task {
 		$result = '';
 		$ids = \Db::fetchList('SELECT i FROM orst WHERE state<30 AND user='.$user.' AND mpi='.$order['id']);
 		foreach ($ids as $i) {
-			$order = new \Model\Order($i);
+			$order = new \Order\Model($i);
 			$order->setState(35);
 			$order->save();
 			$result.= '-';

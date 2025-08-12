@@ -1,9 +1,9 @@
 <?
 
-$order = new \Model\Order($config['args'][0]);
+$order = new \Order\Model($config['args'][0]);
 
 if (is_user('ones') && $order->getStaff() != $_SESSION['i']) {
-	$order = new \Model\Order();
+	$order = new \Order\Model();
 }
 
 $root = '/order';
