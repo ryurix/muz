@@ -382,8 +382,25 @@ foreach ($filter as $k=>$f) {
 
 $price2 = 0;
 
-$q = db_query($select);
-while ($i = db_fetch($q)) {
+$mem = new Memcached();
+$mem->addServer('localhost', 11211);
+$key = 'catalog-'.md5($select);
+
+$rows = $mem->get($key);
+if ($rows == FALSE && \Flydom\Parallel::locked($key)) {
+	\Flydom\Parallel::lock($key);
+	$rows = $mem->get($key);
+	\Flydom\Parallel::unlock($key);
+}
+
+if ($rows == FALSE) {
+	\Flydom\Parallel::lock($key);
+	$rows = \Db::fetchAll($select);
+	$mem->set($key, $rows, 15);
+	\Flydom\Parallel::unlock($key);
+}
+
+foreach ($rows as $i) {
 	$price2 = max($price2, $i['price']);
 	if ($get['max']['value'] && $get['max']['value'] < $i['price']) {
 		continue;
@@ -454,7 +471,6 @@ while ($i = db_fetch($q)) {
 		$store[$i['i']] = $i;
 	}
 }
-db_close($q);
 
 $limit = $get['per']['value'] ?? $get['per']['default'];
 $max = ceil(count($store) / $limit);

@@ -30,9 +30,10 @@ class Api {
 
 		$vendors = \Flydom\Cache::get('vendor');
 		$sync = db_fetch_all('SELECT name,dt,vendor,price,opt,count FROM sync WHERE store='.$order['store'].' ORDER BY count DESC');
+
 		foreach ($sync as $k=>$v) {
 			$sync[$k]['dt'] = \Flydom\Time::date($v['dt']);
-			$sync[$k]['vendor'] = $vendors[$v['vendor']] ?? $v['vendor'];
+			$sync[$k]['vendor_name'] = $vendors[$v['vendor']] ?? $v['vendor'];
 		}
 		$order['sync'] = $sync;
 
