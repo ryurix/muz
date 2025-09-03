@@ -382,23 +382,7 @@ foreach ($filter as $k=>$f) {
 
 $price2 = 0;
 
-$mem = new Memcached();
-$mem->addServer('localhost', 11211);
-$key = 'catalog-'.md5($select);
-
-$rows = $mem->get($key);
-if ($rows == FALSE && \Flydom\Parallel::locked($key)) {
-	\Flydom\Parallel::lock($key);
-	$rows = $mem->get($key);
-	\Flydom\Parallel::unlock($key);
-}
-
-if ($rows == FALSE) {
-	\Flydom\Parallel::lock($key);
-	$rows = \Db::fetchAll($select);
-	$mem->set($key, $rows, 15);
-	\Flydom\Parallel::unlock($key);
-}
+$rows = \Flydom\Memcached::fetchAll($select);
 
 foreach ($rows as $i) {
 	$price2 = max($price2, $i['price']);
