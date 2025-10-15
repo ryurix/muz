@@ -259,7 +259,7 @@ class Yandex extends Task {
 				$vendor = '';
 			}
 
-			$dt = now() - 30*24*60*60;
+			$dt = \Config::now() - 30*24*60*60;
 			$select = 'SELECT store.i,ven.count FROM store LEFT JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE '.implode(' AND ', $where);
 
 			$data = ['skus'=>[]];

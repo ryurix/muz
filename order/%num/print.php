@@ -34,16 +34,16 @@ $select = 'SELECT orst.i i'
 .' FROM orst'
 .' LEFT JOIN user ON orst.user=user.i'
 .' LEFT JOIN user s ON orst.staff=s.i'
-.' WHERE orst.i="'.$config['args'][0].'"';
+.' WHERE orst.i="'.\Page::arg().'"';
 
 $q = db_query($select);
 $root = '/order';
 
-//alert($select);
+//\Flydom\Alert::warning($select);
 
 if ($row = db_fetch($q)) {
 	w('ft');
-	$config['name'] = 'Заказ №'.$row['i'].' от '.ft($row['dt'], 1).' &mdash; '.ft($row['last'], 1);
+	\Page::name('Заказ №'.$row['i'].' от '.ft($row['dt'], 1).' &mdash; '.ft($row['last'], 1));
 	$config['row'] = $row;
 
 	$docs = \Type\Doc::NAMES;
@@ -75,7 +75,7 @@ if ($row = db_fetch($q)) {
 
 		w('keys');
 		$key = key_next('doc'.$type);
-		$dt = now();
+		$dt = \Config::now();
 		$city = cache_load('city');
 
 		$data = array(
@@ -178,12 +178,12 @@ if ($row = db_fetch($q)) {
 				$q = db_query('SELECT * FROM orst WHERE i IN ('.implode(',', $orst).')');
 				while ($i = db_fetch($q)) {
 					if ($i['state'] == 1) {
-						db_query('UPDATE orst SET state=3, last='.now().' WHERE i='.$i['i']);
+						db_query('UPDATE orst SET state=3, last='.\Config::now().' WHERE i='.$i['i']);
 						db_query('UPDATE sync SET count=count-'.$i['count']
 							.' WHERE vendor='.$i['vendor'].' AND store='.$i['store']);
 						db_query('UPDATE store SET count=count-'.$i['count']
 							.' WHERE vendor='.$i['vendor'].' AND i='.$i['store']);
-						alert('Количество товара '.$i['name'].' на складе уменьшено на '.$i['count']);
+						\Flydom\Alert::warning('Количество товара '.$i['name'].' на складе уменьшено на '.$i['count']);
 					}
 				}
 			}
@@ -203,7 +203,7 @@ if ($row = db_fetch($q)) {
 
 			$id = db_insert_id();
 
-			alert('Документ сформирован: <a href="/doc/'.$id.'" target="_BLANK">'.$name.'</a>');
+			\Flydom\Alert::warning('Документ сформирован: <a href="/doc/'.$id.'" target="_BLANK">'.$name.'</a>');
 		}
 	}
 
@@ -239,7 +239,7 @@ if ($row = db_fetch($q)) {
 			'total'=>0,
 			'usr'=>$row['user'],
 			'staff'=>$_SESSION['i'],
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'state'=>$type >= 95 ? 5 : 0,
 			'orst'=>'|'.implode('|', $ids).'|',
 		));
@@ -269,7 +269,7 @@ if ($row = db_fetch($q)) {
 			'orst'=>'|'.implode('|', $orst).'|',
 			'user'=>$user,
 			'staff'=>$_SESSION['i'],
-			'dt1'=>now(),
+			'dt1'=>\Config::now(),
 			'dt2'=>0,
 			'total'=>$total,
 			'state'=>0,
@@ -280,18 +280,18 @@ if ($row = db_fetch($q)) {
 		$q = db_query('SELECT * FROM orst WHERE i IN ('.implode(',', $orst).')');
 		while ($i = db_fetch($q)) {
 			if ($i['state'] == 1) {
-				db_query('UPDATE orst SET state=3, last='.now().' WHERE i='.$i['i']);
+				db_query('UPDATE orst SET state=3, last='.\Config::now().' WHERE i='.$i['i']);
 				db_query('UPDATE sync SET count=count-'.$i['count']
 					.' WHERE vendor='.$i['vendor'].' AND store='.$i['store']);
 				db_query('UPDATE store SET count=count-'.$i['count']
 					.' WHERE vendor='.$i['vendor'].' AND i='.$i['store']);
-				alert('Количество товара '.$i['name'].' на складе уменьшено на '.$i['count']);
+				\Flydom\Alert::warning('Количество товара '.$i['name'].' на складе уменьшено на '.$i['count']);
 			}
 		}
 	}
 
 } else {
-	redirect($root);
+	\Page::redirect($root);
 }
 
 ?>

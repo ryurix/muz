@@ -1,5 +1,3 @@
 <?
 
-$config['action'] = array(
-	['action'=>'добавить задачу', 'href'=>'/prices/plan/0'],
-);
+\Action::before('/prices/plan/0', 'добавить задачу');

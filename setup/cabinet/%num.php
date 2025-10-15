@@ -1,6 +1,6 @@
 <?
 
-$user = $config['args'][0];
+$user = \Page::arg();
 
 \Cabinet\Model::load($user);
 
@@ -16,7 +16,7 @@ if (isset($_REQUEST['type'])) {
 
 if (\Cabinet\Form::send() === 'delete') {
 	\Db::delete('cabinet', ['usr'=>\Cabinet\Form::user()]);
-	redirect('.');
+	\Page::redirect('.');
 }
 
 if (\Cabinet\Form::isValid())
@@ -41,13 +41,13 @@ if (\Cabinet\Form::isValid())
 			\Db::insert('cabinet', $row);
 			\Flydom\Alert::success('Кабинет создан!');
 		}
-		redirect('/setup/cabinet/'.\Cabinet\Form::user());
+		\Page::redirect('/setup/cabinet/'.\Cabinet\Form::user());
 	}
 
 	if (\Cabinet\Form::send() == 'delete' && $exists)
 	{
 		\Db::delete('cabinet', ['usr'=>\Cabinet\Form::user()]);
 		\Flydom\Alert::success('Кабинет удалён');
-		redirect('/setup/cabinet');
+		\Page::redirect('/setup/cabinet');
 	}
 }

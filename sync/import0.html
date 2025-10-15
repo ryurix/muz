@@ -14,7 +14,7 @@ function normalize_unit($u) {
 }
 
 w('ft');
-$data_file = $config['root'].'files/data.csv';
+$data_file = \Config::ROOT.'files/data.csv';
 
 /*
 $data = file_get_contents($data_file);
@@ -34,8 +34,8 @@ while(!feof($f)) {
 	$row = explode(';', $str);
 	if (count($row) > 11) {
 		$dt = ft_parse($row[11]);
-		
-		if ((now() - $dt) < 24*60*60) {
+
+		if ((\Config::now() - $dt) < 24*60*60) {
 			echo '<p>Parse error: '.$str.'</p>';
 		} else {
 			$row[7] = normalize_unit($row[7]);
@@ -91,9 +91,9 @@ foreach ($sames as $k=>$v) {
 			'count'=>0,
 			'price'=>0,
 			'info'=>'',
-			'dt'=>now(),
-			'dt_name'=>ft(now()),
-			'dt_str'=>ft(now()),
+			'dt'=>\Config::now(),
+			'dt_name'=>ft(\Config::now()),
+			'dt_str'=>ft(\Config::now()),
 		);
 	}
 }
@@ -168,7 +168,7 @@ foreach ($rows as $j=>$i) {
 		'count'=>$i['count'],
 		'units'=>$units[$i['units_name']],
 		'dt'=>$i['dt'],
-		'updt'=>now(),
+		'updt'=>\Config::now(),
 		'user'=>$_SESSION['i'],
 		'info'=>$i['info'],
 		'data'=>php_encode(array(

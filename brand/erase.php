@@ -2,6 +2,6 @@
 
 $plan = w('plan-erase');
 
-refile('new.html');
+\Page::body('new.html');
 
 ?>

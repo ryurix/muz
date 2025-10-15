@@ -33,8 +33,7 @@ while ($i = db_fetch($q)) {
 }
 db_close($q);
 
-alert('Обновлено тегов: '.$count);
-w('alert');
+\Flydom\Alert::warning('Обновлено тегов: '.$count, true);
 
 //*/
 ?>

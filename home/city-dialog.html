@@ -14,7 +14,7 @@ $name[34].= '?msk';
 $left = array_slice($both, 0, floor(count($both)/2), true);
 $right= array_slice($both, count($left), count($both), true);
 
-$href = rtrim($config['q'], '/');
+$href = rtrim(\Page::url(), '/');
 $href = strpos($href, '?') === FALSE ? $href.'?_city=' : '&_city=';
 
 ?>
@@ -63,7 +63,7 @@ $href = strpos($href, '?') === FALSE ? $href.'?_city=' : '&_city=';
 	}
 ?>
 	</div>
-</div> 
+</div>
 <div class="modal-footer">
 	<button type="button" class="city_cancel" data-dismiss="modal">Отмена</button>
 </div>
@@ -112,7 +112,7 @@ $both = cache_load('sitename');
 $left = array_slice($both, 0, floor(count($both)/2), true);
 $right= array_slice($both, count($left), count($both), true);
 
-$href = rtrim($config['q'], '/');
+$href = rtrim(\Page::url(), '/');
 $href = strpos($href, '?') === FALSE ? $href.'?_city=' : '&_city=';
 
 			foreach ($left as $k=>$v) {

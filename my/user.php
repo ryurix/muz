@@ -1,14 +1,11 @@
 <?
 
-if (!is_user()) {
-	redirect('/');
+if (!\User::is()) {
+	\Page::redirect('/');
 }
 
-if (is_user('order')) {
-	$config['action'] = array(array(
-		'action'=>'Финансы',
-		'href'=>'/user/'.$_SESSION['i'].'/sales',
-	));
+if (\User::is('order')) {
+	\Action::before('/user/'.$_SESSION['i'].'/sales', 'Финансы');
 }
 
 $q = db_query('SELECT * FROM user WHERE i='.$_SESSION['i']);
@@ -98,7 +95,7 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 
 	if (strlen($plan['pass1']['value']) > 0 && $plan['pass1']['value'] == $plan['pass2']['value']) {
 		$data['pass'] = $plan['pass1']['value'];
-		alert('Пароль изменён!');
+		\Flydom\Alert::warning('Пароль изменён!');
 		$plan['pass1']['value'] = '';
 		$plan['pass2']['value'] = '';
 	}
@@ -108,7 +105,7 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	));
 
 	w('cache-user', $_SESSION['i']);
-	alert('Анкета сохранена!');
+	\Flydom\Alert::warning('Анкета сохранена!');
 }
 
 $config['plan'] = $plan;

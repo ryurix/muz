@@ -3,11 +3,10 @@
 $sklad = w('list-sklad');
 $sk = isset($_REQUEST['sk']) ? $_REQUEST['sk'] : '';
 if (!isset($sklad[$sk])) {
-	refile('menu.html');
+	\Page::body('menu');
 	return;
 }
 
-refile('sklad-action.html', 'sklad-action');
 w('sklad-action', $sk);
 
 $cuts = array(0=>'Все', 1=>'В плане', 2=>'В наличии');
@@ -36,7 +35,7 @@ if(!is_array($osts)) {
 	$osts = array();
 }
 
-$config['name'] = $sklad[$sk];
+\Page::name($sklad[$sk]);
 
 w('clean');
 
@@ -61,7 +60,7 @@ if (isset($_REQUEST['prices'])) {
 					'sync'=>$i['i'],
 				);
 			}
-			
+
 			if (isset($ost[$i['i']])) {
 				$code = $sk.':'.$i['store'];
 				$val = $ost[$i['i']];
@@ -81,7 +80,7 @@ if (isset($_REQUEST['prices'])) {
 
 		if (count($rows)) {
 			db_insert('naklad', array(
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 				'user'=>$_SESSION['i'],
 				'vendor'=>$sk,
 				'type'=>2,
@@ -101,7 +100,7 @@ if (isset($_REQUEST['prices'])) {
 				db_update('sync', array('price'=>$i['new'], 'dt'=>1893445200), array('i'=>$k));
 			}
 
-			redirect('/sklad/'.$naklad);
+			\Page::redirect('/sklad/'.$naklad);
 		}
 	}
 }

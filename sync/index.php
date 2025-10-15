@@ -1,12 +1,5 @@
 <?
 
-/*
-$config['action'] = [
-	['action'=>'нет синхронизации', 'href'=>'/sync/nosync'],
-	['action'=>'поиск', 'href'=>'/sync/search'],
-];
-*/
-
 $plan = [
 	''=>['method'=>'POST'],
 	'code'=>['type'=>'line'],
@@ -19,7 +12,7 @@ w('request', $plan);
 
 //	$config['design'] = 'none'; print_pre($_REQUEST);
 
-if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && is_user('sync')) {
+if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && \User::is('sync')) {
 	$config['design'] = 'none';
 	if ($plan['']['valid']) {
 		$block['body'] = '';
@@ -33,7 +26,7 @@ if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && is_user('sync'
 			db_update('sync', array(
 				'code'=>$code,
 				'name'=>$name,
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 				'store'=>$plan['store']['value'],
 				'vendor'=>$plan['vendor']['value'],
 			), array(
@@ -43,7 +36,7 @@ if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && is_user('sync'
 			\Flydom\Log::add(18, $plan['store']['value'], $code);
 		} else {
 			db_insert('sync', array(
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 				'code'=>$code,
 				'name'=>$name,
 				'store'=>$plan['store']['value'],
@@ -59,7 +52,7 @@ if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && is_user('sync'
 
 		db_insert('log', array(
 			'type'=>17,
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'user'=>$_SESSION['i'],
 			'info'=>'store: '.$plan['store']['value'],
 		));

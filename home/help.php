@@ -1,16 +1,17 @@
 <?
 
 if (isset($_REQUEST['_win'])) {
-	$config['design'] = 'help';
+	\Page::design('help');
 }
 
-if ($config['args'][0] == 'login') {
-	$config['design'] = 'none';
-	$block['body'] = $block['modal-login'];
+if (\Page::arg() == 'login') {
+	\Page::design('modal-login');
 } else {
-	$block['body'] = cache_get($config['args'][0], $config['args'][0]);
+	// $block['body'] = cache_get(\Page::arg(), \Page::arg());
 }
 
-if (is_user('block')) {
-	$block['modal-edit'] = '<a href="/block/'.$config['args'][0].'" type="button" class="btn btn-secondary">Правка</a>';
+/*
+if (\User::is('block')) {
+	$block['modal-edit'] = '<a href="/block/'.\Page::arg().'" type="button" class="btn btn-secondary">Правка</a>';
 }
+*/

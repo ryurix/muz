@@ -12,7 +12,7 @@ if (isset($_POST['code']) && isset($_POST['name']) && isset($_POST['send1'])) {
 		}
 	}
 	cache_save('portfolio', $data);
-	alert('Группы сохранены!');
+	\Flydom\Alert::warning('Группы сохранены!');
 }
 
 ?>

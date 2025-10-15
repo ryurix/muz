@@ -74,8 +74,7 @@ if ($plan['send']['value'] && $plan['']['valid']) {
 	}
 	fclose($f);
 
-	alert('Обновлено '.$upd_catalog.' категорий Google.');
-	w('alert');
+	\Flydom\Alert::warning('Обновлено '.$upd_catalog.' категорий Google.', true);
 }
 
 // EXPORT
@@ -111,7 +110,7 @@ $catalog = cache_load('catalog-hide');
 
 //print_pre($tree);
 //*
-$f = fopen($config['root'].'files/catalog.csv', 'w+');
+$f = fopen(\Config::ROOT.'files/catalog.csv', 'w+');
 
 fputcsv($f, array(
 	trans('Код'),

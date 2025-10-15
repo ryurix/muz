@@ -5,7 +5,7 @@ w('request', $plan);
 
 if ($plan['']['valid'] && $plan['send']['value']==1) {
 	db_insert('rate', array(
-		'dt0'=>now(),
+		'dt0'=>\Config::now(),
 		'dt'=>$plan['dt']['value'],
 		'name'=>$plan['name']['value'],
 		'rate'=>$plan['rate']['value'],
@@ -14,7 +14,7 @@ if ($plan['']['valid'] && $plan['send']['value']==1) {
 		'body'=>$plan['body']['value'],
 		'state'=>$plan['state']['value'] ? 10 : 0,
 	));
-	redirect('.', 302);
+	\Page::redirect('.', 302);
 }
 
 $config['plan'] = $plan;

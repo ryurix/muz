@@ -88,7 +88,7 @@ if (isset($config['import']) && is_array($config['import']) && count($config['im
 		echo '</tr>';
 	}
 	if ($count) {
-		alert('Импортировано '.$count.' товаров в <a href="/catalog/'.$up.'">раздел: '.$plan['up']['values'][$up].'</a>');
+		\Flydom\Alert::warning('Импортировано '.$count.' товаров в <a href="/catalog/'.$up.'">раздел: '.$plan['up']['values'][$up].'</a>');
 		cache_delete('sync-chunk');
 		cache_delete('sync-names');
 	}
@@ -97,7 +97,7 @@ if (isset($config['import']) && is_array($config['import']) && count($config['im
 }
 echo '</form>';
 
-w('alert');
+echo \Flydom\Alert::build();
 
 function find_brand(&$name, $brands) {
 	foreach ($brands as $k=>$v) {
@@ -162,7 +162,7 @@ function store_import($store, $plan, $up) {
 		'sale'=>10,
 		'count'=>0,
 		'user'=>$_SESSION['i'],
-		'dt'=>now(),
+		'dt'=>\Config::now(),
 		'info'=>$store['info'],
 		'w'=>100,
 	);
@@ -186,7 +186,7 @@ function store_import($store, $plan, $up) {
 		foreach ($store['pics'] as $v) {
 			$name = basename($v);
 
-			$dir = $config['root'].substr($path, 1);
+			$dir = \Config::ROOT.substr($path, 1);
 
 			$pic = pic_load($v);
 			if ($pic) {
@@ -206,7 +206,7 @@ function store_import($store, $plan, $up) {
 	if (isset($store['files'])) {
 		w('clean');
 		$files = array();
-		$dir = $config['root'].substr($path, 1);
+		$dir = \Config::ROOT.substr($path, 1);
 		if (!is_dir($dir)) {
 			mkdir($dir);
 		}
@@ -227,7 +227,7 @@ function store_import($store, $plan, $up) {
 
 	db_insert('log', array(
 		'type'=>15,
-		'dt'=>now(),
+		'dt'=>\Config::now(),
 		'user'=>$_SESSION['i'],
 		'info'=>'store: '.$key,
 	));
@@ -238,7 +238,7 @@ function store_import($store, $plan, $up) {
 <ul>
 <?
 
-$files = scandir($config['root'].'--/block/parse');
+$files = scandir(\Config::ROOT.'--/block/parse');
 foreach ($files as $i) {
 	if (strlen($i) > 5) {
 		$name = basename($i, '.html');

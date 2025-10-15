@@ -1,0 +1,206 @@
+<?
+
+/*
+if (isset($first[''])) {
+	$sub[] = ['name'=>'', 'href'=>'/'];
+}
+*/
+
+$back = [];
+$first = \Page::menu(0)['/'];
+
+// Заказы + Финансы
+
+$sub = [];
+
+if (isset($first['order'])) {
+	$sub[] = ['name'=>'Заказы', 'href'=>'/order'];
+}
+
+if (isset($first['prices'])) {
+	$sub[] = ['name'=>'Ценообразование', 'href'=>'/prices'];
+}
+
+if (isset($first['sklad'])) {
+	$sub[] = ['name'=>'Склады', 'href'=>'/sklad'];
+}
+
+if (isset($first['kkm'])) {
+	$sub[] = array('name'=>'Фискальные чеки', 'href'=>'/kkm');
+}
+
+if (isset($first['doc'])) {
+	$sub[] = ['name'=>'Документы', 'href'=>'/doc'];
+}
+
+if (\User::is('bill')) {
+	$sub[] = array('name'=>'Счета оплаты', 'href'=>'/bill');
+}
+
+if (\User::is('money')) {
+	$sub[] = array('name'=>'Финансы', 'href'=>'/user/sales');
+}
+
+if (\User::is('auto')) {
+	$sub[] = array('name'=>'Водитель', 'href'=>'/auto');
+}
+
+if (\User::is('order')) {
+	$sub[] = array('name'=>'Резервы', 'href'=>'/reserve');
+}
+
+if (\User::is('scan')) {
+	$sub[] = ['name'=>'Штрихкоды', 'href'=>'/scan'];
+}
+
+if (count($sub)) {
+	$back[] = array('name'=>$sub[0]['name'], 'href'=>$sub[0]['href'], '/'=>$sub);
+}
+
+// Каталог
+
+$sub = [];
+
+if (isset($first['sync'])) {
+	$sub[] = ['name'=>'Синхронизация', 'href'=>'/sync'];
+	$sub[] = ['name'=>'Импорт xls', 'href'=>'/sync/import-xls'];
+}
+
+if (\User::is('vendor')) {
+	$sub[] = ['name'=>'Поставщики', 'href'=>'/vendor'];
+}
+
+if (\User::is('filter')) {
+	$sub[] = ['name'=>'Фильтры', 'href'=>'/filter'];
+}
+
+if (\User::is('subcat')) {
+	$sub[] = ['name'=>'Подразделы', 'href'=>'/subcat'];
+}
+
+if (\User::is('brand')) {
+	$sub[] = ['name'=>'Производители', 'href'=>'/brand'];
+}
+
+if (\User::is('sale')) {
+	$sub['sale'] = array('name'=>'Скидки', 'href'=>'/sales/list');
+}
+
+if (\User::is('mark')) {
+	$sub[] = ['name'=>'Метки', 'href'=>'/mark'];
+}
+
+if (\User::is('sign')) {
+	$sub[] = ['name'=>'Знаки', 'href'=>'/sign'];
+}
+
+if (\User::is('rate')) {
+	$sub[] = ['name'=>'Отзывы', 'href'=>'/rate'];
+}
+
+if (count($sub)) {
+	$back[] = array('name'=>'Каталог', 'href'=>$sub[0]['href'], '/'=>$sub);
+}
+
+/*
+if (\User::is('catalog')) {
+//	$sub['catalog'] = array('name'=>'<i class="fa fa-wrench"></i> Каталог', 'href'=>'/setup/catalog');
+
+
+	$sub[] = array('name'=>'Поставщики', 'href'=>'/vendor');
+//	$sub[] = array('name'=>'Подкаталоги', 'href'=>'/subcat');
+
+
+	$sub[] = array('name'=>'Категории Google', 'href'=>'/setup/google');
+	$sub[] = array('name'=>'Импорт товаров с других сайтов', 'href'=>'/setup/parse');
+	$sub[] = array('name'=>'"Потерянные" товары (без раздела)', 'href'=>'/setup/lost');
+	$sub[] = array('name'=>'Очистка лишних файлов каталога', 'href'=>'/clean-store');
+}
+
+if (\User::is('rate')) {
+	$sub['rate'] = array('name'=>'Отзывы', 'href'=>'/rate');
+}
+
+if (count($sub)) {
+	$key = array_keys($sub)[0];
+	$back[] = array('name'=>'Каталог', 'href'=>$sub[$key]['href'], '/'=>$sub);
+}
+*/
+
+// Маркетплейс
+
+$sub = [];
+
+if (\User::is('cabinet')) {
+	$sub[] = ['name'=>'Кабинеты', 'href'=>'/setup/cabinet'];
+}
+
+if (\User::is('yandex')) {
+	$sub[] = ['name'=>'Выгрузка YML', 'href'=>'/setup/yml'];
+	$sub[] = ['name'=>'Яндекс', 'href'=>'/setup/yandex'];
+}
+
+if (\User::is('ozon')) {
+	$sub[] = ['name'=>'Ozon', 'href'=>'/setup/ozon'];
+}
+
+if (\User::is('wildberries')) {
+	$sub[] = ['name'=>'Wildberries', 'href'=>'/setup/wildberries'];
+}
+
+if (\User::is('api')) {
+	$sub[] = ['name'=>'API', 'href'=>'/api'];
+}
+
+if (count($sub)) {
+	$back[] = ['name'=>'Маркетплейс', 'href'=>$sub[0]['href'], '/'=>$sub];
+}
+
+// Сервис
+
+$sub = [];
+
+if (\User::is('users')) {
+	$sub[] = array('name'=>'<i class="fa fa-user"></i> Пользователи', 'href'=>'/user');
+}
+
+if (\User::is('setup')) {
+	$sub[] = array('name'=>'<i class="fa fa-cog"></i> Настройки', 'href'=>'/setup');
+}
+
+if (\User::is('adres')) {
+	$sub[] = array('name'=>'Города', 'href'=>'/city');
+	$sub[] = array('name'=>'Области', 'href'=>'/region');
+	$sub[] = array('name'=>'Время доставки', 'href'=>'/setup/delivery');
+}
+
+if (\User::is('menu')) {
+	$sub[] = ['name'=>'Меню', 'href'=>'/menu'];
+	$sub[] = ['name'=>'Статьи', 'href'=>'/article'];
+	$sub[] = ['name'=>'Портфолио', 'href'=>'/portfolio'];
+}
+
+if (\User::is('block')) {
+	$sub[] = array('name'=>'Блоки', 'href'=>'/block');
+}
+
+if (\User::is('dict')) {
+	$sub[] = array('name'=>'<i class="fa fa-book"></i> Словарь', 'href'=>'/dict');
+}
+
+if (\User::is('spam')) {
+	$sub[] = array('name'=>'<i class="icon-envelope"></i> Рассылка', 'href'=>'/setup/spam');
+}
+
+if (\User::is('plan')) {
+	$sub[] = array('name'=>'Планировщик', 'href'=>'/plan');
+}
+
+if (\User::is('log')) {
+	$sub[] = ['name'=>'Логи', 'href'=>'/setup/log'];
+}
+
+if (count($sub)) {
+	$key = array_keys($sub)[0];
+	$back[] = array('name'=>'Сервис', 'href'=>$sub[$key]['href'], '/'=>$sub);
+}

@@ -17,7 +17,7 @@ if ($_REQUEST['eventType'] == 'InPaymentReceived') {
 	$where = array('i='.$bill, 'state<10', 'code='.$code, 'type>=200');
 	$q = db_query('SELECT * FROM bill WHERE '.implode(' AND ', $where)); // .' AND type=1' // ???
 	if ($row = db_fetch($q)) {
-		db_update('bill', array('state'=>10, 'dt2'=>now()), array('i'=>$bill));
+		db_update('bill', array('state'=>10, 'dt2'=>\Config::now()), array('i'=>$bill));
 
 		$orst = explode('|', trim($row['orst'], '|'));
 		$q = db_query('SELECT * FROM orst WHERE i in ('.implode(',', $orst).')');
@@ -50,7 +50,7 @@ if ($_REQUEST['eventType'] == 'InPaymentReceived') {
 		foreach ($part2 as $k=>$v) {
 			if ($row['state'] < 10) {
 				db_update('orst',
-					'last='.now()
+					'last='.\Config::now()
 					.',state=GREATEST(7,state)'
 					.',money'.$dest.'='.$v
 					.',pay'.$dest.'=7'
@@ -62,7 +62,7 @@ if ($_REQUEST['eventType'] == 'InPaymentReceived') {
 		// Фискализация
 		if (count($part) && $total < 200000) {
 			db_insert('kkm', array(
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 				'state'=>0,
 				'usr'=>$row['user'],
 				'orst'=>'|'.implode('|', array_keys($part)).'|',

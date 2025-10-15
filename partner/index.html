@@ -7,7 +7,7 @@ function shift_month($dt, $shift) {
 	return mktime(0, 0, 0, $month + $shift, 1, $year);
 }
 
-$now = now();
+$now = \Config::now();
 $months = array();
 w('ft');
 

@@ -137,7 +137,7 @@ if ($plan['']['valid'] && $send > 0) {
 						db_update('sync', array(
 							'code'=>$ccode,
 							'name'=>$cname,
-							'dt'=>now(),
+							'dt'=>\Config::now(),
 							'price'=>$cprice,
 							'opt'=>$copt,
 							'count'=>$ccount,
@@ -162,13 +162,13 @@ if ($plan['']['valid'] && $send > 0) {
 		}
 		$lost = array_diff($all, $updated, $unchanged);
 
-		alert('Обновлено '.count($updated).', без изменений '.count($unchanged).' позиций этого поставщика в каталоге.<br>Отмечены как недоступные для заказа: '.count($lost).', не синхронизировано: '.$nosync.' (из них с количеством: '.$nosyncv.')');
+		\Flydom\Alert::warning('Обновлено '.count($updated).', без изменений '.count($unchanged).' позиций этого поставщика в каталоге.<br>Отмечены как недоступные для заказа: '.count($lost).', не синхронизировано: '.$nosync.' (из них с количеством: '.$nosyncv.')');
 
 		// Обновлем даты синхронизации для записей без изменений
 		$syncs = array_chunk($unchanged, 100, TRUE);
 		foreach ($syncs as $chunk) {
 			db_update('sync', array(
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 			), 'i IN ('.implode(',', $chunk).')');
 		}
 
@@ -176,26 +176,26 @@ if ($plan['']['valid'] && $send > 0) {
 		$syncs = array_chunk($lost, 100, TRUE);
 		foreach ($syncs as $chunk) {
 			db_update('sync', array(
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 				'count'=>'',
 			), 'i IN ('.implode(',', $chunk).')');
 		}
 
 		db_insert('log', array(
 			'type'=>16,
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'user'=>$_SESSION['i'],
 			'info'=>$vendors[$plan['vendor']['value']],
 		));
 /*
 		// Устанавливаем дату следующей выгрузки яндекса так, чтобы выгрузка произошла сразу.
 		$last = cache_load('cron');
-		$last['yandex'] = now() - 25*60*60;
+		$last['yandex'] = \Config::now() - 25*60*60;
 		cache_save('cron', $last);
 */
 	}
 }
 
-w('alert');
+echo \Flydom\Arrau::build();
 
 ?>

@@ -6,7 +6,7 @@ set_time_limit(0);
 $pre = rtrim($config['exf'], '/');
 print_pre($pre);
 
-$root = rtrim($config['root'], '/');
+$root = rtrim(\Config::ROOT, '/');
 
 w('pic');
 
@@ -30,7 +30,7 @@ while ($i = db_fetch($q)) {
 
 		$f = pic_load($pre.$pic);
 		$f = pic_into($f, 260, 260);
-		
+
 
 		if (!is_dir($dir)) {
 			mkdir($dir);
@@ -38,7 +38,7 @@ while ($i = db_fetch($q)) {
 
 print_pre($i['i']);
 
-		pic_jpeg($f, $config['root'].substr($i['icon'], 1), 90);
+		pic_jpeg($f, \Config::ROOT.substr($i['icon'], 1), 90);
 	}
 //*/
 }

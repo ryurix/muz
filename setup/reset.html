@@ -107,7 +107,4 @@ foreach ($a as $k=>$v) {
 	db_update('param', array('code'=>str2url($v)), array('i'=>$k));
 }
 
-alert('Done: '.count($a));
-w('alert');
-
-?>
+\Flydom\Alert::warning('Done: '.count($a), true);

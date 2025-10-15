@@ -46,7 +46,7 @@ echo '<p><a href="/setup/sync-check" class="btn btn-default">'
 .'Проверка синхронизации'
 .'</a></p>';
 
-if (is_user('block')) {
+if (\User::is('block')) {
 	echo '<p>';
 
 	echo '<a href="/block" class="btn btn-default">Редактирование блоков</a>';
@@ -64,7 +64,7 @@ if (is_user('block')) {
 }
 
 /*
-if (is_user('catalog')) {
+if (\User::is('catalog')) {
 	echo '<p>
 <a href="/setup/parse" class="btn btn-default">Импорт каталога товаров с других сайтов</a>
 <a href="/setup/catalog" class="btn btn-default">Категории Google, импорт/экспорт</a>
@@ -96,18 +96,20 @@ if (is_user('catalog')) {
 }
 */
 
-if (is_user('admin')) {
+if (\User::is('admin')) {
 	echo '<p>
 <a class="btn btn-default" href="/setup/update-tags">Обновить теги товаров</a>
 <a class="btn btn-default" href="/setup/img-fluid">Обновить картинки в статьях и товарах</a>
 </p>';
 }
 
-if (is_user('log')) {
+if (\User::is('log')) {
 	echo '<p>
 <a class="btn btn-default" href="/setup/log">Логи</a>
 <a class="btn btn-default" href="/setup/ip">IP</a>
 </p>';
 }
 
-?>
+if (\Flydom\Cache::get('catalog-disable')) {
+	\Flydom\Alert::warning('Каталог выключен для неавторизованных пользователей', true);
+}

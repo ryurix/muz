@@ -1,6 +1,6 @@
 <?
 
-$code = $config['args'][0];
+$code = \Page::arg();
 
 $row = 0;
 if ($code) {
@@ -8,7 +8,7 @@ if ($code) {
 	$row = db_fetch($q);
 
 	if (!$row) {
-		redirect('/plan');
+		\Page::redirect('/plan');
 	}
 }
 
@@ -17,13 +17,13 @@ if (!$row) {
 		'i'=>0,
 		'typ'=>0,
 		'name'=>'Новая задача',
-		'dt'=>now() + 24*60*60,
+		'dt'=>\Config::now() + 24*60*60,
 		'every'=>86400,
 		'data'=>'',
 	);
 }
 
-$config['name'] = $row['name'];
+\Page::name($row['name']);
 
 $data = array_decode($row['data']);
 $data['name'] = $row['name'];
@@ -78,12 +78,12 @@ if ($plan['']['valid']) {
 	{
 		if ($row['i']) {
 			db_update('cron', $new, array('i'=>$row['i']));
-			alert('Задача сохранена');
-			redirect('/plan');
+			\Flydom\Alert::warning('Задача сохранена');
+			\Page::redirect('/plan');
 		} else {
 			db_insert('cron', $new);
-			alert('Задача создана!');
-			redirect('/plan');
+			\Flydom\Alert::warning('Задача создана!');
+			\Page::redirect('/plan');
 		}
 	}
 
@@ -91,11 +91,11 @@ if ($plan['']['valid']) {
 	{
 		$info = \Cron\Task::execute($new);
 
-		alert('Задача выполнена: '.$info);
+		\Flydom\Alert::warning('Задача выполнена: '.$info);
 		if ($row['i']) {
 			w('ft');
 			db_update('cron', [
-				'info'=>ft(now(), 1).' '.$info,
+				'info'=>ft(\Config::now(), 1).' '.$info,
 			], ['i'=>$row['i']]);
 		}
 	}

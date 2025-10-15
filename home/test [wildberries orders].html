@@ -19,8 +19,8 @@ $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 */
 
-//$url = 'https://suppliers-orders.wildberries.ru/api/v1/orders?date_start='.urlencode(date('c', now() - 7*24*60*60));
-$url = 'https://marketplace-api.wildberries.ru/api/v2/orders?take=1000&skip=0&date_start='.urlencode(date('c', now() - 7*24*60*60));
+//$url = 'https://suppliers-orders.wildberries.ru/api/v1/orders?date_start='.urlencode(date('c', \Config::now() - 7*24*60*60));
+$url = 'https://marketplace-api.wildberries.ru/api/v2/orders?take=1000&skip=0&date_start='.urlencode(date('c', \Config::now() - 7*24*60*60));
 
 
 $ch = curl_init();

@@ -27,10 +27,10 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	db_insert('vendor', $data);
 	$id = db_insert_id();
 	if ($id) {
-		alert('Поставщик добавлен');
+		\Flydom\Alert::warning('Поставщик добавлен');
 		w('cache-vendor');
-		redirect('/vendor/');
+		\Page::redirect('/vendor/');
 	} else {
-		alert('Ошибка добавления поставщика');
+		\Flydom\Alert::warning('Ошибка добавления поставщика');
 	}
 }

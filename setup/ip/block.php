@@ -22,7 +22,7 @@ if ($plan['send']['value'] === 'add' && strlen($plan['ip']['value']) >= 4) {
 		cache_save('ip-ban', $ban);
 	}
 } elseif ($plan['send']['value'] === 'del') {
-	$ban = remove_role($plan['ip']['value'], $ban);
+	$ban = \Flydom\Arrau::remove($plan['ip']['value'], $ban);
 	cache_save('ip-ban', $ban);
 } elseif ($plan['send']['value'] === 'reset') {
 	db_query('DELETE FROM session WHERE usr=0 AND ip IN (SELECT ip FROM (SELECT ip FROM session GROUP BY ip HAVING count(*)>3) s)');

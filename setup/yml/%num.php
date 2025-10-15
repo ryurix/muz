@@ -1,6 +1,6 @@
 <?
 
-$code = $config['args'][0];
+$code = \Page::arg();
 
 $row = 0;
 if ($code) {
@@ -8,7 +8,7 @@ if ($code) {
 	$row = db_fetch($q);
 
 	if (!$row) {
-		redirect('/setup/yml');
+		\Page::redirect('/setup/yml');
 	}
 }
 
@@ -17,13 +17,13 @@ if (!$row) {
 		'i'=>0,
 		'typ'=>1,
 		'name'=>'Новая выгрузка',
-		'dt'=>now() + 24*60*60,
+		'dt'=>\Config::now() + 24*60*60,
 		'every'=>86400,
 		'data'=>"'form'=>'yandex'",
 	);
 }
 
-$config['name'] = $row['name'];
+\Page::name($row['name']);
 
 $forms = array(
 	\Cron\Yml::YANDEX => 'Яндекс',
@@ -61,7 +61,7 @@ w('invalid', $plan);
 
 if ($plan['send']['value'] == 3) {
 	\Db::delete('cron', ['i'=>$row['i']]);
-	redirect('.');
+	\Page::redirect('.');
 }
 
 if ($plan['']['valid'])
@@ -71,7 +71,7 @@ if ($plan['']['valid'])
 		'form'=>$plan['form']['value'],
 		'name'=>$plan['name']['value'],
 		'info'=>'',
-		'dt'=>now() + $plan['every']['value'],
+		'dt'=>\Config::now() + $plan['every']['value'],
 		'every'=>$plan['every']['value'],
 		'time'=>$plan['time']['value'],
 		'week'=>\Flydom\Arrau::encode($plan['week']['value']),
@@ -91,12 +91,12 @@ if ($plan['']['valid'])
 
 		if ($row['i']) {
 			db_update('cron', $new, ['i'=>$row['i']]);
-			alert('Выгрузка обновлена');
-			redirect('/setup/yml');
+			\Flydom\Alert::warning('Выгрузка обновлена');
+			\Page::redirect('/setup/yml');
 		} else {
 			db_insert('cron', $new);
-			alert('Выгрузка создана!');
-			redirect('/setup/yml');
+			\Flydom\Alert::warning('Выгрузка создана!');
+			\Page::redirect('/setup/yml');
 		}
 	}
 
@@ -105,13 +105,13 @@ if ($plan['']['valid'])
 		$info = \Cron\Task::execute($new, $data);
 		//$info.= \Cron\Task::follow($data['follow']);
 
-		alert('Выгрузка выполнена! '.$info);
+		\Flydom\Alert::warning('Выгрузка выполнена! '.$info);
 		if ($row['i']) {
 			w('ft');
 			db_update('cron', [
-				'info'=>ft(now(), 1).' '.$info,
+				'info'=>ft(\Config::now(), 1).' '.$info,
 			], ['i'=>$row['i']]);
-//			redirect('/setup/yml');
+//			\Page::redirect('/setup/yml');
 		}
 	}
 }

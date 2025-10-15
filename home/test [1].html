@@ -17,7 +17,7 @@ $args = [
 	$rows = [];
 	$updates = [];
 
-	$now = now();
+	$now = \Config::now();
 
 	foreach ($store as $i) {
 		print_pre($now.' - '.$i['dt'].' = '.($now - $i['dt']));

@@ -7,11 +7,11 @@ $client_secret = "f2dcc50fa4264cff8c82be5c3a707cd5";
 // Если мы еще не получили разрешения от пользователя, отправляем его на страницу для его получения
 // В урл мы также можем вставить переменную state, которую можем использовать для собственных нужд, я не стал
 if (!isset($_GET["code"])) {
-	if (is_user('admin')) {
+	if (\User::is('admin')) {
 		Header("Location: https://oauth.yandex.ru/authorize?response_type=code&client_id=".$client_id);
 		die();
 	} else {
-		redirect('/');
+		\Page::redirect('/');
 	}
 }
 
@@ -37,7 +37,7 @@ function postKeys($url,$peremen,$headers) {
 		$post_arr[]=$key."=".$value;
 		}
 	$data=implode('&',$post_arr);
-	
+
 	$handle=curl_init();
 	curl_setopt($handle, CURLOPT_URL, $url);
 	curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);
@@ -58,18 +58,18 @@ if ($result["code"]==200) {
 	$token=$result["response"]["access_token"];
 	$expire=$result['response']['expires_in'];
 	w('ft');
-	alert('Token: '.$token.', expires: '.$expire.' ('.ft(now() + $expire, 1).')');
+	\Flydom\Alert::warning('Token: '.$token.', expires: '.$expire.' ('.ft(\Config::now() + $expire, 1).')');
 	cache_save('yandex-market', array(
 		'token'=>$token,
-		'expires'=>now() + $expire,
+		'expires'=>\Config::now() + $expire,
 		'user'=>$client_user,
 		'id'=>$client_id,
 	));
 }else{
-	alert("Ошибка! Код: ".$result["code"]);
+	\Flydom\Alert::warning("Ошибка! Код: ".$result["code"]);
 }
 
-redirect('/');
+\Page::redirect('/');
 
 // Токен можно кинуть в базу, связав с пользователем, например, а за пару дней до конца токена напомнить, чтобы обновил
 

@@ -1,7 +1,3 @@
 <?
 
-$config['action'] = array(
-	array('action'=>'добавить выгрузку', 'href'=>'/setup/yml/0'),
-);
-
-?>
+\Action::before('/setup/yml/0', 'добавить выгрузку');

@@ -13,7 +13,7 @@ if ($plan['']['valid'] && $plan['send']['value']==1) {
 	));
 
 	w('cache-mark');
-	redirect('.');
+	\Page::redirect('.');
 }
 
 $config['plan'] = $plan;

@@ -77,8 +77,8 @@ function scan_class($root, $path, &$class) {
 //$root = __DIR__.'/../class';
 
 $class = [];
-scan_class($config['root'], 'src', $class);
-scan_class($config['root'], 'lib', $class);
+scan_class(\Config::ROOT, 'src', $class);
+scan_class(\Config::ROOT, 'lib', $class);
 
 file_put_contents(\Config::ROOT.'/src/autoload.php', '<?
 

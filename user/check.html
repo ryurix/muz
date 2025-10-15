@@ -60,7 +60,7 @@ if (count($upd)) {
 		$user[$k]['email'] = $v;
 	}
 
-	alert('Обновлено '.count($upd).' почтовых адресов.');
+	\Flydom\Alert::warning('Обновлено '.count($upd).' почтовых адресов.');
 }
 //*/
 
@@ -98,12 +98,12 @@ if (count($upd)) {
 		$user[$k]['phone'] = $v;
 	}
 
-	alert('Обновлено '.count($upd).' телефонов.');
+	\Flydom\Alert::warning('Обновлено '.count($upd).' телефонов.');
 }
 //*/
 
 echo '<p>';
-w('alert');
+echo \Flydom\Alert::build();
 echo '</p>';
 
 //	* * *

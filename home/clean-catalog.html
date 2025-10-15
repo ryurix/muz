@@ -24,7 +24,7 @@ $del = array_diff($all, $list);
 echo '<p>'.count($all).' = '.count($list).' - '.count($del).'</p>';
 
 foreach ($del as $i) {
-	unlink($config['root'].substr($i, 1));
+	unlink(\Config::ROOT.substr($i, 1));
 }
 
 //print_pre($list);

@@ -51,17 +51,17 @@ if ($count && $total2 < 500) {
 	<div class="container">
 		<div class="row">
 			<div class="col">
-				
+
 				<div class="table-responsive">
 					<table class="basket_table">
 						<thead>
 							<tr>
-								<th>&nbsp;</th> 
-								<th>НАИМЕНОВАНИЕ</th> 
+								<th>&nbsp;</th>
+								<th>НАИМЕНОВАНИЕ</th>
 								<th>ЦЕНА</th>
 								<th>КОЛ-ВО</th>
 								<th>СУММА</th>
-								<th>&nbsp;</th> 
+								<th>&nbsp;</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -78,7 +78,7 @@ foreach ($basket as $i) {
 	</td>
 	<td>
 		<p class="basket_category"><a href="/catalog/<? echo $i['url2'] ?>"><? echo $i['name2'] ?></a></p>
-		<p class="basket_name"><a href="/store/<? echo $i['url'] ?>"><? echo $i['name'] ?></a></p>				
+		<p class="basket_name"><a href="/store/<? echo $i['url'] ?>"><? echo $i['name'] ?></a></p>
 	</td>
 	<td><? echo  number_format($i['price1'], 0, '.', ' ') ?> ₽</td>
 	<td>
@@ -135,14 +135,14 @@ if ($total1 > $total2) {
 
 <?
 
-if (is_user('manager') /*|| kv($config, 'DEBUG', 0)*/) {
+if (\User::is('manager') /*|| kv($config, 'DEBUG', 0)*/) {
 
 ?>
 	<div class="full-width basket_store">
 		<div class="container">
 			<div class="row">
 				<div class="col">
-					
+
 					<form class="basket_form" action="" method="POST">
 						<label class="basket_label ddl">
 							<p class="basket_text2">Склад</p>
@@ -165,12 +165,12 @@ if (is_user('manager') /*|| kv($config, 'DEBUG', 0)*/) {
 								<input type="radio" name="document" value="Приходная" checked>
 								<p class="basket_doctext1">Приходная</p>
 							</label>
-							<p class="basket_text3 node"> | </p>					
+							<p class="basket_text3 node"> | </p>
 							<label>
 								<input type="radio" name="document" value="Расходная">
 								<p class="basket_doctext1">Расходная</p>
 							</label>
-							<p class="basket_text3">накладная</p>					
+							<p class="basket_text3">накладная</p>
 						</div> -->
 					</form>
 

@@ -40,8 +40,8 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	db_update('catalog', array('url'=>$url), array('i'=>$id));
 
 	w('catalog-cache');
-	alert('Раздел '.$data['name2'].' создан!');
-	redirect('/catalog/'.$url.'/edit');
+	\Flydom\Alert::warning('Раздел '.$data['name2'].' создан!');
+	\Page::redirect('/catalog/'.$url.'/edit');
 } else {
 	$config['plan'] = $plan;
 }

@@ -18,7 +18,7 @@ foreach ($orders as $i) {
 		$insert[$i['mpi']]['data']['offers'][] = $i['store'];
 	} else {
 		$insert[$i['mpi']] = [
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'state'=>0,
 			'typ'=>\Marketplace\Sber::CONFIRM,
 			'data'=>[

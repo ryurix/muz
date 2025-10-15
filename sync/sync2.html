@@ -15,8 +15,8 @@ function echo_best($best, $names, $cname, $code = '') {
 .' <button class="btn btn-xs btn-default sync" data-code="'.$code.'">&#10003;</button> <button class="btn btn-xs btn-default nosync" data-code="'.$code.'">&times;</button>';
 }
 
-if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']['file'], 1))) {
-	$file = $config['root'].substr($_SESSION['sync']['file'], 1);
+if (isset($_SESSION['sync']) && is_file(\Config::ROOT.substr($_SESSION['sync']['file'], 1))) {
+	$file = \Config::ROOT.substr($_SESSION['sync']['file'], 1);
 	$vendor = $_SESSION['sync']['vendor'];
 
 	set_time_limit(0);
@@ -119,7 +119,7 @@ if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']
 							'name'=>$sync['name'],
 							'store'=>$sync['store'],
 							'vendor'=>$k,
-							'dt'=>now(),
+							'dt'=>\Config::now(),
 							'price'=>ceil($cprice),
 						));
 						\Flydom\Log::add(17, $sync['store'], $ccode);
@@ -143,13 +143,12 @@ $rows[] = '<tr><td>'.$n.'</td><td><span class="sync">'.$cname.'</span>; <b>'.$cp
 	}
 
 	if (count($rows) < $sync_max) {
-		alert('Всё синхронизировано: '.$count.' строк.');
+		\Flydom\Alert::warning('Всё синхронизировано: '.$count.' строк.', true);
 		echo '<tr><td colspan=3>';
-		w('alert');
 		echo '</td></tr>';
 	} else {
 		echo '<tr><td colspan=3><input type="text" id="sync1" value="'.$count.'"> <button class="btn btn-success" id="sync2" data-range="'.$count.'">Загрузить ещё строки</button>';
-		w('alert');
+		echo \Flydom\Alert::build();
 		echo '</td></tr>';
 	}
 }

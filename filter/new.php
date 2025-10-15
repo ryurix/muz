@@ -14,8 +14,8 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	db_insert('filter', $data);
 	save_param(db_insert_id(), $plan['value']['value']);
 	w('cache-filter');
-	alert('Фильтр добавлен');
-	redirect('/filter');
+	\Flydom\Alert::warning('Фильтр добавлен');
+	\Page::redirect('/filter');
 } else {
 	$config['plan'] = $plan;
 }

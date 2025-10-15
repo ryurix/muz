@@ -1,0 +1,56 @@
+<?
+
+// Created by Ryurix 2015-09-01
+
+switch ($args) {
+	case 'RUB': $code = 0; break;
+	case 'USD': $code = 840; break;
+	case 'EUR': $code = 978; break;
+	default: $code = $args;
+}
+
+if ($code) {
+/*
+	// Получаем текущие курсы валют в rss-формате с сайта www.cbr.ru
+	// Формируем сегодняшнюю дату
+	$date = date("d/m/Y");
+	// Формируем ссылку
+	$url = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=$date";
+	$text = file_get_contents($url);
+
+	// Разбираем содержимое, при помощи регулярных выражений
+	$pattern = "#<Valute ID=\"([^\"]+)[^>]+>[^>]+>([^<]+)[^>]+>[^>]+>[^>]+>[^>]+>[^>]+>[^>]+>([^<]+)[^>]+>[^>]+>([^<]+)#i";
+	preg_match_all($pattern, $text, $out, PREG_SET_ORDER);
+
+	$curr = array();
+	foreach($out as $i) {
+		$curr[$i[2]] = $i[4];
+	}
+
+	if (count($curr) && isset($curr[$code])) {
+		$back = $curr[$code];
+		$back = str_replace(",",".",$back);
+	} else {
+		$back = 0;
+		\Flydom\Alert::warning('Сервер не выдал результатов по данной валюте ('.$args.') на указнную дату: '.$url);
+	}
+//*/
+
+//*
+	$url = 'http://cbrates.rbc.ru/tsv/'.$code.'/'.date('Y/m/d', \Config::now()).'.tsv';
+	$text = file_get_contents($url);
+	$curs = explode("\t", $text);
+
+	if (!empty($curs[1])) {
+		$back = $curs[1];
+	} else {
+		$back = 0;
+		\Flydom\Alert::warning('Сервер не выдал результатов по данной валюте ('.$args.') на указнную дату: '.$url);
+	}
+//*/
+} else {
+	$back = 1;
+}
+
+
+?>

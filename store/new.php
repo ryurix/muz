@@ -19,7 +19,7 @@ $plan['sign4']['default'] = 0;
 $plan['up']['default'] = $catalog;
 $plan['w']['default'] = 100;
 $plan['sale']['default'] = 10;
-$plan['dt']['default'] = now();
+$plan['dt']['default'] = \Config::now();
 //$plan['speed']['default'] = 100;
 $plan['hide']['default'] = 0;
 $plan['vendor']['default'] = 1;
@@ -86,7 +86,7 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 		'sale'=>$plan['sale']['value'],
 		'count'=>$plan['count']['value'],
 		'user'=>$_SESSION['i'],
-		'dt'=>now(),
+		'dt'=>\Config::now(),
 		'info'=>$plan['info']['value'],
 		'w'=>$plan['w']['value'],
 		'filter'=>$plan['filter']['value'],
@@ -104,15 +104,15 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 
 	db_insert('log', array(
 		'type'=>14,
-		'dt'=>now(),
+		'dt'=>\Config::now(),
 		'user'=>$_SESSION['i'],
 		'info'=>'store: '.$key,
 	));
-	alert('<a href="/store/'.$url.'">Товар</a> добавлен');
+	\Flydom\Alert::warning('<a href="/store/'.$url.'">Товар</a> добавлен');
 	cache_delete('sync-chunk');
 	cache_delete('sync-names');
-	//redirect('/catalog/'.$plan['up']['value']);
-	redirect('/store/'.$url);
+	//\Page::redirect('/catalog/'.$plan['up']['value']);
+	\Page::redirect('/store/'.$url);
 } else {
 	$plan['filter']['up'] = $plan['up']['value'];
 	$config['plan'] = $plan;

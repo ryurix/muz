@@ -38,7 +38,7 @@ if ($plan['']['valid']) {
 		if ($status == 'paid' || $status == 'authorized') {
 			$q = db_query('SELECT * FROM bill WHERE i='.$order.' AND state<10'); // .' AND type=1' // ???
 			if ($row = db_fetch($q)) {
-				db_update('bill', array('state'=>10, 'dt2'=>now()), array('i'=>$order));
+				db_update('bill', array('state'=>10, 'dt2'=>\Config::now()), array('i'=>$order));
 
 				$orst = explode('|', trim($row['orst'], '|'));
 				$q = db_query('SELECT * FROM orst WHERE i in ('.implode(',', $orst).')');
@@ -69,7 +69,7 @@ if ($plan['']['valid']) {
 				foreach ($part2 as $k=>$v) {
 /*
 					db_update('orst', array(
-						'last'=>now(),
+						'last'=>\Config::now(),
 						'state'=>7,
 						'money'.$dest=>$v,
 						'pay'.$dest=>7,
@@ -77,7 +77,7 @@ if ($plan['']['valid']) {
 */
 					if ($row['state'] < 10) {
 						db_update('orst',
-							'last='.now()
+							'last='.\Config::now()
 							.',state=GREATEST(7,state)'
 							.',money'.$dest.'='.$v
 							.',pay'.$dest.'=7'
@@ -89,7 +89,7 @@ if ($plan['']['valid']) {
 				// Фискализация
 				if (count($part) && $total < 200000) {
 					db_insert('kkm', array(
-						'dt'=>now(),
+						'dt'=>\Config::now(),
 						'state'=>0,
 						'usr'=>$row['user'],
 						'orst'=>'|'.implode('|', array_keys($part)).'|',
@@ -101,7 +101,7 @@ if ($plan['']['valid']) {
 }
 
 $info = array(
-	'dt'=>ft(now(), 1),
+	'dt'=>ft(\Config::now(), 1),
 	'POST'=>$_POST,
 	'plan'=>$plan,
 );

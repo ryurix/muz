@@ -1,27 +1,26 @@
 <?
 
-$q = db_query('SELECT * FROM vendor WHERE i="'.$config['args'][0].'"');
+$q = db_query('SELECT * FROM vendor WHERE i="'.\Page::arg().'"');
 $root = '/vendor';
 
 if ($row = db_fetch($q)) {
-	$config['name'] = $row['name'];
-	$config['action'] = array(
-		array('action'=>'Список', 'href'=>'/vendor'),
-	);
+	\Page::name($row['name']);
+	\Action::before('/vendor', 'Список');
 
-	$action = count($config['args']) > 1 ? $config['args'][1] : 'view';
+	$action = \Page::arg(1, 'view');
 
 	if ($action == 'edit') {
 		$plan = w('plan-vendor');
 		$plan['']['default'] = $row;
 		w('request', $plan);
-		
+
 		if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 			db_update('vendor', array(
 				'name'=>$plan['name']['value'],
 				'typ'=>$plan['typ']['value'],
 				'up'=>$plan['up']['value'],
 				'w'=>$plan['w']['value'],
+				'days'=>$plan['days']['value'],
 				'price'=>$plan['price']['value'],
 				'prmin'=>$plan['prmin']['value'],
 				'city'=>$plan['city']['value'],
@@ -37,24 +36,24 @@ if ($row = db_fetch($q)) {
 				'short'=>$plan['short']['value'],
 				'info'=>$plan['info']['value'],
 			), array('i'=>$row['i']));
-			alert('Запись изменена');
+			\Flydom\Alert::warning('Запись изменена');
 			w('cache-vendor');
-			redirect($root);
+			\Page::redirect($root);
 		} elseif ($plan['']['valid'] && $plan['send']['value'] == 2) {
 			db_delete('vendor', array(
 				'i'=>$row['i']
 			));
-			alert('Запись удалена');
+			\Flydom\Alert::warning('Запись удалена');
 			w('cache-vendor');
-			redirect($root);
+			\Page::redirect($root);
 		}
 		$config['plan'] = $plan;
 	} elseif ($action == 'view') {
-		$config['name'] = $row['name'];
+		\Page::name($row['name']);
 		$block['body'] = $row['info'];
-	}	
+	}
 } else {
-	redirect($root);
+	\Page::redirect($root);
 }
 
 ?>

@@ -3,15 +3,15 @@
 $sklad = w('list-sklad');
 $sk = isset($_REQUEST['sk']) ? $_REQUEST['sk'] : '';
 if (!isset($sklad[$sk])) {
-	refile('menu.html');
+	\Page::body('menu');
 	return;
 }
 
-refile('sklad-action.html', 'sklad-action');
+\Page::body('sklad-action.html', 'sklad-action');
 w('sklad-action', $sk);
 
-$config['name'] = 'Расходные накладные '.$sklad[$sk];
+\Page::name('Расходные накладные '.$sklad[$sk]);
 $config['type'] = -1;
-refile('docs.html');
+\Page::body('docs');
 
 ?>

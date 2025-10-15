@@ -5,28 +5,12 @@
  *	Version 3.0.2011-07-15
  */
 
-//header('Content-Encoding: gzip');
-
-error_reporting(E_ALL);
-ini_set('display_errors', 'stdout');
-
-ini_set('magic_quotes_runtime', 0);
-ini_set('magic_quotes_sybase', 0);
-ini_set('zlib.output_compression', 'On');
-ini_set('session.name', 'muzmart');
-ini_set('session.use_cookies', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.gc_maxlifetime', 86400);
-ini_set('session.cookie_lifetime', 0);
-ini_set('session.cache_expire', 60*60*8);
-
 $config['database'] = 'mysql://admin:nimda@127.0.0.1/muz';
 //$config['database'] = 'mysql://ryurix_second:nimda@localhost/ryurix_second';
 //$config['database'] = 'mysql://045315160_mse:nimda@localhost/hmaomarketing_mse';
 $config['find'] = array('user' => 1, 'new' => 2, 'text' => 3);
 
 $config['libs'] = array('include', 'forms', 'types', 'input', 'mail', 'work', 'catalog', 'f-doc', 'design', 'include2');
-$config['root'] = getcwd().'/';
 
 $config['title'] = 'Muzmart';
 $config['site'] = 'muzmart.com';
@@ -39,10 +23,7 @@ $config['GMT'] = 0;
 
 $config['kkmserver'] = 'http://admin:@muzmart.com:5894';
 
-//$config['update-url'] = 'http://ruvix.ru';
-//$config['update-url'] = 'https://muzmart.com';
 $config['update-url'] = 'https://muzmart.com';
-//$config['update-url'] = 'http://muz2';
 
 // test
 

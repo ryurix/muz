@@ -1,29 +1,27 @@
 <?
 
-$q = db_query('SELECT * FROM user WHERE i='.$config['args'][0]);
+$q = db_query('SELECT * FROM user WHERE i='.\Page::arg());
 
-if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || $row['i'] == $_SESSION['i'])) {
+if (($row = db_fetch($q)) && (\User::is('admin') || strlen($row['roles']) == 0 || $row['i'] == $_SESSION['i'])) {
 	$sales = strpos($row['roles'], 'order') !== FALSE
 	&& !(strpos($row['roles'], 'ones') !== FALSE && $_SESSION['i'] != $row['i']);
 
-	$action = array();
-	$action[] = array('href'=>'/user/'.$row['i'], 'action'=>'Посмотреть');
-	$action[] =	array('href'=>'/user/'.$row['i'].'/order', 'action'=>'Заказы');
-	$action[] = array('href'=>'/user/'.$row['i'].'/docs', 'action'=>'Документы');
-	if (is_user('roles')) {
-		$action[] = ['href'=>'/user/'.$row['i'].'/roles', 'action'=>'Роли'];
+	\Action::before('/user/'.$row['i'], 'Посмотреть');
+	\Action::before('/user/'.$row['i'].'/order', 'Заказы');
+	\Action::before('/user/'.$row['i'].'/docs', 'Документы');
+	if (\User::is('roles')) {
+		\Action::before('/user/'.$row['i'].'/roles', 'Роли');
 	}
-	if (is_user('cabinet')) {
-		$action[] = ['href'=>'/setup/cabinet/'.$row['i'], 'action'=>'Кабинет'];
+	if (\User::is('cabinet')) {
+		\Action::before('/setup/cabinet/'.$row['i'], 'Кабинет');
 	}
 	if ($sales) {
-		$action[] = array('href'=>'/user/'.$row['i'].'/sales', 'action'=>'Продажи');
+		\Action::before('/user/'.$row['i'].'/sales', 'Продажи');
 	}
-	$action[] = array('href'=>'/user/'.$row['i'].'/erase', 'action'=>'Удалить');
-	$config['action'] = $action;
+	\Action::before('/user/'.$row['i'].'/erase', 'Удалить');
 
-	$config['name'] = $row['name'];
-	$action = count($config['args']) > 1 ? $config['args'][1] : 'edit';
+	\Page::name($row['name']);
+	$action = \Page::arg(1, 'edit');
 
 	if ($action == 'edit') {
 		$plan = w('plan-user');
@@ -54,7 +52,7 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 				$plan['phone']['iv'] = 1;
 				$plan['phone']['valid'] = 0;
 				$plan['']['valid'] = 0;
-				alert('Данный телефон уже зарегистрирован на другого пользователя!', 'danger');
+				\Flydom\Alert::danger('Данный телефон уже зарегистрирован на другого пользователя!');
 			}
 		}
 
@@ -95,7 +93,7 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 				'quick'=>'',
 //				'login'=>$plan['login']['value'],
 				'pass'=>$plan['pass1']['value'],
-				'roles' => is_user('admin') ? $plan['roles']['value'] : $row['roles'] ,
+				'roles' => \User::is('admin') ? $plan['roles']['value'] : $row['roles'] ,
 				'name'=>$plan['name']['value'],
 				'phone'=>clean_phone($plan['phone']['value']),
 				'email'=>clean_mail($plan['email']['value']),
@@ -116,13 +114,13 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 			db_update('user', $data, array('i'=>$row['i']));
 			db_insert('log', array(
 				'type'=>10,
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 				'user'=>$_SESSION['i'],
 				'info'=>'',
 			));
 			w('cache-user', $row['i']);
 			w('cache-staff');
-//			redirect('/user');
+//			\Page::redirect('/user');
 		}  else {
 			$fields = array();
 			foreach ($plan as $v) {
@@ -134,18 +132,18 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 				$s = 'Заполните поле "'.$fields[0].'"';
 				$s.= count($fields) > 1 ? ' и другие поля выделенные' : ' выделенное';
 				$s.= ' красным цветом';
-				alert($s);
+				\Flydom\Alert::warning($s);
 			} elseif (count($fields) > 1) {
-				alert('Заполните поле "'.$fields[0].'" выделенное красным цветом.');
+				\Flydom\Alert::warning('Заполните поле "'.$fields[0].'" выделенное красным цветом.');
 			}
 		}
 		$config['plan'] = $plan;
 	} elseif ($action == 'order') {
 		w('order-user', $row['i']);
-		refile('order.html');
+		\Page::body('order');
 	} elseif ($action == 'docs') {
 		$config['row'] = $row;
-		refile('docs.html');
+		\Page::body('docs');
 	} elseif ($action == 'erase') {
 		$plan = w('plan-erase');
 		w('request', $plan);
@@ -156,16 +154,16 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 				db_delete('comment', array('theme'=>'u'.$row['i']));
 				db_delete('orst', array('user'=>$row['i']));
 				db_delete('session', array('usr'=>$row['i']));
-				redirect('/user');
+				\Page::redirect('/user');
 			} else {
-				redirect('/user/'.$row['i']);
+				\Page::redirect('/user/'.$row['i']);
 			}
 		} else {
 			$config['plan'] = $plan;
-			refile('erase.html');
+			\Page::body('erase');
 		}
 	} elseif ($action == 'roles') {
-		refile('roles.html');
+		\Page::body('roles');
 		$plan = w('plan-roles', $row['roles']);
 		w('request', $plan);
 
@@ -183,14 +181,14 @@ if (($row = db_fetch($q)) && (is_user('admin') || strlen($row['roles']) == 0 || 
 				], ['i'=>$row['i']]);
 
 				db_delete('session', ['usr'=>$row['i']]);
-				alert('Роли сохранены', 'success');
-				redirect('/user/'.$row['i']);
+				\Flydom\Alert::success('Роли сохранены', 'success');
+				\Page::redirect('/user/'.$row['i']);
 			}
 		}
 	} elseif ($action == 'sales' && $sales) {
-		refile('sales.html');
+		\Page::body('sales');
 		$config['row'] = $row;
 	}
 } else {
-	redirect('/user');
+	\Page::redirect('/user');
 }

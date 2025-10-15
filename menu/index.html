@@ -5,8 +5,7 @@ foreach ($config['rows'] as $row) {
 }
 
 if (count($config['lost'])) {
-	alert('Потерянные страницы (раздел не существует)');
-	w('alert');
+	\Flydom\Alert::warning('Потерянные страницы (раздел не существует)', true);
 
 	foreach ($config['lost'] as $row) {
 		echo "\n".$row;

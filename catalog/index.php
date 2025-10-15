@@ -1,4 +1,7 @@
 <?
 
 $config['args'] = [0];
-rebody('%abc');
+\Page::body('%str');
+include_once \Page::php();
+
+//rebody('%abc');

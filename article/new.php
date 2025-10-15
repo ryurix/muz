@@ -14,7 +14,7 @@ if ($plan['']['valid'] && $plan['send']['value']==1) {
 
 	$q = db_query('SELECT 1 FROM article WHERE url="'.$plan['url']['value'].'"');
 	if ($dummy = db_fetch($q) || strlen($plan['url']['value']) < 3) {
-		alert('Данная ссылка уже используется для другой статьи!');
+		\Flydom\Alert::warning('Данная ссылка уже используется для другой статьи!');
 		$plan['']['valid'] = 0;
 	}
 }
@@ -23,8 +23,8 @@ if ($plan['']['valid'] && $plan['send']['value']==1) {
 	db_insert('article', array(
 		'url' =>$plan['url']['value'],
 		'usr'=>$_SESSION['i'],
-		'dt'=>now(),
-		'last'=>now(),
+		'dt'=>\Config::now(),
+		'last'=>\Config::now(),
 		'hide'=>$plan['hide']['value'],
 		'up'=>$plan['up']['value'],
 		'up2'=>$plan['up2']['value'],
@@ -37,14 +37,14 @@ if ($plan['']['valid'] && $plan['send']['value']==1) {
 		'tag2'=>$plan['tag2']['value'],
 		'tag3'=>$plan['tag3']['value'],
 	));
-	alert('Статья создана!');
+	\Flydom\Alert::warning('Статья создана!');
 
 	$id = db_insert_id();
 	$plan['pic']['path'] = '/files/article/'.$id.'/';
 	w('input-pic');
 	parse_pic($plan['pic']);
 
-	redirect('.', 302);
+	\Page::redirect('.', 302);
 }
 
 $config['plan'] = $plan;

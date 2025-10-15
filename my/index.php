@@ -1,6 +1,6 @@
 <?
 
-if (!is_user()) {
+if (!\User::is()) {
 	$plan = array(
 		''=>array('method'=>'POST'),
 		'login'=>array('name'=>'Email / Телефон', 'type'=>'line', 'width'=>'100%'),
@@ -20,7 +20,5 @@ if (!is_user()) {
 	}
 
 	$config['plan'] = $plan;
-	refile('remind.html');
+	\Page::body('remind');
 }
-
-?>

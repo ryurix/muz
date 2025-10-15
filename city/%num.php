@@ -1,8 +1,8 @@
 <?
 
-$q = db_query('SELECT * FROM city WHERE i='.$config['args'][0]);
+$q = db_query('SELECT * FROM city WHERE i='.\Page::arg());
 if ($row = db_fetch($q)) {
-	$config['name'] = $row['name'];
+	\Page::name($row['name']);
 
 	$plan = w('plan-city');
 	$plan['']['default'] = $row;
@@ -31,12 +31,12 @@ if ($row = db_fetch($q)) {
 		];
 		w('comment-log', $dummy);
 		w('cache-city');
-		redirect('.', 302);
+		\Page::redirect('.', 302);
 	}
 	$config['plan'] = $plan;
 
 } else {
-	redirect('.');
+	\Page::redirect('.');
 }
 
 ?>

@@ -33,7 +33,7 @@ if (is_array($cron['vendor']) && count($cron['vendor'])) {
 	$vendor = '';
 }
 
-$dt = now() - 30*24*60*60;
+$dt = \Config::now() - 30*24*60*60;
 $select = "SELECT store.i,store.name,ven.count,store.dt FROM store LEFT JOIN (SELECT store, SUM(count) count, MAX(dt) dt FROM sync WHERE dt>=$dt$vendor GROUP BY store) ven ON ven.store=store.i WHERE hide<=0";
 if (kv($cron, 'min', 0)) { $select.= ' AND '.$cron['min'].'<=ven.count'; }
 if (kv($cron, 'price', 0)) { $select.= ' AND '.$cron['price'].'<=price'; }

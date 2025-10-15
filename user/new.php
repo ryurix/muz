@@ -23,7 +23,7 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 
 	$data = array(
 		'quick'=>$quick,
-		'dt'=>now(),
+		'dt'=>\Config::now(),
 		'login'=>$plan['login']['value'],
 		'pass'=>$plan['pass']['value'],
 		'name'=>$plan['name']['value'],
@@ -39,12 +39,12 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 		'dost'=>$plan['dost']['value'],
 		'config'=>$cfg,
 	);
-	if (is_user('admin')) {
+	if (\User::is('admin')) {
 		$data['roles'] = $plan['roles']['value'];
 	}
 	db_insert('user', $data);
-	alert('Пользователь добавлен');
-	redirect('/user/');
+	\Flydom\Alert::warning('Пользователь добавлен');
+	\Page::redirect('/user/');
 } else {
 	$config['plan'] = $plan;
 //	print_pre($plan);

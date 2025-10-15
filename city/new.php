@@ -8,7 +8,7 @@ w('request', $plan);
 if ($plan['']['valid'] && $plan['send']['value']==1) {
 	$city = $plan['name']['value'];
 	if (db_result('SELECT COUNT(*) FROM city WHERE LOWER(name)="'.strtolower($city).'"')) {
-		alert('Город с названием "'.$city.'" уже есть в базе!');
+		\Flydom\Alert::warning('Город с названием "'.$city.'" уже есть в базе!');
 	} else {
 		db_insert('city', array(
 			'hide' => 0,
@@ -26,7 +26,7 @@ if ($plan['']['valid'] && $plan['send']['value']==1) {
 			'head'=>$plan['head']['value'],
 		));
 		w('cache-city');
-		redirect('.', 302);
+		\Page::redirect('.', 302);
 	}
 }
 

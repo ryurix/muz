@@ -1,6 +1,6 @@
 <?
 
-$key = isset($config['args'][0]) ? $config['args'][0] : 0;
+$key = \Page::arg(0, 0);
 
 $where = array();
 $where[] = 'i='.$key;
@@ -8,8 +8,8 @@ $where[] = 'i='.$key;
 $q = db_query('SELECT * FROM kkm WHERE '.implode(' AND ', $where));
 
 if (!$row = db_fetch($q)) {
-	alert('Чек #'.$key.' не найден!');
-	redirect('/kkm');
+	\Flydom\Alert::warning('Чек #'.$key.' не найден!');
+	\Page::redirect('/kkm');
 }
 
 $plan = array(
@@ -37,13 +37,13 @@ if ($plan['state']['value'] < 10) {
 		// печать чека или фискализация без печати
 		w('kkmserver');
 		$state = kkm_fix($row['i']);
-		redirect('/kkm/'.$row['i']);
+		\Page::redirect('/kkm/'.$row['i']);
 	}
 
 	if ($plan['send']['value'] == 2) {
 		// отменяем задание на обработку
-		db_update('kkm', array('state'=>20, 'dt2'=>now()), array('i'=>$row['i']));
-		redirect('/kkm/'.$row['i']);
+		db_update('kkm', array('state'=>20, 'dt2'=>\Config::now()), array('i'=>$row['i']));
+		\Page::redirect('/kkm/'.$row['i']);
 	}
 }
 
@@ -51,11 +51,11 @@ if ($plan['send']['value'] == 3) {
 	w('ft');
 	$name = 'Фискальный чек '.$row['i'].' от '.ft($row['dt']);
 	w('clean');
-	$file = $config['root'].'files/docs/'.str2url($name).'.xlsx';
+	$file = \Config::ROOT.'files/docs/'.str2url($name).'.xlsx';
 
 	$data = php_decode($row['data']);
 	$data['_encoding'] = 'utf-8';
-	$data['_template'] = $config['root'].'doc/template/kkm.xlsx';
+	$data['_template'] = \Config::ROOT.'doc/template/kkm.xlsx';
 	$data['_filename'] = $file;
 
 	w('f-doc', $data);
@@ -65,7 +65,7 @@ if ($plan['send']['value'] == 3) {
 	if (isset($data['QRCode'])) {
 		if ($zip->open($file) === TRUE) {
 			if ($zip->locateName($imagefile) !== false) {
-				include_once $config['root'].'--/block/phpqrcode/qrlib.php';
+				include_once \Config::ROOT.'--/block/phpqrcode/qrlib.php';
 				ob_start();
 				QRcode::png($data['QRCode'], false, 'L', 4, 2);
 				$png = ob_get_contents();

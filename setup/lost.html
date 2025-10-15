@@ -9,17 +9,13 @@ $ups[] = -1;
 
 //$count = db_result('SELECT COUNT(*) FROM store WHERE 0=(SELECT COUNT(*) FROM catalog WHERE i=store.up)');
 $count = db_result('SELECT COUNT(*) FROM store WHERE up NOT IN ('.implode(',', $ups).')');
-alert($count ? 'Потерянных товаров: '.$count : 'Потерянных товаров нет.');
+\Flydom\Alert::warning($count ? 'Потерянных товаров: '.$count : 'Потерянных товаров нет.', true);
 
 $count2 = db_result('SELECT COUNT(*) FROM catalog WHERE up NOT IN ('.implode(',', $ups).')');
-alert($count2 ? 'Потерянных разделов: '.$count2 : 'Потерянных разделов нет.');
-
-w('alert');
+\Flydom\Alert::warning($count2 ? 'Потерянных разделов: '.$count2 : 'Потерянных разделов нет.', true);
 
 if ($count + $count2) {
 	echo '<p>';
 	w('form', $config['plan']);
 	echo '</p>';
 }
-
-?>

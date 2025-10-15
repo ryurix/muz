@@ -1,0 +1,83 @@
+<?
+
+//function cache_sync() {
+//	global $config;
+
+$type = 'json'; // maybe wddx is better? but best is JSON
+
+if (!cache_exists('sync-chunk') || !cache_exists('sync-names')) {
+	$brand = cache_load('brand');
+	w('search');
+	$chunk = array();
+	$names = array();
+	$q = db_query("SELECT i,brand,model,name,price FROM store");
+	while ($i = db_fetch($q)) {
+		$name = $i['name'];
+		if (strlen($i['model']) > 0) {
+			$name = $brand[$i['brand']].' '.$i['model'].' '.$name;
+		}
+		$chunk[$i['i']] = search_split($name);
+		$names[$i['i']] = $name.'; '.$i['price'].' руб.';
+	}
+	db_close($q);
+
+	cache_save('sync-chunk', $chunk, $type);
+	cache_save('sync-names', $names, $type);
+} else {
+	$chunk = cache_load('sync-chunk', NULL, $type);
+	$names = cache_load('sync-names', Null, $type);
+}
+
+$config['sync-chunk'] = $chunk;
+$config['sync-names'] = $names;
+
+//	return $chunk;
+//}
+
+//$chunk = cache_sync();
+
+//unset($chunk);
+//unset($names);
+
+/*
+
+$brand = cache_load('brand');
+
+$f = fopen(\Config::ROOT.'cache/sync-chunk.txt', 'w+');
+fwrite($f, '<?$v=array(');
+
+w('search');
+
+$names = array();
+$q = db_query("SELECT * FROM store");
+
+$first = true;
+while ($i = db_fetch($q)) {
+	if ($first) {
+		$first = false;
+	} else {
+		fwrite($f, ',');
+//fwrite($f, ');$v=$v+array(');
+	}
+
+	$name = $i['name'];
+	if (strlen($i['model']) > 0) {
+		$name = $brand[$i['brand']].' '.$i['model'].' '.$name;
+	}
+
+	fwrite($f, $i['i'].'=>');
+	php_encode2(search_split($name), $f);
+
+	$names[$i['i']] = $name.'; '.$i['price'].' руб.';
+}
+
+db_close($q);
+
+fwrite($f, ')?>');
+fclose($f);
+
+cache_save('sync-names', $names);
+
+*/
+
+?>

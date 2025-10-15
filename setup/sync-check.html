@@ -4,7 +4,7 @@ w('calendar');
 
 $plan = [
 	''=>['method'=>'GET'],
-	'dt'=>['type'=>'date', 'name'=>'Мин. дата синхронизации', 'default'=>now()-30*24*60*60],
+	'dt'=>['type'=>'date', 'name'=>'Мин. дата синхронизации', 'default'=>\Config::now()-30*24*60*60],
 	'diff'=>['type'=>'number', 'name'=>'Разница в цене, %', 'default'=>20],
 	'same'=>['type'=>'number', 'name'=>'Совпадение, %', 'default'=>100],
 	'limit'=>['type'=>'number', 'name'=>'Количество записей', 'default'=>1000],

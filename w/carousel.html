@@ -1,0 +1,95 @@
+<script src="/design/carousel.js"></script>
+<div id="carousel">
+<a href="/" id="title"><img src="/files/carousel/title.png"></a>
+<div id="adres">
+<?
+
+$city = cache_load('city2');
+$block['city-name'] = 'Адрес';
+if (isset($city[$_SESSION['city']])) {
+	$city = $city[$_SESSION['city']];
+	$block['city-name'] = 'Адрес в г.'.$city['name'];
+	$block['city-mail'] = '<a href="mailto:'.$city['mail'].'">'.$city['mail'].'</a>';
+	$block['city-phone'] = $city['phone'];
+}
+
+w('admin-line', $dummy='adres');
+cache_load('adres');
+
+if (\User::is()) {
+	echo 'Привет, <a href="/my/user">'.$_SESSION['name'].'</a>! <a href="?_logout" class="btn btn-mini btn-inverse">Выход</a>';
+} else {
+	echo '<form method="POST" style="margin:0">';
+	w('input-cire', $dummy = array(
+		'code'=>'_city',
+		'value'=>$_SESSION['city'],
+		'width'=>278,
+		'more'=>'onchange="this.form.submit()"',
+	));
+	if ($_SESSION['city'] == 0) {
+		echo '<span id="chose-city" style="">Выберите город!</span>';
+	}
+	echo '</form>';
+}
+
+?>
+</div>
+	<div id="slides">
+<?
+
+/*
+$q = db_query('SELECT * FROM carousel WHERE type="'.$args.'" ORDER BY w');
+while ($i = db_fetch($q)) {
+	echo '<img src="'.$i['href'].'">';
+}
+*/
+
+$dir = \Config::ROOT;
+$width = strlen($dir);
+$dir.= 'files/user/carousel';
+$dh = opendir($dir);
+while (false !== ($filename = readdir($dh))) {
+	$ext = substr($filename, -3);
+	if (in_array($ext, array('png', 'jpg', 'gif'))) {
+		echo '<img src="/files/user/carousel/'.$filename.'">'."\n";
+	}
+}
+
+/*
+<img src="/files/user/carousel/1.png">
+<img src="/files/user/carousel/2.png">
+<img src="/files/user/carousel/3.png">
+<img src="/files/user/carousel/4.png">
+<img src="/files/user/carousel/5.png">
+<img src="/files/user/carousel/6.png">
+*/
+
+?>
+	</div>
+</div>
+
+<script>
+    $(function() {
+      $('#slides').slidesjs({
+        width: 1088,
+        height: 200,
+		navigation: false,
+		play: {
+			active: false,
+			effect: "fade",
+			interval: 10000,
+			auto: true,
+			pauseOnHover: true,
+			restartDelay: 2500
+		},
+		effect: {
+			slide: {
+				speed: 2000
+			},
+			fade: {
+				speed: 2000
+			}
+		}
+      });
+    });
+</script>

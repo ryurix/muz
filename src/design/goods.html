@@ -1,6 +1,6 @@
 <?
 
-$user = $config['args'][0] ?? 0;
+$user = \Page::arg() ?? 0;
 $goods = $goods[$user] ?? [];
 $goods['user'] = $user;
 

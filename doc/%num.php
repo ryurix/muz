@@ -40,18 +40,18 @@ function mop($one, $two, $op, $offset = 0, $length = 0) {
 	return $single ? $back[0] : $back;
 }
 
-$key = isset($config['args'][0]) ? $config['args'][0] : 0;
+$key = \Page::arg(0, 0);
 
 w('ft');
 w('clean');
 w('rub2str');
 
-$q = db_query('SELECT * FROM docs WHERE i='.$key.(is_user('doc') || is_user('auto') ? '' : ' AND user='.$_SESSION['i']));
+$q = db_query('SELECT * FROM docs WHERE i='.$key.(\User::is('doc') || \User::is('auto') ? '' : ' AND user='.$_SESSION['i']));
 if ($i = db_fetch($q)) {
 
 	$templates = \Type\Doc::FILES;
 	$template = $templates[$i['type']];
-	$file = $config['root'].'files/docs/'.str2url($i['name']).'.xlsx';
+	$file = \Config::ROOT.'files/docs/'.str2url($i['name']).'.xlsx';
 
 	$data = php_decode($i['data']);
 	$data['names'] = mop($data['names'], 0, '&');
@@ -141,7 +141,7 @@ if ($i = db_fetch($q)) {
 
 	$data = array(
 		'_encoding'=>'utf-8',
-		'_template'=>$config['root'].'doc/template/'.$template.'.xlsx',
+		'_template'=>\Config::ROOT.'doc/template/'.$template.'.xlsx',
 		'_filename'=>$file,
 
 		'money'=>mop($data['money'], 2, 'format'),
@@ -297,7 +297,7 @@ if ($i = db_fetch($q)) {
 //*
 	if (file_exists($file)) {
 //		ini_set("zlib.output_compression", "Off");
-//		redirect('/files/docs/'.basename($file));
+//		\Page::redirect('/files/docs/'.basename($file));
 //*
 		header('Content-Disposition: attachment; filename='.basename($file));
 		header('Content-Description: File Transfer');
@@ -317,7 +317,7 @@ if ($i = db_fetch($q)) {
 	}
 //*/
 } else {
-	redirect('/');
+	\Page::redirect('/');
 }
 
 ?>

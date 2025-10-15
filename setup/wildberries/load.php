@@ -59,7 +59,7 @@ if ($plan['send']['value'] == 1) {
 		} else {
 			\Db::insert('wb', [
 				'i'=>$i[4],
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 				'chrt'=>$chrt,
 				'barcode'=>$i[6],
 				'store'=>$store,
@@ -72,7 +72,7 @@ if ($plan['send']['value'] == 1) {
 	}
 	if (count($wb) && $plan['clear']['value']) {
 		db_query('DELETE FROM wb WHERE chrt IN ('.implode(',', array_keys($wb)).')');
-		alert('Удалено '.count($wb).' синхронизаций wildberries.');
+		\Flydom\Alert::warning('Удалено '.count($wb).' синхронизаций wildberries.');
 	}
 }
 

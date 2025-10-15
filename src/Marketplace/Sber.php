@@ -27,7 +27,7 @@ class Sber
 
 	static function cron_confirm($token, $shipmentId, $orderCode, $items) {
 		db_insert('send_sber', [
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'state'=>0,
 			'typ'=>self::CONFIRM,
 			'data'=> array_encode([
@@ -41,7 +41,7 @@ class Sber
 
 	static function cron_packing($token, $shipmentId, $orderCode, $items) {
 		db_insert('send_sber', [
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'state'=>0,
 			'typ'=>self::PACKING,
 			'data'=> array_encode([

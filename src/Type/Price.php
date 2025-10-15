@@ -34,7 +34,7 @@ class Price
 	}
 
 	static function name($key) {
-		return kv(self::names(), $key, '');
+		return self::names()[$key] ?? $key;
 	}
 
 	static function get() {

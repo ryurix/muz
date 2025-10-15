@@ -19,7 +19,7 @@ function load_body($id) {
 }
 
 //*
-$file = $config['root'].'products.xls';
+$file = \Config::ROOT.'products.xls';
 
 w('xlsread');
 $data = new Spreadsheet_Excel_Reader();
@@ -45,7 +45,7 @@ array_shift($ids);
 
 foreach ($ids as $m=>$i) {
 
-	$filename = $config['root'].'files/ozon/'.iconv('UTF-8', 'Windows-1251', $m).'.jpg';
+	$filename = \Config::ROOT.'files/ozon/'.iconv('UTF-8', 'Windows-1251', $m).'.jpg';
 	if (file_exists($filename)) {
 		continue;
 	}
@@ -61,7 +61,7 @@ foreach ($ids as $m=>$i) {
 	}
 
 	if (!$start) {
-		alert('Товар '.$m.' / '.$i[0].' не найден!');
+		\Flydom\Alert::warning('Товар '.$m.' / '.$i[0].' не найден!');
 		continue;
 	}
 
@@ -74,7 +74,7 @@ foreach ($ids as $m=>$i) {
 	if (isset($data['images'])) {
 		foreach ($data['images'] as $image) {
 			$count++;
-			$dest = $config['root'].'files/ozon/'.iconv('UTF-8', 'Windows-1251', $m).($count > 1 ? '_'.$count : '').'.jpg';
+			$dest = \Config::ROOT.'files/ozon/'.iconv('UTF-8', 'Windows-1251', $m).($count > 1 ? '_'.$count : '').'.jpg';
 			if (!file_exists($dest)) {
 				copy($image, $dest);
 			}
@@ -84,6 +84,4 @@ foreach ($ids as $m=>$i) {
 //	break;
 }
 
-w('alert');
-
-?>
+echo \Flydom\Alert::build();

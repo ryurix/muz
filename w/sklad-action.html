@@ -1,0 +1,12 @@
+<?
+
+$sklad = w('list-sklad');
+
+\Action::before('#', 'Склады', 'sklad');
+foreach ($sklad as $k=>$v) {
+	\Action::before('/sklad?sk='.$k, $v, 'sklad');
+}
+
+\Action::before('/sklad/in?sk='.$args, 'приход');
+\Action::before('/sklad/out?sk='.$args, 'расход');
+\Action::before('/sklad/prices?sk='.$args, 'оценка');

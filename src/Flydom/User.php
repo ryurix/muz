@@ -27,6 +27,10 @@ static function is($role = null) {
 	return count(array_intersect($role, static::$roles)) > 0;
 }
 
+static function isStaff() {
+	return self::is() && !empty($_SESSION['roles']);
+}
+
 static function startup() {
 	if (static::$started) {
 		return;

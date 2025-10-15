@@ -18,7 +18,7 @@ if (isset($_REQUEST['search']) && strlen($_REQUEST['search'])) {
 	$quick = ' WHERE ';
 }
 
-$quick.= isset($_REQUEST['staff']) && is_user('admin') ? 'roles<>""' : 'roles=""';
+$quick.= isset($_REQUEST['staff']) && \User::is('admin') ? 'roles<>""' : 'roles=""';
 $quick.= isset($_REQUEST['ul']) ? ' AND ul>0' : '';
 $ul = isset($_REQUEST['ul']) ? '&ul=1' : '';
 
@@ -43,7 +43,7 @@ echo pager_block('?', 0, $ul);
 
 $user = array();
 
-$admin = is_user('admin');
+$admin = \User::is('admin');
 
 $cire = cache_load('city');
 

@@ -1,0 +1,43 @@
+<div id="login">
+<?
+	if (\User::is()) {
+?>
+<p>
+	<a href='/user/my' class="btn btn-mini">Изменить пароль</a> <a href="/?_exit" class="btn btn-mini">Выход?</a>
+</p>
+<h2>Здравствуйте <? echo $_SESSION['name'] ?>!</h2>
+
+<? } else { ?>
+<div class="row">
+<div class="span12">
+	<p>
+	<form method="POST" action="/" class="form-inline">
+	<input name="_login" type="text" class="input-small" placeholder="Логин">
+&nbsp;<input name="_pass" type="password" class="input-small" placeholder="Пароль">
+&nbsp;<input class="btn" name="_enter" value=" Вход " type="submit"/>
+	</form>
+	</p>
+</div>
+</div>
+
+<?
+
+if (isset($_REQUEST['_pass'])) {
+	if (isset($_REQUEST['_remind'])) {
+		w('clean');
+		$mail = clean_mail($_REQUEST['_login']);
+		$q = db_query('SELECT * FROM user WHERE login="'.$mail.'"');
+		if ($row = db_fetch($q)) {
+			w('mail-remind', $row);
+			echo '<p>Пароль выслан на почту</p>';
+		} else {
+			echo '<p>Почтовый ящик '.$mail.' не зарегистрирован.</p>';
+		}
+	} else {
+		echo '<p>Пароль неверный. <input class="knop" name="_remind" value="Восстановить" type="submit"/></p>';
+	}
+} ?>
+
+<? } ?>
+
+</div>

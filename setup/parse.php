@@ -6,7 +6,7 @@ function import_catalog($url) {
 	$code = substr($code, 0, 8) == 'https://' ? substr($code, 8, 32) : substr($code, 0, 32);
 	$pos = strpos($code, '/');
 	if ($pos === FALSE) {
-		alert('Название сайта не опознано: '.$code);
+		\Flydom\Alert::warning('Название сайта не опознано: '.$code);
 		return FALSE;
 	} else {
 		$code = substr($code, 0, $pos);

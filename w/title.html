@@ -1,0 +1,17 @@
+<?
+
+if (isset($config['title2'])) {
+	echo \Page::dict($config['title2']);
+} else {
+	if (strlen($config['name']) > 0) {
+		echo \Page::dict($config['name']) . ' | ';
+	}
+
+	echo $config['title'];
+
+	if (isset($_SESSION['city']) && $_SESSION['city'] && isset($block['city-name'])) {
+		echo ' '.$block['city-name'];
+	}
+}
+
+?>

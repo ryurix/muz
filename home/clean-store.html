@@ -44,7 +44,7 @@ $used = count($list);
 $del = array_diff($all, $list);
 
 foreach ($del as $i) {
-//	unlink($config['root'].substr($i, 1));
+//	unlink(\Config::ROOT.substr($i, 1));
 	print_pre($i);
 }
 

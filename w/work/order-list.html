@@ -1,0 +1,767 @@
+<?
+
+$show_code = \User::is('order_code');
+
+$filter_user = $args;
+$filter_store = $exts;
+
+$setup = 'orders';
+
+if ($filter_user) { $setup = 'user-order'; }
+if ($filter_store) { $setup = 'store-order'; }
+
+w('ft');
+
+$vendor = array(-1=>'Поставщик') + cache_load('vendor');
+$dost = array_values(w('list-dost'));
+$dost[0] = 'Неизвестно';
+$cdost = array(-1=>'Способ') + w('list-dost');
+$states = array(-1=>'Активные заказы') + w('order-state');
+$staff = array(0=>'Менеджер') + cache_load('staff');
+$cire = array('na'=>'Город') + cache_load('city');
+$pay = array('na'=>'Предоплата') + w('list-pay');
+$pay2 = array('na'=>'Оплата') + w('list-pay');
+$mark = array(0=>'Нет меток') + cache_load('mark-name');
+$camark = array(0=>'Добавить метку') + cache_load('mark-name');
+$cdmark = array(0=>'Удалить метку') + cache_load('mark-name');
+$cstate = array(0=>'Статус') + w('order-state');
+
+$default = array(
+	'link'=>0,
+	'num'=>'',
+	'dt1'=>\Config::now() - 183*24*60*60,
+	'dt2'=>ft_parse(ft(\Config::now())) + 24*60*60 - 1,
+	'staff'=>0,
+	'cire'=>'na',
+	'user'=>'',
+	'store'=>'',
+	'pay'=>'na',
+	'group'=>0,
+	'sort'=>1,
+	'vendor'=>-1,
+	'dost'=>array(),
+	'state'=>array(-1),
+	'mark'=>array(),
+
+	'cstaff'=>0,
+	'cpay'=>'na',
+	'cpay2'=>'na',
+	'cstate'=>0,
+	'cdost'=>-1,
+	'cvendor'=>-1,
+	'camark'=>0,
+	'cdmark'=>0,
+);
+
+w('user-config');
+
+$plan = array(
+	''=>array('method'=>'POST', 'default'=>get_user_config($setup, array())),
+
+	'mpi'=>array('name'=>'№ заказа в маркетплейсе', 'type'=>'line', 'placeholder'=>'№ в маркетплейсе', 'class'=>'auto'),
+	'mpdt'=>array('name'=>'Дата доставки', 'type'=>'line', 'placeholder'=>'Доставка', 'class'=>'auto'),
+
+	'link'=>array('name'=>'Массовое изменение', 'type'=>'checkbox'),
+	'num'=>array('name'=>'Номер заказа', 'type'=>'int', 'class'=>'form-control auto', 'placeholder'=>'№ заказа'), // , 'width'=>80
+	'dt1'=>array('name'=>'Дата обновления от', 'type'=>'date', 'class'=>'auto', 'width'=>100, 'button'=>0, 'context'=>1),
+	'dt2'=>array('name'=>'до', 'type'=>'date', 'class'=>'auto', 'width'=>100, 'button'=>0, 'context'=>1), // 'width'=>65
+	'staff'=>array('name'=>'Менеджер', 'type'=>'combo', 'values'=>$staff, 'class'=>'auto'),
+	'cire'=>array('name'=>'Город', 'type'=>'cire', 'class'=>'form-control auto', 'values'=>$cire),
+	'user'=>array('name'=>'Пользователь', 'type'=>'line', 'placeholder'=>'ФИО', 'x'=>1, 'class'=>'form-control auto'),
+	'store'=>array('name'=>'Наименование', 'type'=>'line', 'placeholder'=>'Товар', 'x'=>1, 'class'=>'form-control auto'),
+	'pay'=>array('name'=>'Оплата', 'type'=>'combo', 'values'=>$pay2, 'class'=>'auto'),
+	'group'=>array('name'=>'Группировать', 'type'=>'checkbox2', 'label'=>'Группировать', 'class'=>'auto'),
+
+	'sort'=>array('name'=>'Сортировать по', 'type'=>'combo', 'values'=>array(
+		5=>'Номеру заказа &darr;',
+		105=>'Номеру заказа &uarr;',
+		0=>'Дате создания &darr;',
+		100=>'Дате создания &uarr;',
+		1=>'Дате обновления &darr;',
+		101=>'Дате обновления &uarr;',
+		2=>'Пользователь &darr;',
+		102=>'Пользователь &uarr;',
+		14=>'Менеджер &darr;',
+		114=>'Менеджер &uarr;',
+		4=>'Наименование &darr;',
+		104=>'Наименование &uarr;',
+		6=>'Цена &darr;',
+		106=>'Цена &uarr;',
+		7=>'Сумма &darr;',
+		107=>'Сумма &uarr;',
+		8=>'Количество &darr;',
+		108=>'Количество &uarr;',
+		9=>'Оплачено &darr;',
+		109=>'Оплачено &uarr;',
+		11=>'Оплата &darr;',
+		111=>'Оплата &uarr;',
+		3=>'Статус &darr;',
+		103=>'Статус &uarr;',
+		13=>'Город &darr;',
+		113=>'Город &uarr;',
+		10=>'Доставка &darr;',
+		110=>'Доставка &uarr;',
+		12=>'Поставщик &darr;',
+		112=>'Поставщик &uarr;',
+		15=>'Метки &darr;',
+		115=>'Метки &uarr;',
+	), 'class'=>'form-control auto'),
+
+	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo', 'class'=>'auto', 'values'=>$vendor),
+	'dost'=>array('name'=>'Доставка', 'type'=>'dropcheck', 'item-class'=>'auto2', 'values'=>$dost, 'placeholder'=>'Доставка'),
+	'state'=>array('name'=>'Состояния', 'type'=>'dropcheck', 'item-class'=>'auto2', 'values'=>$states, 'placeholder'=>'Статус'),
+//	'mark'=>array('name'=>'Метки', 'type'=>'combo', 'class'=>'auto', 'values'=>$mark),
+	'mark'=>array('name'=>'Метки', 'type'=>'dropcheck', 'item-class'=>'auto2', 'values'=>$mark, 'placeholder'=>'Метки'),
+	'send'=>array('name'=>'', 'type'=>'button', 'count'=>4, 1=>'Фильтровать', 2=>'Загрузить по умолчанию', 3=>'Сохранить по умолчанию', 4=>'Сбросить'),
+
+	'cstaff'=>array('name'=>'Менеджер', 'type'=>'combo', 'values'=>$staff, 'class'=>'auto form-control-sm'),
+	'cpay'=>array('name'=>'Предоплата', 'type'=>'combo', 'values'=>$pay, 'class'=>'auto form-control-sm'),
+	'cpay2'=>array('name'=>'Оплата', 'type'=>'combo', 'values'=>$pay2, 'class'=>'auto form-control-sm'),
+	'cstate'=>array('name'=>'Статус', 'type'=>'combo', 'values'=>$cstate, 'class'=>'auto form-control-sm'),
+	'cdost'=>array('name'=>'Доставка', 'type'=>'combo', 'values'=>$cdost, 'class'=>'auto form-control-sm'),
+	'cvendor'=>array('name'=>'Новый поставщик', 'type'=>'combo', 'values'=>$vendor, 'class'=>'auto form-control-sm'),
+
+	'camark'=>array('name'=>'Добавить метку', 'type'=>'combo', 'values'=>$camark, 'class'=>'auto form-control-sm'),
+	'cdmark'=>array('name'=>'Удалить метку', 'type'=>'combo', 'values'=>$cdmark, 'class'=>'auto form-control-sm'),
+);
+
+if (\User::is('ones')) {
+	$plan['staff']['type'] = 'hidden';
+	$plan['staff']['value'] = $_SESSION['i'];
+}
+
+set_array($plan, 'default', $default);
+
+//$plan = isset($_SESSION['order']) ? $_SESSION['order'] : $default;
+
+w('request', $plan);
+
+$values = w('values', $plan);
+
+$linked = array('cstaff', 'camark', 'cdmark', 'cpay', 'cpay2', 'cstate', 'cdost', 'cvendor');
+foreach ($linked as $i) {
+	unset($values[$i]);
+}
+
+/*
+unset($values['cstaff']);
+unset($values['camark']);
+unset($values['cdmark']);
+unset($values['cpay']);
+unset($values['cpay2']);
+unset($values['cstate']);
+unset($values['cdost']);
+unset($values['cvendor']);
+*/
+
+set_user_config($setup, $values);
+
+if ($plan['send']['value'] == 2) {
+	$values = get_user_config($setup.'2', []);
+	$values['dt1']+= \Config::now();
+	$values['dt2']+= \Config::now();
+	set_user_config($setup, $values);
+	set_array($plan, 'value', $values);
+}
+
+if ($plan['send']['value'] == 3) {
+//	unset($values['dt1']);
+//	unset($values['dt2']);
+	$values['dt1']-= \Config::now();
+	$values['dt2']-= \Config::now();
+	set_user_config($setup.'2', $values);
+}
+
+if ($plan['send']['value'] == 4) {
+	set_user_config($setup, $default);
+	set_array($plan, 'value', $default);
+}
+
+save_user_config();
+
+if (in_array(-1, $plan['state']['value'])) {
+	$plan['state']['value'] = array(1,2,3,7,10,13,15,20,23,25,27);
+}
+
+$marketplace = in_array(MARKETPLACE_MARK, $plan['mark']['value']);
+
+// SELECT
+
+$select = 'SELECT orst.i i'
+.',orst.dt dt'
+.',orst.last last'
+.',orst.store store'
+.',s.url url'
+.',orst.price price'
+.',orst.state state'
+.',orst.info info'
+.',orst.note note'
+.',orst.docs docs'
+.',orst.files files'
+.',orst.pay2 pay2'
+.',orst.dost dost'
+.',orst.cire'
+.',orst.vendor'
+.',orst.staff'
+.',orst.mark'
+.',orst.mpi'
+.',orst.mpdt'
+.',user.i user'
+.',user.name user_name'
+.',user.color user_color';
+
+$where_user = '';
+
+if ($filter_user) {
+	$where_user = ' AND orst.user='.$filter_user;
+} elseif ($filter_store) {
+	$where_user = ' AND orst.store='.$filter_store;
+} else {
+	if (strlen($plan['user']['value'])) {
+		$user = $plan['user']['value'];
+		w('clean');
+
+		w('search');
+		$where_user = ' AND user.quick LIKE "%'.search_like($user).'%"';
+/*
+		if (is_09($user)) {
+			$where_user = ' AND (orst.user='.$user.' OR '.$where_user.')';
+			if (isset($_GET['user'])) {
+				$plan['group']['value'] = 0;
+			}
+		} else {
+			$where_user = ' AND '.$where_user;
+		}
+*/
+	}
+}
+
+if (\User::is('ones')) {
+	$where_user.= ' AND orst.staff='.$_SESSION['i'];
+}
+
+if ($plan['group']['value']) {
+	$select.= ',COUNT(orst.i) name'
+.',"" code,SUM(orst.count) count,SUM(orst.count*orst.price) total,SUM(orst.money+orst.money2) mon';
+} else {
+	$select.= ',orst.name name'
+.',sync.code,orst.count count,orst.count*orst.price total,orst.money+orst.money2 mon';
+}
+
+$select.= ' FROM orst LEFT JOIN user ON orst.user=user.i LEFT JOIN store s ON orst.store=s.i LEFT JOIN cire ON orst.cire=cire.i LEFT JOIN user staff ON orst.staff=staff.i LEFT JOIN sync ON orst.store=sync.store AND orst.vendor=sync.vendor';
+
+if (strlen($plan['store']['value'])) {
+	w('search');
+	$select.= ',store WHERE orst.store=store.i AND store.quick LIKE "%'.search_like($plan['store']['value']).'%" AND';
+} else {
+	$select.= ' WHERE';
+}
+
+if ($plan['sort']['value'] == 5 || $plan['sort']['value'] == 105) {
+	$select.= ' orst.dt>='.$plan['dt1']['value'].' AND orst.dt<'.($plan['dt2']['value']+24*60*60);
+} else {
+	$select.= ' orst.last>='.$plan['dt1']['value'].' AND orst.last<'.($plan['dt2']['value']+24*60*60);
+}
+
+$select.= $where_user;
+
+w('clean');
+if ($plan['num']['value'] && is_09($plan['num']['value'])) {
+	$select.= ' AND orst.i='.$plan['num']['value'];
+}
+
+if ($plan['cire']['value'] != 'na') {
+	$select.= ' AND orst.cire='.$plan['cire']['value'];
+}
+
+if ($plan['staff']['value']) {
+	$select.= ' AND orst.staff='.$plan['staff']['value'];
+}
+
+if (count($plan['state']['value'])) {
+	$select.= ' AND orst.state IN ('.implode(',', $plan['state']['value']).')';
+}
+
+if ($plan['pay']['value'] != 'na') {
+	$select.= ' AND (orst.pay='.$plan['pay']['value'].' OR orst.pay2='.$plan['pay']['value'].')';
+}
+
+if ($plan['vendor']['value'] != -1) {
+	$select.= ' AND orst.vendor='.$plan['vendor']['value'];
+}
+
+if (count($plan['dost']['value'])) {
+	$codes = array_keys(w('list-dost'));
+	$values = array();
+	foreach ($plan['dost']['value'] as $i) {
+		$values[] =  '"'.kv($codes, $i).'"';
+	}
+	$select.= ' AND orst.dost IN ('.implode(',', $values).')';
+//	$select.= ' AND orst.dost="'.$plan['dost']['value'].'"';
+}
+
+if (count($plan['mark']['value'])) {
+	$or = array();
+	foreach ($plan['mark']['value'] as $i) {
+		if ($i) {
+			$or[] = '(orst.mark LIKE "%,'.$i.',%")';
+		} else {
+			$or[] = '(orst.mark="" OR orst.mark IS NULL)';
+		}
+	}
+	$select.= ' AND ('.implode(' OR ', $or).')';
+}
+
+if (strlen($plan['mpi']['value'])) {
+	$select.= ' AND orst.mpi LIKE "%'.htmlspecialchars($plan['mpi']['value']).'%"';
+}
+
+if (strlen($plan['mpdt']['value'])) {
+	$mpdt = ft_parse($plan['mpdt']['value']);
+	//$select.= ' AND orst.mpdt ='.$mpdt;
+	$select.= ' AND orst.mpdt>='.$mpdt.' AND orst.mpdt<'.($mpdt+24*60*60);
+}
+
+if ($plan['group']['value']) {
+	$select.= ' GROUP BY orst.user';
+}
+
+$select.= ' ORDER BY ';
+switch ($plan['sort']['value']) {
+case 0: $select.= 'orst.dt DESC'; break;
+case 100: $select.= 'orst.dt'; break;
+case 1: $select.= 'orst.last DESC'; break;
+case 101: $select.= 'orst.last'; break;
+case 2:$select.= 'user_name'; break;
+case 102:$select.= 'user_name DESC'; break;
+case 3: $select.= 'orst.state'; break;
+case 103: $select.= 'orst.state DESC'; break;
+case 4:$select.= 'orst.name'; break;
+case 104:$select.= 'orst.name DESC'; break;
+case 5: $select.= 'orst.i'; break;
+case 105: $select.= 'orst.i DESC'; break;
+case 6: $select.= 'orst.price'; break;
+case 106: $select.= 'orst.price DESC'; break;
+case 7: $select.= 'total'; break;
+case 107: $select.= 'total DESC'; break;
+case 8:$select.= 'orst.count'; break;
+case 108:$select.= 'orst.count DESC'; break;
+case 9:$select.= 'mon'; break;
+case 109:$select.= 'mon DESC'; break;
+case 10:$select.= 'dost'; break;
+case 110:$select.= 'dost DESC'; break;
+case 11:$select.= 'orst.pay2'; break;
+case 111:$select.= 'orst.pay2 DESC'; break;
+case 12:$select.= 'orst.vendor'; break;
+case 112:$select.= 'orst.vendor DESC'; break;
+case 13:$select.= 'cire.w'; break;
+case 113:$select.= 'cire.w DESC'; break;
+case 14:$select.= 'staff.name'; break;
+case 114:$select.= 'staff.name DESC'; break;
+case 15:$select.= 'orst.mark'; break;
+case 115:$select.= 'orst.mark DESC'; break;
+case 16:$select.= 'orst.mpdt'; break;
+case 116:$select.= 'orst.mpdt DESC'; break;
+case 17:$select.= 'code'; break;
+case 117:$select.= 'code DESC'; break;
+}
+$select.= ',orst.user';
+
+
+if ((\User::is('link') || $filter_user)
+&& isset($_REQUEST['finish'])
+&& (isset($_REQUEST['c']) && is_array($_REQUEST['c']))
+&& ($plan['cstaff']['value']
+	|| $plan['camark']['value']
+	|| $plan['cdmark']['value']
+	|| $plan['cpay']['value'] !== 'na'
+	|| $plan['cpay2']['value'] !== 'na'
+	|| $plan['cstate']['value']
+	|| $plan['cdost']['value'] >= 0
+	|| $plan['cvendor']['value'] >= 0)
+) {
+	$orst = $_REQUEST['c'];
+
+	$updated = 0;
+
+	w('comment');
+
+	$rows = db_fetch_all($select);
+
+	foreach ($rows as $i) {
+		if (!isset($orst[$i['i']]) || !$orst[$i['i']]) { continue; }
+		if ($plan['cvendor']['value'] >= 0 && $plan['cvendor']['value'] != $i['vendor'] && $plan['cvendor']['value'] != 45) {
+			$count = db_result('SELECT count FROM sync WHERE store='.$i['store'].' AND vendor='.$plan['cvendor']['value']);
+			if (empty($count) || $count < $i['count']) {
+				$plan['cvendor']['value'] = 0;
+				$plan['cvendor']['iv'] = 1;
+				$rows = [];
+			}
+		}
+	}
+
+	foreach ($rows as $i) {
+		if (!isset($orst[$i['i']]) || !$orst[$i['i']]) { continue; }
+
+		//	\Flydom\Alert::warning($i['i']);
+		//	$type = $row['state'] == $plan['state']['value'] ? -1 : $plan['state']['value'];
+
+		if ($plan['cstaff']['value'] && $plan['cstaff']['value'] != $i['staff']) {
+			db_update('orst', array('staff'=>$plan['cstaff']['value'], 'last'=>$i['state'] < 30 ? \Config::now() : $i['last']), array('i'=>$i['i']));
+			comment_type('o'.$i['i'], -1, 'Связанное изменение менеджера ('.kv($plan['cstaff']['values'], $i['staff']).')');
+			$updated++;
+		}
+
+		if ($plan['camark']['value']) {
+			$mark2 = strlen($i['mark']) ? explode(',', trim($i['mark'], ',')) : array();
+			$mark2[] = $plan['camark']['value'];
+
+			$marks = cache_load('mark-name');
+			$mark = array();
+			foreach ($marks as $k=>$v) {
+				if (in_array($k, $mark2)) {
+					$mark[] = $k;
+				}
+			}
+
+			$mark = ','.implode(',', $mark).',';
+			if ($mark != $i['mark']) {
+				db_update('orst', array('mark'=>$mark, 'last'=>$i['state'] < 30 ? \Config::now() : $i['last']), array('i'=>$i['i']));
+				comment_type('o'.$i['i'], -1, 'Связанное добавление метки '.kv($plan['camark']['values'], $plan['camark']['value']));
+				$updated++;
+			}
+		}
+
+		if ($plan['cdmark']['value']) {
+			$mark = strlen($i['mark']) ? explode(',', trim($i['mark'], ',')) : array();
+			$mark = \Flydom\Arrau::remove($plan['cdmark']['value'], $mark);
+			$mark = count($mark) ? ','.implode(',', $mark).',' : '';
+
+			if ($mark != $i['mark']) {
+				db_update('orst', array('mark'=>$mark, 'last'=>$i['state'] < 30 ? \Config::now() : $i['last']), array('i'=>$i['i']));
+				comment_type('o'.$i['i'], -1, 'Связанное удаление метки '.kv($plan['cdmark']['values'], $plan['cdmark']['value']));
+				$updated++;
+			}
+		}
+
+		if ($plan['cpay']['value'] !== 'na' && $plan['cpay']['value'] != $i['pay']) {
+			db_update('orst', array('pay'=>$plan['pay']['value'], 'last'=>$i['state'] < 30 ? \Config::now() : $i['last']), array('i'=>$i['i']));
+			comment_type('o'.$i['i'], -1, 'Связанный способ предоплаты ('.kv($plan['cpay']['values'], $i['pay']).')');
+			$updated++;
+		}
+
+		if ($plan['cpay2']['value'] !== 'na' && $plan['cpay2']['value'] != $i['pay2']) {
+			db_update('orst', array('pay2'=>$plan['cpay2']['value'], 'last'=>$i['state'] < 30 ? \Config::now() : $i['last']), array('i'=>$i['i']));
+			comment_type('o'.$i['i'], -1, 'Связанный способ оплаты ('.kv($plan['cpay2']['values'], $i['pay2']).')');
+			$updated++;
+		}
+
+		if ($plan['cstate']['value'] && $plan['cstate']['value'] != $i['state']) {
+			// db_update('orst', array('state'=>$plan['cstate']['value'], 'last'=>$plan['cstate']['value'] < 30 || $i['state'] < 30 ? \Config::now() : $i['last']), array('i'=>$i['i'], 'state>0'));
+
+			$order = new \Order\Model($i);
+			$order->setState($plan['cstate']['value']);
+			$order->update();
+
+			comment_type('o'.$i['i'], $plan['cstate']['value'], 'Связанное изменение статуса ('.kv($plan['cstate']['values'], $i['state']).')');
+
+			/*
+			$data = array(
+				'orst'=>$i['i'],
+				'old'=>$i['state'],
+				'new'=>$plan['cstate']['value'],
+				'vendor'=>$i['vendor'],
+				'store'=>$i['store'],
+				'count'=>$i['count'],
+				'name'=>'товара ('.$i['name'].')',
+				'user'=>$i['user'],
+				'mpi'=>$i['mpi'],
+			);
+			w('order-update-state', $data);
+			*/
+
+			w('mail');
+			mail_order($i['user'], $i['i']);
+
+			$updated++;
+		}
+
+		if ($plan['cdost']['value'] >= 0 && $plan['cdost']['value'] != $i['dost']) {
+			db_update('orst', array('dost'=>$plan['cdost']['value'], 'last'=>$i['state'] < 30 ? \Config::now() : $i['last']), array('i'=>$i['i']));
+			comment_type('o'.$i['i'], -1, 'Связанный способ доставки ('.kv($plan['cdost']['values'], $i['dost']).')');
+
+			w('mail');
+			mail_order($i['user'], $i['i']);
+
+			$updated++;
+		}
+
+		if ($plan['cvendor']['value'] >= 0 && $plan['cvendor']['value'] != $i['vendor']) {
+			db_update('orst', array('vendor'=>$plan['cvendor']['value'], 'last'=>$i['state'] < 30 ? \Config::now() : $i['last']), array('i'=>$i['i']));
+			comment_type('o'.$i['i'], -1, 'Связанное изменение поставщика ('.kv($plan['cvendor']['values'], $i['vendor']).')');
+			$updated++;
+		}
+	}
+
+	if ($updated) {
+		\Flydom\Alert::warning('Обновлено заказов: '.$updated);
+	}
+}
+
+foreach ($linked as $i) {
+	$plan[$i]['value'] = $plan[$i]['default'];
+}
+
+
+// * * *
+
+
+w('calendar');
+
+w('pager');
+$q = pager_query($select, 200);
+//echo pager_block('?');
+
+$orst = array();
+while ($i = db_fetch($q)) {
+	$orst[$i['i']] = $i;
+}
+db_close($q);
+
+function short_values(&$plan, $key, $data, $default, $multi = false) {
+	$values = $plan[$key]['values'];
+	$short = $multi ? array() : array_slice($values, 0, 1, true);
+
+	if( ($multi && count($plan[$key]['value']) == 0) || (!$multi && $plan[$key]['value'] == $default) ) {
+		foreach ($data as $i) {
+			$short[$i[$key]] = kv($values, $i[$key]);
+		}
+//	} else {
+//		$short[$plan[$key]['value']] = kv($values, $plan[$key]['value']);
+		$plan[$key]['values'] = $short;
+	} else {
+		if (!$multi) {
+			$value = $plan[$key]['value'];
+			$short[$value] = kv($values, $value);
+			foreach ($values as $k=>$v) {
+				if( !isset($short[$k]) ) {
+					$short[$k] = $v;
+				}
+			}
+			$plan[$key]['values'] = $short;
+		}
+	}
+}
+
+short_values($plan, 'vendor', $orst, $default['vendor']);
+short_values($plan, 'cire', $orst, $default['cire']);
+short_values($plan, 'staff', $orst, $default['staff']);
+
+function echo_sort($name, $code, $sort) {
+	$here = 0;
+	$rev = 0;
+	if ($code == ($sort - 100)) { $here = 1; $rev = 1; }
+	if ($code == $sort) { $here = 1; }
+
+	echo '<a href="?sort='.(!$rev && $here ? $code+100 : $code).'">'.$name;
+	if ($here) {
+		if ($rev) {
+			echo '&nbsp;&uarr;';
+		} else {
+			echo '&nbsp;&darr;';
+		}
+	}
+	echo '</a>';
+}
+$sort = $plan['sort']['value'];
+
+?>
+
+<div style="min-height:300px">
+<table class="table table-sm" id="orst">
+<form class="form-inline auto" method="POST">
+<thead>
+	<tr>
+		<th><? echo input_line($plan['num']); ?></th>
+<? if ($marketplace) { ?>
+		<th><? echo input_line($plan['mpi']); ?></th>
+		<th><? echo input_line($plan['mpdt']); ?></th>
+<? } ?>
+		<th><? if (!$filter_user) { echo input_line($plan['user']); } ?></th>
+		<th><? echo input_combo($plan['staff']); ?></th>
+		<th><? if (!$filter_store) { echo input_line($plan['store']); } ?></th>
+		<? if ($show_code) echo '<th>&nbsp;</th>'; ?>
+		<th colspan=4 style="min-width:220px">
+			<div class="form-inline">
+				<? echo input_date($plan['dt1']); ?>
+				&nbsp;
+				<? echo input_date($plan['dt2']); ?>
+			</div>
+		</th>
+		<th><? echo input_combo($plan['pay']); ?></th>
+		<th><? echo input_dropcheck($plan['state']); ?></th>
+		<th style="max-width:120px"><? echo input_cire($plan['cire']); ?></th>
+		<th><? echo input_dropcheck($plan['dost']); ?></th>
+		<th><? echo input_combo($plan['vendor']); ?></th>
+		<th nowrap>
+			<button name="send1" class="btn btn-default hidden"><i class="fa fa-search"></i></button>
+			<button name="send2" class="btn btn-default"><i class="fa fa-briefcase"></i></button>
+			<button name="send3" class="btn btn-default" onclick="return confirm('Сохранить настройки фильтра?')"><i class="fa fa-save"></i></button>
+			<button name="send4" class="btn btn-default"><i class="fa fa-close"></i></button>
+		</th>
+		<th><? echo input_dropcheck($plan['mark']); ?></th>
+	</tr>
+	<tr>
+		<th nowrap><? if (\User::is('link') || $filter_user) { ?>
+			<input type="checkbox" name="link" value=1 class="auto"<? if ($plan['link']['value']) { echo ' checked'; } ?>>
+			<input type=hidden name="link--" />
+		<? } ?>
+			<? echo_sort('#', 5, $sort); ?>, <? echo_sort('Дата', 1, $sort); ?></th>
+<? if ($marketplace) { ?>
+		<th class="text-center">№</th>
+		<th><? echo_sort('Доставка', 16, $sort); ?></th>
+<? } ?>
+		<th><? if (!$filter_user) { echo_sort('Пользователь', 2, $sort); } ?></th>
+		<th><? echo_sort('Менеджер', 14, $sort); ?></th>
+		<th><? if (!$filter_store) { echo_sort('Наименование', 4, $sort); } ?></th>
+		<? if ($show_code) { echo '<th>'; echo_sort('Артикул', 17, $sort); echo '</th>'; } ?>
+		<th class="text-right"><? echo_sort('Цена', 6, $sort); ?></th>
+		<th class="text-right"><? echo_sort('шт.', 8, $sort); ?></th>
+		<th class="text-right"><? echo_sort('Сумма', 7, $sort); ?></th>
+		<th class="text-right"><? echo_sort('Оплачено', 9, $sort); ?></th>
+		<th class="text-center"><? echo_sort('Оплата', 11, $sort); ?></th>
+		<th class="text-center"><? echo_sort('Статус', 3, $sort); ?></th>
+		<th class="text-center"><? echo_sort('Город', 13, $sort); ?></th>
+		<th class="text-center"><? echo_sort('Доставка', 10, $sort); ?></th>
+		<th class="text-center"><? echo_sort('Поставщик', 12, $sort); ?></th>
+		<th>Комментарий</th>
+		<th class="text-center"><? echo_sort('Метки', 15, $sort); ?></th>
+	</tr>
+<? if ($plan['link']['value']) { ?>
+	<tr>
+		<td>
+			<button class="btn btn-sm btn-default" type="button" onclick="$('#orders').find(':checkbox').prop('checked', true); return false;"><i class="fa fa-check-square"></i></button>
+			<button class="btn btn-sm btn-default" type="button" onclick="$('#orders').find(':checkbox').prop('checked', false); return false;"><i class="fa fa-square"></i></button>
+		</td>
+<? if ($marketplace) { ?>
+		<td></td>
+		<td></td>
+<? } ?>
+		<td></td>
+		<td colspan=1><? echo input_combo($plan['cstaff']); ?></td>
+		<td colspan=<? echo $show_code ? 4 : 3 ?>></td>
+		<td colspan=2><? echo input_combo($plan['cpay']); ?></td>
+		<td colspan=1><? echo input_combo($plan['cpay2']); ?></td>
+		<td colspan=1><? echo input_combo($plan['cstate']); ?></td>
+		<td colspan=1></td>
+		<td colspan=1><? echo input_combo($plan['cdost']); ?></td>
+		<td colspan=1><? echo input_combo($plan['cvendor']); ?></td>
+		<td colspan=1><? echo input_combo($plan['camark']); ?></td>
+		<td colspan=1><? echo input_combo($plan['cdmark']); ?></td>
+	</tr>
+<? } ?>
+</thead>
+<tbody id="orders">
+<?
+
+function echo_check($order) {
+	$checked = isset($_REQUEST['c']) && is_array($_REQUEST['c']) && isset($_REQUEST['c'][$order]) && $_REQUEST['c'][$order];
+	return '<input type="checkbox" name="c['.$order.']" value=1'.($checked ? ' checked' : '').'>';
+}
+
+
+$cire = cache_load('city');
+$staff = cache_load('staff');
+
+$state = w('order-state');
+$colors = w('order-state-color');
+
+$pay = w('list-pay');
+$dost = w('list-dost');
+$vendor = array(0=>'') + cache_load('vendor');
+
+$total = 0;
+$items = 0;
+
+w('show-files');
+$style = array('icon'=>1, 'name'=>0, 'class'=>'', 'prefix'=>' ');
+$style_docs = array('icon'=>1, 'name'=>0, 'prefix'=>' ');
+
+$mark_name = cache_load('mark-name');
+$mark_info = cache_load('mark-info');
+$mark_color = cache_load('mark-color');
+
+$marks = array();
+foreach ($mark_name as $k=>$v) {
+	$marks[$k] = '<span class="badge badge-'.kv($mark_color, $k).'" title="'.kv($mark_info, $k).'">'.$v.'</span>';
+}
+
+w('ft');
+w('user-name');
+foreach ($orst as $k=>$v) {
+	$name = trim($v['user_name']);
+
+	echo '<tr'.($colors[$v['state']] == '' ? '' : ' class='.$colors[$v['state']]).'>'
+.'<td>';
+	if ($plan['link']['value']) {
+		echo echo_check($v['i']).' ';
+	}
+
+
+	echo '<a href="/order/'.$k.'">'.$k.', '.ft($v['dt'], 2).' '.ft($v['dt']).'</a></td>'
+.($marketplace ? '<td>'.$v['mpi'].'</td><td>'.($v['mpdt'] ? ft($v['mpdt']) : '').'</td>' : '')
+.'<td>'.($filter_user ? '' : user_name($v['user'], $v['user_name'], $v['user_color'])).'</td>'
+.'<td>'.kv($staff, $v['staff'], '').'</td>';
+
+	if ($plan['group']['value']) {
+		echo '<td><a href="/order?user='.$v['user'].'">'.$v['name'].'&nbsp;наименований</a></td>';
+	} else {
+		if (!$filter_store) {
+			echo '<td><a href="/store/'.$v['url'].'">'.$v['name'].'</a></td>';
+		} else {
+			echo '<td></td>';
+		}
+	}
+
+	if ($show_code) {
+		echo '<td>'.($v['code'] ? $v['code'] : '&nbsp;').'</td>';
+	}
+
+	echo '<td class="text-right" nowrap>'.number_format($v['price'], 0, '.', ' ').'</td>'
+.'<td class="text-right">'.$v['count'].'</td>'
+.'<td class="text-right" nowrap>'.number_format($v['total'], 0, '.', ' ').'</td>'
+.'<td class="text-right" nowrap>'.number_format($v['mon'], 0, '.', ' ').'</td>'
+.'<td>'.$pay[$v['pay2']].'</td>'
+.'<td>'.$state[$v['state']].'</td>'
+.'<td>'.kv($cire, $v['cire']).'</td>'
+.'<td>'.$dost[$v['dost']].'</td>'
+.'<td>'.kv($vendor, $v['vendor']).'</td>'
+.'<td>'.show_files($v['files'], $style).' '.show_files($v['docs'], $style_docs).' '.$v['info'].' <i>'.$v['note'].'</i></td>'
+.'<td>';
+	$mark = explode(',', trim($v['mark'], ','));
+	foreach ($mark as $i) {
+		if (isset($marks[$i])) {
+			echo $marks[$i].' ';
+		}
+	}
+
+	echo '</td>'
+.'</tr>';
+
+	$total+= $v['price']*$v['count'];
+	$items+= $v['count'];
+}
+
+echo '<tr><td colspan=16>Итого <b>'.$items.'</b> товаров на сумму: <b>'.number_format($total, 0, '.', ' ').'</b> рублей.<input type="hidden" name="finish" value=1></td></tr>';
+
+?>
+</tbody>
+</form>
+</table>
+<? echo pager_block('?'); ?>
+</div>
+<script>
+$(document).on('click', '.dropcheck .dropdown-menu', function (e) {
+	e.stopPropagation();
+});
+</script>

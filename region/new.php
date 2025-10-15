@@ -10,7 +10,7 @@ if ($plan['']['valid'] && $plan['send']['value']==1) {
 		'name' => $region,
 		'w' => $plan['w']['value'],
 	));
-	redirect('.', 302);
+	\Page::redirect('.', 302);
 }
 
 $config['plan'] = $plan;

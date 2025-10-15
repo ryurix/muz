@@ -38,12 +38,12 @@ class Sitemap {
 
 		w('clean');
 
-		$f = fopen($config['root'].'files/sitemap'.$suffix.'.xml', 'w+');
+		$f = fopen(\Config::ROOT.'files/sitemap'.$suffix.'.xml', 'w+');
 
 		fwrite($f, '<?xml version="1.0" encoding="UTF-8"?>'."\n"
 		.'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
 
-		self::echo_url($f, rtrim($site, '/'), now());
+		self::echo_url($f, rtrim($site, '/'), \Config::now());
 		self::echo_url($f, $site.'catalog', 0, 0, 1);
 
 		$catalog = cache_load('catalog');
@@ -86,7 +86,7 @@ class Sitemap {
 		$q = db_query('SELECT catalog.i,catalog.dt,subcat.code,catalog.name2 FROM subcat LEFT JOIN catalog ON subcat.up=catalog.i');
 		while ($i = db_fetch($q)) {
 			$dt = $i['dt'];
-			$mindt = now() - 24*60*60 * 31;
+			$mindt = \Config::now() - 24*60*60 * 31;
 			if ($dt < $mindt) { $dt = 0; }
 
 			$url = $site.'catalog/'.$i['i'].'-'.str2url($i['name2']).'/'.$i['code'];
@@ -95,8 +95,8 @@ class Sitemap {
 		db_close($q);
 		*/
 
-		db_query('UPDATE catalog SET dt='.now().' WHERE dt IS NULL');
-		db_query('UPDATE menu SET dt='.now().' WHERE dt IS NULL');
+		db_query('UPDATE catalog SET dt='.\Config::now().' WHERE dt IS NULL');
+		db_query('UPDATE menu SET dt='.\Config::now().' WHERE dt IS NULL');
 
 		fwrite($f, '</urlset>');
 		fclose($f);
@@ -112,8 +112,8 @@ class Sitemap {
 
 		for ($page = 2; $page <= ($pages + 1); $page++) {
 
-			$f = fopen($config['root'].'files/sitemap'.$page.$suffix.'.xml', 'w+');
-			//print_pre($config['root']);
+			$f = fopen(\Config::ROOT.'files/sitemap'.$page.$suffix.'.xml', 'w+');
+			//print_pre(\Config::ROOT);
 
 			fwrite($f, '<?xml version="1.0" encoding="UTF-8"?>
 			<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -166,7 +166,7 @@ class Sitemap {
 	}
 
 	static protected function echo_url($f, $loc, $dt = 0, $freq = 'monthly', $level = 0) {
-		$mindt = now() - 24*60*60 * 31;
+		$mindt = \Config::now() - 24*60*60 * 31;
 		if ($dt < $mindt) { $dt = 0; }
 
 		fwrite($f, '<url>'."\n".'<loc>'.$loc.'</loc>'."\n"

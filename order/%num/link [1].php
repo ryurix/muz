@@ -33,16 +33,16 @@ $select = 'SELECT orst.i i'
 .' FROM orst'
 .' LEFT JOIN user ON orst.user=user.i'
 .' LEFT JOIN user s ON orst.staff=s.i'
-.' WHERE orst.i="'.$config['args'][0].'"';
+.' WHERE orst.i="'.\Page::arg().'"';
 
 $q = db_query($select);
 $root = '/order';
 
-//alert($select);
+//\Flydom\Alert::warning($select);
 
 if ($row = db_fetch($q)) {
 	w('ft');
-	$config['name'] = 'Заказ №'.$row['i'].' от '.ft($row['dt'], 1).' &mdash; '.ft($row['last'], 1);
+	\Page::name('Заказ №'.$row['i'].' от '.ft($row['dt'], 1).' &mdash; '.ft($row['last'], 1));
 
 	w('clean');
 	$ids = isset($_REQUEST['id']) && is_array($_REQUEST['id']) ? $_REQUEST['id'] : array();
@@ -59,13 +59,13 @@ if ($row = db_fetch($q)) {
 		$q = db_query($select);
 		while ($i = db_fetch($q)) {
 			if ($i['state'] != $state) {
-				db_update('orst', array('state'=>$state, 'last'=>now()), array('i'=>$i['i']));
+				db_update('orst', array('state'=>$state, 'last'=>\Config::now()), array('i'=>$i['i']));
 				mail_order($i['user'], $i['i']);
 				comment_type('o'.$i['i'], $state, ''); // 'Связанные: Состояние ('.$states[$i['state']].')'
 
 				if ($i['state'] == 1 && $state > 1 && $state <= 30) {
 					$text = $i['sklad'].' '.$i['scount'].' - '.$i['count'].' = '.($i['scount'] - $i['count']);
-					alert('Количество товара на складе '.$text);
+					\Flydom\Alert::warning('Количество товара на складе '.$text);
 
 					db_query('UPDATE sync SET count=count-'.$i['count']
 						.' WHERE vendor='.$i['vendor'].' AND store='.$i['store']);
@@ -78,7 +78,7 @@ if ($row = db_fetch($q)) {
 
 				if ($i['state'] > 1 && $state < 35 && $state == 1) {
 					$text = $i['sklad'].' '.$i['scount'].' + '.$i['count'].' = '.($i['scount'] + $i['count']);
-					alert('Количество товара на складе '.$text);
+					\Flydom\Alert::warning('Количество товара на складе '.$text);
 
 					db_query('UPDATE sync SET count=count+'.$i['count']
 						.' WHERE vendor='.$i['vendor'].' AND store='.$i['store']);
@@ -91,7 +91,7 @@ if ($row = db_fetch($q)) {
 
 				if ($i['state'] > 1 && $state != 35 && $state == 35) {
 					$text = $i['sklad'].' '.$i['scount'].' + '.$i['count'].' = '.($i['scount'] + $i['count']);
-					alert('Количество товара на складе '.$text);
+					\Flydom\Alert::warning('Количество товара на складе '.$text);
 
 					db_query('UPDATE sync SET count=count+'.$i['count']
 						.' WHERE vendor='.$i['vendor'].' AND store='.$i['store']);
@@ -118,12 +118,12 @@ if ($row = db_fetch($q)) {
 		foreach ($ids as $i) {
 			$orders[] = '<a href="/order/'.$i.'">№'.$i.'</a>';
 		}
-		alert('Состояние документов: '.implode(', ', $orders).' изменено на '.$states[$state]);
+		\Flydom\Alert::warning('Состояние документов: '.implode(', ', $orders).' изменено на '.$states[$state]);
 	}
 
 	$config['row'] = $row;
 } else {
-	redirect($root);
+	\Page::redirect($root);
 }
 
 ?>

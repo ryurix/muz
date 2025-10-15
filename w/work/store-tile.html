@@ -1,0 +1,151 @@
+<?
+
+w('gtm');
+
+$select = 'SELECT store.i i'
+.',store.up up'
+.',store.code code'
+.',store.quick quick'
+.',store.tag0 tag0'
+.',store.tag1 tag1'
+.',store.tag2 tag2'
+.',store.tag3 tag3'
+.',store.hide hide'
+.',store.sign1 sign1'
+.',store.sign2 sign2'
+.',store.sign4 sign4'
+.',store.name name'
+.',store.model model'
+.',store.sync sync'
+.',store.vendor vendor'
+.',store.short short'
+.',speed2.speed speed'
+.',store.city city'
+.',store.icon icon'
+.',store.mini mini'
+.',store.pic pic'
+.',store.pics pics'
+.',store.files files'
+.',store.price price'
+.',store.sale sale'
+.',store.count count'
+.',store.user user'
+.',store.dt dt'
+.',store.info info'
+.',store.w w'
+.',store.filter filter'
+.',store.brand brand'
+.',IF(store.price > 0, 0, 1) worth'
+.',IF(store.count > 0, 0, 1) avail'
+.' FROM store,speed2'
+.' WHERE speed2.vendor=store.vendor AND hide<=0 AND speed2.cire='.$_SESSION['city'].' AND '.$args['where'].$config['tools'];
+
+/*
+echo '<!--';
+print_pre($select);
+echo '-->';
+*/
+
+$onpage = isset($_SESSION['onpage']) ? $_SESSION['onpage'] : 32;
+w('pager');
+$q = pager_query($select, $onpage);
+
+echo pager_block('?', 0, $args['search']);
+
+/*
+if (\User::is('admin')) {
+	//print_pre($select);
+	\Flydom\Alert::warning($select);
+}
+//*/
+
+?>
+<div id="shop"><section class="container"><div class="row">
+<?
+
+$sign2 = cache_load('sign2');
+$brand = cache_load('brand');
+
+$count = 0;
+while ($i = db_fetch($q)) {
+	$count++;
+	$name = '';
+	$itemBrand = "";
+	if (isset($brand[$i['brand']]) && strlen($brand[$i['brand']])) {
+		$itemBrand = $name = $brand[$i['brand']];
+	}
+	if (strlen($i['model'])) {
+		$name.= ' '.$i['model'];
+	}
+	$name.= ' '.$i['name'];
+
+	$href = '/store/'.$i['i'].'-'.str2url($name);
+	$img = strlen($i['icon']) > 0 ? $i['icon'] : '/design/default.png';
+	if ($i['price'] > 0) {
+		$buy = 'КУПИТЬ';
+		$price = '<small class="styleColor">'.number_format($i['price'], 0, '.', ' ').' р.</small>';
+	} else {
+		$buy = 'ЗАКАЗАТЬ';
+		$price = '';
+	}
+	$price = ' <span style="float:left">'.$price.'</span><div class="text-right">'.my_speed($i['vendor'], 0, $i['count']).'</div>';
+	// .($i['count'] > 0 ? ' '.$i['count'].' шт.' : '')
+?>
+<div class="col-sm-6 col-md-3">
+<div class="item-box fixed-box">
+<figure>
+	<?
+
+if ($i['sign1'] || $i['sign2'] || $i['sign4']) {
+	echo '<div class="sign">';
+	echo $i['sign1'] ? '<img src="'.$sign2[$i['sign1']].'" class="sign">' : '';
+	echo $i['sign2'] ? '<img src="'.$sign2[$i['sign2']].'" class="sign">' : '';
+	echo $i['sign4'] ? '<img src="'.$sign2[$i['sign4']].'" class="sign">' : '';
+	echo '</div>';
+}
+
+	?>
+	<a class="item-hover" href="<? echo $href ?>">
+		<span class="overlay color2"></span>
+		<span class="inner"><span class="block fa fa-plus fsize20"></span>
+		ОПИСАНИЕ
+		<strong>ТОВАРА</strong></span>
+	</a>
+	<a href="#" class="btn btn-primary add_to_cart" data-category="<?=gtm_catalog_fullname($i["up"]);?>" data-brand="<?=htmlspecialchars($itemBrand);?>" data-name="<?=htmlspecialchars($name);?>" data-price="<?=$i['price'];?>" data-i=<?=$i['i'];?>>
+		<i class="fa fa-shopping-cart"></i> <? echo $buy ?>
+	</a>
+	<img class="img-responsive" src="<? echo strlen($img) ? $img : '/design/default.png' ?>" width="260" height="260" alt>
+</figure>
+<div class="item-box-desc">
+	<a href="<? echo $href ?>"><h4><? echo $name ?></h4></a>
+	<? echo $price ?>
+</div>
+</div>
+</div>
+<?
+/*
+	$hide = $i['hide']==1 ? '" class="hidden' : '';
+
+	echo '<td><a href="/store/'.$i['i'].'-'.str2url($name).$hide.'"><img title="'.htmlspecialchars($i['short']).'" src="'
+.(strlen($i['icon']) > 0 ? $i['icon'] : '/design/default.png').'">'
+.'<h4>'.$name.'</h4></a>';
+
+	if ($i['price'] > 0) {
+		$buy = $i['count'] > 0 ? 'Купить' : 'Сделать запрос';
+		echo '<div><span class="price2">'.number_format($i['price'], 0, '.', ' ').'</span> <small>руб</small>'
+.' <button class="btn btn-mini btn-primary buy" data-i="'.$i['i'].'">'.$buy.'</button></div>';
+	} else {
+		echo '<div><button class="btn btn-mini btn-primary buy" data-i="'.$i['i'].'">Заказать</button></div>';
+	}
+	echo '<div>'.my_speed($i['vendor'], 0, $i['count']).($i['count'] > 0 ? ' <span class="label">'.$i['count'].' шт.</span>' : '').'</div>';
+	echo '</div>';
+*/
+}
+
+?>
+</div></section></div>
+<?
+
+echo pager_block('?', 0, $args['search']);
+
+?>

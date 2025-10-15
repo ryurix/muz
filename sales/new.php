@@ -21,7 +21,7 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	$data = array(
 		'code'=>u8upper(clean_alpha($plan['code']['value'])),
 		'name'=>$plan['name']['value'],
-		'dt'=>now(),
+		'dt'=>\Config::now(),
 		'user'=>$_SESSION['i'],
 		'dt2'=>$plan['dt2']['value'],
 		'perc'=>$plan['perc']['value'],
@@ -30,8 +30,8 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 		'brand'=>implode(',', $plan['brand']['value']),
 	);
 	db_insert('sale', $data);
-	alert('Скидка добавлена');
-	redirect('/sales/list');
+	\Flydom\Alert::warning('Скидка добавлена');
+	\Page::redirect('/sales/list');
 } else {
 	$config['plan'] = $plan;
 }

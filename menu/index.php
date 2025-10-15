@@ -1,9 +1,6 @@
 <?
 
-$config['action'] = array(
-	array('href'=>'/menu/new', 'action'=>'<i class="fa fa-plus"></i> Добавить')
-);
-
+\Action::before('/menu/new', '<i class="fa fa-plus"></i> Добавить');
 
 $rows = array();
 
@@ -48,7 +45,7 @@ $rows = array('<ul>');
 foreach ($tree as $i) {
 
 	if (strcmp($i['up'], $pre['up']) != 0) {
-		
+
 		if (strcmp($i['up'], $pre['code']) == 0) {
 			$rows[] = '<ul>';
 			$ups[] = $i['up'];

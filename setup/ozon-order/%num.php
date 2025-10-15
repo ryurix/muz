@@ -1,6 +1,6 @@
 <?
 
-$code = $config['args'][0];
+$code = \Page::arg();
 
 $row = 0;
 if ($code) {
@@ -8,7 +8,7 @@ if ($code) {
 	$row = db_fetch($q);
 
 	if (!$row) {
-		redirect('/setup/ozon');
+		\Page::redirect('/setup/ozon');
 	}
 }
 
@@ -17,13 +17,13 @@ if (!$row) {
 		'i'=>0,
 		'typ'=>10,
 		'name'=>'Новая выгрузка',
-		'dt'=>now() + 24*60*60,
+		'dt'=>\Config::now() + 24*60*60,
 		'every'=>86400,
 		'data'=>'',
 	);
 }
 
-$config['name'] = $row['name'];
+\Page::name($row['name']);
 
 $data = array_decode($row['data']);
 $data['name'] = $row['name'];
@@ -70,7 +70,7 @@ w('invalid', $plan);
 
 if ($plan['send']['value'] == 3) {
 	\Db::delete('cron', ['i'=>$row['i']]);
-	redirect('.');
+	\Page::redirect('.');
 }
 
 if ($plan['']['valid']) {
@@ -93,7 +93,7 @@ if ($plan['']['valid']) {
 			'form'=>$plan['form']['value'],
 			'name'=>$plan['name']['value'],
 			'info'=>'',
-			'dt'=>now() + $plan['every']['value'],
+			'dt'=>\Config::now() + $plan['every']['value'],
 			'every'=>$plan['every']['value'],
 			'time'=>$plan['time']['value'],
 			'week'=>$plan['week']['value'],
@@ -103,30 +103,30 @@ if ($plan['']['valid']) {
 
 		if ($new['every'] == 1) {
 			w('cron-tools');
-			$new['dt'] = cron_next(now(), $data);
+			$new['dt'] = cron_next(\Config::now(), $data);
 		}
 
 		if ($row['i']) {
 			db_update('cron', $new, array('i'=>$row['i']));
-			alert('Выгрузка сохранена');
-			redirect('/setup/ozon');
+			\Flydom\Alert::warning('Выгрузка сохранена');
+			\Page::redirect('/setup/ozon');
 		} else {
 			db_insert('cron', $new);
-			alert('Выгрузка создана!');
-			redirect('/setup/ozon');
+			\Flydom\Alert::warning('Выгрузка создана!');
+			\Page::redirect('/setup/ozon');
 		}
 	}
 
 	if ($plan['send']['value'] == 2) {
 		$data['alert'] = 1;
 		$count = w('ozon', $data);
-		alert('Выгрузка выполнена! Выгружено товаров: '.$count);
+		\Flydom\Alert::warning('Выгрузка выполнена! Выгружено товаров: '.$count);
 		if ($row['i']) {
 			w('ft');
 			db_update('cron', array(
-				'info'=>'('.$count.') '.ft(now(), 1),
+				'info'=>'('.$count.') '.ft(\Config::now(), 1),
 			), array('i'=>$row['i']));
-//			redirect('/setup/ozon');
+//			\Page::redirect('/setup/ozon');
 		}
 	}
 }

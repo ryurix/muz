@@ -33,8 +33,7 @@ while ($row = db_fetch($q)) {
 		$count++;
 		$filename = '/files/dyna/'.$row['store'].'/'.$row['store'].'-'.$count.'.jpg';
 		clean_watermark($i, $filename);
-		alert('<a href="'.$filename.'">'.$filename.'</a>');
-		w('alert');
+		\Flydom\Alert::warning('<a href="'.$filename.'">'.$filename.'</a>', true);
 		$clean[] = $filename;
 	}
 

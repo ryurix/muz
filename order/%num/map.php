@@ -36,20 +36,20 @@ $select = 'SELECT orst.i i'
 .' FROM orst'
 .' LEFT JOIN user ON orst.user=user.i'
 .' LEFT JOIN user s ON orst.staff=s.i'
-.' WHERE orst.i="'.$config['args'][0].'"';
+.' WHERE orst.i="'.\Page::arg().'"';
 
 $q = db_query($select);
 $root = '/order';
 
-//alert($select);
+//\Flydom\Alert::warning($select);
 
 if ($row = db_fetch($q)) {
 	w('ft');
-	$config['name'] = 'Заказ №'.$row['i'].' от '.ft($row['dt'], 1).' &mdash; '.ft($row['last'], 1);
+	\Page::name('Заказ №'.$row['i'].' от '.ft($row['dt'], 1).' &mdash; '.ft($row['last'], 1));
 
 	$config['row'] = $row;
 } else {
-	redirect($root);
+	\Page::redirect($root);
 }
 
 ?>

@@ -19,8 +19,8 @@ $mark = array(0=>'Нет меток') + cache_load('mark-name');
 $default = array(
 	'link'=>0,
 	'num'=>'',
-	'dt1'=>now() - 60*60*24*365,
-	'dt2'=>ft_parse(ft(now())) + 24*60*60 - 1,
+	'dt1'=>\Config::now() - 60*60*24*365,
+	'dt2'=>ft_parse(ft(\Config::now())) + 24*60*60 - 1,
 //	'staff'=>0,
 //	'cire'=>'na',
 	'user'=>'',
@@ -93,7 +93,7 @@ $plan = array(
 	'send'=>array('name'=>'', 'type'=>'button', 'count'=>4, 1=>'Фильтровать', 2=>'Загрузить по умолчанию', 3=>'Сохранить по умолчанию', 4=>'Сбросить'),
 );
 
-if (is_user('ones')) {
+if (\User::is('ones')) {
 	$plan['staff']['type'] = 'hidden';
 	$plan['staff']['value'] = $_SESSION['i'];
 }
@@ -181,7 +181,7 @@ if (strlen($plan['user']['value'])) {
 }
 
 
-if (is_user('ones')) {
+if (\User::is('ones')) {
 	$where_user.= ' AND orst.staff='.$_SESSION['i'];
 }
 
@@ -251,7 +251,7 @@ if (count($plan['mark']['value']) && !kv($config, 'DEBUG', 0)) {
 		if ($i) {
 			$or[] = '(orst.mark LIKE "%,'.$i.',%")';
 		} else {
-			$or[] = '(orst.mark="" OR orst.mark IS NULL)';			
+			$or[] = '(orst.mark="" OR orst.mark IS NULL)';
 		}
 	}
 	$select.= ' AND ('.implode(' OR ', $or).')';
@@ -334,7 +334,7 @@ function echo_sort($name, $code, $sort) {
 	$here = 0;
 	$rev = 0;
 	if ($code == ($sort - 100)) { $here = 1; $rev = 1; }
-	if ($code == $sort) { $here = 1; } 
+	if ($code == $sort) { $here = 1; }
 
 	echo '<a href="/auto?sort='.(!$rev && $here ? $code+100 : $code).'">'.$name;
 	if ($here) {
@@ -342,7 +342,7 @@ function echo_sort($name, $code, $sort) {
 			echo '&nbsp;&uarr;';
 		} else {
 			echo '&nbsp;&darr;';
-		}		
+		}
 	}
 	echo '</a>';
 }

@@ -8,7 +8,7 @@ class Reserve {
 		\Db::insert('reserve', [
 			'orst'=>$orst,
 			'store'=>$store,
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'cnt'=>$count
 		]);
 	}
@@ -28,7 +28,7 @@ class Reserve {
 
 	static function update($orst, $store, $count) {
 		\Db::update('reserve', [
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'cnt'=>$count,
 		], [
 			'orst'=>$orst,

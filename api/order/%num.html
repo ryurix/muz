@@ -1,6 +1,6 @@
 <?php
 
-$id = $config['args'][0];
+$id = \Page::arg();
 
 $row = \Db::fetchRow(\Db::select('*', 'orst', ['i'=>$id]));
 

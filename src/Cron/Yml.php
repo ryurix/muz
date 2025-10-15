@@ -50,7 +50,7 @@ class Yml extends Task {
 
 		fwrite($f, '<?xml version="1.0" encoding="UTF-8"?>
 		<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
-		<yml_catalog date="'.date('Y-m-d\TH:i+03:00', now()-2*60*60).'">
+		<yml_catalog date="'.date('Y-m-d\TH:i+03:00', \Config::now()-2*60*60).'">
 			<shop>
 				<name>'.\Config::TITLE.'</name>
 				<company>ООО "КАЙРОС"</company>
@@ -87,7 +87,7 @@ class Yml extends Task {
 			$vendor = '';
 		}
 
-		$dt = now() - 30*24*60*60;
+		$dt = \Config::now() - 30*24*60*60;
 		if ($data['form'] == self::DYNATONE) {
 			$select = 'SELECT store.*,ven.count,dyna.pic dpic,dyna.pics dpics,dyna.info dinfo,dyna.size FROM dyna,store INNER JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE store.i=dyna.store AND hide<=0'.$andNotHidden;
 		} else {
@@ -99,12 +99,12 @@ class Yml extends Task {
 		$price2 = kv($data, 'price2', 1000000);
 		if ($price2) { $select.= ' AND '.$price2.'>=price'; }
 
-		$q = db_query($select);
+		$rows = \Flydom\Memcached::fetchAll($select);
 
 		$reserve = \Tool\Reserve::get();
 		$brands = cache_load('brand');
 		$count = 0;
-		while ($i = db_fetch($q)) {
+		foreach ($rows as $i) {
 			if (!isset($pathway[$i['up']]) || !strlen($i['name']) || !strlen($i['pic'])) {
 				continue;
 			}

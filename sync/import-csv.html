@@ -87,7 +87,7 @@ if ($plan['']['valid'] && $plan['send']['value'] > 0) {
 	$upd_store = 0;
 
 //	Импорт
-//	$file = $config['root'].'files/export.csv';
+//	$file = \Config::ROOT.'files/export.csv';
 
 	//	echo '<p>Импорт: '.$file.'</p>';
 
@@ -255,9 +255,9 @@ if ($plan['']['valid'] && $plan['send']['value'] > 0) {
 			db_query('DELETE FROM catalog WHERE i IN ('.implode(',', $diff_catalog).')');
 		}
 	} else {
-		alert('Более двадцати разделов подлежат на удалению. Возможна ошибка. Процесс установлен.', 'danger');
+		\Flydom\Alert::warning('Более двадцати разделов подлежат на удалению. Возможна ошибка. Процесс установлен.');
 	}
-	alert('Обновлено '.$upd_catalog.', удалено '.count($diff_catalog).' разделов из '.count($pre_catalog).'.');
+	\Flydom\Alert::warning('Обновлено '.$upd_catalog.', удалено '.count($diff_catalog).' разделов из '.count($pre_catalog).'.');
 //	print_pre($diff_catalog);
 
 	$diff_store = array_diff($pre_store, $new_store);
@@ -267,12 +267,12 @@ if ($plan['']['valid'] && $plan['send']['value'] > 0) {
 			db_query('DELETE FROM store WHERE i IN ('.implode(',', $diff_store).')');
 		}
 	} else {
-		alert('Более ста товаров подлежат удалению. Возможна ошибка. Процесс установлен.', 'danger');
+		\Flydom\Alert::warning('Более ста товаров подлежат удалению. Возможна ошибка. Процесс установлен.');
 	}
-	alert('Обновлено '.$upd_store.', удалено '.count($diff_store).' товаров из '.count($pre_store).'.');
+	\Flydom\Alert::warning('Обновлено '.$upd_store.', удалено '.count($diff_store).' товаров из '.count($pre_store).'.');
 //	print_pre($diff_store);
 
-	w('alert');
+	echo \Flydom\Alert::build();
 }
 
 ?>

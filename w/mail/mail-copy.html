@@ -1,0 +1,40 @@
+<?
+
+$q = db_query('SELECT CONCAT_WS(" ", tp.namei, tp.nameo) tp_name'
+.' FROM user tp WHERE user.i='.$args);
+
+function title() {
+	$roles = $_SESSION['roles'];
+	if (in_array('pm', $roles)) {
+		return 'менеджера';
+	} elseif (strpos($s, " pay ") !== FALSE) {
+		return 'бухгалтера';
+	} elseif (strpos($s, " order ") !== FALSE) {
+		return 'заказчика';
+	} else {
+		return 'пользователя';
+	}
+}
+
+w('ft');
+if ($i = db_fetch($q)) {
+	$body = '<p>Добрый день, '.$i['tp_name'].'!</p>'
+	.'<p>Ваша <b>заявка</b> на визит в '
+	.$i['visit_name']
+	.' г.'.$i['city_name']
+	.' '.$i['visit_place']
+	.' '.ft($i['my_dt_visit'], 1)
+	.' <b>отклонена</b>.</p>'
+	.'<p>С уважением,<br />коллектив Югра Маркетинг<br />';
+
+	db_insert('mail', array(
+		'user'=>$i['tp_i'],
+		'back'=>$_SESSION['i'],
+		'dt'=>\Config::now(),
+		'state'=>0,
+		'body'=>$body
+	));
+	cache_delete('mail'.$i['tp_i']);
+}
+
+?>

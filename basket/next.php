@@ -47,7 +47,7 @@ $plan = array(
 	'bkor'=>array('name'=>'Корреспондентский счет', 'type'=>'line', 'class'=>'basket_inputtext'),
 );
 
-if (is_user()) {
+if (\User::is()) {
 	$default = array(
 		'name'=>$_SESSION['name'],
 		'phone'=>$_SESSION['phone'],
@@ -147,7 +147,7 @@ if ($plan['send']['value'] == 1 && $plan['']['valid']) {
 		$user['lon'] = $plan['city']['lon'];
 	}
 
-	if (is_user()) {
+	if (\User::is()) {
 		db_update('user', $user, array('i'=>$_SESSION['i']));
 		$_SESSION = $_SESSION + $user;
 		$ui = $_SESSION['i'];
@@ -183,7 +183,7 @@ if ($plan['send']['value'] == 1 && $plan['']['valid']) {
 				$user['mark'] = $row['mark'];
 				$user['mark2'] = $row['mark2'];
 			} else {
-				alert('Пользователь с данной электронной почтой уже зарегистрирован! <a href="/my">Восстановление пароля.</a>', 'danger');
+				\Flydom\Alert::danger('Пользователь с данной электронной почтой уже зарегистрирован! <a href="/my">Восстановление пароля.</a>');
 
 				w('log');
 				logs(22, $ui, array_encode($user));
@@ -199,8 +199,8 @@ if ($plan['send']['value'] == 1 && $plan['']['valid']) {
 
 			$data = $user + array(
 				'quick'=>'',
-				'dt'=>now(),
-				'last'=>now(),
+				'dt'=>\Config::now(),
+				'last'=>\Config::now(),
 //				'login'=>$login,
 				'pass'=>$pass,
 				'spam'=>1,
@@ -212,11 +212,11 @@ if ($plan['send']['value'] == 1 && $plan['']['valid']) {
 
 			if (is_mail($data['email'])) {
 				w('mail-register', $data);
-				alert('Вы зарегистрированы, пароль <b>'.$pass.'</b>, выслан на почту: '.$data['email']);
+				\Flydom\Alert::warning('Вы зарегистрированы, пароль <b>'.$pass.'</b>, выслан на почту: '.$data['email']);
 			} else {
-				alert('Вы зарегистрированы, пароль <b>'.$pass.'</b>');
+				\Flydom\Alert::warning('Вы зарегистрированы, пароль <b>'.$pass.'</b>');
 			}
-			access_try($data['phone'], $pass);
+			\User::try($data['phone'], $pass);
 			$ui = $_SESSION['i'];
 
 			w('cache-user', $ui);
@@ -244,10 +244,10 @@ if ($plan['send']['value'] == 1 && $plan['']['valid']) {
 		w('log');
 		foreach ($basket as $v) {
 			$data = array(
-				'dt'=>now(),
-				'last'=>now(),
+				'dt'=>\Config::now(),
+				'last'=>\Config::now(),
 				'user'=>$ui,
-				'staff'=>is_user('order') ? $ui : 0,
+				'staff'=>\User::is('order') ? $ui : 0,
 				'state'=>1,
 				'cire'=>$plan['cire']['value'],
 				'city'=>$plan['city']['value'],
@@ -328,16 +328,16 @@ if ($plan['send']['value'] == 1 && $plan['']['valid']) {
 			w('ft');
 			w('email2');
 
-			email2($_SESSION['email'], $config['backmail'], $_SESSION['name'], 'Заказ от '.ft(now()), $rows = array($html));
+			email2($_SESSION['email'], $config['backmail'], $_SESSION['name'], 'Заказ от '.ft(\Config::now()), $rows = array($html));
 
 			logs(43, $_SESSION['i'], $_SESSION['email']);
 
-			alert('Заказ оформлен, на почту отправлено письмо с подтверждением');
+			\Flydom\Alert::warning('Заказ оформлен, на почту отправлено письмо с подтверждением');
 		}
 
-		redirect('/basket/thanks');
+		\Page::redirect('/basket/thanks');
 	} else {
-		alert('Зарегистрируйтесь или войдите под своей учетной записью. В случае проблем &mdash; обратитесь к менеджеру.');
+		\Flydom\Alert::warning('Зарегистрируйтесь или войдите под своей учетной записью. В случае проблем &mdash; обратитесь к менеджеру.');
 	}
 }
 

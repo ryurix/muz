@@ -152,8 +152,8 @@ class Ozon extends Task {
 				$new = self::ozon_query($ozon, '/v3/posting/fbs/list', [
 					'dir'=>'asc',
 					'filter'=>[
-						'since'=>date('c', now() - $days*2*24*60*60),
-						'to'=>date('c', now()),
+						'since'=>date('c', \Config::now() - $days*2*24*60*60),
+						'to'=>date('c', \Config::now()),
 						'status'=>$status
 					],
 					'limit'=>$limit,

@@ -1,0 +1,49 @@
+<?
+
+if (isset($config['gtag-event']) && !\User::isStaff() && strlen(trim(\Page::dict('*Google Ads*'), '*')) > 10) {
+
+	$ecomm = $config['gtag-event'];
+
+	$first = true;
+?>
+<!-- Global site tag (gtag.js) - Google Ads: 1003738579 -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=<? echo \Page::dict('*Google Ads*') ?>"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '<? echo \Page::dict('*Google Ads*') ?>');
+
+gtag('event', '<?= $ecomm['event_name'] ?>', {<?
+
+foreach ($ecomm as $k=>$v) {
+	if ($k == 'event_name') { continue; }
+	echo ($first ? '' : ',').'
+	'.$k.':'.json_encode($v);
+	$first = false;
+}
+
+?>
+
+});
+</script>
+<?
+
+}
+
+/*
+
+<script>
+ gtag('event', 'page_view', {
+   'send_to': 'AW-1003738579',
+   'items': [{
+     'id': 'replace with value',
+     'google_business_vertical': 'retail'
+   }]
+ });
+</script>
+
+*/
+
+?>

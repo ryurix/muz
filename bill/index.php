@@ -1,7 +1,7 @@
 <?
 
-if (!is_user('')) {
-	redirect('/');
+if (!\User::is('')) {
+	\Page::redirect('/');
 }
 
 ?>

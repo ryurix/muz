@@ -1,0 +1,82 @@
+<?
+
+$vendor = cache_load('vendor');
+$city = cache_load('city');
+$dost = w('list-dost');
+$ptype = w('list-pay-user');
+$color = w('list-color');
+$mark = array(0=>'') + cache_load('mark-name');
+
+$back = array(
+	'' => array('method' => 'POST'), // , 'default'=>$row + array_decode($_SESSION['pay'])
+//	'login'=>array('name'=>'Логин', 'type'=>'line'),
+	'pass1'=>array('name'=>'Новый пароль', 'type'=>'password', 'class'=>'form-control'),
+	'pass2'=>array('name'=>'Повтор пароля', 'type'=>'password', 'class'=>'form-control'),
+	'pass'=>array('name'=>'Пароль', 'type'=>'password'),
+	'roles'=>array('name'=>'Роли', 'type'=>'roles'),
+	'vendor'=>array('name'=>'Склад менеджера', 'type'=>'combo', 'values'=>$vendor),
+	'color'=>array('name'=>'Цвет', 'type'=>'combo', 'values'=>$color, 'default'=>0),
+	'mark'=>array('name'=>'Метка', 'type'=>'combo', 'values'=>$mark, 'default'=>0),
+	'mark2'=>array('name'=>'Метка2', 'type'=>'combo', 'values'=>$mark, 'default'=>0),
+
+	'name'=>array('name'=>'Фамилия', 'type'=>'line', 'required'=>1, 'placeholder'=>'Иван Иванов'),
+	'email'=>array('name'=>'Email', 'type'=>'line', 'placeholder'=>'mail@mail.com'),
+	'phone'=>array('name'=>'Телефон', 'type'=>'phone', 'id'=>'contact_phone', 'placeholder'=>'обязательное поле'),
+	'cire'=>array('name'=>'Город', 'type'=>'combo2', 'values'=>$city, 'default'=>$_SESSION['city']),
+
+	'dost'=>array('name'=>'Способ доставки', 'type'=>'radio', 'default'=>'self', 'values'=>$dost),
+	'city'=>array('name'=>'Город', 'type'=>'line', 'class'=>'basket_address', 'placeholder'=>'Москва, ул. пушкина 10'),
+	'adres'=>array('name'=>'Адрес', 'type'=>'adres', 'class'=>'basket_address', 'placeholder'=>'2 подъзд, 2 этаж, 70 квартира'),
+
+	'note'=>array('type'=>'checkbox', 'label'=>'Получать уведомления о статусе заказа', 'class'=>'form-control'),
+	'spam'=>array('type'=>'checkbox', 'label'=>'Получать рассылку об акциях и скидках', 'class'=>'form-control'),
+
+	'send'  =>array('name'=>'', 'type'=>'button', 'count'=>1, 1=>'Сохранить', 'class'=>'basket_btnapply'),
+
+	'ul'=>array('name'=>'Юридическое лицо', 'type'=>'checkbox', 'label'=>'Я юридическое лицо', 'id'=>'ur_checkbox', 'class'=>'basket_checkbox'),
+
+// оплата (pay)
+
+	'ptype'=>array('type'=>'radio', 'values'=>$ptype, 'class'=>'basket_radio', 'default'=>7),
+	'uname'=>array('name'=>'Наименование предприятия', 'type'=>'line', 'class'=>'basket_inputtext'),
+	'head'=>array('name'=>'Директор', 'type'=>'line', 'class'=>'basket_inputtext'),
+	'uadr'=>array('name'=>'Юридический адрес', 'type'=>'line', 'placeholder'=>'индекс, область, город, улица, дом', 'class'=>'basket_inputtext'),
+	'fadr'=>array('name'=>'Физический адрес', 'type'=>'line', 'placeholder'=>'индекс, область, город, улица, дом', 'class'=>'basket_inputtext'),
+	'inn'=>array('name'=>'ИНН', 'type'=>'line', 'class'=>'basket_inputtext'),
+	'kpp'=>array('name'=>'КПП', 'type'=>'line', 'class'=>'basket_inputtext'),
+	'okpo'=>array('name'=>'ОКПО', 'type'=>'line', 'class'=>'basket_inputtext'),
+	'bank'=>array('name'=>'Наименование банка', 'type'=>'line', 'class'=>'basket_inputtext'),
+	'bik'=>array('name'=>'БИК', 'type'=>'line', 'class'=>'basket_inputtext'),
+	'bras'=>array('name'=>'Расчетный счет', 'type'=>'line', 'class'=>'basket_inputtext'),
+	'bkor'=>array('name'=>'Корреспондентский счет', 'type'=>'line', 'class'=>'basket_inputtext'),
+);
+
+/*
+$colors = w('list-color');
+$dost = w('list-dost');
+$vendors = cache_load('vendor');
+
+$back = array(
+	'' => array('method' => 'POST'),
+	'roles'=>array('name'=>'Роли', 'type'=>'roles'),
+	'login'=>array('name'=>'Логин (Email/Телефон)', 'type'=>'line', 'min'=>1),
+	'pass'=>array('name'=>'Пароль', 'type'=>'line'),
+	'name'=>array('name'=>'Имя Фамилия Отчество', 'type'=>'line'),
+	'phone'=>array('name'=>'Телефон', 'type'=>'line'),
+	'email'=>array('name'=>'Электронная почта', 'type'=>'line'),
+	'vendor'=>array('name'=>'Склад менеджера', 'type'=>'combo', 'values'=>$vendors, 'width'=>300),
+	'city'=>array('name'=>'Город', 'type'=>'cire'),
+	'adres'=>array('name'=>'Адрес', 'type'=>'text', 'rows'=>3),
+	'pay'=>array('name'=>'Реквизиты для оплаты', 'type'=>'pay'),
+	'ul'=>array('name'=>'Юридическое лицо', 'type'=>'checkbox', 'id'=>'pay-ul'),
+	'note'=>array('name'=>'<i class="icon-envelope"></i> Получать уведомления', 'type'=>'checkbox'),
+	'spam'=>array('name'=>'<i class="icon-envelope"></i> Получать рассылку', 'type'=>'checkbox'),
+	'color'=>array('name'=>'Цвет', 'type'=>'combo', 'values'=>$colors, 'width'=>300),
+	'dost'=>array('name'=>'Способ доставки', 'type'=>'combo', 'values'=>$dost, 'width'=>300),
+	'send'  =>array('name'=>'', 'type'=>'button', 'count'=>1, 1=>'Сохранить', 2=>'Удалить',
+		'class'=>array(1=>'btn-success', 2=>'btn-warning'),
+		'onclick'=>array(2=>"return confirm('Удалить пользователя? Восстановление невозможно!')")),
+);
+*/
+
+?>

@@ -13,7 +13,7 @@ function cache_exists($key) {
 
 	global $config;
 
-	$filename = $config['root'].'cache/'.$key.'.php';
+	$filename = \Config::ROOT.'cache/'.$key.'.php';
 	return is_file($filename) ? $filename : FALSE;
 }
 
@@ -29,7 +29,7 @@ function cache_clear($key, $percent = 100) {
 function  cache_set($key, $value) {
 	global $config;
 
-	$f = fopen($config['root'].'cache/'.$key.'.php', 'w+');
+	$f = fopen(\Config::ROOT.'cache/'.$key.'.php', 'w+');
 	fwrite($f, $value);
 	fflush($f);
 	fclose($f);
@@ -77,7 +77,7 @@ function cache_save($key, $var, $type = 'php') {
 		case 'php': cache_set($key, '<?$v='.php_encode($var).'?>'); break;
 		case 'php2':
 			global $config;
-			$f = fopen($config['root'].'cache/'.$key.'.php', 'w+');
+			$f = fopen(\Config::ROOT.'cache/'.$key.'.php', 'w+');
 			fwrite($f, '<?$v=');
 			php_encode2($var, $f);
 			fwrite($f, '?>');

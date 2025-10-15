@@ -251,6 +251,8 @@ $menu[] = ['name'=>'', 'wide'=>1, '/'=>[
 	'sync-check'=>['name'=>'Проверка синхронизации', 'role'=>'catalog'],
 
 	'mysql'=>['name'=>'MySql', 'role'=>'admin'],
+	'catalog-disable'=>['name'=>'Отключить каталог'],
+	'catalog-enable'=>['name'=>'Включить каталог']
 ]],
 
 'sign'=>['name'=>'Знаки', 'role'=>'sign', '/'=>[

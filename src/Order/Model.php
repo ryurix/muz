@@ -147,8 +147,8 @@ class Model {
 		$data = $this->row + $this->default();
 		unset($data['i']);
 
-		if (!$data['dt']) { $data['dt'] = now(); }
-		if (!$data['last']) { $data['last'] = now(); }
+		if (!$data['dt']) { $data['dt'] = \Config::now(); }
+		if (!$data['last']) { $data['last'] = \Config::now(); }
 		if (!isset($data['state'])) {
 			$data['state'] = 1;
 		}
@@ -200,7 +200,7 @@ class Model {
 	function update() {
 
 		if ($this->row['state'] < 30 || $this->orig['state'] < 30) {
-			$this->row['last'] = now();
+			$this->row['last'] = \Config::now();
 		}
 
 		$data = $this->row;
@@ -253,7 +253,7 @@ class Model {
 			.' WHERE vendor='.$this->row['vendor'].' AND store='.$this->row['store']);
 		db_query('UPDATE store SET count=count-'.$this->row['count']
 			.' WHERE vendor='.$this->row['vendor'].' AND i='.$this->row['store']);
-		alert('Количество '.$this->row['name'].' на складе '.$text);
+		\Flydom\Alert::warning('Количество '.$this->row['name'].' на складе '.$text);
 
 		w('log');
 		logs(36, $this->row['i'], $text);
@@ -271,7 +271,7 @@ class Model {
 			.' WHERE vendor='.$this->row['vendor'].' AND store='.$this->row['store']);
 		db_query('UPDATE store SET count=count+'.$this->row['count']
 			.' WHERE vendor='.$this->row['vendor'].' AND i='.$this->row['store']);
-		alert('Количество '.$this->row['name'].' на складе '.$text);
+		\Flydom\Alert::warning('Количество '.$this->row['name'].' на складе '.$text);
 
 		w('log');
 		logs(37, $this->row['i'], $text);
@@ -307,7 +307,7 @@ class Model {
 
 	function getVendorName() {
 		$vendors = \Flydom\Cache::get('vendor');
-		return kv($vendors, $this->row['vendor']);
+		return $vendors ?? $this->row['vendor'];
 	}
 
 	function getUserName() {

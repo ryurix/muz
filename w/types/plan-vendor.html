@@ -1,0 +1,64 @@
+<?
+
+//$speed = w('speed');
+$cols = array(
+	1=>'1 А',
+	2=>'2 B',
+	3=>'3 C',
+	4=>'4 D',
+	5=>'5 E',
+	6=>'6 F',
+	7=>'7 G',
+	8=>'8 H',
+	9=>'9 I',
+	10=>'10 J',
+	11=>'11 K',
+	12=>'12 L',
+	13=>'13 M',
+	14=>'14 N',
+	15=>'15 O',
+	16=>'16 P',
+	17=>'17 Q',
+	18=>'18 R',
+	19=>'19 S',
+	20=>'20 T',
+	21=>'21 U',
+	22=>'22 V',
+	23=>'23 W',
+	24=>'24 X',
+	25=>'25 Y',
+	26=>'26 Z',
+);
+
+$curr = array(
+	0=>'Рубль',
+	840=>'Доллар',
+	978=>'Евро',
+);
+
+
+$vendors = array(0=>'') + cache_load('vendor');
+
+$back = array(
+	'' => array('method' => 'POST', 'default'=>array('w'=>100)),
+	'name'=>array('name'=>'Наименование', 'type'=>'line'),
+	'up'=>array('name'=>'Головной склад', 'type'=>'combo', 'values'=>$vendors),
+	'typ'=>array('name'=>'Тип', 'type'=>'combo', 'values'=>w('list-vendor-type')),
+	'w'=>array('name'=>'Вес', 'type'=>'int'),
+	'days'=>['name'=>'Дней синхронизации', 'type'=>'int'],
+	'price'=>array('name'=>'Поправка цены, %', 'type'=>'number'),
+	'prmin'=>array('name'=>'Минимальная цена', 'type'=>'number', 'default'=>0),
+	'city'=>array('name'=>'Город', 'type'=>'city'),
+//	'speed'=>array('name'=>'Доставка', 'type'=>'combo', 'values'=>$speed),
+	'ccode'=>array('name'=>'Колонка артикула', 'type'=>'int', 'values'=>$cols),
+	'cname'=>array('name'=>'Колонка названия', 'type'=>'int', 'values'=>$cols),
+	'ctype'=>array('name'=>'Колонка модели', 'type'=>'int', 'values'=>$cols),
+	'cbrand'=>array('name'=>'Колонка производителя', 'type'=>'int', 'values'=>$cols),
+	'ccount'=>array('name'=>'Колонка количества', 'type'=>'line', 'values'=>$cols),
+	'cprice'=>array('name'=>'Колонка цены', 'type'=>'int', 'values'=>$cols),
+	'copt'=>array('name'=>'Колонка опта', 'type'=>'int', 'values'=>$cols),
+	'curr'=>array('name'=>'Валюта', 'type'=>'combo', 'values'=>$curr, 'default'=>0),
+	'short'=>array('name'=>'Краткая информация', 'type'=>'line'),
+	'info'=>array('name'=>'Информация', 'type'=>'rich', 'rows'=>12),
+	'send'=>array('name'=>'', 'type'=>'button', 'count'=>1, 1=>'Сохранить', 'class'=>'btn-success'),
+);

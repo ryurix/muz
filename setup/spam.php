@@ -28,7 +28,7 @@ $plan = array(
 
 	'if'=>array('name'=>'Условие', 'type'=>'combo', 'values'=>$ifs),
 
-	'dt'=>array('name'=>'Дата', 'type'=>'date', 'default'=>now()-31*24*60*60),
+	'dt'=>array('name'=>'Дата', 'type'=>'date', 'default'=>\Config::now()-31*24*60*60),
 
 	'theme'=>array('name'=>'Тема', 'type'=>'line'),
 
@@ -58,13 +58,13 @@ if ($plan['']['valid'] && $plan['send']['value']) {
 	if ($plan['send']['value'] == 1) {
 		$select = 'SELECT COUNT(*) FROM user WHERE user.spam>0 AND '.$where;
 		$count = db_result($select);
-		alert('Аудитория рассылки: '.$count.' адресов.');
+		\Flydom\Alert::warning('Аудитория рассылки: '.$count.' адресов.');
 		w('clean');
 		if (is_mail($plan['test']['value'])) {
-			alert('Проверочное письмо отправлено.', 'success');
+			\Flydom\Alert::warning('Проверочное письмо отправлено.', 'success');
 			email2($plan['test']['value'], 'news@muzmart.com', 'Тестовый адресат', $plan['theme']['value'], $plan['text']['value']);
 		} else {
-			alert('Проверочный адрес указан неверно!', 'danger');
+			\Flydom\Alert::warning('Проверочный адрес указан неверно!');
 		}
 	}
 
@@ -82,7 +82,7 @@ if ($plan['']['valid'] && $plan['send']['value']) {
 
 			$count++;
 			db_insert('mail', array(
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 				'user'=>$i['i'],
 				'info'=>php_encode(array(
 					'mail'=>$email,
@@ -93,7 +93,7 @@ if ($plan['']['valid'] && $plan['send']['value']) {
 				)),
 			));
 		}
-		alert('Рассылка на '.$count.' адресов поставлена в очередь.', 'success');
+		\Flydom\Alert::warning('Рассылка на '.$count.' адресов поставлена в очередь.', 'success');
 	}
 }
 

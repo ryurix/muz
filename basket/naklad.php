@@ -22,7 +22,7 @@ if ($plan['']['valid'] && $plan['send']['value']) {
 		$type = $plan['send']['value'] == 1 ? 1 : -1;
 
 		db_insert('naklad', array(
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'user'=>$_SESSION['i'],
 			'vendor'=>$plan['vendor']['value'],
 			'type'=>$type,
@@ -42,10 +42,10 @@ if ($plan['']['valid'] && $plan['send']['value']) {
 		naklad_commit($naklad, $plan['vendor']['value'], $type);
 		$_SESSION['basket'] = array();
 
-		alert('<a href="/sklad/'.$naklad.'">Накладная</a> создана!');
+		\Flydom\Alert::warning('<a href="/sklad/'.$naklad.'">Накладная</a> создана!');
 
 	} else {
-		alert('Ошибка создания накладной: корзина пустая', 'danger');
+		\Flydom\Alert::danger('Ошибка создания накладной: корзина пустая');
 	}
 }
 

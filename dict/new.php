@@ -3,9 +3,7 @@
 $plan = w('plan-dict');
 w('request', $plan);
 
-$config['action'] = array(
-	array('href'=>'/dict', 'action'=>'Словарь'),
-);
+\Action::before('/dict', 'Словарь');
 
 if ($plan['']['valid'] && $plan['sent']['value']) {
 	$data = array(
@@ -13,8 +11,8 @@ if ($plan['']['valid'] && $plan['sent']['value']) {
 		'code'=>$plan['code']['value'],
 	);
 	db_insert('dict', $data);
-	alert('Слово добавлено');
-	redirect('/dict/');
+	\Flydom\Alert::warning('Слово добавлено');
+	\Page::redirect('/dict/');
 } else {
 	$config['plan'] = $plan;
 }

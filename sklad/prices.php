@@ -3,15 +3,15 @@
 $sklad = w('list-sklad');
 $sk = isset($_REQUEST['sk']) ? $_REQUEST['sk'] : '';
 if (!isset($sklad[$sk])) {
-	refile('menu.html');
+	\Page::body('menu.html');
 	return;
 }
 
-refile('sklad-action.html', 'sklad-action');
+\Page::body('sklad-action', 'sklad-action');
 w('sklad-action', $sk);
 
-$config['name'] = 'Переоценка '.$sklad[$sk];
+\Page::name('Переоценка '.$sklad[$sk]);
 $config['type'] = 2;
-refile('docs.html');
+\Page::body('docs');
 
 ?>

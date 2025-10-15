@@ -45,7 +45,7 @@ else
 //	header("Content-Length: ".filesize($yourfile));
 }
 
-//$f = fopen($config['root'].'/files/basket.csv', 'w+');
+//$f = fopen(\Config::ROOT.'/files/basket.csv', 'w+');
 
 $f = fopen('php://output', 'w');
 
@@ -65,8 +65,8 @@ exit;
 //fclose($fp);
 
 } else {
-	alert('Корзина пуста!');
-	redirect('/basket');
+	\Flydom\Alert::warning('Корзина пуста!');
+	\Page::redirect('/basket');
 }
 
 ?>

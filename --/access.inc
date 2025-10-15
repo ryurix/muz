@@ -96,18 +96,18 @@ function access_try($login, $pass) {
 
 		if ($i = db_fetch($q)) {
 			if (((now() - $i['dry']) < $timeout*60) && ($i['try'] >= 3)) {
-				alert('Слишком много попыток ввода пароля, подождите '.($timeout - floor((now() - $i['dry'])/60)).' мин.', 'danger');
+				\Flydom\Alert::danger('Слишком много попыток ввода пароля, подождите '.($timeout - floor((now() - $i['dry'])/60)).' мин.');
 			} elseif ($i['pass'] == $pass) {
 				$i['roles'] = strlen($i['roles']) ? explode(" ", $i['roles']) : array();
 				access_exit();
 				access_create($i);
 				return TRUE;
 			} else {
-				alert('Пароль неверный!', 'danger');
+				\Flydom\Alert::danger('Пароль неверный!');
 				db_query('UPDATE user SET try='.((now() - $i['dry']) < $timeout*60 ? 'try+' : '').'1, dry='.now().' WHERE i='.$i['i']);
 			}
 		} else {
-			alert('Пользователь не найден!', 'danger');
+			\Flydom\Alert::danger('Пользователь не найден!');
 		}
 
 		if (strlen($pass)) {
@@ -151,10 +151,11 @@ function access_read($key) {
 function access_write($key, $data) {
 	global $config;
 
+	$uid = $_SESSION['i'];
+
 	if (kv($config, 'new-session', 0)) {
-		if ($config['new-session'] < 100) {
+		if ($config['new-session'] < 100) { //  && $uid
 			$ip = client_ip();
-			$uid = $_SESSION['i'];
 
 			db_insert('session', array(
 				'i'=>crc32($key),
@@ -188,6 +189,3 @@ function access_gc($life) {
 }
 
 session_set_save_handler('access_open', 'access_close', 'access_read', 'access_write', 'access_destroy', 'access_gc');
-
-
-?>

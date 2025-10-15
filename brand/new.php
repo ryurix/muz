@@ -13,8 +13,8 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	);
 	db_insert('brand', $data);
 	w('cache-brand');
-	alert('Производитель добавлен');
-	redirect('/brand/');
+	\Flydom\Alert::warning('Производитель добавлен');
+	\Page::redirect('/brand/');
 } else {
 	$config['plan'] = $plan;
 }

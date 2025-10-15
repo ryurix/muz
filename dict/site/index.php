@@ -1,13 +1,13 @@
 <?
 
-$site = count($config['args']) ? $config['args'][0] : 0;
+$site = \Page::arg(0, 0);
 $q = db_query('SELECT * FROM site WHERE i='.$site);
 
 $sites = cache_load('sitename');
 
 if (isset($sites[$site])) {
 
-	$config['name'] = 'Сайт: '.$sites[$site];
+	\Page::name('Сайт: '.$sites[$site]);
 
 	$fields = w('fields-site', $site);
 	$plan = $fields + array(
@@ -26,12 +26,12 @@ if (isset($sites[$site])) {
 		}
 		w('cache-word');
 
-		redirect('/dict');
+		\Page::redirect('/dict');
 	}
 	$config['plan'] = $plan;
 
 } else {
-	redirect('/dict');
+	\Page::redirect('/dict');
 }
 
 ?>

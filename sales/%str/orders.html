@@ -1,0 +1,89 @@
+<?
+
+$code = \Page::arg();
+echo '<p><a href="/sales/'.$code.'">&larr; Назад</a> | <a href="/sales/list">К списку &uarr;</a></p>';
+
+function shift_month($dt, $shift) {
+	$month = date('n', $dt);
+	$year = date('Y', $dt);
+
+	return mktime(0, 0, 0, $month + $shift, 1, $year);
+}
+
+$now = \Config::now();
+$months = array();
+w('ft');
+
+for($i=-13; $i<=0; $i++) {
+	$dt = shift_month($now, $i);
+	$months[$dt] = ft_month(date('n', $dt)).date(' Y', $dt);
+}
+
+
+$plan = array(
+	'' => array('method' => 'POST'),
+	'month' => array('name'=>'Месяц', 'type'=>'combo', 'values'=>$months, 'value'=>shift_month($now, 0), 'width'=>250),
+	'send' => array('name'=>'', 'type'=>'button', 'count'=>1, 1=>'Формировать'),
+);
+
+w('request', $plan);
+w('form', $plan);
+
+w('table');
+
+?>
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<td>#</td>
+<td>Заказ</td>
+<td>Дата</td>
+<td class="text-right">Цена</td>
+<td class="text-right">Количество</td>
+<td class="text-right">Сумма</td>
+<td>Статус заказа</td>
+</tr>
+</thead>
+<tbody>
+<?
+
+$dt1 = $plan['month']['value'];
+$dt2 = shift_month($dt1, 1);
+
+$q = db_query('SELECT orst.i i, orst.name name, orst.dt dt'
+.',orst.price price, orst.count count, orst.state state'
+.' FROM sale,orst'
+.' WHERE sale.code="'.\Page::arg().'"'
+.' AND orst.sale=sale.code'
+.' AND orst.last>='.$dt1.' AND orst.last<'.$dt2);
+
+$state = w('order-state');
+$colors = w('order-state-color');
+
+$num = 0;
+$total = 0;
+
+while ($i = db_fetch($q)) {
+	$num++;
+	$price = $i['price'];
+	$count = $i['count'];
+	echo '<tr'.($colors[$i['state']] == '' ? '' : ' class='.$colors[$i['state']]).'>';
+	echo '<td>'.$num.'</td>';
+	echo '<td><a href="/order/'.$i['i'].'">'.$i['name'].'</td>';
+	echo '<td>'.ft($i['dt']).'</td>';
+	echo '<td class="text-right">'.number_format($price, 0, '.', ' ').'</td>';
+	echo '<td class="text-right">'.$count.'</td>';
+	echo '<td class="text-right">'.number_format($price*$count, 0, '.', ' ').'</td>';
+	echo '<td>'.$state[$i['state']].'</td>';
+	echo '</tr>';
+	$total+= $price*$count;
+}
+
+?>
+</tbody>
+</table>
+<?
+
+echo '<p>Итого: <b>'.number_format($total, 0, '.', ' ').'</b></p>';
+
+?>

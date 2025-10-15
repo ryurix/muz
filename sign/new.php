@@ -7,7 +7,7 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	$mini = '';
 	if (is_file($plan['mini']['value'])) {
 		$mini = '/files/sign/'.$plan['mini']['filename'];
-		$file = $config['root'].substr($mini, 1);
+		$file = \Config::ROOT.substr($mini, 1);
 		xcopy($plan['mini']['value'], $file);
 		if (!is_file($file)) {
 			$mini = '';
@@ -21,8 +21,8 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	);
 	db_insert('sign', $data);
 	w('cache-sign');
-	alert('Знак добавлен');
-	redirect('/sign/');
+	\Flydom\Alert::warning('Знак добавлен');
+	\Page::redirect('/sign/');
 } else {
 	$config['plan'] = $plan;
 }

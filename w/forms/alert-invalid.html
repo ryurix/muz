@@ -1,0 +1,18 @@
+<?
+
+$fields = array();
+foreach ($args as $v) {
+	if (isset($v['iv'])) {
+		$fields[] = $v['name'];
+	}
+}
+if (count($fields) > 0) {
+	$s = 'Заполните поле "'.$fields[0].'"';
+	$s.= count($fields) > 1 ? ' и другие поля выделенные' : ' выделенное';
+	$s.= ' красным цветом';
+	\Flydom\Alert::warning($s);
+} elseif (count($fields) > 1) {
+	\Flydom\Alert::warning('Заполните поле "'.$fields[0].'" выделенное красным цветом.');
+}
+
+?>

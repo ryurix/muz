@@ -1,0 +1,132 @@
+<?
+
+// Получаем коды и количество из сессии
+
+$basket = array();
+$count = 0;
+if (isset($_SESSION['basket']) && is_array($_SESSION['basket'])) {
+	foreach ($_SESSION['basket'] as $k=>$i) {
+		$count+= $i['c'];
+		$basket[$k] = $i['c'];
+	}
+}
+
+// Получаем данные по товарам из базы
+
+$basket2 = array();
+if ($count) {
+	$count = 0;
+	$select = 'SELECT s.i i'
+.',s.url url'
+.',s.name name'
+.',s.up up'
+.',s.icon icon'
+.',s.model model'
+.',s.price price'
+.',b.name brand'
+.' FROM store s,brand b WHERE s.i in ('.implode(',', array_keys($basket)).') AND s.brand=b.i';
+
+	$rows = \Db::fetchAll($select);
+
+	foreach ($rows as $i) {
+		$i['c'] = $basket[$i['i']];
+		$count+= $i['c'];
+
+		$name = strlen($i['model']) > 0 ? $i['brand'].' '.$i['model'].' '.$i['name'] : $i['brand'].' '.$i['name'];
+		$i['fullname'] = $name;
+
+		$basket2[$i['i']] = $i;
+	}
+}
+
+
+/*
+if ($count) {
+	$q = db_query('SELECT s.i i'
+.',s.name name'
+.',s.up up'
+.',s.icon icon'
+.',s.model model'
+.',s.price price'
+.',b.name brand'
+.' FROM store s,brand b WHERE s.i in ('.implode(',', array_keys($basket)).') AND s.brand=b.i');
+
+	while ($i = db_fetch($q)) {
+		$name = strlen($i['model']) > 0 ? $i['brand'].' '.$i['model'].' '.$i['name'] : $i['name'];
+
+		echo '<a class="item" href="/store/'.$i['i'].'">'
+.'<button class="item-x"'
+            .' data-category="'.catalogPathGtagStr(catalogPathArray($i["up"])).'"'
+            .' data-name="'.htmlspecialchars($name).'"'
+            .' data-brand="'.htmlspecialchars($i['brand']).'"'
+            .' data-count="'.$basket[$i['i']].'"'
+            .' data-price="'.$i['price'].'"'
+            .' data-i="'.$i['i'].'"><i class="fa fa-times"></i></button>'
+.'<img class="pull-left" src="'.$i['icon'].'" width="40" height="40" alt="quick cart">'
+.'<div class="inline-block">'
+.'<span class="title">'.$name.'</span>'
+.'<span class="price">'.$basket[$i['i']].' × '.number_format($i['price'], 0, '.', ' ').' <i class="fa fa-rub"></i></span>'
+.'</div></a>';
+	}
+	db_close($q);
+}
+*/
+
+
+?>
+<button type="button" id="basket">Корзина <div class="cart-count badge"><? echo $count ?></div></button>
+<div id="basket_list">
+
+<ul class="bl_items">
+	<p class="bl_empty<? if ($count) { echo ' hidden'; } ?>">В корзине нет товаров</p>
+<?
+
+if ($count) {
+	$pathway = cache_load('pathway-hide');
+
+	foreach ($basket2 as $k=>$i) {
+
+		$up = kv($pathway, $i['up'], array('name'=>$i['up'].'?'));
+		$category = '';
+		foreach (kv($up, 'pre', array()) as $j) {
+			$category.= kv(kv($pathway, $j, array()), 'name').'/';
+		}
+		$category.= htmlspecialchars(kv(kv($pathway, $i['up'], array()), 'name'));
+
+		$data = array(
+			'i'=>$i['i'],
+			'category'=>$category,
+			'brand'=>$i['brand'],
+			'name'=>$i['fullname'],
+			'price'=>$i['price'],
+		);
+
+		$data2 = '';
+		foreach ($data as $d=>$v) {
+			$data2.= ' data-'.$d.'="'.htmlspecialchars($v).'"';
+		}
+
+		echo '
+	<li class="bl_item">
+		<div class="bl_section1">
+			<img src="'.$i['icon'].'" alt="" class="img-fluid bs_img">
+		</div>
+		<div class="bl_section2">
+			<button type="button" class="bl_close buyx"'.$data2.'>&times;</button>
+			<a  href="/store/'.$i['url'].'" class="bl_title" data-i='.$i['i'].'>'.$i['fullname'].'</a>
+			<p class="bl_price"><span class="bl_count">'.$i['c'].'</span> x <span class="bl_pricein">'.number_format($i['price'], 0, '.', ' ').' ₽</span></p>
+		</div>
+	</li>';
+	}
+}
+
+?>
+</ul>
+<?
+
+if ($count) {
+	echo '<a href="/basket" class="bl_btncheckout">Оформить заказ</a>';
+}
+
+?>
+</div>

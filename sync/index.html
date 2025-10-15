@@ -18,7 +18,7 @@ if ($plan['']['valid'] && $plan['send']['value']) {
 	if (strlen($file) > 0 && is_file($file)) {
 		w('clean');
 		$filename = str2url($plan['file']['filename']);
-		copy($file, $config['root'].'files/sync/'.$filename);
+		copy($file, \Config::ROOT.'files/sync/'.$filename);
 		$file = '/files/sync/'.$filename;
 
 		$_SESSION['sync'] = array(
@@ -29,13 +29,11 @@ if ($plan['']['valid'] && $plan['send']['value']) {
 	}
 }
 
-if (isset($_SESSION['sync']) && is_file($config['root'].substr($_SESSION['sync']['file'], 1))) {
-	alert('Файл: <a href="'
+if (isset($_SESSION['sync']) && is_file(\Config::ROOT.substr($_SESSION['sync']['file'], 1))) {
+	\Flydom\Alert::warning('Файл: <a href="'
 .$_SESSION['sync']['file'].'">'
 .$_SESSION['sync']['name'].'</a>, поставщик: '
-.$vendors[$_SESSION['sync']['vendor']]);
-
-	w('alert');
+.$vendors[$_SESSION['sync']['vendor']], true);
 
 	echo '<script src="/design/js/store-sync.js"></script>'
 .'<table class="table sync" id="sync"><thead><tr>'

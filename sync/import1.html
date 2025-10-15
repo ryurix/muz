@@ -50,7 +50,7 @@ w('keys');
 db_query('TRUNCATE TABLE `brand`');
 get_i('brand', "");
 
-$filename = $config['root'].'files/import.csv';
+$filename = \Config::ROOT.'files/import.csv';
 //echo $filename;
 $f = @fopen($filename, 'r');
 
@@ -113,10 +113,10 @@ if ($f) {
 							} else {
 								$pic = $pics[2];
 							}
-							//$pic = $config['root'].'files/pics/'.$pic;
+							//$pic = \Config::ROOT.'files/pics/'.$pic;
 							//echo '<p>http://muzmarket.pro/images/supersound/pp/'.$pic.'</p>';
 							//$pic = '<a href="http://muzmarket.pro/images/supersound/pp/'.$pic.'">'.$pic.'</a>';
-							//echo '<p>'.$pic.'</p>';							
+							//echo '<p>'.$pic.'</p>';
 						} else {
 							echo '<p>'.$pic.'</p>';
 							if (strlen($pic) > 1) {
@@ -168,7 +168,7 @@ if ($f) {
 
 	db_query('TRUNCATE TABLE `store`');
 	db_query('DELETE FROM `catalog` WHERE i>0');
-	db_query('ALTER TABLE `catalog` AUTO_INCREMENT = 1');;
+	db_query('ALTER TABLE `catalog` AUTO_INCREMENT = 1');
 
 	$cat = eval($a);
 	print_r($cat);
@@ -184,7 +184,7 @@ if ($f) {
 		if (strlen($pic) > 0) {
 			$plan = array(
 				''=>array('path'=>'/files/store/'.$key.'/'),
-				'icon'=>array('filename'=>basename($pic), 'value'=>$config['root'].'files/pics/'.$pic),
+				'icon'=>array('filename'=>basename($pic), 'value'=>\Config::ROOT.'files/pics/'.$pic),
 			);
 			w('store-pic', $plan);
 		} else {
@@ -200,7 +200,7 @@ if ($f) {
 			'sync'=>'',
 			'brand'=>$i['brand'],
 			'vendor'=>0,
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'speed'=>2,
 			'price'=>$i['price'],
 			'count'=>0,

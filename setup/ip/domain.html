@@ -41,8 +41,7 @@ if ($plan['send']['value'] === 'add' && strlen($plan['domain']['value']) >= 3) {
 	sort($ban, SORT_STRING);
 	cache_save('ip-ban', $ban);
 
-	alert('Забанено: '.count($blacklist));
-	w('alert');
+	\Flydom\Alert::warning('Забанено: '.count($blacklist), true);
 
 } else {
 	w('form', $plan);

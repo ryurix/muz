@@ -1,0 +1,76 @@
+<?
+
+$row = $config['row'];
+
+$price = $row['price'];
+
+$prices = '';
+foreach (\Cron\Prices::decode($row['prices']) as $k=>$v) {
+	$prices.= ', '.\Type\Price::name($k+1).' <b>'.$v.'</b>';
+}
+echo '<p>Наша цена: розничная <b>'.$price.'</b>'.$prices.'</p>';
+
+?>
+<form method="POST" class="auto">
+<table class="table table-hover">
+<thead>
+	<tr>
+		<th>Артикул</th>
+		<th>Наименование</th>
+		<th>Поставщик</th>
+		<th>Дата</th>
+		<th>Цена</th>
+		<th>Оптовая</th>
+		<th>Наличие</th>
+		<th>&nbsp;</th>
+	</tr>
+</thead>
+<tbody>
+<?
+
+$vendor = cache_load('vendor');
+$sklad = w('list-sklad');
+
+$rows = db_fetch_all('SELECT * FROM sync WHERE store='.$row['i']);
+if (\User::is('sync')) {
+	w('clean');
+	foreach ($rows as $k=>$i) {
+		if (isset($_REQUEST['c'.$i['i']])) {
+			$c = clean_int($_REQUEST['c'.$i['i']]);
+			$rows[$k]['count'] = $c;
+
+			// TODO: refactor
+			$dt = \Config::now() + (isset($sklad[$i['vendor']]) ? 60*60*24*365*5 : 0);
+			$rows[$k]['dt'] = $dt;
+			db_update('sync', ['count'=>$c, 'dt'=>$dt], ['i'=>$i['i']]);
+		}
+	}
+}
+
+w('ft');
+foreach ($rows as $i) {
+	echo '<tr><td>'.$i['code'].'</td>'
+.'<td>'.$i['name'].'</td>'
+.'<td>'.(isset($vendor[$i['vendor']]) ? $vendor[$i['vendor']] : '').'</td>'
+.'<td>'.ft($i['dt'], 1).'</td>'
+.'<td align=center>'.$i['price'].'</td>'
+.'<td align=center>'.$i['opt'].'</td>';
+
+	if (\User::is('sync_count')) {
+		echo '
+<td><input type="text" class="inline-int auto" name="c'.$i['i'].'" value="'.$i['count'].'"></td>
+<td><a href="/store/'.$row['url'].'/sync?code='.$i['i'].'" class="btn btn-default btn-sm" onclick="return confirm(\'Удалить синхронизацию? Восстановление невозможно!\')">&times;</a></td>';
+	} else {
+		echo '
+<td>'.$i['count'].'</td>
+<td></td>';
+	}
+
+	echo '
+</tr>';
+}
+
+?>
+</tbody>
+</table>
+</form>

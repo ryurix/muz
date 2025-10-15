@@ -4,7 +4,7 @@ $city = cache_load('city');
 
 //	--------------------------------------------------------------------------------------
 
-$f = file_get_contents($config['root'].'files/cities.txt');
+$f = file_get_contents(\Config::ROOT.'files/cities.txt');
 $f = explode("\n", $f);
 //echo count($f);
 
@@ -23,7 +23,7 @@ foreach ($f as $i) {
 
 $country = array();
 
-$f = file_get_contents($config['root'].'files/cidr_optim.txt');
+$f = file_get_contents(\Config::ROOT.'files/cidr_optim.txt');
 $f = explode("\n", $f);
 
 $alpha = array();
@@ -34,7 +34,7 @@ foreach ($f as $i) {
 		if ($row[4] <> '-') {
 			$country[$row[4]] = $row[3];
 			$alpha[] = array($row[0], $row[1], $row[4]);
-		}		
+		}
 	}
 }
 

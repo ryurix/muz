@@ -1,5 +1,27 @@
 <?
 
+function xcopy($from, $to) {
+	if (is_dir($from)) {
+		if (!file_exists($to)) {
+			@mkdir($to);
+		}
+		$dir = dir($from);
+		while (FALSE !== ($i = $dir->read())) {
+			if ($i == '.' || $i == '..') continue;
+			if (is_dir($from.'/'.$i)) {
+				xcopy("$from/$i", "$to/$i");
+			} else {
+				copy("$from/$i", "$to/$i");
+			}
+		}
+	} else {
+		if (!file_exists(dirname($to))) {
+			@mkdir(dirname($to));
+		}
+		copy($from, $to);
+	}
+}
+
 /* not send */
 $exclude = ['/^custom$/', 'files', 'cache', 'design/logo.png', 'config.php'
 	, 'doc/template', 'design/brands', 'design/catalog', 'design/images'
@@ -103,7 +125,7 @@ function upd_del($url, $pass, $filename) {
 function upd_file($url, $pass, $filename) {
 	global $config;
 
-	$fullname = rtrim($config['root'], '/').$filename;
+	$fullname = rtrim(\Config::ROOT, '/').$filename;
 	if (function_exists('curl_file_create')) {
 		$f = curl_file_create($fullname);
 	} else {
@@ -151,7 +173,7 @@ function upd_dir($url, $pass, $filename) {
 
 function get_dir($url, $pass, $filename) {
 	global $config;
-	$f = $config['root'].$filename;
+	$f = \Config::ROOT.$filename;
 	if (!is_dir($f)) {
 		mkdir($f);
 	}
@@ -176,7 +198,7 @@ function get_file($url, $pass, $filename) {
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 	$result = curl_exec($ch);
 	curl_close($ch);
-	file_put_contents($config['root'].$filename, $result);
+	file_put_contents(\Config::ROOT.$filename, $result);
 	return $filename;
 }
 //*/
@@ -196,7 +218,7 @@ function get_file($url, $pass, $filename) {
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-	$f = fopen($config['root'].$filename, 'w+');
+	$f = fopen(\Config::ROOT.$filename, 'w+');
 	curl_setopt($ch, CURLOPT_FILE, $f);
 	curl_exec($ch);
 	curl_close($ch);
@@ -207,7 +229,7 @@ function get_file($url, $pass, $filename) {
 
 function get_del($url, $pass, $filename) {
 	global $config;
-	$filename = $config['root'].$filename;
+	$filename = \Config::ROOT.$filename;
 	if (is_dir($filename)) {
 		rmdir($filename);
 	} else {
@@ -232,15 +254,15 @@ $plan = [
 $plan = w('request', $plan);
 
 if ($plan['pass']['value'] == $upd_pass) {
-	$config['design'] = 'none';
+	\Page::design('none');
 
 	if ($plan['cmd']['value'] == 'scan') {
 		$ex = eval('return '.$plan['arg']['value'].';');
 		$a = [];
-		scan_dir(rtrim($config['root'], '/'), '', $ex, $a);
+		scan_dir(rtrim(\Config::ROOT, '/'), '', $ex, $a);
 
 		if (isset($_REQUEST['cache'])) {
-			file_put_contents($config['root'].'files/scan.txt', php_encode($a));
+			file_put_contents(\Config::ROOT.'files/scan.txt', php_encode($a));
 		} else {
 			echo php_encode($a);
 		}
@@ -248,7 +270,7 @@ if ($plan['pass']['value'] == $upd_pass) {
 	}
 
 	if ($plan['cmd']['value'] == 'del') {
-		$filename = $config['root'].$plan['arg']['value'];
+		$filename = \Config::ROOT.$plan['arg']['value'];
 		if (is_dir($filename)) {
 /**/		rmdir($filename);
 		} else {
@@ -261,7 +283,7 @@ if ($plan['pass']['value'] == $upd_pass) {
 
 	if ($plan['cmd']['value'] == 'file') {
 		if (is_file($plan['file']['value'])) {
-/**/		xcopy($plan['file']['value'], $config['root'].$plan['arg']['value']);
+/**/		xcopy($plan['file']['value'], \Config::ROOT.$plan['arg']['value']);
 			echo 'file: '.$plan['arg']['value'];
 		} else {
 			echo 'file not found';
@@ -269,12 +291,12 @@ if ($plan['pass']['value'] == $upd_pass) {
 	}
 
 	if ($plan['cmd']['value'] == 'dir') {
-/**/	mkdir($config['root'].$plan['arg']['value']);
+/**/	mkdir(\Config::ROOT.$plan['arg']['value']);
 		echo 'dir: '.$plan['arg']['value'];
 	}
 
 	if ($plan['cmd']['value'] == 'get') {
-		$filename = $config['root'].$plan['arg']['value'];
+		$filename = \Config::ROOT.$plan['arg']['value'];
 		if (is_file($filename)) {
 			header('Content-Type: "application/octet-stream"');
 			header('Content-Disposition: attachment; filename="'.basename($filename).'"');
@@ -304,7 +326,7 @@ if (isset($config['update-url']) && isset($_REQUEST['clone'])) { // клонир
 	set_time_limit(0);
 
 	$tut = array();
-	scan_dir(rtrim($config['root'], '/'), '', $not_get, $tut);
+	scan_dir(rtrim(\Config::ROOT, '/'), '', $not_get, $tut);
 
 	if (cache_exists('clone') && isset($_REQUEST['cache'])) {
 		$tam = cache_load('clone');
@@ -351,7 +373,7 @@ if (isset($config['update-url']) && isset($_REQUEST['clone'])) { // клонир
 	set_time_limit(0);
 
 	$tut = array();
-	scan_dir(rtrim($config['root'], '/'), '', $exclude, $tut);
+	scan_dir(rtrim(\Config::ROOT, '/'), '', $exclude, $tut);
 	$tam = upd_scan($config['update-url'].'/update', $upd_pass, $not_get);
 
 	// Загрузка новых файлов

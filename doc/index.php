@@ -1,7 +1,7 @@
 <?
 
-if (!is_user('doc')) {
-	redirect('/');
+if (!\User::is('doc')) {
+	\Page::redirect('/');
 }
 
 $docs = \Type\Doc::NAMES;
@@ -23,12 +23,12 @@ if ($plan['']['valid'] && $plan['doc']['value']) {
 		$keys['doc'.$doc] = max(0, $key - 1);
 		cache_save('keys', $keys);
 		db_delete('docs', array('num'=>$key, 'type'=>$doc));
-		alert('Документ '.$docs[$doc].' № '.$key.' удалён!');
+		\Flydom\Alert::warning('Документ '.$docs[$doc].' № '.$key.' удалён!');
 	}
 } elseif ($plan['del']['value'] && $plan['doc']['value'] == 0) {
 	$key = $plan['del']['value'];
 	if (db_delete('docs', array('i'=>$key))) {
-		alert('Документ № '.$key.' удалён!');
+		\Flydom\Alert::warning('Документ № '.$key.' удалён!');
 	}
 }
 

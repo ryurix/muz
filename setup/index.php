@@ -1,26 +1,26 @@
 <?
 
-if (is_user('catalog')) {
+if (\User::is('catalog')) {
 	if (isset($_REQUEST['cache1'])) {
 /*
 		$next = cache_load('cron');
-		$next['yandex'] = now();
+		$next['yandex'] = \Config::now();
 		cache_save('cron', $next);
 */
 		w('yandex');
-		alert('yandex.xml обновлён!');
+		\Flydom\Alert::warning('yandex.xml обновлён!');
 	}
 
 	if (isset($_REQUEST['cache2'])) {
 		w('google-merchant');
-		alert('google-merchant.xml обновлён!');
+		\Flydom\Alert::warning('google-merchant.xml обновлён!');
 	}
 
 	if (isset($_REQUEST['cache3'])) {
 		$next = cache_load('cron');
-		$next['brand'] = now();
+		$next['brand'] = \Config::now();
 		cache_save('cron', $next);
-		alert('Фильтр по брендам обновлён будет обновлён в ближайшее время');
+		\Flydom\Alert::warning('Фильтр по брендам обновлён будет обновлён в ближайшее время');
 	}
 
 	if (isset($_REQUEST['cache4'])) {

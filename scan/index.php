@@ -38,7 +38,7 @@ if (strlen($scan)) {
 			'store' => $store['i'],
 			'orst'=>$store['orst_i'],
 			'mpi'=>$scan,
-			'dt' => now()
+			'dt' => \Config::now()
 		];
 
 		if ($store['state'] == 27) {
@@ -82,7 +82,7 @@ if (strlen($scan)) {
 			$store = \Db::fetchRow(\Db::select($fields, 'store', $where));
 		}
 
-		if ((now() - ($_SESSION['scan']['dt'] ?? 0)) < 60) {
+		if ((\Config::now() - ($_SESSION['scan']['dt'] ?? 0)) < 60) {
 			if (is_array($store)) { // это товар в заказе
 				if (!empty($store['orst_i'])) {
 					$sound = 'success';

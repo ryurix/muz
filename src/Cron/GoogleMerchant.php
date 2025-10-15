@@ -32,7 +32,7 @@ class GoogleMerchant extends Task {
 
 		$status = cache_load('status');
 		$status['google-merchant'] = array(
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'count'=>$count,
 		);
 		cache_save('status', $status);

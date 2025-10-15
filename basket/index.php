@@ -1,7 +1,7 @@
 <?
 
-if (is_user('sklad')) {
-	$config['action'] = array(array('href'=>'/basket/naklad', 'action'=>'+ Накладная'));
+if (\User::is('sklad')) {
+	\Action::after('/basket/naklad', 'Накладная');
 }
 
 $action = 'view';
@@ -39,7 +39,7 @@ $config['sale'] = $sale;
 $_SESSION['sale'] = $sale;
 
 if ($action == 'next') {
-	redirect('/basket/next');
+	\Page::redirect('/basket/next');
 }
 
 $config['gtag-event'] = array(

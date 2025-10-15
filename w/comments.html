@@ -1,0 +1,83 @@
+<?
+
+$code = '';
+if (\Page::depth() >= 3 && !empty(\Page::arg())) {
+	$key = \Page::arg();
+	if ($key > 0) {
+		$code = $menu[1]['code'];
+		switch($code) {
+			case ('user'):
+			case ('order'): $code = substr($code, 0, 1).$key; break;
+		}
+	}
+}
+
+if (strlen($code) == 0) {
+	return;
+}
+
+echo '<div class="comment">';
+
+$plan = array(
+	'' => array('method' => 'POST'),
+	'cbody'=> array('name'=>'Оставить комментарий', 'type'=>'line'),
+	'comment' => array('name'=>'', 'type'=>'button', 'count'=>1, 1=>'Отправить'),
+);
+
+w('request', $plan);
+
+if ($plan['']['valid'] && $plan['comment']['value'] == 1) {
+	db_insert('comment', array(
+		'theme' => $code,
+		'user' => $_SESSION['i'],
+		'dt' => \Config::now(),
+		'body' => $plan['cbody']['value'],
+	));
+	$plan['cbody']['value'] = '';
+}
+
+if (isset($_REQUEST['comment_erase'])) {
+	$where = array('i'=>$_REQUEST['comment_erase']);
+	if (!\User::is('comment')) {
+		$where['user'] = $_SESSION['i'];
+	}
+	db_delete('comment', $where);
+}
+
+w('ft');
+
+$q = db_query('SELECT c.i i, c.user user, c.type type, c.body body, c.dt dt, u.name name'
+.' FROM comment c LEFT JOIN user u ON c.user=u.i'
+.' WHERE c.theme="'.$code.'"'
+.' ORDER BY c.dt DESC');
+
+while ($row = db_fetch($q)) {
+	echo '<div>';
+	if (($row['user'] == $_SESSION['i'] && $row['type'] == 0) || \User::is('comment')) {
+		echo ' <a href="?comment_erase='.$row['i'].'" class="btn btn-sm btn-default fl-r" onclick="return confirm(\'Удалить комментарий\')">&times;</a>';
+	}
+	echo '<span class="label">'.ft($row['dt'], 1).'</span> ';
+
+	if ($row['type'] == 0) {
+		if ($row['user'] > 0) {
+			 echo '<span class="muted">'.$row['name'].':</span> ';
+		}
+		echo $row['body'];
+	} else {
+		$sub = substr($code, 0, 1);
+		switch ($sub) {
+		case 'u': w('comment-user', $row); break;
+		case 'o': w('comment-order', $row); break;
+		}
+	}
+
+
+	echo '</div>';
+}
+
+//w('form', $plan);
+echo '<p><form method="POST" class="form-inline">Прокомментировать:&nbsp;<input type="text" name="cbody" class="form-control" style="width:400px">&nbsp;<input type="submit" name="comment1" value="Отправить" class="btn btn-default"></form></p>';
+
+echo '</div>';
+
+?>

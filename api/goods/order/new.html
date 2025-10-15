@@ -26,8 +26,8 @@ foreach ($shipments as $shipment) {
 
 	foreach ($orders as $item) {
 		$ids = (new \Order\Model([
-			'dt'=>now(),
-			'last'=>now(),
+			'dt'=>\Config::now(),
+			'last'=>\Config::now(),
 			'user'=>$user,
 			'staff'=>null,
 			'state'=>1,

@@ -1,0 +1,51 @@
+<? //
+
+if (isset($_REQUEST['append']) && isset($_SESSION['basket']) && is_array($_SESSION['basket']) && count($_SESSION['basket'])) {
+	$basket = $_SESSION['basket'];
+	$select = 'SELECT * FROM store WHERE i IN ('.implode(',',array_keys($basket)).')';
+	$q = db_query($select);
+	$store = array();
+	while ($i = db_fetch($q)) {
+		$store[$i['i']] = $i;
+	}
+	db_close($q);
+	$select = 'SELECT * FROM user WHERE i='.$args;
+	$q = db_query($select);
+	if ($user = db_fetch($q)) {
+//*
+		$brand = cache_load('brand');
+
+		w('comment');
+		foreach ($basket as $k=>$v) {
+
+			$mark = [];
+			if ($user['mark']) { $mark[] = $user['mark']; }
+			if ($user['mark2']) { $mark[] = $user['mark2']; }
+
+			$ids = (new \Order\Model([
+				'user'=>$args,
+				'staff'=>$_SESSION['i'],
+				'cire'=>$user['cire'],
+				'city'=>$user['city'],
+				'lat'=>$user['lat'],
+				'lon'=>$user['lon'],
+				'adres'=>$user['adres'],
+				'dost'=>$user['dost'],
+				'store'=>$k,
+				'name'=>(isset($brand[$store[$k]['brand']]) ? $brand[$store[$k]['brand']].' ' : '').(strlen($store[$k]['model']) ? $store[$k]['model'].' ' : '').$store[$k]['name'],
+				'price'=>$store[$k]['price'],
+				'count'=>$v['c'],
+				'mark'=>count($mark) ? ','.implode(',', $mark).',' : '',
+			]))->create();
+
+			foreach ($ids as $i) {
+				comment_type('o'.$i, 1);
+			}
+		}
+//*/
+		$_SESSION['basket'] = array();
+		\Flydom\Alert::warning('Товары ('.array_sum($basket).') добавлены в заказ пользователя.');
+	}
+}
+
+?>

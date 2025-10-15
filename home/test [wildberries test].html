@@ -10,7 +10,7 @@ $store = db_fetch_all(db_query($select), 'store');
 
 $vendor = '';
 
-$dt = now() - 30*24*60*60; // актуальность синхронизации
+$dt = \Config::now() - 30*24*60*60; // актуальность синхронизации
 
 $select = 'SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' AND store IN ('.implode(',', array_keys($store)).') GROUP BY store';
 $q = db_query($select);

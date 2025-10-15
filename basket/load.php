@@ -30,7 +30,7 @@ if ($plan['send']['value'] == 1 && strlen($plan['file']['value'])) {
 
 	$_SESSION['basket'] = $basket;
 //	print_pre($basket);
-	redirect('/basket');
+	\Page::redirect('/basket');
 }
 
 $config['plan'] = $plan;

@@ -1,6 +1,6 @@
 <?
 
-$code = $config['args'][0];
+$code = \Page::arg();
 
 $row = 0;
 if ($code) {
@@ -8,7 +8,7 @@ if ($code) {
 	$row = db_fetch($q);
 
 	if (!$row) {
-		redirect('/prices/plan');
+		\Page::redirect('/prices/plan');
 	}
 }
 
@@ -17,13 +17,13 @@ if (!$row) {
 		'i'=>0,
 		'typ'=>10,
 		'name'=>'Новая задача',
-		'dt'=>now() + 24*60*60,
+		'dt'=>\Config::now() + 24*60*60,
 		'every'=>86400,
 		'data'=>'',
 	];
 }
 
-$config['name'] = $row['name'];
+\Page::name($row['name']);
 
 $data = array_decode($row['data']);
 $data['name'] = $row['name'];
@@ -66,7 +66,7 @@ if ($plan['']['valid']) {
 		'name'=>$plan['name']['value'],
 		'every'=>$plan['every']['value'],
 		'info'=>'',
-		'dt'=>now() + $plan['every']['value'],
+		'dt'=>\Config::now() + $plan['every']['value'],
 		'data'=>array_encode($data),
 	];
 
@@ -76,12 +76,12 @@ if ($plan['']['valid']) {
 
 		if ($row['i']) {
 			db_update('cron', $new, ['i'=>$row['i']]);
-			alert('Задача сохранена');
-			redirect('/prices/plan');
+			\Flydom\Alert::warning('Задача сохранена');
+			\Page::redirect('/prices/plan');
 		} else {
 			db_insert('cron', $new);
-			alert('Задача создана!');
-			redirect('/prices/plan');
+			\Flydom\Alert::warning('Задача создана!');
+			\Page::redirect('/prices/plan');
 		}
 	}
 
@@ -90,13 +90,13 @@ if ($plan['']['valid']) {
 		$info = \Cron\Task::execute($new, $data);
 		//$info.= \Cron\Task::follow($data['follow']);
 
-		alert('Задача выполнена: '.$info);
+		\Flydom\Alert::warning('Задача выполнена: '.$info);
 		if ($row['i']) {
 			w('ft');
 			db_update('cron', [
-				'info'=>ft(now(), 1).' '.$info,
+				'info'=>ft(\Config::now(), 1).' '.$info,
 			], ['i'=>$row['i']]);
-//			redirect('/setup/ozon');
+//			\Page::redirect('/setup/ozon');
 		}
 	}
 }

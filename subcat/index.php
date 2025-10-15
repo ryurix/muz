@@ -13,11 +13,11 @@ if ($get['']['valid']) {
 	$q = db_query('SELECT * FROM subcat WHERE code="'.$get['code']['value'].'" AND up='.$get['up']['value']);
 	if ($row = db_fetch($q)) {
 		$plan['']['default'] = $row;
-		$config['name'] = $row['name2'];
+		\Page::name($row['name2']);
 	} else {
 		$row = array('i'=>0);
 		$pathway = cache_load('pathway-hide');
-		$config['name'] = kv($pathway, $get['up']['value'], array('name'=>''))['name'];
+		\Page::name(($pathway[$get['up']['value']] ?? ['name'=>''])['name']);
 	}
 	db_close($q);
 
@@ -25,7 +25,7 @@ if ($get['']['valid']) {
 
 	if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 		$data = array(
-			'dt'=>now(),
+			'dt'=>\Config::now(),
 			'up'=>$get['up']['value'],
 			'code'=>$get['code']['value'],
 			'tag0'=>$plan['tag0']['value'],
@@ -39,10 +39,10 @@ if ($get['']['valid']) {
 
 		if ($row['i']) {
 			db_update('subcat', $data, array('i'=>$row['i']));
-			alert('Подкаталог изменен');
+			\Flydom\Alert::warning('Подкаталог изменен');
 		} else {
 			db_insert('subcat', $data);
-			alert('Подкаталог создан');
+			\Flydom\Alert::warning('Подкаталог создан');
 		}
 	}
 
@@ -52,9 +52,6 @@ if ($get['']['valid']) {
 			'code'=>$get['code']['value'],
 		));
 	} else {
-		$config['plan'] = $plan;
-		refile('form.html');
+		\Page::body('form');
 	}
 }
-
-?>

@@ -1,8 +1,8 @@
 <?
 
-$q = db_query('SELECT * FROM region WHERE i='.$config['args'][0]);
+$q = db_query('SELECT * FROM region WHERE i='.\Page::arg());
 if ($row = db_fetch($q)) {
-	$config['name'] = $row['name'];
+	\Page::name($row['name'];
 
 	$plan = w('plan-region');
 	$plan['']['default'] = $row;
@@ -17,12 +17,12 @@ if ($row = db_fetch($q)) {
 			'theme'=>'region-'.$row['i'],
 			'body'=>'Правка',
 		));
-		redirect('.', 302);
+		\Page::redirect('.', 302);
 	}
 	$config['plan'] = $plan;
 
 } else {
-	redirect('.');
+	\Page::redirect('.');
 }
 
 ?>

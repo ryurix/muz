@@ -24,11 +24,9 @@ if (isset($_REQUEST['i'])) {
 
 	w('menu-basket');
 } else {
-	if (kv($config, 'DEBUG', 0)) {
+	if ($config['DEBUG'] ?? 0) {
 		print_pre($_SESSION['basket']);
 	} else {
-		redirect('/basket');
+		\Page::redirect('/basket');
 	}
 }
-
-?>

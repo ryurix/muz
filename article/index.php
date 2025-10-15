@@ -10,7 +10,7 @@ if (count($_GET)) {
 w('clean');
 $up = first_int(kv($_REQUEST, 'catalog', '0'));
 
-$pw = cache_load('pathway'.(is_user('catalog') ? '-hide' : ''));
+$pw = cache_load('pathway'.(\User::is('catalog') ? '-hide' : ''));
 
 if ($up && isset($pw[$up]) && kv($_REQUEST, 'catalog') == $pw[$up]['url']) {
 	// do nothing
@@ -23,7 +23,7 @@ $config['up'] = $up;
 
 // * * * catalog
 
-$sub = cache_load('catalog'.(is_user('catalog') ? '-hide' : ''));
+$sub = cache_load('catalog'.(\User::is('catalog') ? '-hide' : ''));
 if ($up) {
 	$sub = $sub['/'];
 	foreach ($pw[$up]['pre'] as $i) {
@@ -52,7 +52,7 @@ $config['sub'] = $sub;
 
 $where = array();
 
-if (!is_user('menu')) {
+if (!\User::is('menu')) {
 	$where[] = 'hide=0';
 }
 

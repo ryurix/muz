@@ -1,1 +1,1 @@
-<? redirect('/catalog'); ?>
+<? \Page::redirect('/catalog'); ?>

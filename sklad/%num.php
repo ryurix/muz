@@ -1,10 +1,10 @@
 <?
 
-$q = db_query('SELECT naklad.type,naklad.i,naklad.dt,naklad.vendor,naklad.info,user.name FROM naklad,user WHERE naklad.user=user.i AND naklad.i='.$config['args'][0]);
+$q = db_query('SELECT naklad.type,naklad.i,naklad.dt,naklad.vendor,naklad.info,user.name FROM naklad,user WHERE naklad.user=user.i AND naklad.i='.\Page::arg());
 
 if ($row = db_fetch($q)) {
 
-	refile('sklad-action.html', 'sklad-action');
+	\Page::body('sklad-action.html', 'sklad-action');
 	w('sklad-action', $row['vendor']);
 
 	w('ft');
@@ -15,11 +15,9 @@ if ($row = db_fetch($q)) {
 		default: $name = '';
 	}
 
-	$config['name'] = $name.' от '.ft($row['dt'], 1).', '.$row['name'];
+	\Page::name($name.' от '.ft($row['dt'], 1).', '.$row['name']);
 	$config['row'] = $row;
-	$config['action'] = array(
-		array('href'=>'/sklad?sk='.$row['vendor'], 'action'=>'Склад'),
-	);
+	\Action::before('/sklad?sk='.$row['vendor'], 'Склад');
 } else {
-	redirect('/sklad');
+	\Page::redirect('/sklad');
 }

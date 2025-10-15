@@ -89,7 +89,7 @@ $sign = cache_load('sign');
 
 //print_pre($tree);
 //*
-$f = fopen($config['root'].'files/export.csv', 'w+');
+$f = fopen(\Config::ROOT.'files/export.csv', 'w+');
 
 fputcsv($f, array(
 	trans('Код'),

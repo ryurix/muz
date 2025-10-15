@@ -1,8 +1,8 @@
 <?
 
-$q = db_query('SELECT * FROM mark WHERE i='.$config['args'][0]);
+$q = db_query('SELECT * FROM mark WHERE i='.\Page::arg());
 if ($row = db_fetch($q)) {
-	$config['name'] = $row['name'];
+	\Page::name($row['name']);
 
 	$plan = w('plan-mark');
 	$plan['']['default'] = $row;
@@ -17,19 +17,19 @@ if ($row = db_fetch($q)) {
 		), array('i'=>$row['i']));
 
 		w('cache-mark');
-		redirect('.');
+		\Page::redirect('.');
 	}
 
 	if ($plan['']['valid'] && $plan['send']['value'] == 2) {
 		db_delete('mark', array('i'=>$row['i']));
 
 		w('cache-mark');
-		redirect('.');
+		\Page::redirect('.');
 	}
 
 	$config['plan'] = $plan;
 } else {
-	redirect('.');
+	\Page::redirect('.');
 }
 
 ?>

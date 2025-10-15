@@ -41,7 +41,7 @@ foreach ($updates as $k=>$v) {
 	db_update('article', array('body'=>$v), array('i'=>$k));
 }
 
-alert('Обновлено '.count($updates).' статей.');
+\Flydom\Alert::warning('Обновлено '.count($updates).' статей.');
 
 $updates = array();
 $q = db_query('SELECT * FROM store');
@@ -59,8 +59,4 @@ foreach ($updates as $k=>$v) {
 	db_update('store', array('info'=>$v), array('i'=>$k));
 }
 
-alert('Обновлено '.count($updates).' товаров.');
-
-w('alert');
-
-?>
+\Flydom\Alert::warning('Обновлено '.count($updates).' товаров.', true);

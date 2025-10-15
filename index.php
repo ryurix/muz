@@ -8,15 +8,17 @@
 // 1. Read config
 ini_set('include_path', '.');
 require_once 'src/autoload.php';
+session_set_save_handler(new \Flydom\Core\Session(), true);
 require_once 'config.php';
+require_once 'src/menu.php';
 
 require_once '--/config.inc';
-require_once '--/first.inc';
+// require_once '--/first.inc';
 require_once '--/cache.inc';
 
-
+/*
 // IP Ban
-$ip = client_ip();
+$ip = \User::ip();
 $ban = cache_load('ip-ban', []);
 
 $parts = explode('.', $ip);
@@ -29,21 +31,24 @@ if (in_array($ip, $ban) || in_array($one, $ban) || in_array($two, $ban)) {
 	// header('HTTP/1.0 403 Forbidden', true, 403);
 	exit;
 }
+*/
 
-// 2. Connect to database
-
-//\Db::connect(\Config::DATABASE);
 require_once 'lib/flydom/Core/log2.php';
 
-if (isset($config['database'])) {
-	require_once '--/database.inc';
-	db_connect($config['database']);
-}
+// Legacy
+require_once '--/database.inc';
+db_connect(\Config::DATABASE);
+include_once 'w.php';
+
+include_once \Page::php();
+include_once 'src/design/'.\Page::html();
 
 // 3. Read session
 
-require_once '--/access.inc';
-access_login();
+// require_once '--/access.inc';
+// access_login();
+
+/*
 
 // 4. Search for menu
 
@@ -71,7 +76,7 @@ include_once first_body();
 
 // 7. Process design file
 
-include $config['root'].'src/design/'.$config['design'].'.html';
+include \Config::ROOT.'src/design/'.$config['design'].'.html';
 
 // 8. Cron
 
@@ -81,3 +86,5 @@ include $config['root'].'src/design/'.$config['design'].'.html';
 //}
 
 exit();
+
+//*/

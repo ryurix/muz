@@ -1,14 +1,14 @@
 <?
 
-$config['action'] = array(array('href'=>'/rate/new', 'action'=>'Добавить отзыв'));
+\Action::before('/rate/new', 'Добавить отзыв');
 
 w('user-config');
 
 $default = array(
-	'dt01'=>now() - 7*24*60*60,
-	'dt02'=>now(),
-	'dt1'=>now() - 7*24*60*60,
-	'dt2'=>now(),
+	'dt01'=>\Config::now() - 7*24*60*60,
+	'dt02'=>\Config::now(),
+	'dt1'=>\Config::now() - 7*24*60*60,
+	'dt2'=>\Config::now(),
 	'usr'=>'',
 	'state'=>-1,
 	'store'=>'',

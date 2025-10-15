@@ -1,8 +1,8 @@
 <?
 
-$q = db_query('SELECT rate.*,store.name sname,store.model,store.url,store.brand FROM rate LEFT JOIN store ON rate.store=store.i WHERE rate.i='.$config['args'][0]);
+$q = db_query('SELECT rate.*,store.name sname,store.model,store.url,store.brand FROM rate LEFT JOIN store ON rate.store=store.i WHERE rate.i='.\Page::arg());
 if ($row = db_fetch($q)) {
-	$config['name'] = $row['name'];
+	\Page::name($row['name']);
 
 	$plan = w('plan-rate');
 	$plan['send']['count'] = 2;
@@ -18,18 +18,18 @@ if ($row = db_fetch($q)) {
 			'state'=>$plan['state']['value'],
 			'dt'=>$plan['dt']['value'],
 		), array('i'=>$row['i']));
-		alert('Отзыв сохранён!', 'success');
-		redirect('.', 302);
+		\Flydom\Alert::success('Отзыв сохранён!', 'success');
+		\Page::redirect('.', 302);
 	}
 	if ($plan['']['valid'] && $plan['send']['value'] == 2) {
 		db_delete('rate', array('i'=>$row['i']));
-		alert('Отзыв удалён!');
-		redirect('.', 302);
+		\Flydom\Alert::warning('Отзыв удалён!');
+		\Page::redirect('.', 302);
 	}
 	$config['plan'] = $plan;
 
 } else {
-	redirect('.');
+	\Page::redirect('.');
 }
 
 ?>

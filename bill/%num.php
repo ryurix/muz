@@ -1,24 +1,24 @@
 <?
 
-$key = isset($config['args'][0]) ? $config['args'][0] : 0;
+$key = \Page::arg(0, 0);
 
 $where = '';
-if (!is_user('order')) {
+if (!\User::is('order')) {
 	$where = ' AND state=1 AND user='.$_SESSION['i'];
 }
 
 $q = db_query('SELECT * FROM bill WHERE i='.$key.$where);
 
 if (!$row = db_fetch($q)) {
-	alert('Счет #'.$key.' не найден!');
-	redirect('/');
+	\Flydom\Alert::warning('Счет #'.$key.' не найден!');
+	\Page::redirect('/');
 }
 
-$action = count($config['args']) > 1 ? $config['args'][1] : 'view';
+$action = \Page::arg(1, 'view');
 
 if ($action == 'pay' && $row['state'] == 1) {
 	$config['row'] = $row;
-} elseif ($action == 'edit' && is_user('order')) {
+} elseif ($action == 'edit' && \User::is('order')) {
 	$plan = array(
 		''=>array('method'=>'POST'),
 		'type'=>array('name'=>'Вид', 'type'=>'combo', 'values'=>w('list-bill'), 'width'=>300, 'readonly'=>1),
@@ -62,7 +62,7 @@ if ($action == 'pay' && $row['state'] == 1) {
 					),
 					'billingCode'=>'muzmart003',
 				));
-				
+
 				if (is_object($o)) {
 					$code = $o->code;
 					$data['code'] = $code;
@@ -90,7 +90,7 @@ if ($action == 'pay' && $row['state'] == 1) {
 						}
 						*/
 						$o = appex('PUT', 'ecommerce/orders/'.$code.'/payer', $arr);
-					}					
+					}
 
 // Отправка кода возврата
 					$o = appex('GET', 'bills/'.$code, array(
@@ -98,28 +98,28 @@ if ($action == 'pay' && $row['state'] == 1) {
 						'returnUrl'=>'https://muzmart.com/basket/ok',
 					));
 				} else {
-					alert('Ошибка создания запроса appex: '.$o.'. Необходимо создать новый счет!', 'danger');
+					\Flydom\Alert::danger('Ошибка создания запроса appex: '.$o.'. Необходимо создать новый счет!');
 				}
 			}
 
 			db_update('bill', $data, array('i'=>$key));
-			alert('Счет изменен!');
+			\Flydom\Alert::warning('Счет изменен!');
 
-			redirect('/bill/'.$key);
+			\Page::redirect('/bill/'.$key);
 		} elseif ($plan['send']['value'] == 2) {
 			db_delete('bill', array('i'=>$key));
-			alert('Счет удален!');
+			\Flydom\Alert::warning('Счет удален!');
 			w('clean');
 			$orst = first_int(trim($row['orst'], '|'));
-			redirect('/order/'.$orst);
+			\Page::redirect('/order/'.$orst);
 		}
 	}
 
 	$config['plan'] = $plan;
-	refile('edit.html');
+	\Page::body('edit');
 } else {
 	$config['row'] = $row;
-	refile('view.html');
+	\Page::body('view');
 }
 
 ?>

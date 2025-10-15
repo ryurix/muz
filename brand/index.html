@@ -1,6 +1,6 @@
 <?
 
-if (is_user('catalog')) {
+if (\User::is('catalog')) {
 	echo '<p><a href="/brand/new" class="btn btn-default"><i class="fa fa-plus"></i> Добавить</a></p>';
 }
 
@@ -18,7 +18,7 @@ if (is_user('catalog')) {
 $select = 'SELECT * FROM brand ORDER BY w, name';
 $q = db_query($select);
 
-$edit = is_user('catalog');
+$edit = \User::is('catalog');
 w('clean');
 
 while ($i = db_fetch($q)) {

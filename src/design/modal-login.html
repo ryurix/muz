@@ -1,0 +1,43 @@
+<div class="modal-header">
+	<h5 class="modal-title">Авторизация</h5>
+	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		<span aria-hidden="true">&times;</span>
+	</button>
+</div>
+<div class="modal-body">
+
+<form action="#" id="signin_form" method="POST">
+	<label class="signin_label">
+		<p class="signin_text1">Email / Телефон</p>
+		<input type="text" name="_login" placeholder="mail@mail.com" required>
+	</label>
+	<label class="signin_label">
+		<p class="signin_text1">Пароль</p>
+		<a href="/my" class="signin_forgot">Забыли пароль?</a>
+		<input type="password" name="_password" placeholder="Введите пароль" required>
+	</label>
+	<div class="signin_cont">
+		<button type="submit" class="signin_submit">Войти</button>
+<? /*
+		<div class="signin_remember">
+			<input type="checkbox" id="signin_checkbox">
+			<label for="signin_checkbox">
+				<p class="signin_text2">Запомнить меня</p>
+			</label>
+		</div>
+*/ ?>
+	</div>
+</form>
+<? /*
+<p class="signin_text3">Авторизация через соц. сети</p>
+<ul class="signin_socnetwork">
+	<li><a href="#"><img src="/design/img/signin_vk.png" alt="vk"></a></li>
+	<li><a href="#"><img src="/design/img/signin_fb.png" alt="fb"></a></li>
+	<li><a href="#"><img src="/design/img/signin_googleplus.png" alt="g+"></a></li>
+</ul>
+*/ ?>
+
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+</div>

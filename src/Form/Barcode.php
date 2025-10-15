@@ -29,7 +29,7 @@ static function start($default = [])
 		$code = explode(',', self::code());
 		$code = array_map('trim', $code);
 		\Db::update('store', ['code'=>\Flydom\Arrau::encodec($code)], ['i'=>$store]);
-		alert('Штрихкод товара изменён!');
+		\Flydom\Alert::warning('Штрихкод товара изменён!');
 	}
 }
 

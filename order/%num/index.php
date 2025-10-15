@@ -1,8 +1,8 @@
 <?
 
-$order = new \Order\Model($config['args'][0]);
+$order = new \Order\Model(\Page::arg());
 
-if (is_user('ones') && $order->getStaff() != $_SESSION['i']) {
+if (\User::is('ones') && $order->getStaff() != $_SESSION['i']) {
 	$order = new \Order\Model();
 }
 
@@ -10,12 +10,12 @@ $root = '/order';
 
 if ($order->getId()) {
 	w('ft');
-	$config['name'] = 'Заказ №'.$order->getId().' от '.ft($order->getDt(), 1).' &mdash; '.ft($order->getLast(), 1);
+	\Page::name('Заказ №'.$order->getId().' от '.ft($order->getDt(), 1).' &mdash; '.ft($order->getLast(), 1));
 
 	$sync = db_fetch_all('SELECT * FROM sync WHERE store='.$order->getStore().' ORDER BY count DESC', 'vendor');
 	$config['sync'] = $sync;
 
-	$action = count($config['args']) > 1 ? $config['args'][1] : 'edit';
+	$action = \Page::arg(1, 'edit');
 
 	if ($action == 'edit') {
 		$vendor_name = cache_load('vendor');
@@ -66,13 +66,13 @@ if ($order->getId()) {
 		}
 
 		if ($plan['last']['value'] < $order->getLast()) {
-			alert('Заказ изменён другим пользователем! Сохранение невозможно!', 'danger');
+			\Flydom\Alert::warning('Заказ изменён другим пользователем! Сохранение невозможно!');
 			$plan['']['valid'] = 0;
 		}
 
 		if ($order->getVendor() != $plan['vendor']['value'] && $plan['vendor']['value'] != 45) {
 			if ($plan['count']['value'] > kv($sync, $plan['vendor']['value'], ['count'=>0])['count']) {
-				alert('Недостаточно товаров у поставщика!', 'danger');
+				\Flydom\Alert::warning('Недостаточно товаров у поставщика!');
 				$plan['']['valid'] = 0;
 				$plan['vendor']['iv'] = 1;
 			}
@@ -90,7 +90,7 @@ if ($order->getId()) {
 
 			if (($plan['money']['value'] + $plan['money2']['value']) > ($plan['price']['value'] * $plan['count']['value'])) {
 				$changes = null;
-				alert('Сумма к оплате превышает сумму заказа!', 'danger');
+				\Flydom\Alert::warning('Сумма к оплате превышает сумму заказа!');
 			}
 
 			if (!is_null($changes)) {
@@ -138,8 +138,8 @@ if ($order->getId()) {
 
 				$order->update();
 
-				$plan['last']['value'] = now();
-				alert('<a href="/order/'.$order->getId().'">Заказ</a> изменён: '.$changes);
+				$plan['last']['value'] = \Config::now();
+				\Flydom\Alert::warning('<a href="/order/'.$order->getId().'">Заказ</a> изменён: '.$changes);
 
 				if ((($plan['send']['value'] == 1 || $plan['send']['value'] == 4) && $order->getState() != $plan['state']['value']) || $plan['dost']['value'] != $order->getDost()) {
 					w('mail');
@@ -153,36 +153,36 @@ if ($order->getId()) {
 						// Добавляем к чеку
 						db_update('kkm', array(
 							'orst'=>$old['orst'].$order->getId().'|',
-							'dt'=>now(),
+							'dt'=>\Config::now(),
 						), [
 							'i='.$old['i'],
 						]);
-						alert('Добавлено в <a href="/kkm/'.$old['i'].'">фискальный чек</a>');
+						\Flydom\Alert::warning('Добавлено в <a href="/kkm/'.$old['i'].'">фискальный чек</a>');
 					} else {
 						// Создаём новый чек
 						db_insert('kkm', [
-							'dt'=>now(),
+							'dt'=>\Config::now(),
 							'state'=>0,
 							'usr'=>$order->getUser(),
 							'staff'=>$_SESSION['i'],
 							'orst'=>'|'.$order->getId().'|',
 						]);
-						alert('Создан <a href="/kkm">фискальный чек</a>');
+						\Flydom\Alert::warning('Создан <a href="/kkm">фискальный чек</a>');
 					}
 				}
 			}
 
 			if ($plan['send']['value'] == 4) {
-				redirect($root);
+				\Page::redirect($root);
 			}
 		} elseif ($plan['']['valid'] && $plan['send']['value'] == 3) {
 			$id = $order->getId();
 			$order->delete();
-			alert('Заказ удален.');
+			\Flydom\Alert::warning('Заказ удален.');
 
 			w('log');
 			logs(39, $id);
-			redirect($root);
+			\Page::redirect($root);
 
 			db_delete('bill', array(
 				'orst'=>$id,
@@ -199,5 +199,5 @@ if ($order->getId()) {
 	$name = trim($order->getUserName());
 	$plan['user']['value'] = '<a href="/user/'.$order->getUser().'">'.(strlen($name) < 3 ? $order->getUser().' '.$name : $name).'</a>';
 } else {
-	redirect($root);
+	\Page::redirect($root);
 }

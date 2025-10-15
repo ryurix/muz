@@ -14,7 +14,7 @@ cache_load('basket-com');
 */
 
 ?>
-<p style="color:#000"><b>Коммерческое предложение  № И-<? w('keys'); $key=key_next('com-k'); echo $key; ?> От <? w('ft'); echo ft(now()); ?> г.</b></p>
+<p style="color:#000"><b>Коммерческое предложение  № И-<? w('keys'); $key=key_next('com-k'); echo $key; ?> От <? w('ft'); echo ft(\Config::now()); ?> г.</b></p>
 <?
 
 $basket = array();

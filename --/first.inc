@@ -6,8 +6,6 @@
  */
 
 function first_query() {
-	global $config;
-
 	if (isset($_GET['q']) && is_string($_GET['q'])) {
 		$q = $_GET['q'];
 	}
@@ -139,10 +137,10 @@ function first_menu($q, $roles, &$menu, &$config) {
 function first_file($path, &$file) {
 	global $config;
 
-	$file = $config['root'].implode('/', $path);
+	$file = \Config::ROOT.implode('/', $path);
  	$body = is_dir($file) ? 'index' : array_pop($path);
 	$path = count($path) > 0 ? implode('/', $path).'/' : 'home/';
-	$file = $config['root'].$path.$body;
+	$file = \Config::ROOT.$path.$body;
 
 	return '$'.$path.$body.(is_file($file.'.htm') ? '.htm' : '.html');
 }
@@ -163,7 +161,7 @@ function first_body($force = 0) {
 
 function first_block($path, $body = NULL) {
 	global $config, $block;
-	$base = $config['root'].'--/block/'.$path;
+	$base = \Config::ROOT.'--/block/'.$path;
 	if (!is_dir($base)) { return; }
 	$handle = @opendir($base);
 	if ($handle === FALSE) { return; }
@@ -200,7 +198,7 @@ function w($name, &$args = NULL, &$exts = NULL) {
 		return FALSE;
 	}
 	if (substr($block[$name], 0, 1) === '$') {
-		$file = $config['root'].substr($block[$name], 1);
+		$file = \Config::ROOT.substr($block[$name], 1);
 		if(is_file($file)) {
 			if (strpos($file, ".ph") > 0) {
 				unset($block[$name]);
@@ -220,7 +218,7 @@ function body($name = 'body') {
 	global $config, $block;
 	if(isset($block[$name])) {
 		if (substr($block[$name], 0, 1) === '$') {
-			$file = $config['root'].substr($block[$name], 1);
+			$file = \Config::ROOT.substr($block[$name], 1);
 			if(is_file($file)) {
 				return $file;
 			}

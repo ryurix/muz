@@ -1,8 +1,4 @@
 <?
 
-$config['action'] = array(
-	array('action'=>'добавить выгрузку', 'href'=>'/setup/wildberries/0'),
-	array('action'=>'загрузка номенклатуры', 'href'=>'/setup/wildberries/load'),
-);
-
-?>
+\Action::before('/setup/wildberries/0', 'добавить выгрузку');
+\Action::before('/setup/wildberries/load', 'загрузка номенклатуры');

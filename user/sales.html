@@ -14,7 +14,7 @@ function a_link($i, $code, $list, $plan) {
 	}
 
 	global $config;
-	return '<a href="'.$config['q'].'?'
+	return '<a href="'.\Page::url().'?'
 	.(isset($_REQUEST['month']) ? 'month='.$_REQUEST['month'].'&' : '')
 	.(isset($_REQUEST['pay']) && $code != 'pay' ? 'pay='.$_REQUEST['pay'].'&' : '')
 	.(isset($_REQUEST['state']) && $code != 'state' ? 'state='.$_REQUEST['state'].'&' : '')
@@ -22,7 +22,7 @@ function a_link($i, $code, $list, $plan) {
 }
 
 
-$now = now();
+$now = \Config::now();
 /*
 $months = array();
 w('ft');
@@ -101,7 +101,7 @@ if (count($plan['mark']['value'])) {
 		if ($i) {
 			$or[] = '(CONCAT(",",orst.mark,",") LIKE "%,'.$i.',%")';
 		} else {
-			$or[] = '(orst.mark="" OR orst.mark IS NULL)';			
+			$or[] = '(orst.mark="" OR orst.mark IS NULL)';
 		}
 	}
 	$select.= ' AND ('.implode(' OR ', $or).')';

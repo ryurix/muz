@@ -5,7 +5,7 @@ $code = isset($_REQUEST['url']) ? $_REQUEST['url'] : '';
 $q = db_query('SELECT * FROM menu WHERE code="'.$code.'"');
 
 if ($row = db_fetch($q)) {
-	$config['name'] = $row['name'];
+	\Page::name($row['name']);
 
 	$dummy = $row['code'];
 	$plan = w('plan-menu', $dummy);
@@ -21,7 +21,7 @@ if ($row = db_fetch($q)) {
 	}
 	$plan['']['default']['code'] = $code;
 	w('request', $plan);
-	
+
 	if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 		w('clean');
 		$code = $plan['code']['value'];
@@ -49,21 +49,21 @@ if ($row = db_fetch($q)) {
 			'w'=>$plan['w']['value'],
 			'body'=>$plan['body']['value'],
 		), array('code'=>$row['code']));
-		alert('Запись изменена');
+		\Flydom\Alert::warning('Запись изменена');
 		w('cache-menu');
-		redirect('/menu');
+		\Page::redirect('/menu');
 	} elseif ($plan['']['valid'] && $plan['send']['value'] == 2) {
 		db_delete('menu', array(
 			'code'=>$row['code'],
 		));
-		alert('Запись удалена');
+		\Flydom\Alert::warning('Запись удалена');
 		w('cache-menu');
-		redirect('/menu');
+		\Page::redirect('/menu');
 	}
 
 	$config['plan'] = $plan;
 } else {
-	redirect('/menu');
+	\Page::redirect('/menu');
 }
 
 ?>

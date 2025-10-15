@@ -37,7 +37,7 @@ class OzonXml extends Task {
 			return;
 		}
 
-		//alert(php_encode($items));
+		//\Flydom\Alert::warning(php_encode($items));
 
 		// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -59,7 +59,7 @@ class OzonXml extends Task {
 			$where[] = 'store.i='.$test;
 		}
 
-		$dt = now() - 30*24*60*60;
+		$dt = \Config::now() - 30*24*60*60;
 		$select = 'SELECT store.*,ven.count FROM store LEFT JOIN (SELECT store, SUM(count) count FROM sync WHERE dt>='.$dt.$vendor.' GROUP BY store) ven ON ven.store=store.i WHERE '.implode(' AND ', $where);
 		//if (kv($args, 'min', 0)) { $select.= ' AND '.$args['min'].'<=ven.count'; }
 		//if (kv($args, 'price', 0)) { $select.= ' AND '.$args['price'].'<=price'; }
@@ -214,7 +214,7 @@ class OzonXml extends Task {
 
 			if (kv($args, 'alert', 0)) {
 				foreach ($errors as $i) {
-					alert($i);
+					\Flydom\Alert::warning($i);
 					logs(395, 0, $i);
 				}
 			}
@@ -265,7 +265,7 @@ class OzonXml extends Task {
 			$id = mb_substr($i['offer_id'], 1);
 			if (!is_09($id)) {
 				if (kv($args, 'alert', 0)) {
-					alert('Неправильный артикул: '.$id);
+					\Flydom\Alert::warning('Неправильный артикул: '.$id);
 				}
 				continue;
 			}
@@ -324,7 +324,7 @@ class OzonXml extends Task {
 			$id = mb_substr($i['offer_id'], 1);
 			if (!is_09($id)) {
 				if (kv($args, 'alert', 0)) {
-					alert('Неправильный артикул: '.$id);
+					\Flydom\Alert::warning('Неправильный артикул: '.$id);
 				}
 				continue;
 			}

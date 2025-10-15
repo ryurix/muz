@@ -7,7 +7,7 @@ w('pathway');
 //	$shop = $row['i'];
 $up = $config['up'];
 
-$pw = cache_load('pathway'.(is_user('catalog') ? '-hide' : ''));
+$pw = cache_load('pathway'.(\User::is('catalog') ? '-hide' : ''));
 
 ?>
 	</div>

@@ -1,43 +1,19 @@
-<?
+<?php
 
-if (function_exists('disable_error_log')) {
-	disable_error_log();
-}
-
-$url = parse_url($config['database']);
+$url = parse_url(\Config::DATABASE);
 
 $_GET['server'] = $url['host'].(isset($url['port']) ? ':'.$url['port'] : '');
 $_GET['username'] = urldecode($url['user']);
 $_GET['password'] = urldecode($url['pass']);
 $_GET['db'] = substr(urldecode($url['path']), 1);
-$config['new-session'] = 100;
 
-/*
-if (isset($_GET['db'])) {
-	$_GET['db'] = $db;
-} else {
-	if (isset($url['port'])) {
-		$url['host'] = $url['host'] .':'. $url['port'];
-	}
-
-	$_POST['auth'] = array(
-		'driver'=>$url['scheme'] == 'mysql' ? 'server' : 'pgsql',
-		'server'=>$url['host'],
-		'username'=>urldecode($url['user']),
-		'password'=>urldecode($url['pass']),
-		'db'=>$db,
-	);
-}
-*/
+define('SID', '');
+$_SESSION = [];
+\Flydom\Log::disable();
 
 // remove session_start
 // remove session_regenerate_id
-// remove set session_name ?
-// verify_token -> return 1; ?
-// redirect -> redirecx
-// is_url -> is_urx
-// is_mail -> is_maix
 // get_password(){return $_GET['password'];
 
-
-include __DIR__.'/adminer-481.php';
+//include __DIR__.'/adminer-4.7.8-mysql-en.php';
+include __DIR__.'/adminer-4.8.1-en.php';

@@ -79,7 +79,7 @@ class Prices extends Task {
 			$data = array(
 				'count'=>$i['count'],
 				'vendor'=>$i['vendor'],
-				'dt'=>now(),
+				'dt'=>\Config::now(),
 				'rule'=>$rule['i'],
 			);
 			if (isset($i['sale'])) { $data['sale'] = $i['sale']; }
@@ -142,15 +142,15 @@ class Prices extends Task {
 	.' FROM store,sync WHERE store.i=sync.store'.$where.') store'
 	.' WHERE sync.store=store.i AND sync.price IS NOT NULL';
 		if ($rule['days']) {
-			$select.= ' AND sync.dt>='.(now() - 24*60*60*$rule['days']);
+			$select.= ' AND sync.dt>='.(\Config::now() - 24*60*60*$rule['days']);
 		}
 		$select.=' ORDER BY store.i,sync.price'.($max?' DESC':'').',sync.dt DESC';
 
-		$q = db_query($select);
+		$rows = \Flydom\Memcached::fetchAll($select);
 		$row = array();
 		$store = 0;
 		$prices = [];
-		while ($i = db_fetch($q)) {
+		foreach ($rows as $i) {
 			if ($store == $i['store']) {
 				if ($i['count'] > 0 && $i['price'] > 0) {
 					$pre = &$row[$store];
@@ -173,7 +173,6 @@ class Prices extends Task {
 				$row[$store] = $i;
 			}
 		}
-		db_close($q);
 
 		if ($avg && $store && count($prices)) {
 			$row[$store]['price'] = round(array_sum($prices) / count($prices));
@@ -214,7 +213,7 @@ class Prices extends Task {
 				$where[]= 'store.count<1';
 			}
 		}
-		$where_sync = $rule['days'] ? ' AND sync.dt>='.(now() - 24*60*60*$rule['days']) : '';
+		$where_sync = $rule['days'] ? ' AND sync.dt>='.(\Config::now() - 24*60*60*$rule['days']) : '';
 		if (!$all) {
 			$where[]= 'NOT EXISTS (SELECT 1 FROM sync WHERE sync.store=store.i'.$where_sync.')';
 		}
@@ -268,7 +267,7 @@ class Prices extends Task {
 			}
 		}
 		if ($rule['days']) {
-			$where[]= 'sync.dt>='.(now() - 24*60*60*$rule['days']);
+			$where[]= 'sync.dt>='.(\Config::now() - 24*60*60*$rule['days']);
 		}
 		if ($rule['pmin']) {
 			$where[]= 'store.price>='.$rule['pmin'];

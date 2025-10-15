@@ -45,7 +45,7 @@ function postKeys($url, $args, $headers, $post = 0) {
 		$post_arr[]=$key."=".$value;
 	}
 	$data=implode('&',$post_arr);
-	
+
 	$handle=curl_init();
 	curl_setopt($handle, CURLOPT_URL, $url.($post ? '' :'?'.$data));
 	curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);
@@ -100,7 +100,7 @@ if ($f['code'] == 200) {
 
 $data = array(
 	'name'=>$shop,
-	'dt'=>now(),
+	'dt'=>\Config::now(),
 	'store'=>$store,
 	'vendor'=>$vendor,
 	'price'=>$min,

@@ -1,0 +1,70 @@
+<?
+
+if ($args == 0) {
+	w('catalog-0');
+} else {
+	w('catalog-admin', $args);
+
+?>
+<div class="row catrow">
+<?
+
+w('clean');
+
+$brand = '';
+
+$search = array();
+if (isset($_REQUEST['search']) && strlen($_REQUEST['search'])>0) {
+	$search[] = 'search='.$_REQUEST['search'];
+}
+if (isset($_REQUEST['w']) && strlen($_REQUEST['w'])) {
+	$search[] = 'w='.$_REQUEST['w'];
+}
+if (isset($_REQUEST['v']) && strlen($_REQUEST['v'])) {
+	$search[] = 'v='.$_REQUEST['v'];
+}
+if (isset($_REQUEST['db']) && strlen($_REQUEST['db'])) {
+	$search[] = 'db=';
+}
+if (isset($_REQUEST['f'])) {
+	foreach($_REQUEST['f'] as $i) {
+		if (strlen($i)) {
+			$search[] = 'f%5B%5D='.$i;
+		}
+	}
+}
+
+$select = 'SELECT * FROM catalog WHERE up='.$args;
+if (!\User::is('catalog')) {
+	$select.= ' AND hide=0';
+}
+if (\Page::depth() == 1) {
+	$select.= ' AND w<100';
+}
+$select.= ' ORDER BY w,name';
+$q = db_query($select);
+
+while ($i = db_fetch($q)) {
+	if (!$i['hide'] || \User::is('catalog')) {
+		$search2 = $search;
+		if (isset($_REQUEST['b'])) {
+			if (in_array($_REQUEST['b'], explode(',', $i['brand']))) {
+				$search2[] = 'b='.$_REQUEST['b'];
+			}
+		}
+
+		$search3 = count($search2) ? '?'.implode('&', $search2) : '';
+
+		echo '<div class="col-sm-4 col-md-3 col-lg-2 text-center"><a href="/catalog/'.$i['i'].'-'.str2url($i['name2']).$search3.'" rel=canonical><img class="cato" src="';
+		echo (strlen($i['icon']) > 0 ? $i['icon'] : '/design/default.png');
+		echo '"><h4>'.$i['name'].($i['hide'] ? ' *' : '').'</h4></a></div>';
+	}
+}
+
+?>
+</div>
+<?
+
+}
+
+?>

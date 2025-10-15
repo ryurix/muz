@@ -22,8 +22,8 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1 && strlen($plan['pics']['v
 		'info'=>$plan['info']['value'],
 	);
 	db_insert('pf', $data);
-	alert('<a href="/portfolio/'.$key.'">Запись</a> добавлена');
-	redirect('/portfolio#'.$plan['up']['value']);
+	\Flydom\Alert::warning('<a href="/portfolio/'.$key.'">Запись</a> добавлена');
+	\Page::redirect('/portfolio#'.$plan['up']['value']);
 } else {
 	$config['plan'] = $plan;
 }

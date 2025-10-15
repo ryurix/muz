@@ -1,5 +1,3 @@
 <?
 
-$config['action'] = array(
-	['action'=>'добавить выгрузку', 'href'=>'/setup/ozon-order/0'],
-);
+\Action::before('/setup/ozon-order/0', 'добавить выгрузку');

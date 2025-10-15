@@ -28,8 +28,8 @@ $states = array(
 );
 $default = array(
 	''=>array('method'=>'POST', 'type'=>'inline'),
-//	'dt1'=>array('name'=>'От', 'type'=>'date', 'default'=>now() - 30*24*60*60),
-//	'dt2'=>array('name'=>'До', 'type'=>'date', 'default'=>ft_parse(ft(now())) + 24*60*60 - 1),
+//	'dt1'=>array('name'=>'От', 'type'=>'date', 'default'=>\Config::now() - 30*24*60*60),
+//	'dt2'=>array('name'=>'До', 'type'=>'date', 'default'=>ft_parse(ft(\Config::now())) + 24*60*60 - 1),
 	'state'=>array('name'=>'Состояния', 'type'=>'combo', 'values'=>$states, 'default'=>'active', 'class'=>'form-control',
 		'more'=>'onchange="this.form.submit()"'),
 	'sort'=>array('name'=>'Сортировать по', 'type'=>'combo', 'values'=>array(
@@ -54,8 +54,8 @@ if ($plan['send']['value'] == 2) {
 	$_SESSION[$code] = $default;
 	$plan = $default;
 	w('request', $plan);
-//	$plan['dt1']['value'] = now() - 30*24*60*60;
-//	$plan['dt2']['value'] = ft_parse(ft(now())) + 24*60*60 - 1;
+//	$plan['dt1']['value'] = \Config::now() - 30*24*60*60;
+//	$plan['dt2']['value'] = ft_parse(ft(\Config::now())) + 24*60*60 - 1;
 	$plan['state']['value'] = 'active';
 	$plan['sort']['value'] = 1;
 } else {

@@ -51,7 +51,7 @@ while ($i = db_fetch($q)) {
 .'<td>'.$i['opt'].'</td>'
 .'<td>'.$i['count'].'</td>';
 
-	if (is_user('sync')) {
+	if (\User::is('sync')) {
 		echo '
 <td><a href="/sync/check?code='.$i['i'].'" class="btn btn-default btn-sm" onclick="return confirm(\'Удалить синхронизацию? Восстановление невозможно!\')">&times;</a></td></tr>';
 	}
@@ -63,7 +63,7 @@ while ($i = db_fetch($q)) {
 <?
 //*/
 
-$dt = now() - 60*24*60*60;
+$dt = \Config::now() - 60*24*60*60;
 $q = db_query('SELECT ss.*,store.url,store.name,store.brand,store.model model FROM (SELECT MIN(price) minp,MAX(price) maxp,store FROM sync WHERE store>0 AND NOT price IS NULL AND price>0 AND dt>'.$dt.' GROUP BY store) ss LEFT JOIN store ON ss.store=store.i WHERE minp*1.5<maxp');
 
 ?>
@@ -95,7 +95,7 @@ while ($i = db_fetch($q)) {
 .'<td>'.$i['maxp'].'</td>'
 .'<td><a href="/store/'.$i['url'].'/sync">'.$store.'</a></td>';
 /*
-	if (is_user('sync')) {
+	if (\User::is('sync')) {
 		echo '
 <td><a href="/sync/check?code='.$i['i'].'" class="btn btn-default btn-sm" onclick="return confirm(\'Удалить синхронизацию? Восстановление невозможно!\')">&times;</a></td></tr>';
 	}

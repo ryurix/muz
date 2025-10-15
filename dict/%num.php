@@ -1,11 +1,11 @@
 <?
 
-$q = db_query('SELECT * FROM dict WHERE i='.$config['args'][0]);
+$q = db_query('SELECT * FROM dict WHERE i='.\Page::arg());
 
 if ($row = db_fetch($q)) {
 
-	$config['name'] = 'Слово: '.$row['name'];
-	$action = count($config['args']) > 1 ? $config['args'][1] : 'edit';
+	\Page::name('Слово: '.$row['name']);
+	$action = \Page::arg(1, 'edit');
 
 	if ($action == 'edit') {
 		$plan = w('plan-dict');
@@ -28,7 +28,7 @@ if ($row = db_fetch($q)) {
 			}
 			w('cache-word');
 
-			redirect('/dict');
+			\Page::redirect('/dict');
 		}
 		$config['plan'] = $plan;
 	} elseif ($action == 'erase') {
@@ -38,17 +38,17 @@ if ($row = db_fetch($q)) {
 		if ($plan['']['valid']) {
 			if ($plan['send']['value'] == 1) {
 				db_delete('dict', array('i'=>$row['i']));
-				redirect('/dict');
+				\Page::redirect('/dict');
 			} else {
-				redirect('/dict/'.$row['i']);
+				\Page::redirect('/dict/'.$row['i']);
 			}
 		} else {
 			$config['plan'] = $plan;
-			refile('erase.html');
+			\Page::body('erase');
 		}
 	}
 } else {
-	redirect('/dict');
+	\Page::redirect('/dict');
 }
 
 ?>

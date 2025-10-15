@@ -41,7 +41,7 @@ class Complex extends Task {
 		unset($sync);
 
 		$updated = 0;
-		$updt = now();
+		$updt = \Config::now();
 		$typven = $config['complex-vendors'];
 
 		foreach ($data as $key=>$children) {
@@ -104,6 +104,7 @@ class Complex extends Task {
 
 
 			if ($valid) {
+/*
 				$prices = implode(',', $prices);
 				if ($up['price'] != $price || $up['prices'] != $prices || $up['count'] != $count) {
 					\Db::update('store', [
@@ -116,6 +117,8 @@ class Complex extends Task {
 
 					$updated++;
 				}
+*/
+				$updated++;
 
 				foreach ($typcnt as $typ=>$cnt) {
 					if (isset($typven[$typ]) && count($cnt) == count($children)) {
@@ -154,6 +157,11 @@ class Complex extends Task {
 
 					$updated++;
 				}
+
+				\Db::update('sync', [
+					'count'=>0,
+					'dt'=>$updt,
+				], ['store'=>$key]);
 			}
 		}
 

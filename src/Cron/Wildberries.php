@@ -56,8 +56,9 @@ class Wildberries extends Task {
 		$select = 'SELECT wb.*,store.price s_price FROM wb LEFT JOIN store ON wb.store=store.i WHERE '.implode(' AND ', $where);
 
 		$store = [];
-		$q = db_query($select);
-		while ($row = db_fetch($q)) {
+
+		$rows = \Flydom\Memcached::fetchAll($select);
+		foreach ($rows as $row) {
 			if (!in_array($row['barcode'], $exclude)) {
 				$key = $row['store'];
 				unset($row['store']);
@@ -69,7 +70,7 @@ class Wildberries extends Task {
 
 
 			$where = [
-				'dt>='.(now() - 30*24*60*60), // актуальность синхронизации
+				'dt>='.(\Config::now() - 30*24*60*60), // актуальность синхронизации
 				'store IN ('.implode(',', array_keys($store)).')',
 			];
 
@@ -79,8 +80,12 @@ class Wildberries extends Task {
 
 			$select = 'SELECT store, SUM(count) count FROM sync WHERE '.implode(' AND ', $where).' GROUP BY store';
 
-			$q = db_query($select);
-			while ($i = db_fetch($q)) {
+			$rows = \Flydom\Memcached::fetchAll($select);
+
+			//$q = db_query($select);
+			//while ($i = db_fetch($q)) {
+
+			foreach ($rows as $i) {
 
 				$count = max(0, $i['count'] - kv($args, 'minus', 0));
 
@@ -90,7 +95,7 @@ class Wildberries extends Task {
 
 				$store[$i['store']]['s_count'] = $count;
 			}
-			db_close($q);
+			//db_close($q);
 
 		}
 
@@ -225,8 +230,8 @@ class Wildberries extends Task {
 		}
 
 		$store = [];
-		$q = db_query($select);
-		while ($row = db_fetch($q)) {
+		$rows = \Flydom\Memcached::fetchAll($select);
+		foreach ($rows as $row) {
 			if (!in_array($row['i'], $exclude)) {
 				$key = $row['store'];
 				unset($row['store']);
@@ -239,7 +244,7 @@ class Wildberries extends Task {
 		$rows = [];
 		$updates = [];
 
-		$now = now();
+		$now = \Config::now();
 
 		foreach ($store as $i) {
 			//if (14*24*60*60 > ($now - $i['dt'])) { continue; }
@@ -426,8 +431,8 @@ class Wildberries extends Task {
 
 				$count++;
 				(new \Order\Model([
-					'dt'=>now(),
-					'last'=>now(),
+					'dt'=>\Config::now(),
+					'last'=>\Config::now(),
 					'user'=>$user,
 					'staff'=>null,
 					'state'=>1,

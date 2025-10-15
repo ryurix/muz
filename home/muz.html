@@ -14,8 +14,8 @@ while ($i = db_fetch($q)) {
 //*
 	$pic = $pre.$i['icon'];
 
-	$dir = $config['root'].'files/catalog';
-	$new = $config['root'].substr($i['icon'], 1);
+	$dir = \Config::ROOT.'files/catalog';
+	$new = \Config::ROOT.substr($i['icon'], 1);
 
 	if (is_file($pic) && !is_file($new)) {
 print_pre($pic);
@@ -51,14 +51,14 @@ while ($i = db_fetch($q)) {
 //*
 	$pic = $i['pic'];
 
-	$dir = $config['root'].'files/store/'.$i['i'];
+	$dir = \Config::ROOT.'files/store/'.$i['i'];
 
 
 	if (is_file($pre.$pic) && !is_dir($dir)) {
 
 		$link = 'http://muzmarket.pro'.$pic;
 		print_pre($link);
-		
+
 
 		$f = pic_load($pre.$pic);
 
@@ -68,7 +68,7 @@ while ($i = db_fetch($q)) {
 
 //print_pre($i['i']);
 
-			pic_jpeg($f, $config['root'].substr($i['icon'], 1), 90);
+			pic_jpeg($f, \Config::ROOT.substr($i['icon'], 1), 90);
 		}
 
 //		break;
@@ -87,7 +87,7 @@ w('pic');
 
 $conf = array(
 	'pre'=>rtrim($config['exf'], '/'),
-	'new'=>rtrim($config['root'],'/'),
+	'new'=>rtrim(\Config::ROOT,'/'),
 );
 
 function pic_convert($pic, $conf) {

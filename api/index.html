@@ -8,10 +8,8 @@
 
 $keys = \Db::fetchAll('SELECT * FROM session WHERE usr='.\User::id());
 foreach ($keys as $i) {
-	\Flydom\Alert::warning($i['id']);
+	\Flydom\Alert::warning($i['id'], true);
 }
-
-w('alert');
 
 ?>
 
