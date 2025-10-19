@@ -45,6 +45,8 @@ static function startup() {
         return;
     }
 
+	\Flydom\Memcached::inc('count-'.intdiv(\Config::now(), 60), 1800);
+
 	@session_start();
 	if (isset($_POST['_login']) && isset($_POST['_password'])) {
 		$basket = isset($_SESSION['basket']) ? $_SESSION['basket'] : null;
@@ -75,8 +77,21 @@ static function try($login, $password) {
 
 	$timeout = 5;
 
-	$login = addslashes($login);
-	$user = \Db::fetchRow('SELECT * FROM user WHERE login="'.$login.'"');
+	$where = [];
+	$email = preg_replace('@[^0-9a-zA-Z_\-\.\+\^!#\@\$%&*+\/\=\?\`\|\{\}~\']+@', '', $login);
+	$email = strtolower($email);
+	if (strlen($email) && strpos($email, '@')) {
+		$where[]= 'email="'.$email.'"';
+	}
+	$phone = preg_replace('@[^0-9]+@', '', $login);
+	if (strlen($phone) > 10) {
+		if (substr($phone, 0, 1) == '8') {
+			$phone = '7'.substr($phone, 1);
+		}
+		$where[] = 'phone="'.$phone.'"';
+	}
+
+	$user = empty($where) ? null : \Db::fetchRow('SELECT * FROM user WHERE '.implode(' OR ', $where));
 
 	if (is_null($user)) {
 		\Flydom\Alert::danger('Пользователь не найден!');
@@ -104,7 +119,8 @@ static function exit($guest = true) {
 	if ($_SESSION['i'] ?? 0) {
 		\Db::delete('session', ['usr'=>$_SESSION['i']]);
 	} else {
-		\Db::delete('session', ['usr'=>0, 'i'=>static::session32()]);
+//		\Db::delete('session', ['usr'=>0, 'i'=>static::session32()]);
+		\Flydom\Memcached::delete(session_id());
 	}
 
 	if ($guest) {

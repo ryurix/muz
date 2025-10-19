@@ -9,7 +9,7 @@ class Action extends \Flydom\Action
 
 	protected static function item($action) {
 		if ($action['here'] ?? false) {
-			return '<a href="#" class="btn btn-sm btn-secondary my-1 mx-1'.static::addClass($action).'" disabled>'.$action['name']."</a>\n";
+			return '<a href="'.$action['href'].'" class="btn btn-sm btn-secondary my-1 mx-1'.static::addClass($action).'" disabled>'.$action['name']."</a>\n";
 		} else {
 			return '<a href="'.$action['href'].'" class="btn btn-sm btn-outline-secondary my-1 mx-1'.static::addClass($action).'">'.$action['name']."</a>\n";
 		}
@@ -17,7 +17,7 @@ class Action extends \Flydom\Action
 
 	protected static function dropdownItem($action) {
 		if ($action['here'] ?? false) {
-			return '<a class="dropdown-item active'.static::addClass($action).'" href="#">'.$action['name']."</a>\n";
+			return '<a class="dropdown-item active'.static::addClass($action).'" href="'.$action['href'].'">'.$action['name']."</a>\n";
 		} else {
 			return '<a class="dropdown-item'.static::addClass($action).'" href="'.$action['href'].'">'.$action['name']."</a>\n";
 		}

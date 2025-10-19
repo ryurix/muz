@@ -10,10 +10,8 @@ $plan = [
 
 w('request', $plan);
 
-//	$config['design'] = 'none'; print_pre($_REQUEST);
-
 if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && \User::is('sync')) {
-	$config['design'] = 'none';
+	\Page::design('none');
 	if ($plan['']['valid']) {
 		$block['body'] = '';
 		w('u8');

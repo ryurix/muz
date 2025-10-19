@@ -30,7 +30,7 @@
 	]],
 ]],
 
-'article'=>['name'=>'Статьи', '/'=>[
+'article'=>['name'=>'Статьи', 'wide'=>1, '/'=>[
 	'%str'=>['name'=>'Статья', '/'=>[
 		'edit'=>['virtual'=>1, 'role'=>'menu', 'action'=>'правка'],
 	]],
@@ -41,7 +41,7 @@
 	'%num'=>['name'=>'Заказ'],
 ]],
 
-'basket'=>['name'=>'Корзина', 'wide'=>1, '/'=>[
+'basket'=>['name'=>'Корзина', '/'=>[
 	'buy'=>['design'=>'none'],
 	'thanks'=>['name'=>'Благодарим за заказ!'],
 	'ok'=>['name'=>'Платеж успешен!'],
@@ -249,7 +249,8 @@
 
 	'mysql'=>['name'=>'MySql', 'role'=>'admin'],
 	'catalog-disable'=>['name'=>'Отключить каталог'],
-	'catalog-enable'=>['name'=>'Включить каталог']
+	'catalog-enable'=>['name'=>'Включить каталог'],
+	'counter'=>['name'=>'Счётчик страниц'],
 ]],
 
 'sign'=>['name'=>'Знаки', 'role'=>'sign', '/'=>[

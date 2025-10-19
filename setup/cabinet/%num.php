@@ -25,7 +25,8 @@ if (\Cabinet\Form::isValid())
 
 	if (\Cabinet\Form::send() == 'save')
 	{
-		$data = \Flydom\Arrau::exclude(\Cabinet\Form::values(), ['type', 'usr', 'name', 'w', 'send']);
+		$data = \Flydom\Arrau::exclude(['type', 'usr', 'name', 'w', 'send'], \Cabinet\Form::values());
+
 
 		$row = [
 			'usr'=>\Cabinet\Form::user(),

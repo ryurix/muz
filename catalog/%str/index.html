@@ -217,14 +217,18 @@ $pager.= '</nav></center>';
 
 //	echo $pager;
 
+if (count($store) == 0 && !$short) {
+	\Flydom\Alert::warning('Выберите раздел!', true);
+}
+
 ?>
 					<div class="catalog_items">
 <?
 
-$store = $config['store'];
 w('store-mini');
 
-foreach ($config['store'] as $k=>$v) {
+
+foreach ($store as $k=>$v) {
 //	print_pre($v);
 	echo store_mini($v);
 }

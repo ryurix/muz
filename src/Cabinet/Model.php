@@ -14,7 +14,8 @@ class Model
 
 		if (is_null($row)) { return null; }
 
-		return \Flydom\Arrau::exclude($row, 'data') + \Flydom\Arrau::decode($row['data']);
+
+		return \Flydom\Arrau::exclude('data', $row) + \Flydom\Arrau::decode($row['data']);
 	}
 
 	static function load($user) {

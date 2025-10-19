@@ -1,15 +1,14 @@
 <?
 
-if (kv($config, 'DEBUG', 0)) {
+if (\Config::DEBUG) {
 	return;
 }
 
-set_time_limit(55);
-w('ft');
+set_time_limit(550);
 
-cache_set('cron', ft(\Config::now(), 1));
+cache_set('cron', \Flydom\Time::dateTime(\Config::now()));
 
-$rows = db_fetch_all('SELECT * FROM cron WHERE every>0 AND dt<'.\Config::now().' ORDER BY dt LIMIT 5');
+$rows = db_fetch_all('SELECT * FROM cron WHERE every>0 AND dt<'.\Config::now().' ORDER BY dt LIMIT 1');
 
 foreach ($rows as $cron) {
 
@@ -23,6 +22,6 @@ foreach ($rows as $cron) {
 
 	db_update('cron', [
 		'dt'=>\Cron\Task::next($cron, $data),
-		'info'=>trim(ft(\Config::now(), 1).' '.$info),
+		'info'=>trim(\Flydom\Time::dateTime(\Config::now()).' '.$info),
 	], ['i'=>$cron['i']]);
 }

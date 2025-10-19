@@ -4,7 +4,6 @@ $q = db_query('SELECT naklad.type,naklad.i,naklad.dt,naklad.vendor,naklad.info,u
 
 if ($row = db_fetch($q)) {
 
-	\Page::body('sklad-action.html', 'sklad-action');
 	w('sklad-action', $row['vendor']);
 
 	w('ft');
@@ -16,7 +15,6 @@ if ($row = db_fetch($q)) {
 	}
 
 	\Page::name($name.' от '.ft($row['dt'], 1).', '.$row['name']);
-	$config['row'] = $row;
 	\Action::before('/sklad?sk='.$row['vendor'], 'Склад');
 } else {
 	\Page::redirect('/sklad');

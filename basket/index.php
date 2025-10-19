@@ -1,9 +1,10 @@
 <?
 
 if (\User::is('sklad')) {
-	\Action::after('/basket/naklad', 'Накладная');
+	\Action::before('/basket/naklad', 'Накладная');
 }
 
+\Page::set('wide', 1);
 $action = 'view';
 
 if (isset($_REQUEST['calc'])) {

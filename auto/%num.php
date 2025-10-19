@@ -11,6 +11,4 @@ if ($row = db_fetch($q)) {
 	\Page::redirect('/auto');
 }
 
-$config['design'] = 'none';
-
-?>
+\Page::design('none');

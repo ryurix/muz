@@ -24,6 +24,11 @@ class Session implements SessionHandlerInterface
 			self::$save = false;
 		}
 
+		$data = \Flydom\Memcached::get($key);
+		if (!empty($data)) {
+			return $data;
+		}
+
 		$rows = \Db::fetchAll('SELECT * FROM session WHERE i='.crc32($key));
 		foreach ($rows as $i) {
 			if ($i['id'] == $key) {
@@ -43,25 +48,31 @@ class Session implements SessionHandlerInterface
 		if (isset($_SESSION['i']) && self::$save)
 		{
 			$uid = $_SESSION['i'];
-			if (self::$newSession) {
-				$ip = \User::ip();
-				\Db::insert('session', [
-					'i'=>crc32($key),
-					'id'=>$key,
-					'ip'=>$ip,
-					'dt'=>time(),
-					'data'=>$data,
-					'usr'=>$uid,
-				]);
+
+			if ($uid) {
+				if (self::$newSession) {
+					$ip = \User::ip();
+					\Db::insert('session', [
+						'i'=>crc32($key),
+						'id'=>$key,
+						'ip'=>$ip,
+						'dt'=>time(),
+						'data'=>$data,
+						'usr'=>$uid,
+					]);
+					\Flydom\Memcached::delete($key);
+				} else {
+					\Db::update('session', [
+						'dt'=>time(),
+						'data'=>$data,
+					], [
+						'i'=>crc32($key),
+						'id'=>$key,
+						'usr'=>$uid,
+					]);
+				}
 			} else {
-				\Db::update('session', [
-					'dt'=>time(),
-					'data'=>$data,
-				], [
-					'i'=>crc32($key),
-					'id'=>$key,
-					'usr'=>$uid,
-				]);
+				\Flydom\Memcached::set($key, $data, 86400);
 			}
 		}
 		return true;
@@ -69,6 +80,7 @@ class Session implements SessionHandlerInterface
 
 	function destroy($sess): bool {
 		\Db::delete('session', ['id'=>$sess]);
+		\Flydom\Memcached::delete($sess);
 		return true;
 	}
 

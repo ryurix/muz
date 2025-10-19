@@ -122,8 +122,10 @@ $parnam = array(); // код параметра => название
 $pw = cache_load('pathway-hide');
 $fs = $pw[$shop]['f'];
 if (count($fs)) {
-	$q = db_query('SELECT * FROM filter WHERE i IN ('.implode(',', $fs).')');
-	while ($i = db_fetch($q)) {
+	$filters = \Flydom\Memcached::fetchAll('SELECT * FROM filter WHERE i IN ('.implode(',', $fs).')');
+	// $q = db_query('SELECT * FROM filter WHERE i IN ('.implode(',', $fs).')');
+	// while ($i = db_fetch($q)) {
+	foreach ($filters as $i) {
 		$filter[$i['i']] = array(
 			'name'=>$i['name'],
 			'info'=>$i['info'],
@@ -131,10 +133,12 @@ if (count($fs)) {
 			'counts'=>array(), // counts -- код=>счетчик
 		);
 	}
-	db_close($q);
+	// db_close($q);
 
-	$q = db_query('SELECT * FROM param WHERE filter IN ('.implode(',', $fs).') ORDER BY w');
-	while ($i = db_fetch($q)) {
+	$params = \Flydom\Memcached::fetchAll('SELECT * FROM param WHERE filter IN ('.implode(',', $fs).') ORDER BY w');
+	// $q = db_query('SELECT * FROM param WHERE filter IN ('.implode(',', $fs).') ORDER BY w');
+	// while ($i = db_fetch($q)) {
+	foreach ($params as $i) {
 		$params[$i['code']] = $i['i'];
 		$parfil[$i['i']] = $i['filter'];
 		$parnam[$i['i']] = $i['value'];
@@ -142,7 +146,7 @@ if (count($fs)) {
 		$filter[$i['filter']]['values'][$i['i']] = $i['value'];
 		$filter[$i['filter']]['counts'][$i['i']] = 0;
 	}
-	db_close($q);
+	// db_close($q);
 }
 
 // Фильтр по бренду
@@ -212,6 +216,7 @@ if (trim($url, '/') != trim(str_replace(' ', '+', \Page::url()), '/')) {
 // Если есть параметры -- ищем подкатегорию
 
 $subcat = 0;
+//* // TODO: включить подкатегорию
 if (count($param)) {
 	$code = $param;
 	sort($code);
@@ -238,6 +243,7 @@ if (count($param)) {
 		}
 	}
 }
+//*/
 
 // Добавляем фильтры к имени страницы
 
@@ -328,8 +334,12 @@ if ($get['group']['value'] && $get['group']['valid']) {
 
 $ch = cache_load('children'.(\User::is('catalog') ? '-hide' : ''));
 
+$short = false;
 if (is_array($ch[$shop]) && count($ch[$shop])) {
 	$where[] = 'store.up IN ('.$shop.','.implode(',', $ch[$shop]).')';
+	if (count($ch[$shop]) <= 33) {
+		$short = true;
+	}
 } else {
 	$where[] = 'store.up='.$shop;
 }
@@ -338,6 +348,7 @@ if ($get['search']['value']) {
 	w('search');
 	$s = $get['search']['value'];
 	$i = str_replace(array('M','м','М'), 'm', $s);
+	$short = true;
 
 	if (preg_match('/^m[0-9]+$/', $i)) {
 		$where[] = 'store.i='.substr($i, 1);
@@ -378,7 +389,7 @@ foreach ($filter as $k=>$f) {
 $price2 = 0;
 
 //$rows = \Flydom\Memcached::fetchAll($select);
-$rows = \User::is() || !\Flydom\Cache::get('catalog-disable') ? \Flydom\Memcached::fetchAll($select) : [];
+$rows = $short || \User::is() || !\Flydom\Cache::get('catalog-disable') ? \Flydom\Memcached::fetchAll($select, 60) : [];
 //$rows = \User::is() || !\Flydom\Cache::get('catalog-disable') ? \Db::fetchAll($select) : [];
 
 foreach ($rows as $i) {
@@ -476,8 +487,10 @@ w('catalog-get');
 $getline = catalog_param($config['get']);
 $getlen = strlen($getline);
 
+$canon = [];
+
+//* // TODO: enable canon
 $here = array('i'=>0);
-$canon = array();
 if ($getlen) {
 	$url32 = crc32($url);
 	$code32 = 0;
@@ -540,6 +553,7 @@ if ($code32) {
 		}
 	}
 }
+//*/
 
 // Получаем количество параметров без учёта поиска
 $gets = isset($_GET['search']) ? 0 : count($_GET);

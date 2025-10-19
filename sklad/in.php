@@ -7,7 +7,6 @@ if (!isset($sklad[$sk])) {
 	return;
 }
 
-\Page::body('sklad-action.html', 'sklad-action');
 w('sklad-action', $sk);
 
 \Page::name('Приходные накладные '.$sklad[$sk]);

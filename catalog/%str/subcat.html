@@ -29,9 +29,9 @@ if ($row = db_fetch($q)) {
 	$brand = explode(',', $row['brand']);
 	$brand = \Flydom\Arrau::remove('0', $brand);
 
-	$q = db_query('SELECT brand FROM subcat WHERE up='.$cat.(strlen($filter) ? ' AND filter='.$fk.' AND fvalue='.$fv : ' AND filter=0'));
-	while ($i = db_fetch($q)) {
-		$brand = \Flydom\Arrau::remove($i['brand'], $brand);
+	$rows = \Db::fetchList('SELECT brand FROM subcat WHERE up='.$cat.(strlen($filter) ? ' AND filter='.$fk.' AND fvalue='.$fv : ' AND filter=0'));
+	foreach ($rows as $i) {
+		$brand = \Flydom\Arrau::remove($i, $brand);
 	}
 
 	w('clean');
