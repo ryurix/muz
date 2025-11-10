@@ -9,7 +9,7 @@
 
 $version = '?1';
 
-echo $config['city']['head'];
+echo \Page::cityHead();
 
 $city = cache_load('city');
 $block['city-name'] = 'Выберите город';
@@ -121,10 +121,13 @@ if (in_array($css, array('main', 'catalog', 'store', 'basket'))) {
 ?>
 
 	<script src="/design/libs/jquery.min.js"></script>
+	<?
 
-	<? w('head') ?>
+w('head');
+w('gtag-head');
+echo \Page::head();
 
-	<? w('gtag-head') ?>
+?>
 </head>
 <body>
 
@@ -378,11 +381,11 @@ echo '</div>';
 	</div>
 </footer>
 <?
-	if (!kv($config, 'DEBUG', 0)) {
-		echo \Page::dict($config['city']['metrics']);
+	if (!\Config::DEBUG) {
+		echo \Page::dict(\Page::cityMetrics());
 
 		if (!\User::isStaff()) {
-			echo \Page::dict($config['city']['metrico']);
+			echo \Page::dict(\Page::cityMetrico());
 		}
 	}
 ?>

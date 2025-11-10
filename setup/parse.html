@@ -226,9 +226,9 @@ function store_import($store, $plan, $up) {
 	db_insert('store', $data);
 
 	db_insert('log', array(
-		'type'=>15,
+		'typ'=>15,
 		'dt'=>\Config::now(),
-		'user'=>$_SESSION['i'],
+		'usr'=>$_SESSION['i'],
 		'info'=>'store: '.$key,
 	));
 }

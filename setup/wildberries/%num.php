@@ -15,7 +15,7 @@ if ($code) {
 if (!$row) {
 	$row = [
 		'i'=>0,
-		'typ'=>\Type\Cron::WILDBERRIES,
+		'typ'=>\Cron\Type::WILDBERRIES,
 		'form'=>1,
 		'name'=>'Новая выгрузка',
 		'dt'=>\Config::now() + 24*60*60,
@@ -51,13 +51,13 @@ foreach ($config['wildberries'] as $k=>$v) {
 $plan = [
 	''=>array('default'=>$data),
 	'name'=>array('name'=>'Название', 'type'=>'line', 'min'=>3),
-	'every'=>array('name'=>'Период', 'type'=>'combo', 'values'=>\Form\Cron::EVERY, 'default'=>0),
+	'every'=>array('name'=>'Период', 'type'=>'combo', 'values'=>\Cron\Form::EVERY, 'default'=>0),
 
 	'time'=>array('name'=>'Время запуска', 'type'=>'time', 'default'=>0),
 	'week'=>array('name'=>'Дни недели', 'type'=>'multich', 'values'=>array(1=>'пн', 2=>'вт', 3=>'ср', 4=>'чт', 5=>'пт', 6=>'сб', 7=>'вс'), 'placeholder'=>'ежедневно'),
 	'form'=>array('name'=>'Формат', 'type'=>'combo', 'values'=>$forms),
 	'client'=>array('name'=>'Клиент', 'type'=>'combo', 'default'=>'16838', 'values'=>$clients),
-	'type'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
+	'type'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=> \Price\Type::names(), 'default'=>0],
 ];
 
 if (isset($data['form']) && $data['form'] < 20) {
@@ -108,7 +108,8 @@ if ($plan['form']['value'] == 3) { // Для выгрузки цен отклю�
 if ($plan['']['valid'])
 {
 	$new = [
-		'typ'=>\Type\Cron::WILDBERRIES,
+		'i'=>$row['i'] ?? 0,
+		'typ'=>\Cron\Type::WILDBERRIES,
 		'form'=>$plan['form']['value'],
 		'name'=>$plan['name']['value'],
 		'info'=>'',
@@ -126,7 +127,7 @@ if ($plan['']['valid'])
 	}
 
 	$new['data'] = array_encode($data);
-	$new['dt'] = \Cron\Task::next($new);
+	$new['dt'] = \Flydom\Cron\Task::next($new);
 
 	if ($plan['send']['value'] == 1) {
 		if ($row['i']) {
@@ -142,8 +143,8 @@ if ($plan['']['valid'])
 
 	if ($plan['send']['value'] == 2) {
 
-		$info = \Cron\Task::execute($new, $data);
-		$info.= \Cron\Task::follow($new['follow']);
+		$info = \Flydom\Cron\Task::execute($new, $data);
+		$info.= \Flydom\Cron\Task::follow($new['follow']);
 
 		\Flydom\Alert::warning('Выгрузка выполнена! '.$info);
 		if ($row['i']) {

@@ -4,7 +4,7 @@ $code = \Page::arg();
 
 $row = 0;
 if ($code) {
-	$q = db_query('SELECT * FROM cron WHERE typ='.\Type\Cron::PRICES.' AND i='.$code);
+	$q = db_query('SELECT * FROM cron WHERE typ='.\Cron\Type::PRICES.' AND i='.$code);
 	$row = db_fetch($q);
 
 	if (!$row) {
@@ -30,12 +30,12 @@ $data['name'] = $row['name'];
 $data['every'] = $row['every'];
 
 $others = array(0=>'');
-$q = db_query('SELECT * FROM cron WHERE typ='.\Type\Cron::PRICES.' AND i<>'.$row['i'].' ORDER BY name');
+$q = db_query('SELECT * FROM cron WHERE typ='.\Cron\Type::PRICES.' AND i<>'.$row['i'].' ORDER BY name');
 while ($i = db_fetch($q)) {
 	$others[$i['i']] = $i['name'];
 }
 
-$prices = \Type\Price::names();
+$prices = \Price\Type::names();
 
 $plan = array(
 	''=>['default'=>$data],
@@ -62,7 +62,7 @@ if ($plan['']['valid']) {
 	];
 
 	$new = [
-		'typ'=>\Type\Cron::PRICES,
+		'typ'=>\Cron\Type::PRICES,
 		'name'=>$plan['name']['value'],
 		'every'=>$plan['every']['value'],
 		'info'=>'',
@@ -70,7 +70,7 @@ if ($plan['']['valid']) {
 		'data'=>array_encode($data),
 	];
 
-	$new['dt'] = \Cron\Task::next($new, $data);
+	$new['dt'] = \Flydom\Cron\Task::next($new, $data);
 
 	if ($plan['send']['value'] == 1) {
 
@@ -87,8 +87,8 @@ if ($plan['']['valid']) {
 
 	if ($plan['send']['value'] == 2) {
 
-		$info = \Cron\Task::execute($new, $data);
-		//$info.= \Cron\Task::follow($data['follow']);
+		$info = \Flydom\Cron\Task::execute($new, $data);
+		//$info.= \Flydom\Cron\Task::follow($data['follow']);
 
 		\Flydom\Alert::warning('Задача выполнена: '.$info);
 		if ($row['i']) {

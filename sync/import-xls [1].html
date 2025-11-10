@@ -52,7 +52,7 @@ if ($plan['']['valid'] && $send > 0) {
 		db_close($q);
 
 		w('xlsread');
-		$data = new Spreadsheet_Excel_Reader();
+		$data = Spreadsheet_Excel_Reader();
 		$data->setOutputEncoding('UTF-8');
 		$data->read($file);
 		$cells = array();
@@ -182,9 +182,9 @@ if ($plan['']['valid'] && $send > 0) {
 		}
 
 		db_insert('log', array(
-			'type'=>16,
+			'typ'=>16,
 			'dt'=>\Config::now(),
-			'user'=>$_SESSION['i'],
+			'usr'=>$_SESSION['i'],
 			'info'=>$vendors[$plan['vendor']['value']],
 		));
 /*
@@ -196,6 +196,4 @@ if ($plan['']['valid'] && $send > 0) {
 	}
 }
 
-echo \Flydom\Arrau::build();
-
-?>
+echo \Flydom\Alert::build();

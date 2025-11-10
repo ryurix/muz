@@ -2,7 +2,7 @@
 
 namespace Flydom\Cron;
 
-class Log extends Task {
+class Log {
 	static function run($args = null) {
 		$now = \Config::now();
 		$deleted = 0;

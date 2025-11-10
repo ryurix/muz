@@ -223,8 +223,11 @@ class Model {
 			\Tool\Reserve::delete($this->getId(), $this->getStore());
 		}
 
-		if ($old <= 1 && $old < $new && $new < 35) { // обработка заказа маркетплейсами
-			\Cron\Ozon::pack($this);
+		if ($old <= 1 && $old < $new && $new < 35) { // обработка заказа маркетплейсами TODO: добавить обработку другими маркетплейсами
+			\Cabinet\Model::load($this->getUser());
+			if (\Cabinet\Model::valid() && \Cabinet\Model::type() === \Cabinet\Type::OZON) {
+				\Ozon\Order::pack($this);
+			}
 		}
 
 		if ($old != $new) { \Flydom\Log::add(100 + $new, $this->getId()); }
@@ -307,7 +310,7 @@ class Model {
 
 	function getVendorName() {
 		$vendors = \Flydom\Cache::get('vendor');
-		return $vendors ?? $this->row['vendor'];
+		return $vendors[$this->row['vendor']] ?? $this->row['vendor'];
 	}
 
 	function getUserName() {

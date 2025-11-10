@@ -13,7 +13,7 @@ w('request', $plan);
 if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && \User::is('sync')) {
 	\Page::design('none');
 	if ($plan['']['valid']) {
-		$block['body'] = '';
+		$body = '';
 		w('u8');
 
 		$code = u8sub($plan['code']['value'], 0, 15);
@@ -30,7 +30,7 @@ if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && \User::is('syn
 			), array(
 				'i'=>$sync['i'],
 			));
-			$block['body'] = 'Изменение имеющейся синхронизации! ('.$sync['i'].')';
+			$body = 'Изменение имеющейся синхронизации! ('.$sync['i'].')';
 			\Flydom\Log::add(18, $plan['store']['value'], $code);
 		} else {
 			db_insert('sync', array(
@@ -41,22 +41,20 @@ if (strlen($plan['name']['value'].$plan['store']['value']) > 0 && \User::is('syn
 				'vendor'=>$plan['vendor']['value'],
 			));
 			if ($plan['store']['value']) {
-				$block['body'] = 'Синхронизировано.';
+				$body = 'Синхронизировано.';
 			} else {
-				$block['body'] = 'Не синхронизировать: '.$name;
+				$body = 'Не синхронизировать: '.$name;
 			}
 			\Flydom\Log::add(17, $plan['store']['value'], $code);
 		}
 
 		db_insert('log', array(
-			'type'=>17,
+			'typ'=>17,
 			'dt'=>\Config::now(),
-			'user'=>$_SESSION['i'],
+			'usr'=>$_SESSION['i'],
 			'info'=>'store: '.$plan['store']['value'],
 		));
 	} else {
-		$block['body'] = 'code="'.$plan['code']['value'].'", name="'.$plan['name']['value'].'", store='.$plan['store']['value'].', vendor='.$plan['vendor']['value'];
+		$body = 'code="'.$plan['code']['value'].'", name="'.$plan['name']['value'].'", store='.$plan['store']['value'].', vendor='.$plan['vendor']['value'];
 	}
 }
-
-?>

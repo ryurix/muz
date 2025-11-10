@@ -1,0 +1,12 @@
+<?php
+
+
+for ($i=0; $i<=32; $i++) {
+	$minutes = intdiv(\Config::now(), 60) - $i;
+	$key = 'count-'.$minutes;
+	$dt = $minutes * 60;
+	$count = \Flydom\Memcached::get($key);
+	if (!empty($count)) {
+		echo '<p>'.$count.' &mdash; '.\Flydom\Time::dateTime($dt).'</p>';
+	}
+}

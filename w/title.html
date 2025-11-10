@@ -1,17 +1,16 @@
 <?
 
-if (isset($config['title2'])) {
-	echo \Page::dict($config['title2']);
+
+if (!empty(\Page::get('title2'))) {
+	echo \Page::dict(\Page::get('title2'));
 } else {
-	if (strlen($config['name']) > 0) {
-		echo \Page::dict($config['name']) . ' | ';
+	if (!empty(\Page::name())) {
+		echo \Page::dict(\Page::name()) . ' | ';
 	}
 
-	echo $config['title'];
+	echo \Config::TITLE;
 
 	if (isset($_SESSION['city']) && $_SESSION['city'] && isset($block['city-name'])) {
 		echo ' '.$block['city-name'];
 	}
 }
-
-?>

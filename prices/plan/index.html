@@ -11,7 +11,7 @@
 
 w('ft');
 
-$q = db_query('SELECT * FROM cron WHERE typ='.\Type\Cron::PRICES.' ORDER BY name');
+$q = db_query('SELECT * FROM cron WHERE typ='.\Cron\Type::PRICES.' ORDER BY name');
 while ($i = db_fetch($q)) {
 	echo '
 <tr>

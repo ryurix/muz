@@ -4,10 +4,15 @@ namespace Cabinet;
 
 class Type extends \Flydom\Type\Base
 {
+
+	const OZON = \Cron\Type::OZON;
+	const WILDBERRIES = \Cron\Type::WILDBERRIES;
+	const YANDEX = \Cron\Type::YANDEX;
+
 	const DATA = [
-		\Type\Cron::YANDEX => ['Яндекс', 'yandex'],
-		\Type\Cron::OZON => ['Озон', 'ozon'],
-		\Type\Cron::WILDBERRIES => ['Wildberries', 'wildberries']
+		self::OZON => ['Озон', 'ozon'],
+		self::WILDBERRIES => ['Wildberries', 'wildberries'],
+		self::YANDEX => ['Яндекс', 'yandex'],
 	];
 
 	static function name($code = null, $default = null) {

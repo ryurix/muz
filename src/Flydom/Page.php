@@ -14,9 +14,10 @@ class Page extends \Flydom\Core\Page {
 		return $site;
 	}
 
-	static function city() {
-		return static::$city;
-	}
+	static function cityHead() { return static::$city['head']; }
+	static function cityMetrics() { return static::$city['metrics']; }
+	static function cityMetrico() { return static::$city['metrico']; }
+	static function cityRobots() { return static::$city['robots']; }
 
 	static function dict($text) {
 		return empty($text) ? '' : str_replace(array_keys(static::$word), array_values(static::$word), $text);

@@ -8,7 +8,7 @@ Disallow: /';
 } else {
 	header("Content-Type: text/plain");
 	//echo file_get_contents(\Config::ROOT.'robots'.$config['dict-site'].'.txt');
-	echo $config['city']['robots'];
+	echo \Page::cityRobots();
 	exit();
 }
 

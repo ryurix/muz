@@ -1,0 +1,8 @@
+<?php
+
+if (\Cabinet\Model::valid())
+{
+	\Page::menu(-2)['name'] = 'test';
+	\Cabinet\Stock::parse();
+	echo \Cabinet\Stock::build();
+}

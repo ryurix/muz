@@ -103,9 +103,9 @@ if ($plan['']['valid'] && $plan['send']['value'] == 1) {
 	db_insert('store', $data);
 
 	db_insert('log', array(
-		'type'=>14,
+		'typ'=>14,
 		'dt'=>\Config::now(),
-		'user'=>$_SESSION['i'],
+		'usr'=>$_SESSION['i'],
 		'info'=>'store: '.$key,
 	));
 	\Flydom\Alert::warning('<a href="/store/'.$url.'">Товар</a> добавлен');

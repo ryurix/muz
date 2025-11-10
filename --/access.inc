@@ -53,9 +53,9 @@ function access_exit() {
 function access_create($user) {
 	if ($user['i']) {
 		db_insert('log', array(
-			'type'=>3,
+			'typ'=>3,
 			'dt'=>now(),
-			'user'=>$user['i'],
+			'usr'=>$user['i'],
 			'info'=>$user['login'].' '.client_ip(),
 		));
 	}
@@ -111,7 +111,7 @@ function access_try($login, $pass) {
 		}
 
 		if (strlen($pass)) {
-			db_insert('log', array('user'=>-1, 'dt'=>now(), 'info'=>client_ip().'@'.$login.':'.$pass));
+			db_insert('log', array('usr'=>-1, 'dt'=>now(), 'info'=>client_ip().'@'.$login.':'.$pass));
 		}
 	}
 

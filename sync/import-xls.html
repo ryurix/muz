@@ -50,9 +50,9 @@ if ($plan['']['valid'] && $send > 0) {
 
 		$curr = 1;
 
-		$q = db_query('SELECT * FROM vendor WHERE i='.$plan['vendor']['value'].' OR (up='.$plan['vendor']['value'].' AND up>0)');
+		$rows = \Db::fetchAll('SELECT * FROM vendor WHERE i='.$plan['vendor']['value'].' OR (up='.$plan['vendor']['value'].' AND up>0)');
 		$ven = array();
-		while ($i = db_fetch($q)) {
+		foreach ($rows as $i) {
 			$i['prmin'] = $i['prmin'] ? $i['prmin'] : 0;
 			$i['ccs'] = explode(' ', $i['ccount']);
 			$curr = w('currency', $i['curr']);
@@ -60,7 +60,6 @@ if ($plan['']['valid'] && $send > 0) {
 
 			$ven[$i['i']] = $i;
 		}
-		db_close($q);
 
 		if ($curr != 1) {
 			echo '<p>Курс валюты: '.$curr.'</p>';
@@ -83,11 +82,6 @@ if ($plan['']['valid'] && $send > 0) {
 				$valid = isset($i[$v['cname']]) && !empty($i[$v['cname']]);
 
 				if (!isset($i[$v['ccs'][0]])) { $i[$v['ccs'][0]] = 0; }
-				if ($v['copt']) {
-					if (!isset($i[$v['copt']])) {
-						$i[$v['copt']] = 0;
-					}
-				}
 
 				if ($valid) {
 					$ccode = isset($i[$v['ccode']]) ? $i[$v['ccode']] : '';
@@ -112,13 +106,13 @@ if ($plan['']['valid'] && $send > 0) {
 							$valid = FALSE;
 						}
 					}
-					if ($v['copt']) {
+					if ($v['copt'] && isset($i[$v['copt']])) {
 						$copt = $i[$v['copt']];
 						$copt = is_number($copt) ? ceil($copt) : 0;
 
 						$valid = $copt*1.1 <= $cprice;	// Проверка на маржинальность
 					} else {
-						$copt = 0;
+						$copt = round($cprice * (100 - $v['sopt']) / 100);
 					}
 
 					if ($valid) {
@@ -134,19 +128,19 @@ if ($plan['']['valid'] && $send > 0) {
 					$or = strlen($ccode) ? ' OR code="'.addslashes($ccode).'"' : '';
 					$select = 'SELECT * FROM sync WHERE (name="'.addslashes($cname).'"'.$or.') AND vendor='.$v['i'];
 
-					$q = db_query($select);
-					if ($sync = db_fetch($q)) { // Ищем в таблице синхронизации
+					$sync = \Db::fetchRow($select);
+					if (is_array($sync)) { // Ищем в таблице синхронизации
 						$cprice = round($cprice * $v['curr']);
 						$copt = round($copt * $v['curr']);
 						if ($sync['price'] != $cprice || $sync['count'] != $ccount || $sync['opt'] != $copt) {
-							db_update('sync', array(
+							\Db::update('sync', [
 								'code'=>$ccode,
 								'name'=>$cname,
 								'dt'=>\Config::now(),
 								'price'=>$cprice,
 								'opt'=>$copt,
 								'count'=>$ccount,
-							), 'i='.$sync['i']);
+							], 'i='.$sync['i']);
 							$updated[] = $sync['i'];
 						} else {
 							$unchanged[] = $sync['i'];
@@ -161,11 +155,7 @@ if ($plan['']['valid'] && $send > 0) {
 			}
 		}
 
-		$all = array();
-		$q = db_query('SELECT i FROM sync WHERE count>0 AND vendor IN ('.implode(',', array_keys($ven)).')');
-		while ($i = db_fetch($q)) {
-			$all[] = $i['i'];
-		}
+		$all = \Db::fetchList('SELECT i FROM sync WHERE count>0 AND vendor IN ('.implode(',', array_keys($ven)).')');
 		$lost = array_diff($all, $updated, $unchanged);
 
 		\Flydom\Alert::warning('Обновлено '.count($updated).', без изменений '.count($unchanged).' позиций этого поставщика в каталоге.<br>Отмечены как недоступные для заказа: '.count($lost).', не синхронизировано: '.$nosync.' (из них с количеством: '.$nosyncv.')', true);
@@ -187,12 +177,7 @@ if ($plan['']['valid'] && $send > 0) {
 			), 'i IN ('.implode(',', $chunk).')');
 		}
 
-		db_insert('log', array(
-			'type'=>16,
-			'dt'=>\Config::now(),
-			'user'=>$_SESSION['i'],
-			'info'=>$vendors[$plan['vendor']['value']],
-		));
+		\Flydom\Log::add(16, 0, $vendors[$plan['vendor']['value']]);
 /*
 		// Устанавливаем дату следующей выгрузки яндекса так, чтобы выгрузка произошла сразу.
 		$last = cache_load('cron');

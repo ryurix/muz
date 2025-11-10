@@ -4,7 +4,7 @@ namespace Cron;
 
 
 // 3*60
-class Mail extends Task {
+class Mail {
 	static function run($args) {
 		w('mail-cron');
 	}

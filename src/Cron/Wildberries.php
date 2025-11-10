@@ -6,7 +6,7 @@ use stdClass;
 
 // https://openapi.wildberries.ru/
 
-class Wildberries extends Task {
+class Wildberries {
 
 	public static function run($args) {
 

@@ -18,7 +18,7 @@ function input_combo2($v) {
 	if (isset($v['placeholder'])) { $more.= ' data-placeholder="'.$v['placeholder'].'"'; }
 	$v['more'] = $more.' tabindex="-1"';
 
-	$v['class'] = isset($v['class']) ? $v['class'].' chosen-select' : 'chosen-select';
+	$v['class'] = isset($v['class']) ? $v['class'].' chosen' : 'chosen';
 
 	return $back.input_combo($v).'</div>';
 }

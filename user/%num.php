@@ -113,9 +113,9 @@ if (($row = db_fetch($q)) && (\User::is('admin') || strlen($row['roles']) == 0 |
 
 			db_update('user', $data, array('i'=>$row['i']));
 			db_insert('log', array(
-				'type'=>10,
+				'typ'=>10,
 				'dt'=>\Config::now(),
-				'user'=>$_SESSION['i'],
+				'usr'=>$_SESSION['i'],
 				'info'=>'',
 			));
 			w('cache-user', $row['i']);

@@ -52,7 +52,7 @@ if (isset($sub['/'])) {
 $get = catalog_param($config['get']);
 if (count($sub)) { // Подкатегории
 	echo '
-	<button type="button" class="catalog_btnsubmenu">'.(strlen($config['name']) ? \Page::dict($config['name']) : '&nbsp;').'</button>
+	<button type="button" class="catalog_btnsubmenu">'.(strlen($config['name'] ?? '') ? \Page::dict($config['name'] ?? '') : '&nbsp;').'</button>
 	<ul class="catalog_submenu">';
 
 	foreach ($sub as $v) {

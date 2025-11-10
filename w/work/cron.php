@@ -14,14 +14,15 @@ foreach ($rows as $cron) {
 
 	$data = $cron + \Flydom\Arrau::decode($cron['data']);
 
-	$info = \Cron\Task::execute($cron, $data);
+	$info = \Flydom\Cron\Task::execute($cron, $data);
 
 	if (isset($data['follow'])) {
-		$info.= \Cron\Task::follow($data['follow']);
+		$info.= \Flydom\Cron\Task::follow($data['follow']);
 	}
 
 	db_update('cron', [
-		'dt'=>\Cron\Task::next($cron, $data),
-		'info'=>trim(\Flydom\Time::dateTime(\Config::now()).' '.$info),
+		'dt'=>\Flydom\Cron\Task::next($cron, $data),
+		'last'=>\Config::now(),
+		'info'=>trim($info),
 	], ['i'=>$cron['i']]);
 }

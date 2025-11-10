@@ -1,4 +1,8 @@
 <?
+if (isset($body)) {
+	echo $body;
+	return;
+}
 
 $vendors = cache_load('vendor');
 

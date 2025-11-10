@@ -3,7 +3,7 @@
 namespace Cron;
 
 // каждые 26 часов
-class GoogleMerchant extends Task {
+class GoogleMerchant {
 	static function run($args) {
 		$site = cache_load('site');
 

@@ -2,7 +2,7 @@
 
 namespace Cron;
 
-class Yml extends Task {
+class Yml {
 
 	const YANDEX = 0;
 	const YANDEX_COUNT = 1;

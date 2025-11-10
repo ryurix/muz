@@ -4,7 +4,7 @@ $code = \Page::arg();
 
 $row = 0;
 if ($code) {
-	$q = db_query('SELECT * FROM cron WHERE typ='.\Type\Cron::YANDEX.' AND i='.$code);
+	$q = db_query('SELECT * FROM cron WHERE typ='.\Cron\Type::YANDEX.' AND i='.$code);
 	$row = db_fetch($q);
 
 	if (!$row) {
@@ -15,7 +15,7 @@ if ($code) {
 if (!$row) {
 	$row = array(
 		'i'=>0,
-		'typ'=>\Type\Cron::YANDEX,
+		'typ'=>\Cron\Type::YANDEX,
 		'form'=>11,
 		'name'=>'Новая выгрузка',
 		'dt'=>\Config::now() + 24*60*60,
@@ -37,7 +37,7 @@ $form = isset($_REQUEST['form']) && isset($forms[$_REQUEST['form']]) ? $_REQUEST
 $data = $row + array_decode($row['data']);
 
 $others = array(0=>'');
-$q = db_query('SELECT * FROM cron WHERE typ='.\Type\Cron::YANDEX.' AND i<>'.$row['i'].' ORDER BY name');
+$q = db_query('SELECT * FROM cron WHERE typ='.\Cron\Type::YANDEX.' AND i<>'.$row['i'].' ORDER BY name');
 while ($i = db_fetch($q)) {
 	$others[$i['i']] = $i['name'];
 }
@@ -45,15 +45,15 @@ while ($i = db_fetch($q)) {
 $plan = [
 	''=>['default'=>$data],
 	'name'=>['name'=>'Название', 'type'=>'line', 'min'=>3],
-	'usr'=>['name'=>'Кабинет', 'type'=>'combo', 'values'=>\Cabinet\Model::list(\Type\Cron::YANDEX)],
+	'usr'=>['name'=>'Кабинет', 'type'=>'combo', 'values'=>\Cabinet\Model::list(\Cron\Type::YANDEX)],
 	'form'=>['name'=>'Формат', 'type'=>'combo', 'values'=>$forms, 'default'=>$form],
-	'every'=>['name'=>'Период', 'type'=>'combo', 'values'=>\Form\Cron::EVERY, 'default'=>0],
+	'every'=>['name'=>'Период', 'type'=>'combo', 'values'=>\Cron\Form::EVERY, 'default'=>0],
 	'time'=>['name'=>'Время запуска', 'type'=>'time', 'default'=>0],
 	'week'=>['name'=>'Дни недели', 'type'=>'multich', 'values'=>[1=>'пн', 2=>'вт', 3=>'ср', 4=>'чт', 5=>'пт', 6=>'сб', 7=>'вс'], 'placeholder'=>'ежедневно'],
 
 
 
-//	'price'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
+//	'price'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=> \Price\Type::names(), 'default'=>0],
 
 //	'site'=>array('name'=>'Сайт', 'type'=>'line', 'default'=>'muzmart.com'),
 //	'city'=>array('name'=>'Город', 'type'=>'combo', 'values'=>array(0=>'') + cache_load('city'), 'default'=>0),
@@ -83,7 +83,7 @@ if ($plan['send']['value'] == 3) {
 
 if ($plan['']['valid']) {
 	$new = [
-		'typ'=>\Type\Cron::YANDEX,
+		'typ'=>\Cron\Type::YANDEX,
 		'usr'=>$plan['usr']['value'],
 		'form'=>$plan['form']['value'],
 		'name'=>$plan['name']['value'],
@@ -102,7 +102,7 @@ if ($plan['']['valid']) {
 	}
 
 	$new['data'] = array_encode($data);
-	$new['dt'] = \Cron\Task::next($new);
+	$new['dt'] = \Flydom\Cron\Task::next($new);
 
 	if ($plan['send']['value'] == 1) {
 
@@ -119,8 +119,8 @@ if ($plan['']['valid']) {
 
 	if ($plan['send']['value'] == 2) {
 
-		$info = \Cron\Task::execute($new, $data);
-		$info.= \Cron\Task::follow($data['follow']);
+		$info = \Flydom\Cron\Task::execute($new, $data);
+		$info.= \Flydom\Cron\Task::follow($data['follow']);
 
 		\Flydom\Alert::warning('Выгрузка выполнена: '.$info);
 		if ($row['i']) {

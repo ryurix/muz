@@ -14,7 +14,7 @@ function parse_city(&$r) {
 	} else {
 		$r['value'] = isset($r['default']) ? $r['default'] : 0;
 		$r['valid'] = 1;
-	}	
+	}
 }
 
 function input_city($r) {
@@ -29,7 +29,7 @@ function input_city($r) {
 
 	$s.= '<select name="'.$r['code'].'" data-placeholder="'
 	.(isset($r['placeholder']) ? $r['placeholder'] : 'Выберите город')
-	.'" style="width:'.$width.'px;" class="chosen-select'.$class.'" tabindex="-1"'.$more.'>'."\n";
+	.'" style="width:'.$width.'px;" class="chosen'.$class.'" tabindex="-1"'.$more.'>'."\n";
 
 	if (!isset($city[$r['value']])) {
 		$s.= '<option value="" SELECTED></option>'."\n";

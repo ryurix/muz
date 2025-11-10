@@ -14,7 +14,7 @@ if ($row = db_fetch($q)) {
 	w('pf-action', $row['i']);
 
 	$name = $row['name'];
-	\Page::$name($name);
+	\Page::name($name);
 
 	$action = \Page::arg(1, 'view');
 

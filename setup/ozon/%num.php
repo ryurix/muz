@@ -1,38 +1,53 @@
 <?
 
 $code = \Page::arg();
+\Cron\Form::types(\Cron\Type::names(10, 19));
 
-$row = 0;
-if ($code) {
-	$q = db_query('SELECT * FROM cron WHERE typ=10 AND i='.$code);
-	$row = db_fetch($q);
-
-	if (!$row) {
+$row = \Cron\Form::load($code);
+if (empty($row)) {
+	if ($code) {
+		\Flydom\Alert::danger('Задача не найдена: ' + $code);
 		\Page::redirect('/setup/ozon');
 	}
-}
 
-if (!$row) {
 	$row = array(
 		'i'=>0,
-		'typ'=>10,
-		'name'=>'Новая выгрузка',
+		'typ'=>\Cron\Type::OZON,
+		'name'=>'Новая выгрузка Ozon',
 		'dt'=>\Config::now() + 24*60*60,
 		'every'=>86400,
-		'data'=>'',
+		'week'=>[],
+		'follow'=>[],
 	);
 }
 
-\Page::name($row['name']);
+$follow = \Db::fetchMap('SELECT i,name FROM cron WHERE typ='.\Cron\Type::OZON.' AND i<>'.$code.' ORDER BY name');
+$cabinet = \Db::fetchMap('SELECT usr,name FROM cabinet WHERE typ='.\Cron\Type::OZON.' ORDER BY name');
 
-$forms = array(
-	1=>'Выгрузка цены',
-	//3=>'Выгрузка цен составных товаров',
-	11=>'Выгрузка количества',
-	//13=>'Выгрузка количества составных товаров',
-	19=>'Обнуление количества',
-//	10=>'Обнуление всех',
-);
+$plan = ['usr'=>new \Flydom\Input\Select('Кабинет', $cabinet)];
+
+$type = \Flydom\Clean::firstUint($_REQUEST['typ'] ?? $row['typ']);
+switch ($type) {
+	case \Cron\Type::OZON_SET_PRICE:
+		$plan['test'] = new \Flydom\Input\Line('Тестовый артикул');
+		break;
+	case \Cron\Type::OZON_SET_STOCK:
+		$plan['test'] = new \Flydom\Input\Line('Тестовый артикул');
+		$plan['upd'] = new \Flydom\Input\Checkbox('Только обновления');
+		$plan['zero'] = new \Flydom\Input\Checkbox('Передать нули');
+		$plan['min'] = new \Flydom\Input\Integer('Минимум');
+		$plan['minus'] = new \Flydom\Input\Integer('Вычет');
+		$plan['vendor'] = new \Flydom\Input\Multiselect('Поставщики', \Flydom\Cache::get('vendor'));
+		break;
+}
+
+\Cron\Form::start($plan, $row);
+
+\Page::name(\Cron\Form::name());
+
+\Cron\Form::process('/setup/ozon');
+
+/*
 
 $form = isset($_REQUEST['form']) && isset($forms[$_REQUEST['form']]) ? $_REQUEST['form'] : $row['form'];
 $data = $row + array_decode($row['data']);
@@ -46,7 +61,7 @@ while ($i = db_fetch($q)) {
 $plan = [
 	''=>['default'=>$data],
 	'name'=>array('name'=>'Название', 'type'=>'line', 'min'=>3),
-	'every'=>['name'=>'Период', 'type'=>'combo', 'values'=>\Form\Cron::EVERY, 'default'=>0],
+	'every'=>['name'=>'Период', 'type'=>'combo', 'values'=>\Cron\Form::EVERY, 'default'=>0],
 	'time'=>array('name'=>'Время запуска', 'type'=>'time', 'default'=>0),
 	'week'=>array('name'=>'Дни недели', 'type'=>'multich', 'values'=>array(1=>'пн', 2=>'вт', 3=>'ср', 4=>'чт', 5=>'пт', 6=>'сб', 7=>'вс'), 'placeholder'=>'ежедневно'),
 	'form'=>array('name'=>'Формат', 'type'=>'combo', 'values'=>$forms),
@@ -55,7 +70,7 @@ $plan = [
 	'api'=>array('name'=>'Ключ API', 'type'=>'line', 'default'=>'', 'min'=>1),
 	'warehouse'=>['name'=>'ID Склада', 'type'=>'line', 'default'=>'', 'min'=>1],
 
-	'price'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
+	'price'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=> \Price\Type::names(), 'default'=>0],
 	'min'=>array('name'=>'Мин. количество', 'type'=>'int', 'default'=>0),
 	'minus'=>array('name'=>'Вычет', 'type'=>'int', 'default'=>0),
 //	'site'=>array('name'=>'Сайт', 'type'=>'line', 'default'=>'muzmart.com'),
@@ -80,7 +95,7 @@ if ($plan['send']['value'] == 3) {
 
 if ($plan['']['valid']) {
 	$new = [
-		'typ'=>\Type\Cron::OZON_XML,
+		'typ'=>\Cron\Type::OZON,
 		'form'=>$plan['form']['value'],
 		'name'=>$plan['name']['value'],
 		'info'=>'',
@@ -98,7 +113,7 @@ if ($plan['']['valid']) {
 	}
 
 	$new['data'] = array_encode($data);
-	$new['dt'] = \Cron\Task::next($new);
+	$new['dt'] = \Flydom\Cron\Task::next($new);
 
 	if ($plan['send']['value'] == 1) {
 
@@ -115,8 +130,8 @@ if ($plan['']['valid']) {
 
 	if ($plan['send']['value'] == 2) {
 
-		$info = \Cron\Task::execute($new, $data);
-		$info.= \Cron\Task::follow($data['follow']);
+		$info = \Flydom\Cron\Task::execute($new, $data);
+		$info.= \Flydom\Cron\Task::follow($data['follow']);
 
 		\Flydom\Alert::warning('Выгрузка выполнена: '.$info);
 		if ($row['i']) {
@@ -128,3 +143,5 @@ if ($plan['']['valid']) {
 		}
 	}
 }
+
+//*/

@@ -2,7 +2,7 @@
 
 namespace Cron;
 
-class Prices extends Task {
+class Prices {
 
 	public static function run($data) {
 		return self::calc_all($data['price']);
@@ -14,6 +14,7 @@ class Prices extends Task {
 		foreach ($rules as $rule) {
 			$count[]= self::calc($rule);
 		}
+
 		return count($count) ? max($count) : 0;
 	}
 
@@ -57,10 +58,11 @@ class Prices extends Task {
 		return $count;
 	}
 
-	static function update($rule, $i) {
-
+	static function update($rule, $i)
+	{
 		if (isset($i['price'])) {
 			if ($rule['typ'] > 0) {
+				if ($rule['typ'] === \Price\Type::OPT) { $i['opt'] = $i['price']; }
 				$prices = self::decode($i['_prices']);
 				$prices[$rule['typ'] - 1] = $i['price'];
 				$i['prices'] = self::encode($prices);
@@ -69,7 +71,6 @@ class Prices extends Task {
 				$i['prices'] = $i['_prices'];
 			}
 		}
-
 
 		if ($i['count'] != $i['_count']
 		|| $i['vendor'] != $i['_vendor']
@@ -85,6 +86,7 @@ class Prices extends Task {
 			if (isset($i['sale'])) { $data['sale'] = $i['sale']; }
 			if (isset($i['price'])) { $data['price'] = $i['price']; }
 			if (isset($i['prices'])) { $data['prices'] = $i['prices']; }
+			if (isset($i['opt'])) { $data['price2'] = $i['opt']; }
 
 			db_update('store', $data, 'i='.$i['i']);
 			return TRUE;
@@ -98,7 +100,7 @@ class Prices extends Task {
 		}
 
 		$array = empty($prices) ? [] : explode(',', $prices);
-		while (count($array) < \Type\Price::count()) {
+		while (count($array) < \Price\Type::count()) {
 			$array[]= 0;
 		}
 

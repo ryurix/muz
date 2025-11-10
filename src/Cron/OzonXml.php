@@ -2,7 +2,7 @@
 
 namespace Cron;
 
-class OzonXml extends Task {
+class OzonXml {
 
 	public static function run($args) {
 		w('clean');
@@ -34,7 +34,7 @@ class OzonXml extends Task {
 		}
 
 		if (!count($ids)) {
-			return;
+			return 'Товары не найдены!';
 		}
 
 		//\Flydom\Alert::warning(php_encode($items));

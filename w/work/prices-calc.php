@@ -235,7 +235,7 @@ function prices_where($rule) {
 	if ($rule['pmax']) {
 		$where[]= 'store.price<='.$rule['pmax'];
 	}
-	return ' AND '.implode(' AND ', $where);
+	return count($where) ? ' AND '.implode(' AND ', $where) : '';
 }
 
 function prices_calc_yandex_opt($rule, $less) {

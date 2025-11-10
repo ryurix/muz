@@ -105,7 +105,7 @@ if (isset($_SESSION['sync']) && is_file(\Config::ROOT.substr($_SESSION['sync']['
 									'code'=>$ccode,
 									'name'=>$cname,
 								), array('i'=>$sync['i']));
-								\Flydom\Log::add(18, $plan['store']['value'], $ccode);
+								\Flydom\Log::add(18, $sync['store'], $ccode);
 							}
 //echo '<p>break!</p>';
 							break;

@@ -32,6 +32,7 @@ if ($row = db_fetch($q)) {
 				'ccount'=>$plan['ccount']['value'],
 				'cprice'=>$plan['cprice']['value'],
 				'copt'=>$plan['copt']['value'],
+				'sopt'=>$plan['sopt']['value'],
 				'curr'=>$plan['curr']['value'],
 				'short'=>$plan['short']['value'],
 				'info'=>$plan['info']['value'],

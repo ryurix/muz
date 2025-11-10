@@ -34,7 +34,7 @@ function input_multich($r) {
 	if (count($style)) { $s.=' style="'.implode(';', $style).';"'; }
 	//style="width:'.(isset($r['width']) ? $r['width'] : 366).'px">';
 	$s.= '><input type=hidden name="'.$r['code'].'--">';
-	$s.= '<select data-placeholder="'.$placeholder.'" class="chosen-select'.(isset($r['class']) ? ' '.$r['class'] : '').'" multiple name="'.$r['code'].'[]"'
+	$s.= '<select data-placeholder="'.$placeholder.'" class="chosen'.(isset($r['class']) ? ' '.$r['class'] : '').'" multiple name="'.$r['code'].'[]"'
 	.(isset($r['width']) ? ' style="width:'.$r['width'].'px"':'').'>';
 
 	foreach($r['values'] as $k=>$v) {
@@ -46,7 +46,7 @@ function input_multich($r) {
 	}
 
 	$s.= '</select></div>
-<script type="text/javascript">$(".chosen-select").chosen();</script>';
+<script type="text/javascript">$(".chosen").chosen();</script>';
 
 	return $s;
 }

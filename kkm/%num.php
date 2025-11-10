@@ -65,14 +65,16 @@ if ($plan['send']['value'] == 3) {
 	if (isset($data['QRCode'])) {
 		if ($zip->open($file) === TRUE) {
 			if ($zip->locateName($imagefile) !== false) {
-				include_once \Config::ROOT.'--/block/phpqrcode/qrlib.php';
+				include_once \Config::ROOT.'w/phpqrcode/qrlib.php';
 				ob_start();
 				QRcode::png($data['QRCode'], false, 'L', 4, 2);
 				$png = ob_get_contents();
 				ob_end_clean();
 
-				$zip->deleteName($imagefile);
-				$zip->addFromString($imagefile, $png);
+				if (!empty($png)) {
+					$zip->deleteName($imagefile);
+					$zip->addFromString($imagefile, $png);
+				}
 			}
 
 			$zip->close();

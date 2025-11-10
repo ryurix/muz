@@ -1,5 +1,5 @@
 <?
 
-\Action::before('/setup/cabinet/0', 'добавить кабинет');
+\Action::before('/setup/cabinet/0', 'новый кабинет');
 
 \Cabinet\Table::parse();

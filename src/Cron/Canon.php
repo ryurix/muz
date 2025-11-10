@@ -4,7 +4,7 @@ namespace Cron;
 
 
 // раз в 5 дней
-class Canon extends Task {
+class Canon {
 	static function run($args) {
 		db_query('DELETE FROM canon WHERE dt<'.(\Config::now() - 15*24*60*60));
 	}

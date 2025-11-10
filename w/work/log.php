@@ -3,9 +3,9 @@
 // Сохраняет лог в базу
 function logs($type, $code = 0, $info = null, $user = null) {
 	db_insert('log', array(
-		'type'=>$type,
+		'typ'=>$type,
 		'dt'=>\Config::now(),
-		'user'=>is_null($user) ? $_SESSION['i'] : $user,
+		'usr'=>is_null($user) ? $_SESSION['i'] : $user,
 		'info'=>mb_substr($info, 0, 65535),
 		'code'=>$code,
 	));

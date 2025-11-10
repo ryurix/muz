@@ -134,9 +134,9 @@ function kkm_fix($id = 0) {
 	if (!count($orst)) {
 		db_update('kkm', array('state'=>15, 'dt2'=>\Config::now()), array('i'=>$kkm['i']));
 		db_insert('log', array(
-			'type'=>95,
+			'typ'=>95,
 			'dt'=>\Config::now(),
-			'user'=>$_SESSION['i'],
+			'usr'=>$_SESSION['i'],
 			'info'=>'Не найден заказ для фискализации: '.$kkm['orst'],
 			'code'=>$kkm['i'],
 		));
@@ -344,9 +344,9 @@ $back = array(
 
 	if (strlen($back['Error'])) {
 		db_insert('log', array(
-			'type'=>95,
+			'typ'=>95,
 			'dt'=>\Config::now(),
-			'user'=>$_SESSION['i'],
+			'usr'=>$_SESSION['i'],
 			'info'=>$back['Error'].' '.php_encode($data).' '.php_encode($back),
 			'code'=>$kkm['i'],
 		));
@@ -357,9 +357,9 @@ $back = array(
 
 	if (!is_array($back) || !count($back)) {
 		db_insert('log', array(
-			'type'=>95,
+			'typ'=>95,
 			'dt'=>\Config::now(),
-			'user'=>$_SESSION['i'],
+			'usr'=>$_SESSION['i'],
 			'info'=>'Пустой ответ сервера: '.php_encode($data).' '.php_encode($back),
 			'code'=>$kkm['i'],
 		));

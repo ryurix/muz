@@ -4,7 +4,7 @@ namespace Cron;
 
 
 // раз в 2 минуты
-class Kkm extends Task {
+class Kkm {
 	static function run($args) {
 		w('kkmserver');
 		kkm_fix();

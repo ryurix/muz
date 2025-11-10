@@ -54,10 +54,7 @@ if (is_array($row)) {
 		}
 	}
 
-	$config['plan'] = $plan;
-	\Page::name($row['name');
+	\Page::name($row['name']);
 } else {
 	\Page::redirect('/');
 }
-
-?>

@@ -16,7 +16,7 @@ if ($row = db_fetch($q)) {
 */
 
 w('clean');
-$shop = \Flydom\Clean::firstUint(\Page::arg());
+$shop = \Flydom\Clean::startUint(\Page::arg());
 
 if (\User::is('catalog')) {
 	w('user-config');
@@ -334,10 +334,11 @@ if ($get['group']['value'] && $get['group']['valid']) {
 
 $ch = cache_load('children'.(\User::is('catalog') ? '-hide' : ''));
 
+
 $short = false;
 if (is_array($ch[$shop]) && count($ch[$shop])) {
 	$where[] = 'store.up IN ('.$shop.','.implode(',', $ch[$shop]).')';
-	if (count($ch[$shop]) <= 33) {
+	if (count($ch[$shop]) <= 22) { // TODO configure
 		$short = true;
 	}
 } else {

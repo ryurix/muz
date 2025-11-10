@@ -1,12 +1,18 @@
 <?
 
-namespace Type;
+namespace Cron;
 
-class Cron extends \Flydom\Type\Cron
+class Type extends \Flydom\Cron\Type
 {
 	const YML = 1;
-	const OZON_XML = 10;
-	const OZON_ORDER = 12;
+
+	const OZON = 10;
+	const OZON_ORDER = 11;
+	const OZON_GET_PRICE = 12;
+	const OZON_SET_PRICE = 13;
+	const OZON_GET_STOCK = 14;
+	const OZON_SET_STOCK = 15;
+
 	const WILDBERRIES = 20;
 	const YANDEX = 30;
 	const PRICES = 50;
@@ -21,12 +27,19 @@ class Cron extends \Flydom\Type\Cron
 	const MARKET72 = 108;
 	const MAIL = 109;
 	const SESSION = 110;
-	const OZON = 111;
+//	const OZON_COMMON = 111;
 	const LOG = 200;
 
 	const DATA = parent::DATA + [
 		self::YML => [ 'name'=>'Выгрузка YML', 'class'=>'\Cron\Yml::run', ],
-		self::OZON_XML => [ 'name'=>'Выгрузка Ozon', 'class'=>'\Cron\OzonXml::run', ],
+
+		self::OZON => [ 'name'=>'Выгрузка Ozon', 'class'=>'\Cron\OzonXml::run', ],
+		self::OZON_ORDER => [ 'name'=>'Заказы Ozon', 'class'=>'\Ozon\Order::run', ],
+		self::OZON_GET_PRICE => ['name'=>'Загрузка цен и товаров из Ozon', 'class'=>'\Ozon\GetPrice::run', ],
+		self::OZON_SET_PRICE => ['name'=>'Выгрузка цен в Ozon', 'class'=>'\Ozon\Price::run', ],
+		self::OZON_GET_STOCK => ['name'=>'Загрузка остатков из Ozon', 'class'=>'\Ozon\GetStock::run', ],
+		self::OZON_SET_STOCK => ['name'=>'Выгрузка остатков в Ozon', 'class'=>'\Ozon\Stock::run', ],
+
 		self::WILDBERRIES => [ 'name'=>'Выгрузка Wildberries', 'class'=>'\Cron\Wildberries::run', ],
 		self::YANDEX => [ 'name'=>'Выгрузка Яндекс', 'class'=>'\Cron\Yandex::run', ],
 		self::PRICES => [ 'name'=>'Ценообразование', 'class'=>'\Cron\Prices::run', ],
@@ -41,7 +54,7 @@ class Cron extends \Flydom\Type\Cron
 		self::MARKET72 => [ 'name'=>'Маркет 72', 'class'=>'\Cron\Market72::run', ],
 		self::MAIL => [ 'name'=>'Рассылка', 'class'=>'\Cron\Mail::run', ],
 		self::SESSION => [ 'name'=>'Очистка сессий', 'class'=>'\Cron\Session::run', ],
-		self::OZON => [ 'name'=>'Озон обработка заказов', 'class'=>'\Cron\Ozon::run', ],
+//		self::OZON_COMMON => [ 'name'=>'Озон обработка', 'class'=>'\Ozon\Order::run', ],
 		self::LOG => ['name'=>'Очистка логов', 'class'=>'\Cron\Log::run'],
 	];
 

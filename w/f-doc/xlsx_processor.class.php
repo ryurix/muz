@@ -84,8 +84,9 @@ class xlsx_processor {
 			foreach ($rows as $row=>$tags) {
 				$row_count = 0;
 				foreach ($tags as $tag) {
-					if ($row_count<count($matrix->$tag))
-						$row_count = count($matrix->$tag);
+					$count = is_null($matrix->$tag) ? 0 : count($matrix->$tag);
+					if ($row_count<$count)
+						$row_count = $count;
 				}
 				$multiple_rows_count[$sheet][$row+$add]=$row_count-1;
 				$add+=$row_count-1;

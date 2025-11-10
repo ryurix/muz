@@ -2,7 +2,7 @@
 
 $back = array(
 	'link'=>array('type'=>''),
-	'name'=>array('type'=>'line', 'name'=>'Имя', 'default'=>$_SESSION['name']),
+	'name'=>array('type'=>'line', 'name'=>'Имя', 'default'=>$_SESSION['name'] ?? ''),
 	'rate'=>array('type'=>'rate', 'name'=>'Оценка'),
 	'plus'=>array('type'=>'line', 'name'=>'Плюсы'),
 	'minus'=>array('type'=>'line', 'name'=>'Минусы'),

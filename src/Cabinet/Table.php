@@ -16,12 +16,14 @@ class Table extends \Flydom\Table\Sql
 		'usr' => ['name'=>'Пользователь', 'field'=>'u.name'],
 		'name'=> ['name'=>'Название', 'field'=>'c.name'],
 		'type' => ['name'=>'Тип', 'field'=>'c.typ'],
+		'margin'=>['name'=>'Прибыль, %', 'field'=>'c.margin'],
+		'profit'=>['name'=>'Прибыль, руб', 'field'=>'c.profit'],
+		'vat'=>['name'=>'НДС', 'field'=>'c.vat'],
 	];
 
 	protected static function where() {
 		return '';
 	}
-
 
 	protected static function cell($code, $pos, $row) {
 		switch ($code) {

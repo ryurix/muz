@@ -2,7 +2,7 @@
 
 namespace Cron;
 
-class Ozon extends Task {
+class Ozon {
 
 	static function ozon_query($ozon, $url, $args) {
 		$ch = curl_init();

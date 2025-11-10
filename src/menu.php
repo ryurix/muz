@@ -222,10 +222,12 @@
 	]],
 	'reset'=>['name'=>'RESET', 'role'=>'admin'],
 
-	'log'=>['name'=>'Логи', 'role'=>'log'],
+	'log'=>['name'=>'Логи', 'role'=>'log', 'class'=>'\Flydom\Page\Log'],
 
 	'cabinet'=>['name'=>'Кабинеты', 'role'=>'cabinet', '/'=>[
-		'%num'=>[],
+		'%num'=>['name'=>'Новый кабинет', '/'=>[
+			'stock'=>['name'=>'Товары'],
+		]],
 	]],
 	'yml'=>['name'=>'Выгрузка YML', 'role'=>'yandex', '/'=>[
 		'%num'=>[],

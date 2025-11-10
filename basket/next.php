@@ -100,7 +100,7 @@ if ($plan['phone']['value'] != $_SESSION['phone'] && strlen($plan['phone']['valu
 }
 */
 
-if ($plan['email']['value'] != $_SESSION['email'] && strlen($plan['email']['value'])) {
+if ($plan['email']['value'] != ($_SESSION['email'] ?? '') && strlen($plan['email']['value'])) {
 	w('clean');
 	if (db_result('SELECT COUNT(*) FROM user WHERE email="'.clean_mail($plan['email']['value']).'"')) {
 		$plan['email']['iv'] = 1;

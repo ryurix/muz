@@ -3,7 +3,7 @@
 namespace Cron;
 
 //13*60*60
-class Complex extends Task {
+class Complex {
 	static function run($args) {
 		global $config;
 

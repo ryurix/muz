@@ -4,7 +4,7 @@ $code = '';
 if (\Page::depth() >= 3 && !empty(\Page::arg())) {
 	$key = \Page::arg();
 	if ($key > 0) {
-		$code = $menu[1]['code'];
+		$code = \Page::menu(1)['code'];
 		switch($code) {
 			case ('user'):
 			case ('order'): $code = substr($code, 0, 1).$key; break;

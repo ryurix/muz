@@ -2,7 +2,7 @@
 
 w('autoload');
 
-$typ = \Type\Price::get();
+$typ = \Price\Type::get();
 
 $config['breadcrumb'] = [
 	'/prices?typ='.$typ=>'Ценообразование'
@@ -95,7 +95,7 @@ if ($plan['']['valid'] && $plan['send']['value'] && $plan['code']['value']) {
 			'vendor'=>$plan['vendor']['value'],
 			'up'=>$plan['up']['value'],
 			'count'=>$plan['count']['value'],
-			'days'=>$plan['days']['value'],
+//			'days'=>$plan['days']['value'],
 			'pmin'=>$plan['pmin']['value'],
 			'pmax'=>$plan['pmax']['value'],
 			'typ'=>$typ,

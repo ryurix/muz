@@ -2,10 +2,10 @@
 
 w('autoload');
 
-$typ = \Type\Price::get();
-$list = \Type\Price::names();
+$typ = \Price\Type::get();
+$list = \Price\Type::names();
 
-\Page::name('Ценообразование (' . \Type\Price::name($typ) . ')');
+\Page::name('Ценообразование (' . \Price\Type::name($typ) . ')');
 
 $links = [];
 foreach ($list as $k=>$v) {

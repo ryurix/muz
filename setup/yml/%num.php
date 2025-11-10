@@ -47,7 +47,7 @@ $plan = array(
 	'filename'=>array('name'=>'Имя файла', 'type'=>'line', 'default'=>'yandex.xml'),
 	'min'=>array('name'=>'Мин. количество', 'type'=>'int', 'default'=>0),
 	'minus'=>array('name'=>'Вычет', 'type'=>'int', 'default'=>0),
-	'type'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=>\Type\Price::names(), 'default'=>0],
+	'type'=>['name'=>'Тип цены', 'type'=>'combo', 'values'=> \Price\Type::names(), 'default'=>0],
 	'price'=>array('name'=>'Мин. цена', 'type'=>'int', 'default'=>500),
 	'price2'=>array('name'=>'Макс. цена', 'type'=>'int', 'default'=>1000000),
 	'site'=>array('name'=>'Сайт', 'type'=>'line', 'default'=>'muzmart.com'),
@@ -67,7 +67,7 @@ if ($plan['send']['value'] == 3) {
 if ($plan['']['valid'])
 {
 	$new = [
-		'typ'=>\Type\Cron::YML,
+		'typ'=>\Cron\Type::YML,
 		'form'=>$plan['form']['value'],
 		'name'=>$plan['name']['value'],
 		'info'=>'',
@@ -85,7 +85,7 @@ if ($plan['']['valid'])
 	}
 
 	$new['data'] = array_encode($data);
-	$new['dt'] = \Cron\Task::next($new);
+	$new['dt'] = \Flydom\Cron\Task::next($new);
 
 	if ($plan['send']['value'] == 1) {
 
@@ -102,8 +102,8 @@ if ($plan['']['valid'])
 
 	if ($plan['send']['value'] == 2) {
 
-		$info = \Cron\Task::execute($new, $data);
-		//$info.= \Cron\Task::follow($data['follow']);
+		$info = \Flydom\Cron\Task::execute($new, $data);
+		//$info.= \Flydom\Cron\Task::follow($data['follow']);
 
 		\Flydom\Alert::warning('Выгрузка выполнена! '.$info);
 		if ($row['i']) {

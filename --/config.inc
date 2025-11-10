@@ -27,7 +27,6 @@ $config['update-url'] = 'https://muzmart.com';
 
 // test
 
-$config['city']['head'] = '';
 $config['domain'] = 'mmart';
 
 $config['DEBUG'] = 1;

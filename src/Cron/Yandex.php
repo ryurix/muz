@@ -5,7 +5,7 @@
 
 namespace Cron;
 
-class Yandex extends Task {
+class Yandex {
 
 	static function post($url, $args, $data = []) {
 		$ch = curl_init();

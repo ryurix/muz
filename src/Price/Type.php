@@ -1,16 +1,19 @@
 <?
 
-namespace Type;
+namespace Price;
 
-class Price
+class Type
 {
+//	const RRC = 0;
+//	const OPT = 1;
 
-	const MAIN = 0;
+	const RRC = 0;
 	const WB = 1;
 	const OZON = 2;
 	const WB2 = 3;
 	const OZON2 = 4;
 	const YANDEX = 5;
+	const OPT = 6;
 
 	static function list() {
 		$oClass = new \ReflectionClass(__CLASS__);
@@ -23,13 +26,16 @@ class Price
 
 	static function names() {
 		return [
-			self::MAIN => 'основная',
+//			self::RRC => 'розничная',
+//			self::OPT => 'оптовая',
+
+			self::RRC => 'основная',
 			self::WB => 'WB',
 			self::OZON => 'озон',
 			self::WB2 => 'WB2',
 			self::OZON2 => 'озон2',
 			self::YANDEX => 'yandex',
-		//	self::
+			self::OPT => 'оптовая'
 		];
 	}
 
@@ -38,7 +44,7 @@ class Price
 	}
 
 	static function get() {
-		$default = self::MAIN;
+		$default = self::RRC;
 		$typ = kv($_REQUEST, 'typ', $default);
 		$names = self::names();
 		if (!isset($names[$typ])) {
