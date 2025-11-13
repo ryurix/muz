@@ -1,0 +1,9 @@
+<?php
+
+use \Flydom\Form\Form;
+
+echo Form::build();
+
+if (Form::send() == 'test') {
+	\Flydom\Debug::print(Form::values());
+}

@@ -1,0 +1,78 @@
+<?
+
+$typ = \Price\Type::get();
+
+$run = $start['']['valid'] && $start['send']['value'];
+
+$plan = w('plan-prices');
+
+$q = db_query('SELECT * FROM price2 WHERE typ='.$typ.' ORDER BY i');
+
+?>
+<table class="table table-bordered table-striped table-sm">
+	<thead>
+		<tr>
+			<th class="text-center">#</th>
+			<th>Каталог</th>
+			<th>Группы</th>
+			<th>Производители</th>
+			<th>Поставщик</th>
+			<th>Наличие</th>
+			<th>Взять цену</th>
+			<th>Коррекция цены</th>
+			<th>Комментарий</th>
+		</tr>
+	</thead>
+	<tbody>
+<?
+
+$ups = $plan['up']['values'];
+$ups[0] = '';
+$counts = $plan['count']['values'];
+$prices = $plan['price']['values'];
+
+function names($keys, $values) {
+	if (!strlen($keys)) {
+		return '';
+	}
+	$a = [];
+	$codes = explode(',', $keys);
+	foreach ($codes as $i) {
+		$a[] = $values[$i];
+	}
+	return implode(', ', $a);
+}
+
+while ($i = db_fetch($q)) {
+
+	$up = $ups[$i['up']];
+	$grp = names($i['grp'], $plan['grp']['values']);
+	$brand = names($i['brand'], $plan['brand']['values']);
+	$vendor = names($i['vendor'], $plan['vendor']['values']);
+
+	$count = $counts[$i['count']];
+	$price = $prices[$i['price']];
+	$info = $i['info'];
+	if ($i['fin']) {
+		$info = trim('Финальное. '.$info);
+	}
+
+	echo '<tr>'
+.'<td class="text-center"><a class="btn btn-default btn-sm" href="/price2/'.$i['i'].'?typ='.$typ.'">'.$i['i'].'</a></td>'
+.'<td>'.$up.'</td>'
+.'<td>'.$grp.'</td>'
+.'<td>'.$brand.'</td>'
+.'<td>'.$vendor.'</td>'
+.'<td nowrap>'.$count.'</td>'
+.'<td>'.$price.'</td>'
+.'<td>'.$i['sale'].' %</td>'
+.'<td>'.$info.'</td>';
+	echo '</tr>'."\n";
+}
+
+?>
+	</tbody>
+</table>
+<?
+
+w('form', $start);
