@@ -16,7 +16,7 @@ function import_catalog($url) {
 	}
 
 	w('simple_html_dom');
-	set_time_limit(0);
+	set_time_limit(\Config::TIME_LIMIT);
 
 	return w($code, $url);
 }

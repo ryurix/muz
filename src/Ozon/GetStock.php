@@ -11,7 +11,7 @@ class GetStock {
 			return 'Кабинет не найден: '.$data['usr'];
 		}
 
-		set_time_limit(0);
+		set_time_limit(\Config::TIME_LIMIT);
 
 		$rows = \Db::fetchMap('SELECT store,stock FROM stock WHERE usr='.\Cabinet\Model::user());
 		$now = \Config::now();

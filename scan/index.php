@@ -140,10 +140,12 @@ $result = '<!--'.($sound ?? '').'-->';
 
 if (is_array($store)) {
 	$brands = cache_load('brand');
-	$name = ($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'];
+	$name = '<a href="/store/'.$store['url'].'" target=_BLANK>'.($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'].'</a>';
 
 	$code = implode(', ', \Flydom\Arrau::decodec($store['code']));
 	$barcode = \Form\Barcode::button('Штрихкод', 'scan', 'btn btn-default btn-sm');
+
+	$res = \Tool\Reserve::get($store['i']);
 
 //	echo '<h3>'.($brands[$store['brand']] ?? '').' '.$store['name'].' '.$store['model'].'</h3>';
 	$result.= '<div class="row"><div class="col"><img src="'.$store['pic'].'" class="img-fluid"></div><div class="col">';
@@ -176,6 +178,18 @@ if (is_array($store)) {
 <tr><td>'.$barcode.'</td><td>'.$code.'</td></tr>
 </tbody></table>';
 	}
+	$sync = \Db::fetchAll('SELECT v.name,s.count FROM sync s LEFT JOIN vendor v ON v.i=s.vendor WHERE s.store='.$store['i']);
+	$result.= '
+<table class="table table-bordered"><thead>
+<tr><th>Поставщик</th><th>Количество</th></tr><tbody>';
+	foreach ($sync as $i) {
+		$result.= '<tr><td>'.$i['name'].'</td><td>'.$i['count'].'</td></tr>';
+	}
+	if ($res > 0) {
+		$result.= '<tr><td><i>Резерв</i></td><td>'.$res.'</td></tr>';
+	}
+	$result.= '
+</tbody></table>';
 	$result.= '</div></div>';
 } else {
 	if (strlen($scan)) {

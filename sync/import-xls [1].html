@@ -45,7 +45,7 @@ if ($plan['']['valid'] && $send > 0) {
 	$file = $plan['file']['value'];
 
 	if (strlen($file) > 0) {
-		set_time_limit(0);
+		set_time_limit(\Config::TIME_LIMIT);
 
 		$q = db_query('SELECT * FROM vendor WHERE i="'.$plan['vendor']['value'].'"');
 		$ven = db_fetch($q);

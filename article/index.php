@@ -14,7 +14,7 @@ $pw = cache_load('pathway'.(\User::is('catalog') ? '-hide' : ''));
 
 if ($up && isset($pw[$up]) && kv($_REQUEST, 'catalog') == $pw[$up]['url']) {
 	// do nothing
-	$config['breadcrumb'] = array('/article'=>'Все статьи');
+	\Page::breadcrumb(['/article'=>'Все статьи']);
 } else {
 	$up = 0;
 }

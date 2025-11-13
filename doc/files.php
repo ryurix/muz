@@ -1,6 +1,6 @@
 <?
 
-use \Flydom\Form\Form;
+use \Form\Form;
 
 $names = [];
 

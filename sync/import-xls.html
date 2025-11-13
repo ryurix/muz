@@ -1,6 +1,6 @@
 <?
 
-set_time_limit(0);
+set_time_limit(\Config::TIME_LIMIT);
 
 w('u8');
 
@@ -36,17 +36,20 @@ $plan = array(
 	''=>array('method'=>'POST'),
 	'file'=>array('name'=>'Файл данных', 'type'=>'file0', 'default'=>''),
 	'vendor'=>array('name'=>'Поставщик', 'type'=>'combo', 'values'=>$vendors, 'default'=>0, 'class'=>'vendor', 'width'=>300),
+	'force'=>['type'=>'checkbox', 'label'=>'Обновить резко подешевевшие товары', 'default'=>0],
 	'send'=>array('type'=>'button', 'count'=>1, 1=>'Импорт', 'class'=>'btn-warning'),
 );
 
 w('request', $plan);
+echo '<p>';
 w('form', $plan);
+echo '</p>';
 
 $send = $plan['send']['value'];
 if ($plan['']['valid'] && $send > 0) {
 	$file = $plan['file']['value'];
 	if (strlen($file) > 0) {
-		set_time_limit(0);
+		set_time_limit(\Config::TIME_LIMIT);
 
 		$curr = 1;
 
@@ -75,6 +78,7 @@ if ($plan['']['valid'] && $send > 0) {
 		$nosyncv = 0;
 		$updated = array();
 		$unchanged = array();
+		$warnings = [];
 
 		foreach ($cells as $i) {
 			array_unshift($i, 0);
@@ -109,11 +113,15 @@ if ($plan['']['valid'] && $send > 0) {
 					if ($v['copt'] && isset($i[$v['copt']])) {
 						$copt = $i[$v['copt']];
 						$copt = is_number($copt) ? ceil($copt) : 0;
-
-						$valid = $copt*1.1 <= $cprice;	// Проверка на маржинальность
 					} else {
+						$copt = 0;
+					}
+
+					if ($copt == 0) {
 						$copt = round($cprice * (100 - $v['sopt']) / 100);
 					}
+
+					$valid = $copt*1.1 <= $cprice;	// Проверка на маржинальность
 
 					if ($valid) {
 						$ccount = round($cprice*$v['curr']) < $v['prmin'] ? 0 : clean_count($i, $v['ccs']);
@@ -127,11 +135,24 @@ if ($plan['']['valid'] && $send > 0) {
 				if ($valid) {
 					$or = strlen($ccode) ? ' OR code="'.addslashes($ccode).'"' : '';
 					$select = 'SELECT * FROM sync WHERE (name="'.addslashes($cname).'"'.$or.') AND vendor='.$v['i'];
-
 					$sync = \Db::fetchRow($select);
 					if (is_array($sync)) { // Ищем в таблице синхронизации
 						$cprice = round($cprice * $v['curr']);
 						$copt = round($copt * $v['curr']);
+
+						if (!$plan['force']['value']) {
+							if ($cprice < $sync['price'] * 0.8) {
+								$warnings[] = $ccode.' '.$cname.' в рознице было '.$sync['price'].' стало '.$cprice;
+								$unchanged[] = $sync['i'];
+								continue;
+							}
+							if ($copt < $sync['opt'] * 0.8) {
+								$warnings[] = $ccode.' '.$cname.' оптом было '.$sync['opt'].' стало '.$copt;
+								$unchanged[] = $sync['i'];
+								continue;
+							}
+						}
+
 						if ($sync['price'] != $cprice || $sync['count'] != $ccount || $sync['opt'] != $copt) {
 							\Db::update('sync', [
 								'code'=>$ccode,
@@ -158,7 +179,10 @@ if ($plan['']['valid'] && $send > 0) {
 		$all = \Db::fetchList('SELECT i FROM sync WHERE count>0 AND vendor IN ('.implode(',', array_keys($ven)).')');
 		$lost = array_diff($all, $updated, $unchanged);
 
-		\Flydom\Alert::warning('Обновлено '.count($updated).', без изменений '.count($unchanged).' позиций этого поставщика в каталоге.<br>Отмечены как недоступные для заказа: '.count($lost).', не синхронизировано: '.$nosync.' (из них с количеством: '.$nosyncv.')', true);
+		\Flydom\Alert::success('Обновлено '.count($updated).', без изменений '.count($unchanged).' позиций этого поставщика в каталоге.<br>Отмечены как недоступные для заказа: '.count($lost).', не синхронизировано: '.$nosync.' (из них с количеством: '.$nosyncv.')', true);
+		foreach ($warnings as $i) {
+			\Flydom\Alert::warning($i, true);
+		}
 
 		// Обновлем даты синхронизации для записей без изменений
 		$syncs = array_chunk($unchanged, 100, TRUE);

@@ -4,11 +4,12 @@ if (\Config::DEBUG) {
 	return;
 }
 
+
 set_time_limit(550);
 
 cache_set('cron', \Flydom\Time::dateTime(\Config::now()));
 
-$rows = db_fetch_all('SELECT * FROM cron WHERE every>0 AND dt<'.\Config::now().' ORDER BY dt LIMIT 1');
+$rows = db_fetch_all('SELECT * FROM cron WHERE every>0 AND dt<'.\Config::now().' ORDER BY dt LIMIT 5');
 
 foreach ($rows as $cron) {
 

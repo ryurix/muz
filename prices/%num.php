@@ -4,9 +4,7 @@ w('autoload');
 
 $typ = \Price\Type::get();
 
-$config['breadcrumb'] = [
-	'/prices?typ='.$typ=>'Ценообразование'
-];
+\Page::breadcrumb(['/prices?typ='.$typ=>'Ценообразование']);
 
 $plan = w('plan-prices');
 

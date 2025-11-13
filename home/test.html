@@ -1,6 +1,29 @@
 <?php
 
 /*
+$start = round(microtime(true) * 1000);
+
+echo '<p>'.\Price\Cron::run(null).'</p>';
+
+$finish = round(microtime(true) * 1000);
+
+echo '<p>'.($finish - $start).'ms</p>';
+
+/*
+$rows = \Db::fetchAll('SELECT store,vendor,price,opt,count FROM sync,vendor WHERE sync.vendor=vendor.i AND sync.dt>('.\Config::now().'-vendor.days*86400) AND store IN ('.implode(',', $ids).')');
+$sync = [];
+foreach ($rows as $i) {
+	$store = $i['store'];
+	if (isset($sync[$store])) {
+		$sync[$store][] = $i;
+	} else {
+		$sync[$store] = [$i];
+	}
+}
+return $sync;
+//*/
+
+/*
 $a = [];
 $a[] = [
 	'product_id'=>'123',

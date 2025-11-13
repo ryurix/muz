@@ -87,6 +87,8 @@ if ($plan['']['valid']) {
 
 	if ($plan['send']['value'] == 2) {
 
+		$new['i'] = $row['i'] ? $row['i'] : 0;
+
 		$info = \Flydom\Cron\Task::execute($new, $data);
 		//$info.= \Flydom\Cron\Task::follow($data['follow']);
 

@@ -46,7 +46,7 @@ function flatten(&$list, $catalog, $pathway) {
 
 if ($plan['']['valid'] && $plan['send']['value'] > 0) {
 
-	set_time_limit(0);
+	set_time_limit(\Config::TIME_LIMIT);
 //	Подгтовка
 	$brand = normalize(cache_load('brand'));
 	$vendor = normalize(cache_load('vendor'));

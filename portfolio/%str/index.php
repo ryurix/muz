@@ -9,7 +9,7 @@ $q = db_query('SELECT * FROM pf WHERE i="'.$key.'"');
 if ($row = db_fetch($q)) {
 	//$ups = cache_load('portfolio');
 	//$config['breadcrumb'] = array('/portfolio#pf'.$row['up'] => $ups[$row['up']]);
-	$config['breadcrumb'] = array('/portfolio' => 'Портфолио');
+	\Page::breadcrumb(['/portfolio' => 'Портфолио']);
 
 	w('pf-action', $row['i']);
 

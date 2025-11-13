@@ -34,7 +34,7 @@ switch ($type) {
 	case \Cron\Type::OZON_SET_STOCK:
 		$plan['test'] = new \Flydom\Input\Line('Тестовый артикул');
 		$plan['upd'] = new \Flydom\Input\Checkbox('Только обновления');
-		$plan['zero'] = new \Flydom\Input\Checkbox('Передать нули');
+		$plan['zero'] = new \Flydom\Input\Checkbox('Обнулить');
 		$plan['min'] = new \Flydom\Input\Integer('Минимум');
 		$plan['minus'] = new \Flydom\Input\Integer('Вычет');
 		$plan['vendor'] = new \Flydom\Input\Multiselect('Поставщики', \Flydom\Cache::get('vendor'));

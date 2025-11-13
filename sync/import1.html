@@ -175,7 +175,7 @@ if ($f) {
 	create_catalog($cat, 0);
 	w('catalog-cache');
 
-	set_time_limit(0);
+	set_time_limit(\Config::TIME_LIMIT);
 
 	$brand = cache_load('brand');
 	foreach ($store as $i) {

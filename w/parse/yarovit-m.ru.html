@@ -26,7 +26,7 @@ foreach ($hrefs as $href) {
 		$html->clear;
 		unset($html);
 	}
-	set_time_limit(0);
+	set_time_limit(\Config::TIME_LIMIT);
 																						echo_test('3 '.$href);
 	$html = file_get_html($href);
 																						echo_test('3 get');
@@ -56,7 +56,7 @@ foreach ($hrefs as $href) {
 		$pic = '';
 	}
 																						echo_test(5);
-	$files = array();	
+	$files = array();
 																						echo_test(6);
 	$info = $html->find('div[class=merch-info-tab]', 0)->find('ul', 1)->find('li', 0)->innertext
 	.' '.$html->find('div[class=merch-info-tab]', 0)->find('ul', 1)->find('li', 1)->innertext;
@@ -67,7 +67,7 @@ foreach ($hrefs as $href) {
 		$info.= "\n".$div->innertext;
 		$div->clear; unset($div);
 	}
-	
+
 	$back[] = array(
 		'href'=>$href,
 		'brand'=>$brand,

@@ -125,7 +125,7 @@ if ($plan['']['valid'] && $plan['send']['value'] > 0) {
 //	$file = \Config::ROOT.'files/yandex.xml';
 
 	echo '<p>Импорт: '.$plan['file']['value'].'</p>';
-	set_time_limit(0);
+	set_time_limit(\Config::TIME_LIMIT);
 
 	$xml = simplexml_load_file($file);
 

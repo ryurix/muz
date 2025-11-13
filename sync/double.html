@@ -12,7 +12,7 @@ w('request', $plan);
 w('form', $plan);
 
 if ($plan['']['valid'] && $plan['send']['value'] = 1) {
-	set_time_limit(0);
+	set_time_limit(\Config::TIME_LIMIT);
 
 	$count = 0;
 	$brand = cache_load('brand');

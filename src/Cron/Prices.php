@@ -5,6 +5,7 @@ namespace Cron;
 class Prices {
 
 	public static function run($data) {
+		set_time_limit(\Config::TIME_LIMIT);
 		return self::calc_all($data['price']);
 	}
 

@@ -2,10 +2,6 @@
 
 $typ = \Price\Type::get();
 
-$run = $start['']['valid'] && $start['send']['value'];
-
-$plan = w('plan-prices');
-
 $q = db_query('SELECT * FROM price2 WHERE typ='.$typ.' ORDER BY i');
 
 ?>
@@ -26,10 +22,13 @@ $q = db_query('SELECT * FROM price2 WHERE typ='.$typ.' ORDER BY i');
 	<tbody>
 <?
 
-$ups = $plan['up']['values'];
+$ups = \Price\Form::ups();
 $ups[0] = '';
-$counts = $plan['count']['values'];
-$prices = $plan['price']['values'];
+$groups = \Price\Form::groups();
+$brands = \Price\Form::brands();
+$vendors = \Price\Form::vendors();
+$counts = \Price\Form::counts();
+$prices = \Price\Form::prices();
 
 function names($keys, $values) {
 	if (!strlen($keys)) {
@@ -46,9 +45,9 @@ function names($keys, $values) {
 while ($i = db_fetch($q)) {
 
 	$up = $ups[$i['up']];
-	$grp = names($i['grp'], $plan['grp']['values']);
-	$brand = names($i['brand'], $plan['brand']['values']);
-	$vendor = names($i['vendor'], $plan['vendor']['values']);
+	$grp = names($i['grp'], $groups);
+	$brand = names($i['brand'], $brands);
+	$vendor = names($i['vendor'], $vendors);
 
 	$count = $counts[$i['count']];
 	$price = $prices[$i['price']];

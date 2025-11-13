@@ -4,15 +4,72 @@ namespace Price;
 
 class Form {
 
+	static function valid() {
+		return FormData::isValid();
+	}
+
+	static function send() {
+		return FormData::send();
+	}
+
 	static function load($id)
 	{
+		$typ = Type::get();
+		$row = \Db::fetchRow('SELECT * FROM price2 WHERE i='.$id.' AND typ='.$typ);
+		$row['grp'] = \Flydom\Arrau::decode($row['grp']);
+		$row['brand'] = \Flydom\Arrau::decode($row['brand']);
+		$row['vendor'] = \Flydom\Arrau::decode($row['vendor']);
+		return $row;
 	}
 
 	static function save()
 	{
+		$data = FormData::values();
+		$data['grp'] = \Flydom\Arrau::encode($data['grp']);
+		$data['brand'] = \Flydom\Arrau::encode($data['brand']);
+		$data['vendor'] = \Flydom\Arrau::encode($data['vendor']);
+
+		$id = FormData::get('i');
+		$pre = FormData::field('i')->default;
+		$typ = Type::get();
+
+		$exists = $id ? db_result('SELECT COUNT(*) FROM price2 WHERE i='.$id.' AND typ='.$typ) : 0;
+		$exists2 = $id != $pre ? db_result('SELECT COUNT(*) FROM price2 WHERE i='.$pre.' AND typ='.$typ) : 0;
+
+		if ($exists2) {
+			\Flydom\Alert::danger('Правило № '.$pre.' уже существует!');
+			FormData::field('i')->iv = 1;
+		} else {
+			if ($exists) {
+				db_update('price2', $data, ['i'=>$id, 'typ'=>$typ]);
+				\Flydom\Alert::warning('Правило обновлено');
+			} else {
+				$data['typ'] = $typ;
+				db_insert('price2', $data);
+				\Flydom\Alert::warning('Правило добавлено');
+			}
+			\Page::redirect('/price2?typ='.$typ);
+		}
+	}
+
+	static function delete() {
+		$id = FormData::get('i');
+		$typ = Type::get();
+		\Db::delete('price2', ['i'=>$id, 'typ'=>$typ]);
+		\Flydom\Alert::warning('Правило удалено!');
+		\Page::redirect('/price2');
 	}
 
 	static function start($default) {
+		FormData::plan(static::plan(), $default);
+		FormData::parse();
+		if (!empty(FormData::send())) {
+			FormData::validate();
+		}
+	}
+
+	static function build() {
+		return FormData::build();
 	}
 
 	static function ups() {
@@ -35,26 +92,27 @@ class Form {
 		return \Flydom\Cache::get('vendor');
 	}
 
-	protected static function counts() {
+	static function counts() {
 		return [
 			0=>'',
 			1=>'В наличии',
 			2=>'Отсутствует',
-			3=>'Нет синхронизации',
 		];
 	}
 
-	protected static function prices() {
+	static function prices() {
 		return [
-			0=>'',
 			1=>'Розничную поставщика',
 			5=>'Оптовую поставщика',
+
 			11=>'Минимальную розничную',
 			12=>'Среднюю розничную',
 			13=>'Максимальную розничную',
-			15=>'Минимальную оптовую',
-			16=>'Среднюю оптовую',
-			17=>'Максимальную оптовую',
+
+			21=>'Минимальную оптовую',
+			22=>'Среднюю оптовую',
+			23=>'Максимальную оптовую',
+
 			101=>'Обнулить',
 		];
 	}
@@ -62,7 +120,7 @@ class Form {
 	protected static function plan()
 	{
 		$plan = [
-			'code'=>new \Flydom\Input\Integer(['name'=>'Номер', 'width'=>100]),
+			'i'=>new \Flydom\Input\Integer(['name'=>'Номер', 'width'=>100, 'min'=>1]),
 			'up'=>new \Flydom\Input\Select('Каталог', static::ups()),
 			'grp'=>new \Flydom\Input\Multiselect('Группа', static::groups()),
 			'brand'=>new \Flydom\Input\Multiselect('Производители', static::brands()),

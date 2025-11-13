@@ -1,6 +1,6 @@
 <?php
 
-use \Flydom\Form\Form;
+use \Form\Form;
 
 Form::plan([
 	'store'=>new \Flydom\Input\Integer('Артикул'),

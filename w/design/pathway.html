@@ -2,8 +2,8 @@
 
 $steps = array('/'=>'<i class="fa fa-home"></i>');
 
-if (isset($config['breadcrumb'])) {
-	foreach ($config['breadcrumb'] as $k=>$v) {
+if (!empty(\Page::breadcrumb())) {
+	foreach (\Page::breadcrumb() as $k=>$v) {
 		$steps[$k] = $v;
 	}
 } elseif ($up = \Page::get('up', 0)) {

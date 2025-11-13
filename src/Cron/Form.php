@@ -62,7 +62,7 @@ class Form
 		];
 
 		$new['dt'] = \Flydom\Cron\Task::next($new);
-		FormData::field('send')->name(\Flydom\Time::dateTimes($new['dt']));
+		FormData::field('send')->name(static::nextDt($new['dt']));
 
 		$data = [];
 		foreach (FormData::values() as $k=>$v) {
@@ -85,11 +85,16 @@ class Form
 	{
 		FormData::plan(static::plan($plan), $default);
 		if (isset($default['dt'])) {
-			$next = $default['dt'] < \Config::now() ? 'скоро' : \Flydom\Time::dateTimes($default['dt']);
-			FormData::field('send')->name($next);
+
+			FormData::field('send')->name(static::nextDt($default['dt']));
 			unset($default['dt']);
 		}
 		FormData::parse();
+	}
+
+	protected static function nextDt($dt) {
+		if (!$dt) { return ''; }
+		return $dt < \Config::now() ? 'скоро' : \Flydom\Time::dateTimes($dt);
 	}
 
 	static function valid() { return FormData::isValid(); }
@@ -134,7 +139,7 @@ class Form
 						\Flydom\Alert::warning($info);
 						\Db::update('cron', [
 							'last'=>\Config::now(),
-							'info'=>trim($info),
+							'info'=>mb_substr(trim($info), 0, 65535),
 						], ['i'=>$task['i']]);
 					} else {
 						\Flydom\Alert::success('Задача сохранена');
@@ -155,7 +160,7 @@ class Form
 	}
 }
 
-class FormData extends \Flydom\Form\Form {
+class FormData extends \Form\Form {
 	static protected $valid = null;
 	static protected $fields = [];
 	static protected $default = [];

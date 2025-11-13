@@ -1,9 +1,92 @@
 <?php
 
-use \Flydom\Form\Form;
+class PriceTest extends \Price\Cron {
+
+	static function test($type, $id) {
+		$store = static::loadStore('i='.$id);
+		$prices = static::getPrices($type, $store);
+
+		\Flydom\Alert::info('Начальная цена: '.$prices[$id], true);
+
+		$ids = array_keys($store);
+
+		$sync = static::loadSync($ids);
+		foreach ($sync[$id] as $i) {
+			\Flydom\Alert::info($i['name'].': количество '.$i['count'].', цена '.$i['price'].', оптовая '.$i['opt'], true);
+		}
+		if (!count($sync[$id])) {
+			\Flydom\Alert::warning('Синхронизация не найдена!', true);
+		}
+
+		$rules = static::loadRules($type);
+
+		$calculated = static::prices($rules, $store, $sync);
+		$prices = $calculated + $prices;
+		\Flydom\Alert::success('Вычисленная цена: '.$prices[$id], true);
+	}
+
+	static function loadRules($type) {
+		$rules = \Db::fetchAll('SELECT i,typ,up,grp,brand,vendor,count,price,pmin,pmax,sale,fin FROM price2 WHERE typ='.$type.' ORDER BY i');
+		foreach ($rules as $k=>$v) {
+			$rules[$k]['grp'] = \Flydom\Arrau::explode($v['grp']);
+			$rules[$k]['brand'] = \Flydom\Arrau::explode($v['brand']);
+			$rules[$k]['vendor'] = \Flydom\Arrau::explode($v['vendor']);
+		}
+		return $rules;
+	}
+
+	static function loadSync($ids) {
+		$rows = \Db::fetchAll('SELECT s.store,s.vendor,s.price,s.opt,s.count,v.name FROM sync s,vendor v WHERE s.vendor=v.i AND s.dt>('.\Config::now().'-v.days*86400) AND s.store IN ('.implode(',', $ids).')');
+		$sync = [];
+		foreach ($ids as $i) {
+			$sync[$i] = [];
+		}
+		foreach ($rows as $i) {
+			$store = $i['store'];
+			$sync[$store][] = $i;
+		}
+		return $sync;
+	}
+
+	protected static function prices($rules, $store, $sync)
+	{
+		$fin = [];
+		$prices = [];
+
+		foreach ($rules as $rule)
+		{
+			foreach ($store as $k=>$v)
+			{
+				if (isset($fin[$k])) { continue; }
+				if (!self::valid($rule, $v, $sync[$k])) {
+				//	\Flydom\Alert::info('Правило: '.$rule['i'].' не подходит', true);
+					continue;
+				}
+
+				$price = self::one($rule, $sync[$k]);
+				$price = round($price*(100 + $rule['sale'])/100);
+
+				if ($rule['fin']) {
+					\Flydom\Alert::warning('Финальное правило: '.$rule['i'], true);
+					$fin[$k] = $price;
+				} else {
+					\Flydom\Alert::warning('<a href="/price2/'.$rule['i'].'?typ='.$rule['typ'].'">Правило: #'.$rule['i'].'</a>, взять '.\Price\Form::prices()[$rule['price']].' '.$rule['sale'].'%, цена: '.$price, true);
+					$prices[$k] = $price;
+				}
+			}
+		}
+
+		return $fin + $prices;
+	}
+}
+
+use \Form\Form;
 
 echo Form::build();
 
 if (Form::send() == 'test') {
-	\Flydom\Debug::print(Form::values());
+	$i = Form::get('store');
+	$type = Form::get('type');
+
+	\PriceTest::test($type, $i);
 }

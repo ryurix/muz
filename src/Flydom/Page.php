@@ -2,6 +2,11 @@
 
 class Page extends \Flydom\Core\Page {
 
+	protected static $breadcrumb;
+	static function breadcrumb($value = null) {
+		return is_null($value)? static::$breadcrumb : static::$breadcrumb = $value;
+	}
+
 	protected static $city;
 	protected static $word;
 	static function site($value = null) {

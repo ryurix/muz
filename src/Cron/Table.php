@@ -9,14 +9,22 @@ class Table extends \Flydom\Table\Sql
 		self::$cabinetType = $value;
 	}
 	protected static function filter() {
-		if (empty(self::$cabinetType)) {
-			return [];
-		}
-		$cabinets = [0=>''] + \Db::fetchMap('SELECT usr,name FROM cabinet WHERE typ='.self::$cabinetType.' ORDER BY name');
+		$cabinets = empty(self::$cabinetType) ? [] : \Db::fetchMap('SELECT usr,name FROM cabinet WHERE typ='.self::$cabinetType.' ORDER BY name');
+		$cabinets = [0=>''] + $cabinets;
+		$types = [0=>''] + static::$types;
 		return [
-			'usr'=>new \Flydom\Input\Select(['values'=>$cabinets, 'class'=>'auto']),
+			'usr'=>count($cabinets) > 2 ? new \Flydom\Input\Select(['values'=>$cabinets, 'class'=>'auto']) : new \Flydom\Input\None('', 0),
+			'typ'=>new \Flydom\Input\Select(['values'=>$types, 'class'=>'auto']),
 			'send'=>new \Flydom\Input\Submit('', 'Фильтровать')
 		];
+	}
+
+	protected static function columns() {
+		$columns = array_keys(static::COLUMNS);
+		if (empty(self::$cabinetType)) {
+			$columns = array_values(\Flydom\Arrau::remove('usr', $columns));
+		}
+		return $columns;
 	}
 
 	protected static $types = [];
@@ -32,6 +40,7 @@ class Table extends \Flydom\Table\Sql
 	protected static function defaults() {
 		return [
 			'usr'=>0,
+			'typ'=>0,
 			'sort'=>'name',
 		];
 	}
@@ -55,6 +64,8 @@ class Table extends \Flydom\Table\Sql
 		$where = 'WHERE p.typ IN ('.implode(',', array_keys(static::$types)).')';
 		$usr = self::get('usr');
 		if (!empty($usr)) { $where.= ' AND p.usr='.$usr; }
+		$typ = self::get('typ');
+		if (!empty($typ)) { $where.= ' AND p.typ='.$typ; }
 		return $where;
 	}
 
@@ -68,7 +79,9 @@ class Table extends \Flydom\Table\Sql
 			case 'typ':
 				return '<td>'.static::$types[$row[$pos]].'</td>';
 			case 'dt':
-				$dt = $row[$pos] < \Config::now() ? 'скоро' : \Flydom\Time::dateTime($row[$pos]);
+				if ($row[$pos] == 0) { $dt = ''; } else {
+					$dt = $row[$pos] < \Config::now() ? 'скоро' : \Flydom\Time::dateTime($row[$pos]);
+				}
 				return '<td>'.$dt.'</td>';
 			case 'last':
 				return '<td>'.(empty($row[$pos]) ? '' : \Flydom\Time::dateTime($row[$pos])).'</td>';

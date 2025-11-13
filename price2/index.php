@@ -29,3 +29,13 @@ $start = array(
 		'class'=>[1=>'btn-warning']),
 );
 w('request', $start);
+
+if ($start['send']['value'] == 1) {
+	set_time_limit(\Config::TIME_LIMIT);
+	\Flydom\Debug::start();
+	$info = \Price\Cron::calc($typ);
+	$time = \Flydom\Debug::finish(true);
+	$info = 'Обновлено цен: '.$info.' за '.$time.' секунд';
+	$start['send']['suffix'] = ' '.$info;
+	\Flydom\Alert::warning($info);
+}

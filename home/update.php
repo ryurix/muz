@@ -323,7 +323,7 @@ if (isset($config['update-url']) && isset($_REQUEST['clone'])) { // клонир
 
 	$report = array('<div class="alert alert-success">Update <a href="'.$config['update-url'].'">'.$config['update-url'].'</a></div>');
 
-	set_time_limit(0);
+	set_time_limit(\Config::TIME_LIMIT);
 
 	$tut = array();
 	scan_dir(rtrim(\Config::ROOT, '/'), '', $not_get, $tut);
@@ -370,7 +370,7 @@ if (isset($config['update-url']) && isset($_REQUEST['clone'])) { // клонир
 
 	$report = array('<div class="alert alert-success">Update <a href="'.$config['update-url'].'">'.$config['update-url'].'</a></div>');
 
-	set_time_limit(0);
+	set_time_limit(\Config::TIME_LIMIT);
 
 	$tut = array();
 	scan_dir(rtrim(\Config::ROOT, '/'), '', $exclude, $tut);

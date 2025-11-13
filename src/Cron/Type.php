@@ -16,6 +16,7 @@ class Type extends \Flydom\Cron\Type
 	const WILDBERRIES = 20;
 	const YANDEX = 30;
 	const PRICES = 50;
+	const PRICE2 = 150;
 
 	const SBER = 101;
 	const SITEMAP = 102;
@@ -43,8 +44,9 @@ class Type extends \Flydom\Cron\Type
 		self::WILDBERRIES => [ 'name'=>'Выгрузка Wildberries', 'class'=>'\Cron\Wildberries::run', ],
 		self::YANDEX => [ 'name'=>'Выгрузка Яндекс', 'class'=>'\Cron\Yandex::run', ],
 		self::PRICES => [ 'name'=>'Ценообразование', 'class'=>'\Cron\Prices::run', ],
-		self::COMPLEX => [ 'name'=>'Составные товары', 'class'=>'\Cron\Complex::run', ],
 
+		self::COMPLEX => [ 'name'=>'Составные товары', 'class'=>'\Cron\Complex::run', ],
+		self::PRICE2 => [ 'name'=>'Ценообразование 2', 'class'=>'\Price\Cron::run', ],
 		self::SBER => [ 'name'=>'Сбер маркет', 'class'=>'\Marketplace\Sber::cron', ],
 		self::SITEMAP => [ 'name'=>'Карта сайта', 'class'=>'\Cron\Sitemap::run', ],
 		self::GOOGLE_MERCHANT => [ 'name'=>'Гугл торговля', 'class'=>'\Cron\GoogleMerchant::run', ],
@@ -55,7 +57,7 @@ class Type extends \Flydom\Cron\Type
 		self::MAIL => [ 'name'=>'Рассылка', 'class'=>'\Cron\Mail::run', ],
 		self::SESSION => [ 'name'=>'Очистка сессий', 'class'=>'\Cron\Session::run', ],
 //		self::OZON_COMMON => [ 'name'=>'Озон обработка', 'class'=>'\Ozon\Order::run', ],
-		self::LOG => ['name'=>'Очистка логов', 'class'=>'\Cron\Log::run'],
+		self::LOG => ['name'=>'Очистка логов', 'class'=>'\Flydom\Cron\Log::run'],
 	];
 
 } // CronType
