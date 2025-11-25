@@ -31,6 +31,10 @@ class Form
 		1200=>'20 минут',
 		1500=>'25 минут',
 		1800=>'30 минут',
+		1860=>'31 минут',
+		1920=>'32 минут',
+		1980=>'33 минут',
+		2040=>'34 минут',
 		2100=>'35 минут',
 		3600=>'1 час',
 		28800=>'8 часов',
@@ -85,9 +89,7 @@ class Form
 	{
 		FormData::plan(static::plan($plan), $default);
 		if (isset($default['dt'])) {
-
 			FormData::field('send')->name(static::nextDt($default['dt']));
-			unset($default['dt']);
 		}
 		FormData::parse();
 	}
@@ -114,9 +116,9 @@ class Form
 			'time'=>new \Flydom\Input\Time('Время запуска'),
 			'week'=>new \Flydom\Input\Multiselect(['name'=>'Дни недели', 'class'=>'chosen', 'values'=>$week, 'placeholder'=>'ежедневно']),
 			'follow'=>empty(static::$follow) ? new \Flydom\Input\None() : new \Flydom\Input\Multiselect(['name'=>'Следующая', 'values'=>static::$follow, 'class'=>'chosen', 'placeholder'=>' ']),
-			'dt'=>new \Flydom\Input\Checkbox(['name'=>'Запуск', 'label'=>'Запустить сейчас']),
 			'send'=> new \Flydom\Input\Button('', [
 				'send'=>['name'=>'Сохранить', 'class'=>'btn-default'],
+				'run'=>['name'=>'Запустить'],
 				'delete'=>['name'=>'Удалить', 'confirm'=>'Удалить выгрузку?']
 			]),
 		];
@@ -133,22 +135,16 @@ class Form
 			if (\Cron\Form::valid()) {
 				if (\Cron\Form::send() === 'send') {
 					$task = \Cron\Form::save();
-					if (FormData::get('dt')) {
-						FormData::set('dt', 0);
-						$info = \Flydom\Cron\Task::execute($task);
-						\Flydom\Alert::warning($info);
-						\Db::update('cron', [
-							'last'=>\Config::now(),
-							'info'=>mb_substr(trim($info), 0, 65535),
-						], ['i'=>$task['i']]);
-					} else {
-						\Flydom\Alert::success('Задача сохранена');
-					}
+					\Flydom\Alert::success('Задача сохранена');
 					if (!FormData::get('i') ?? 0) {
 						\Page::redirect($root.'/'.$task['i']);
 					}
-				}
-				if (\Cron\Form::send() === 'delete') {
+				} elseif (\Cron\Form::send() === 'run') {
+					$task = \Cron\Form::save();
+					\Flydom\Alert::success('Задача сохранена');
+					$info = \Flydom\Cron\Task::executeRow($task);
+					\Flydom\Alert::warning($info);
+				} elseif (\Cron\Form::send() === 'delete') {
 					\Db::delete('cron', ['i'=>FormData::get('i')]);
 					\Flydom\Alert::warning('Задача удалена!');
 					\Page::redirect($root);

@@ -52,7 +52,8 @@ class Table extends \Flydom\Table\Sql
 		'usr'=>['name'=>'Кабинет', 'field'=>'p.usr,c.name', 'fields'=>2],
 		'typ'=>['name'=>'Тип', 'field'=>'p.typ'],
 		'name'=>['name'=>'Название', 'field'=>'p.name'],
-		'last'=>['name'=>'Предыдущий', 'field'=>'p.last'],
+		'start'=>['name'=>'Предыдущий', 'field'=>'p.start'],
+		'finish'=>['name'=>'сек', 'field'=>'p.finish'],
 		'dt'=>['name'=>'Следующий', 'field'=>'p.dt'],
 		'info'=>['name'=>'Результат', 'field'=>'p.info'],
 	];
@@ -83,8 +84,10 @@ class Table extends \Flydom\Table\Sql
 					$dt = $row[$pos] < \Config::now() ? 'скоро' : \Flydom\Time::dateTime($row[$pos]);
 				}
 				return '<td>'.$dt.'</td>';
-			case 'last':
+			case 'start':
 				return '<td>'.(empty($row[$pos]) ? '' : \Flydom\Time::dateTime($row[$pos])).'</td>';
+			case 'finish':
+				return '<td>'.(is_null($row[$pos]) ? '' : \Flydom\Clean::money($row[$pos] / 1000, 3)).'</td>';
 			default:
 				return '<td>'.$row[$pos].'</td>';
 		}

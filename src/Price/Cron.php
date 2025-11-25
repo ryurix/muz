@@ -33,7 +33,7 @@ class Cron {
 			if (isset($typePrices[\Price\Type::OPT]) && $typePrices[\Price\Type::OPT][$k] != $v['price2']) {
 				$upd['price2'] = $typePrices[\Price\Type::OPT][$k];
 			}
-			$list = is_null($type) ? [] : \Flydom\Arrau::explode($v['prices']);
+			$list = is_null($type) ? [] : \Flydom\Arrau::decode($v['prices']);
 			foreach ($types as $typ=>$dummy) {
 				if ($typ == \Price\Type::RRC || $typ == \Price\Type::OPT) {
 					continue;
@@ -78,9 +78,9 @@ class Cron {
 	static function loadRules($type) {
 		$rules = \Db::fetchAll('SELECT up,grp,brand,vendor,count,price,pmin,pmax,sale,fin FROM price2 WHERE typ='.$type.' ORDER BY i');
 		foreach ($rules as $k=>$v) {
-			$rules[$k]['grp'] = \Flydom\Arrau::explode($v['grp']);
-			$rules[$k]['brand'] = \Flydom\Arrau::explode($v['brand']);
-			$rules[$k]['vendor'] = \Flydom\Arrau::explode($v['vendor']);
+			$rules[$k]['grp'] = \Flydom\Arrau::decode($v['grp']);
+			$rules[$k]['brand'] = \Flydom\Arrau::decode($v['brand']);
+			$rules[$k]['vendor'] = \Flydom\Arrau::decode($v['vendor']);
 		}
 		return $rules;
 	}
@@ -93,7 +93,7 @@ class Cron {
 			} elseif ($type === \Price\Type::OPT) {
 				$price[$k] = $v['price2'];
 			} else {
-				$prices = \Flydom\Arrau::explode($v['prices']);
+				$prices = \Flydom\Arrau::decode($v['prices']);
 				if (isset($prices[$type - 1])) {
 					$price[$k] = $prices[$type - 1];
 				} else {

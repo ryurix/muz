@@ -28,9 +28,9 @@ class PriceTest extends \Price\Cron {
 	static function loadRules($type) {
 		$rules = \Db::fetchAll('SELECT i,typ,up,grp,brand,vendor,count,price,pmin,pmax,sale,fin FROM price2 WHERE typ='.$type.' ORDER BY i');
 		foreach ($rules as $k=>$v) {
-			$rules[$k]['grp'] = \Flydom\Arrau::explode($v['grp']);
-			$rules[$k]['brand'] = \Flydom\Arrau::explode($v['brand']);
-			$rules[$k]['vendor'] = \Flydom\Arrau::explode($v['vendor']);
+			$rules[$k]['grp'] = \Flydom\Arrau::decode($v['grp']);
+			$rules[$k]['brand'] = \Flydom\Arrau::decode($v['brand']);
+			$rules[$k]['vendor'] = \Flydom\Arrau::decode($v['vendor']);
 		}
 		return $rules;
 	}

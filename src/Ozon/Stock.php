@@ -4,11 +4,20 @@ namespace Ozon;
 
 class Stock {
 
-	static function run($args) {
+	const TASK_LOCK = 'ozon-stock';
+	const TASK_TIMEOUT = 1800;
+
+	static function run($args)
+	{
 		\Cabinet\Model::load($args['usr']);
 		if (!\Cabinet\Model::valid()) {
 			return 'Кабинет не найден: '.$args['usr'];
 		}
+
+		if (\Flydom\Memcached::locked(static::TASK_LOCK)) {
+			return 'Параллельная выгрузка остатков в Озон запрещена!';
+		}
+		\Flydom\Memcached::lock(static::TASK_LOCK, static::TASK_TIMEOUT);
 
 		$rows = \Db::fetchAll('SELECT c.stock,c.code,c.store,c.price FROM stock c LEFT JOIN store s ON c.store=s.i WHERE c.usr='.$args['usr'], 'store', true);
 
@@ -76,6 +85,8 @@ class Stock {
 		}
 
 		\Flydom\Log::add(355, 0, $errors, $args['usr']);
+
+		\Flydom\Memcached::unlock(static::TASK_LOCK);
 
 		return 'Обновлено: '.count($upd).' товаров'.(empty($errors) ? '' : ', ошибка: '.implode(', ', $errors));
 	}

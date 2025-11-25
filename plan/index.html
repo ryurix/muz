@@ -3,3 +3,5 @@
 echo \Cron\Table::build();
 
 \Flydom\Alert::success('Время сервера: '.\Flydom\Time::dateTime(\Config::now()), true);
+
+\Flydom\Alert::info(\Flydom\Cron\Task::nextTask(), true);

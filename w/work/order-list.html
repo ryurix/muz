@@ -738,7 +738,7 @@ foreach ($orst as $k=>$v) {
 .'<td>'.kv($vendor, $v['vendor']).'</td>'
 .'<td>'.show_files($v['files'], $style).' '.show_files($v['docs'], $style_docs).' '.$v['info'].' <i>'.$v['note'].'</i></td>'
 .'<td>';
-	$mark = explode(',', trim($v['mark'], ','));
+	$mark = explode(',', trim($v['mark'] ?? '', ','));
 	foreach ($mark as $i) {
 		if (isset($marks[$i])) {
 			echo $marks[$i].' ';

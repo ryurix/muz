@@ -21,7 +21,7 @@ class Type
 	}
 
 	static function count() {
-		return count(self::list());
+		return 6;
 	}
 
 	static function names() {

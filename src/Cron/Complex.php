@@ -89,6 +89,10 @@ class Complex {
 
 				$p = Prices::decode($child['prices']);
 				foreach ($prices as $k=>$v) {
+					if (!\Flydom\Clean::is_int($p[$k])) {
+						\Flydom\Log::add(\Flydom\Type\Log::ERROR, $i['i'], 'Complex price: '.$p[$k]);
+						$p[$k] = \Flydom\Clean::uint($p[$k]);
+					}
 					$prices[$k] = (empty($prices[$k]) ? 0 : $prices[$k]) + round($p[$k] * (100 + $i['sale']) / 100) * $i['amount'];
 				}
 

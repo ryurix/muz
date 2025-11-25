@@ -30,7 +30,7 @@ class Form {
 		$data['vendor'] = \Flydom\Arrau::encode($data['vendor']);
 
 		$id = FormData::get('i');
-		$pre = FormData::field('i')->default;
+		$pre = FormData::field('i')->default();
 		$typ = Type::get();
 
 		$exists = $id ? db_result('SELECT COUNT(*) FROM price2 WHERE i='.$id.' AND typ='.$typ) : 0;

@@ -9,6 +9,4 @@ if (isset($_SESSION['basket'])) {
 	echo '<p><form method=POST class="form-inline"><button class="btn btn-sm btn-info mx-1" name="append">Добавить</button> товары из <a href="/basket" class="btn btn-outline-default btn-sm mx-1">Корзины ('.$count.')</a> в заказ пользователя.</form></p>';
 }
 
-w('order-list', \Page::arg());
-
-?>
+w2('order-list', \Page::arg());

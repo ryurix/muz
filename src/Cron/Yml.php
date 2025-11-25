@@ -123,6 +123,11 @@ class Yml {
 				$price = $i['price'];
 			}
 
+			if (!\Flydom\Clean::is_int($price)) {
+				\Flydom\Log::add(\Flydom\Type\Log::ERROR, $i['i'], 'Yml price: '.$price);
+				$price = \Flydom\Clean::uint($price);
+			}
+
 			$count++;
 			$brand = htmlspecialchars($brands[$i['brand']]);
 			$i['count'] = max(0, $i['count'] - kv($data, 'minus', 0) - kv($reserve, $i['i'], 0));
